@@ -35,11 +35,14 @@ DICT_MODEL[2] = ('Rodrigues', 'rm')
 
 
 def write_to_csv(data, path, header):
+   # writes data to .csv file
+   # data -> the data we wish to write
+   # path -> path to save location
+   # header -> include header labelling all columns
     with open(path, mode='w', newline='') as f:
         obj_header = DictWriter(f, fieldnames=header)
         obj_header.writeheader()         
-        obj_writer = writer(f, delimiter=',', 
-                                quotechar='"', quoting=QUOTE_MINIMAL)
+        obj_writer = writer(f, delimiter=',', quotechar='"', quoting=QUOTE_MINIMAL)
         for item in data:
             obj_writer.writerow(item)
 
