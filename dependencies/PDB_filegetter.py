@@ -8,7 +8,7 @@ file over PDB file transfer protocol.
 
 # ------------------------------------------------------------------------------
 
-import gzip
+import gzip                                         # built in
 from urllib.request import urlretrieve, urlcleanup  # built in
 from os             import remove, getcwd, path     # built in
 
