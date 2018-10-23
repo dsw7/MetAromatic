@@ -26,8 +26,8 @@ setup(
 import py2app
 import sys
 from distutils.core import setup
-from os import getcwd
-from pathlib import Path
+from os             import getcwd
+from pathlib        import Path
 
 APP = ['MetAromatic.py']
 DATA_FILES = []
@@ -38,5 +38,4 @@ setup(app=APP,
       options=dict(py2app=dict(bdist_base=str(Path(getcwd()).parent)
       + '/build', dist_dir=str(Path(getcwd()).parent) + '/dist')),
       data_files=DATA_FILES,
-      setup_requires=['py2app']     
-)
+      setup_requires=['py2app'])
