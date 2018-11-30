@@ -7,7 +7,6 @@ import tkinter as tk
 from sys                    import path as PATH                       # built in
 from os                     import path, getcwd, remove               # built in
 PATH.append(path.join(getcwd(), 'lib/python3.7/site-packages'))
-from os                     import path, getcwd                       # built in
 from csv                    import DictWriter, writer, QUOTE_MINIMAL  # built in
 from platform               import platform                           # built in
 from re                     import search                             # built in
