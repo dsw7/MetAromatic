@@ -44,7 +44,7 @@ TODO:
 (6) Create proper save window (like I did in laser program)                                       % DONE
 (7) Throw in a proper exception handler for bad PDB codes                                         % DONE
 (8) Low level routine processes all entries in multimodel entries -> fix this                     % DONE
-    Fuck I had this bug before too....
+    $%&* I had this bug before too....
 (9) Add dropdown menu for chains and structures
 (10) Redeploy for (8-11)
 (11) Fix issue with lowlevel AMET BMET separation                                                 % DONE
