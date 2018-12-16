@@ -1,4 +1,4 @@
-AUTHOR:  
+# AUTHOR:  
 DAVID S. WEBER  
 dsw7@sfu.ca  
   
@@ -13,13 +13,14 @@ do not have to manually run scripts using interpreters/DEs.
 ![aa](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4.png)
   
 **Description of directories**
----
-~/MetAromatic/docs                 // contains deploy instructions + other supporting info  
-~/MetAromatic/MetAromatic.py       // the "main" file - this runs the Tkinter master  
-~/MetAromatic/setup.py             // a custom setup.py file for py2app  
-~/MetAromatic/icon_gaJ_icon.ico    // a custom .ico icon if I ever decide to make a Windows implementation of MetAromatic
-~/MetAromatic/gui_example_v1_4.png // example UI layout .png for v1.4  
-~/MetAromatic/dependencies         // all dependency scripts are located here  
+---  
+
+    ~/MetAromatic/docs                 // contains deploy instructions + other supporting info  
+    ~/MetAromatic/MetAromatic.py       // the "main" file - this runs the Tkinter master  
+    ~/MetAromatic/setup.py             // a custom setup.py file for py2app  
+    ~/MetAromatic/icon_gaJ_icon.ico    // a custom .ico icon if I ever decide to make a Windows implementation of MetAromatic
+    ~/MetAromatic/gui_example_v1_4.png // example UI layout .png for v1.4  
+    ~/MetAromatic/dependencies         // all dependency scripts are located here  
   
 ->
   
@@ -29,7 +30,7 @@ do not have to manually run scripts using interpreters/DEs.
 ~/dependencies/ma_lowlevel.py            // a raw implementation of the Met-aromatic algorithm  
 ~/dependencies/methods.py                // some linear algebraic methods for computing lone pair positions  
   
-TODO:  
+# TODO:  
 (1) Consider refactoring met_aromatic() in ~/dependencies/ma_lowlevel.py in the future?  
   
   
@@ -64,12 +65,12 @@ TODO:
   
 * Added a button that prints a legend to console  
  
-REFERENCES:  
+# REFERENCES:  
 A great refresher on using virtualenv/py2app to deploy MacOSX standalones  
-> https://www.metachris.com/2015/11/create-standalone-mac-os-x-applications-with-python-and-py2app/  
+https://www.metachris.com/2015/11/create-standalone-mac-os-x-applications-with-python-and-py2app/  
   
 Info on errno 63 - an error which occurs when setup.py shares pwd with main script dependencies  
-> https://stackoverflow.com/questions/7701255/py2app-ioerror-errno-63-file-name-too-long  
+https://stackoverflow.com/questions/7701255/py2app-ioerror-errno-63-file-name-too-long  
    
 ---  
 **END OF LEGACY NOTES**  
