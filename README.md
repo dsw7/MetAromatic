@@ -1,7 +1,8 @@
 AUTHOR:  
 DAVID S. WEBER  
 dsw7@sfu.ca  
-  
+
+ ** Example UI Layout **
 ![aa](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4.png)
   
 ~/MetAromatic/docs              // contains deploy instructions + other supporting info  
@@ -22,8 +23,8 @@ TODO:
 (1) Consider refactoring met_aromatic() in ~/dependencies/ma_lowlevel.py in the future?  
   
   
-SOME LEGACY NOTES FROM SFU VAULT    
-=  
+**SOME LEGACY NOTES FROM SFU VAULT**    
+ 
   
 NOTES:  
 Known issues with operating Tcl/Tkinter on MacOSX platforms.  
@@ -60,7 +61,6 @@ REFERENCES:
 > https://stackoverflow.com/questions/7701255/py2app-ioerror-errno-63-file-name-too-long  
    
    
-END OF LEGACY NOTES  
-=
+**END OF LEGACY NOTES**  
 
 
