@@ -1,14 +1,14 @@
-AUTHOR:
-DAVID S. WEBER
-dsw7@sfu.ca
-
-
-~/MetAromatic/docs              // contains deploy instructions + other supporting info
-~/MetAromatic/MetAromatic.py    // the "main" file - this runs the Tkinter master
-~/MetAromatic/setup.py          // a custom setup.py file for py2app
-~/MetAromatic/icon_gaJ_icon.ico // a custom .ico icon if I ever decide to make a Windows implementation of MetAromatic
-~/MetAromatic/dependencies      // all dependency scripts are located here
-
+AUTHOR:  
+DAVID S. WEBER  
+dsw7@sfu.ca  
+  
+  
+~/MetAromatic/docs              // contains deploy instructions + other supporting info  
+~/MetAromatic/MetAromatic.py    // the "main" file - this runs the Tkinter master  
+~/MetAromatic/setup.py          // a custom setup.py file for py2app  
+~/MetAromatic/icon_gaJ_icon.ico // a custom .ico icon if I ever decide to make a Windows implementation of MetAromatic  
+~/MetAromatic/dependencies      // all dependency scripts are located here  
+  
 ->
 
 ~/dependencies/PDB_filegetter.py         // connects to RCSB PDB and fetches a PDB file
