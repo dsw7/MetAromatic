@@ -3,17 +3,17 @@ DAVID S. WEBER
 dsw7@sfu.ca  
   
 ---
-**Description**   
+# Description  
 An application wrapping the Met-aromatic algorithm such that biochemists  
 do not have to manually run scripts using interpreters/DEs.  
   
 ---
-**Example UI layout**      
+# Example UI layout  
   
 ![aa](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4.png)  
   
 ---
-**Description of directories**
+# Description of directories  
 
     ~/MetAromatic/docs                 // contains deploy instructions + other supporting info  
     ~/MetAromatic/MetAromatic.py       // the "main" file - this runs the Tkinter master  
@@ -35,9 +35,9 @@ do not have to manually run scripts using interpreters/DEs.
 1. Consider refactoring met_aromatic() in ~/dependencies/ma_lowlevel.py in the future?  
   
 ---  
-**Legacy notes from SFU Vault**  
+# Legacy notes from SFU Vault  
   
-# NOTES:  
+**NOTES:**  
 Known issues with operating Tcl/Tkinter on MacOSX platforms.  
 Users will need to have third party ActiveTcl 8.5 installed  
 for Python installations prior to v3.7 and MacOSX 10.6 or later.  
@@ -48,7 +48,7 @@ MacOSX 10.8+ also has ActiveTcl 8.5 installed by default (I think)
 the typical string formatting error: could not convert string to float: '67.440-104.578'  
 which is basically a crashed string. I've had this problem... pretty much forever  
   
-# TODO:  
+**TODO:**   
 1. Fix issue with uppercase PDB code string literals not equating to lowercase string literals   % DONE  
 2. RESULT records are not properly labelled - consider a short "header RESULT record"            % DONE *  
 3. Automate version number in main window title                                                  % DONE  
@@ -62,7 +62,7 @@ which is basically a crashed string. I've had this problem... pretty much foreve
 10. Redeploy for (8-11)  
 11. Fix issue with lowlevel AMET BMET separation                                                 % DONE  
   
-# REFERENCES:  
+**REFERENCES:**  
 A great refresher on using virtualenv/py2app to deploy MacOSX standalones  
 https://www.metachris.com/2015/11/create-standalone-mac-os-x-applications-with-python-and-py2app/  
   
