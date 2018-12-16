@@ -2,14 +2,19 @@ AUTHOR:
 DAVID S. WEBER  
 dsw7@sfu.ca  
 
- ** Example UI Layout **
+**Example UI Layout**   
+---    
+ 
 ![aa](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4.png)
   
-~/MetAromatic/docs              // contains deploy instructions + other supporting info  
-~/MetAromatic/MetAromatic.py    // the "main" file - this runs the Tkinter master  
-~/MetAromatic/setup.py          // a custom setup.py file for py2app  
-~/MetAromatic/icon_gaJ_icon.ico // a custom .ico icon if I ever decide to make a Windows implementation of MetAromatic  
-~/MetAromatic/dependencies      // all dependency scripts are located here  
+**Description of directories**
+---
+~/MetAromatic/docs                 // contains deploy instructions + other supporting info  
+~/MetAromatic/MetAromatic.py       // the "main" file - this runs the Tkinter master  
+~/MetAromatic/setup.py             // a custom setup.py file for py2app  
+~/MetAromatic/icon_gaJ_icon.ico    // a custom .ico icon if I ever decide to make a Windows implementation of MetAromatic
+~/MetAromatic/gui_example_v1_4.png // example UI layout .png for v1.4  
+~/MetAromatic/dependencies         // all dependency scripts are located here  
   
 ->
   
@@ -23,7 +28,8 @@ TODO:
 (1) Consider refactoring met_aromatic() in ~/dependencies/ma_lowlevel.py in the future?  
   
   
-**SOME LEGACY NOTES FROM SFU VAULT**    
+**SOME LEGACY NOTES FROM SFU VAULT**  
+---  
  
   
 NOTES:  
@@ -60,7 +66,7 @@ REFERENCES:
 // info on errno 63 - an error which occurs when setup.py shares pwd with main script dependencies  
 > https://stackoverflow.com/questions/7701255/py2app-ioerror-errno-63-file-name-too-long  
    
-   
+---  
 **END OF LEGACY NOTES**  
 
 
