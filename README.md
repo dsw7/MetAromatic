@@ -2,7 +2,7 @@ AUTHOR:
 DAVID S. WEBER  
 dsw7@sfu.ca  
   
-![aa](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4.png?raw=true "Title")
+![aa](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4.png)
   
 ~/MetAromatic/docs              // contains deploy instructions + other supporting info  
 ~/MetAromatic/MetAromatic.py    // the "main" file - this runs the Tkinter master  
@@ -21,9 +21,9 @@ dsw7@sfu.ca
 TODO:  
 (1) Consider refactoring met_aromatic() in ~/dependencies/ma_lowlevel.py in the future?  
   
-=================================  
+  
 SOME LEGACY NOTES FROM SFU VAULT    
-=================================  
+=  
   
 NOTES:  
 Known issues with operating Tcl/Tkinter on MacOSX platforms.  
@@ -58,9 +58,9 @@ REFERENCES:
   
 // info on errno 63 - an error which occurs when setup.py shares pwd with main script dependencies  
 > https://stackoverflow.com/questions/7701255/py2app-ioerror-errno-63-file-name-too-long  
-  
-====================  
+   
+   
 END OF LEGACY NOTES  
-====================  
+=
 
 
