@@ -2,7 +2,7 @@ AUTHOR:
 DAVID S. WEBER  
 dsw7@sfu.ca  
   
-![aa][https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4.png]
+![aa](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4.png)
   
 ~/MetAromatic/docs              // contains deploy instructions + other supporting info  
 ~/MetAromatic/MetAromatic.py    // the "main" file - this runs the Tkinter master  
