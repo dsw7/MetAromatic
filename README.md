@@ -38,7 +38,7 @@ The protein 1rcy was analyzed using the MetAromatic application. Here we set ||*
   
 Consider the last three RESULT lines:  
     
-    #                     ||v|| Met-theta Met-phi (see above schematic)
+    #                     ||v|| Met-theta Met-phi
     RESULT PHE 54 MET 148 4.777 105.947 143.022  
     RESULT PHE 54 MET 148 4.610 93.3820 156.922  
     RESULT PHE 54 MET 148 4.756 93.2870 154.630  
