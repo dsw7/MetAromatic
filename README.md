@@ -1,19 +1,22 @@
-# AUTHOR:  
+## AUTHOR:  
 DAVID S. WEBER  
 dsw7@sfu.ca  
   
 ---
-# Description  
+## Description  
 An application wrapping the Met-aromatic algorithm such that biochemists  
 do not have to manually run scripts using interpreters/DEs.  
   
 ---
-# Example UI layout  
+## Instructions  
   
-![](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4_labelled.png)  
+![](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4_labelled.png)   
+
+1. User must input a PDB code into **A**.  
+2. A vector $\vec{v}$ 
   
 ---
-# Description of directories  
+## Description of directories  
 
     ~/MetAromatic/docs                 // contains deploy instructions + other supporting info  
     ~/MetAromatic/MetAromatic.py       // the "main" file - this runs the Tkinter master  
@@ -30,12 +33,12 @@ do not have to manually run scripts using interpreters/DEs.
     ~/dependencies/ma_lowlevel.py            // a raw implementation of the Met-aromatic algorithm  
     ~/dependencies/methods.py                // some linear algebraic methods for computing lone pair positions  
    
-# TODO:  
+## TODO:  
 --- 
 1. Consider refactoring met_aromatic() in ~/dependencies/ma_lowlevel.py in the future?  
   
 ---  
-# Legacy notes from SFU Vault  
+## Legacy notes from SFU Vault  
   
 **NOTES:**  
 Known issues with operating Tcl/Tkinter on MacOSX platforms.  
