@@ -27,7 +27,14 @@ do not have to manually run scripts using interpreters/DEs.
 
 The following figure provides an excellent overview of the geometry of the system being probed by Met-aromatic. We have a vector **v** in our figure below. **v** points from the methionine SD coordinate to a midpoint between two aromatic carbon atoms. _Distance condition_. Methionine / aromatic residue pairs are saved for further analysis if the vector **v** between the two is of magnitude ≤ to the value inputted in **B**. _Angular condition_. We also have two vectors, **a** and **g**. These vectors estimate the position and direction of the lone pairs of the sulfur atom. Here, an interaction is printed to the prompt **if** either the **a** / **v** angle **or** the **g** / **v** angle is ≤ the value inputted into edit box **C**.    
   
-<img src="https://github.com/dsw7/MetAromatic/blob/master/cd_schematic_chapter2.png" width="500" class="center">  
+<img src="https://github.com/dsw7/MetAromatic/blob/master/cd_schematic_chapter2.png" width="400" class="center">  
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
 
 ---
 ## Description of directories  
