@@ -23,7 +23,12 @@ do not have to manually run scripts using interpreters/DEs.
 9. "Exit" (**J**) does exactly as the name implies.  
 10. The prompt (**K**) yields all the output data obtained from the Met-aromatic algorithm.  
 
+## More information about cutoff distances and cutoff angles  
+
+The following figure provides an excellent overview of the geometry of the system being probed by Met-aromatic. We have a vector **v** in our figure below. **v** points from the methionine SD coordinate to a midpoint between two aromatic carbon atoms. _Distance condition_. Methionine / aromatic residue pairs are saved for further analysis if the vector **v** between the two is of magnitude ≤ to the value inputted in **B**. _Angular condition_. We also have two vectors, **a** and **g**. These vectors estimate the position and direction of the lone pairs of the sulfur atom. Here, an interaction is printed to the prompt **if** either the **a** / **v** angle **or** the **g** / **v** angle is ≤ the value inputted into edit box **C**.    
   
+![](https://github.com/dsw7/MetAromatic/blob/master/cd_schematic_chapter2.png)
+
 ---
 ## Description of directories  
 
