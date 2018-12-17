@@ -54,6 +54,8 @@ Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints
     ~/MetAromatic/setup.py                      // a custom setup.py file for py2app  
     ~/MetAromatic/icon_gaJ_icon.ico             // a custom .ico icon if I ever decide to make a Windows of app
     ~/MetAromatic/gui_example_v1_4_labelled.png // example UI layout .png for v1.4  
+    ~/MetAromatic/cd_schematic_chapter2.png     // chemdraw schematic for observing Met-aromatic feature space
+    ~/MetAromatic/results_1rcy.png              // example analysis of rusticyanin using application
     ~/MetAromatic/dependencies                  // all dependency scripts are located here  
   
     ->
