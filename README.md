@@ -13,8 +13,8 @@ do not have to manually run scripts using interpreters/DEs.
 <img src="https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4_labelled.png">     
 
 1. User must input a PDB code into **A**.  
-2. User then selects the minimum distance between a methionine SD and an aromatic carbon atom (Phe, Tyr or Trp) that is deemed "interacting". This selection is made in edit box **B**. The vector has been termed vector v throughout literature.  
-3. User selects the minimum cutoff angle between a methionine SD lone pair and vector v. Any lone pair / vector v combination is "deemed non-interacting". This selection is made in edit box **C**.  
+2. User then selects the minimum distance between a methionine SD and an aromatic carbon atom (Phe, Tyr or Trp) that is deemed "interacting". This selection is made in edit box **B**. The vector has been termed vector v throughout literature. See **More information about cutoff distances and cutoff angles**.  
+3. User selects the minimum cutoff angle between a methionine SD lone pair and vector v. Any lone pair / vector v combination is "deemed non-interacting". This selection is made in edit box **C**. See **More information about cutoff distances and cutoff angles**.  
 4. The user can select which aromatic amino acids to include in the search in **D**.  
 5. There are two models used for estimating the positions of lone pairs relative to the CG-SD-CE bonding frame in methionine. The ratio buttons **E** and **F** allow for specifying these models. The "Cross product interpolation" generally provides a more accurate estimation.  
 6. The "Go" button, **G**, executes the query by fetching the structure from the Protein Data Bank.  
@@ -37,7 +37,8 @@ The protein 1rcy was analyzed using the MetAromatic application. Here we set ||*
 <img src="https://github.com/dsw7/MetAromatic/blob/master/results_1rcy.png">  
   
 Consider the last three RESULT lines:  
-
+    
+    #                     ||v|| Met-theta Met-phi (see above schematic)
     RESULT PHE 54 MET 148 4.777 105.947 143.022  
     RESULT PHE 54 MET 148 4.610 93.3820 156.922  
     RESULT PHE 54 MET 148 4.756 93.2870 154.630  
