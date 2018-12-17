@@ -10,7 +10,7 @@ do not have to manually run scripts using interpreters/DEs.
 ---
 # Example UI layout  
   
-![aa](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4.png)  
+![](https://github.com/dsw7/MetAromatic/blob/master/gui_example_v1_4_labelled.png)  
   
 ---
 # Description of directories  
