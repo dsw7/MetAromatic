@@ -1,0 +1,14 @@
+HEADER Data for: 3uiy 
+HEADER Cutoff distance: 5.5 Angstroms 
+HEADER Cutoff angle: 109.5 degrees 
+HEADER PHE included in this search 
+HEADER TYR included in this search 
+HEADER TRP included in this search 
+HEADER Interpolation method: Cross product 
+UPDATE Successfully retrieved 3uiy
+UPDATE Processing time: 1.27479 s
+RESULT EC classifier: None 
+RESULT Organism: SALMONELLA ENTERICA SUBSP. ENTERICA SEROVAR  
+RESULT PHE 30 MET 6 5.068 130.229 32.978 
+END
+

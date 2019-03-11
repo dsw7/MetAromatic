@@ -1,0 +1,13 @@
+HEADER Data for: 2rcy 
+HEADER Cutoff distance: 5.5 Angstroms 
+HEADER Cutoff angle: 109.5 degrees 
+HEADER PHE included in this search 
+HEADER TYR included in this search 
+HEADER TRP included in this search 
+HEADER Interpolation method: Cross product 
+UPDATE Successfully retrieved 2rcy
+UPDATE Processing time: 2.11008 s
+RESULT EC classifier: 1.5.1.2 
+RESULT Organism: PLASMODIUM FALCIPARUM;  
+END
+
