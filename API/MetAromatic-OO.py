@@ -1,4 +1,10 @@
+"""
+dsw7@sfu.ca
 
+Here I narrow down the MetAromatic code into one file (for ease of use)
+in addition to setting up a regression testing framework (for use
+with nosetests).
+"""
 
 
 
