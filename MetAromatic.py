@@ -55,7 +55,7 @@ master.geometry('{}x{}'.format(WIDTH_OVERALL, HEIGHT_OVERALL))
 # I'm trying my best to keep this project on one script regardless of OS
 # there's a chance we may need two different scripts for each OS?
 if 'Windows' in PLATFORM:
-    master.iconbitmap(path.join(getcwd(), 'icon_gaJ_icon.ico'))
+    master.iconbitmap('./img/icon_gaJ_icon.ico')
     FONT = ('Consolas', 9)
 elif 'Darwin' in PLATFORM:
     FONT = ('Consolas', 12)
