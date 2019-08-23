@@ -67,7 +67,7 @@ Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints
    
 ## TODO:  
 --- 
-1. Consider refactoring met_aromatic() in ~/dependencies/ma_lowlevel.py in the future?  
+1. Consider refactoring met_aromatic() in ~/utils/ma_lowlevel.py in the future?  
   
 ---  
 ## Legacy notes from SFU Vault  
