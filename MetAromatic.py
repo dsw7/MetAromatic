@@ -78,6 +78,13 @@ VAR_TRP.set(1)
 VAR_MOD.set(1)
 
 
+def get_pattern():
+    get_d = {'PHE': VAR_PHE.get(), 'TYR': VAR_TYR.get(), 'TRP': VAR_TRP.get()}
+    list_d = [j for j in ['PHE', 'TYR', 'TRP'] if get_d.get(j) == True]
+    return '|'.join(list_d)
+          
+
+
 # add input and output frames
 # ----------------------------------------------------------------------------
 frame_input = tk.LabelFrame(master, relief=tk.GROOVE, bd=1)
@@ -124,7 +131,8 @@ tk.Radiobutton(frame_input, text='Cross product interpolation', font=FONT, indic
                variable=VAR_MOD, value=1).pack(side='top', fill='x', padx=35, pady=5)
 tk.Radiobutton(frame_input, text='Rodrigues method interpolation', font=FONT, indicatoron=0, 
                variable=VAR_MOD, value=2).pack(side='top', fill='x', padx=35, pady=5)
-          
+
+
 
 # get data from PDB / met aromatic algorithm
 def pass_data_from_PDB_to_console(CODE, CHAIN, ANGLE, CUTOFF, METHOD):
@@ -145,12 +153,8 @@ def pass_data_from_PDB_to_console(CODE, CHAIN, ANGLE, CUTOFF, METHOD):
     path_to_file = file_PDB.fetch_from_PDB()
     
     # get all data from MA algorithm
-    DATA = met_aromatic(filepath=path_to_file, 
-                        CHAIN=CHAIN, 
-                        CUTOFF=float(CUTOFF), 
-                        ANGLE=float(ANGLE), 
-                        MODEL=DICT_MODEL.get(METHOD)[1])
-                        
+    DATA = met_aromatic(filepath=path_to_file, CHAIN=CHAIN, CUTOFF=float(CUTOFF), ANGLE=float(ANGLE), MODEL=DICT_MODEL.get(METHOD)[1])
+
     # get EC classifier
     EC = get_EC_classifier(path_to_file)
     
@@ -165,6 +169,7 @@ def pass_data_from_PDB_to_console(CODE, CHAIN, ANGLE, CUTOFF, METHOD):
     text_output.insert(tk.END, 'UPDATE Successfully retrieved {}'.format(CODE) + '\n')
     text_output.insert(tk.END, 'UPDATE Processing time: {} s'.format(round(t_end - t_start, 5)) + '\n')
     text_output.insert(tk.END, 'RESULT EC classifier: {} \n'.format(EC))
+    
     for org in ORG:
         text_output.insert(tk.END, 'RESULT Organism: {} \n'.format(org))
     for r in DATA:
@@ -241,7 +246,6 @@ def display_legend():
 # print a legend button to console
 handle_legend = tk.Button(frame_input, text='Legend', font=FONT, command=display_legend, bg='gray50')
 handle_legend.pack(fill='x', padx=5, pady=1.5)
-
 
 
 # save & exit stuff 
