@@ -1,27 +1,26 @@
 # Written by David Weber
 # dsw7@sfu.ca
-# ----------------------------------------------------------------------------
+
 # dependencies
-
-import tkinter as tk
-from sys                    import path as PATH                       # built in
-from os                     import path, getcwd, remove               # built in
-#PATH.append(path.join(getcwd(), 'lib/python3.7/site-packages'))
-PATH.append('./utils')
-from csv                    import DictWriter, writer, QUOTE_MINIMAL  # built in
-from platform               import platform                           # built in
-from re                     import search                             # built in
-from time                   import time                               # built in
-from tkinter.scrolledtext   import ScrolledText                       # built in
-from tkinter                import messagebox, filedialog             # built in
-from ma_lowlevel            import met_aromatic                       # local
-from PDB_filegetter         import PDBFile                            # local
-from EC_classifier          import get_EC_classifier                  # local
-from get_organism_from_file import get_organism                       # local
-
 # ----------------------------------------------------------------------------
-   
-CURR_VER = '1.4'  # path.basename... throws error unless dirs are almost perfectly structured
+import tkinter as tk
+from sys                    import path as PATH; PATH.append('./utils')  # built in
+from os                     import path, getcwd, remove                  # built in
+from csv                    import DictWriter, writer, QUOTE_MINIMAL     # built in
+from platform               import platform                              # built in
+from re                     import search                                # built in
+from time                   import time                                  # built in
+from tkinter.scrolledtext   import ScrolledText                          # built in
+from tkinter                import messagebox, filedialog                # built in
+from ma_lowlevel            import met_aromatic                          # local
+from PDB_filegetter         import PDBFile                               # local
+from EC_classifier          import get_EC_classifier                     # local
+from get_organism_from_file import get_organism                          # local
+
+
+# constants
+# ----------------------------------------------------------------------------
+CURR_VER = '1.4'
 PLATFORM = platform()
 HEIGHT_OVERALL = 455
 WIDTH_OVERALL = 1000
@@ -34,6 +33,8 @@ DICT_MODEL[1] = ('Cross product', 'cp')
 DICT_MODEL[2] = ('Rodrigues', 'rm')
 
 
+# some helper functions
+# ----------------------------------------------------------------------------
 def write_to_csv(data, path, header):
    # writes data to .csv file
    # data -> the data we wish to write
@@ -46,9 +47,9 @@ def write_to_csv(data, path, header):
         for item in data:
             obj_writer.writerow(item)
 
-# ----------------------------------------------------------------------------
-# master window and downstream definitions
 
+# master window and downstream definitions
+# ----------------------------------------------------------------------------
 master = tk.Tk()
 master.geometry('{}x{}'.format(WIDTH_OVERALL, HEIGHT_OVERALL))
 
@@ -76,27 +77,17 @@ VAR_TYR.set(1)
 VAR_TRP.set(1)
 VAR_MOD.set(1)
 
-def get_pattern():
-    # pass regex as constraint on console output
-    get_d = {'PHE': VAR_PHE.get(), 'TYR':VAR_TYR.get(), 'TRP':VAR_TRP.get()}
-    list_d = [j for j in ['PHE', 'TYR', 'TRP'] if get_d.get(j) == True]
-    return '|'.join(list_d)
-    
-# ----------------------------------------------------------------------------
-# add input and output frames
 
+# add input and output frames
+# ----------------------------------------------------------------------------
 frame_input = tk.LabelFrame(master, relief=tk.GROOVE, bd=1)
 frame_input.pack(side='left', fill='both', expand=True, padx=5, pady=5)
 frame_output = tk.Frame(master, relief=tk.GROOVE, bd=1)
 frame_output.pack(side='right', fill='both', expand=True, padx=5, pady=5)
 
 
-# ----------------------------------------------------------------------------
 # input window
-
-# other buttons
-# *************
-
+# ----------------------------------------------------------------------------
 frame_input.pack_propagate(False)  # fixes resize issue when loading widgets
 
 # input pdb code
@@ -133,11 +124,9 @@ tk.Radiobutton(frame_input, text='Cross product interpolation', font=FONT, indic
                variable=VAR_MOD, value=1).pack(side='top', fill='x', padx=35, pady=5)
 tk.Radiobutton(frame_input, text='Rodrigues method interpolation', font=FONT, indicatoron=0, 
                variable=VAR_MOD, value=2).pack(side='top', fill='x', padx=35, pady=5)
-# *************
-               
+          
 
 # get data from PDB / met aromatic algorithm
-# ******************************************
 def pass_data_from_PDB_to_console(CODE, CHAIN, ANGLE, CUTOFF, METHOD):
     """
     Clicking on go button executes wrapper_over_data_passer() which is a wrapper
@@ -187,6 +176,7 @@ def pass_data_from_PDB_to_console(CODE, CHAIN, ANGLE, CUTOFF, METHOD):
         else:
             continue
 
+
 def wrapper_over_data_passer():
     """
     A wrapper over my Met-aromatic pipeline implementation.
@@ -228,14 +218,12 @@ def wrapper_over_data_passer():
     else:
         text_output.insert(tk.END, 'END\n')
 
+
 # go button       
 go_input = tk.Button(frame_input, text='Go', font=FONT, command=wrapper_over_data_passer, bg='gray50')
 go_input.pack(fill='x', padx=5, pady=(5, 1.5))
-# ******************************************
-
 
 # display a legend showing what output means
-# ******************************************
 def display_legend():
     text_output.insert(tk.END, 'UPDATE ' + '-' * 30 + '\n')
     text_output.insert(tk.END, 'UPDATE Here is a legend: \n')
@@ -249,14 +237,14 @@ def display_legend():
     text_output.insert(tk.END, 'UPDATE 64.317 -> Met-phi angle (degrees) \n')
     text_output.insert(tk.END, 'UPDATE ' + '-' * 30 + '\n')
 
+
 # print a legend button to console
 handle_legend = tk.Button(frame_input, text='Legend', font=FONT, command=display_legend, bg='gray50')
 handle_legend.pack(fill='x', padx=5, pady=1.5)
-# ******************************************
+
 
 
 # save & exit stuff 
-# *****************
 def output_save():
     DATA = text_output.get('1.0', tk.END)  # read from line '1', char '0'    
     spath = filedialog.asksaveasfilename(parent=frame_input, 
@@ -284,11 +272,10 @@ save_data.pack(fill='x', padx=5, pady=1.5)
 # exit button
 button_exit = tk.Button(frame_input, text="Exit", command=master.destroy, font=FONT, bg='gray50')
 button_exit.pack(fill='x', padx=5, pady=1.5)
-# *****************
 
-# ----------------------------------------------------------------------------
+
 # output window
-
+# ----------------------------------------------------------------------------
 frame_output.pack_propagate(False)  # fixes resize issue when loading widgets
 text_output = ScrolledText(frame_output, relief=tk.GROOVE, bd=1, font=FONT, bg='gray12', fg='yellow green')
 text_output.pack(fill='both', expand=True, padx=5, pady=5)
@@ -297,6 +284,7 @@ text_output.insert(tk.END, '** MetAromaticProgram - dsw7@sfu.ca - v{}'.format(CU
 text_output.insert(tk.END, '** Detected: {} **\n'.format(PLATFORM))
 text_output.insert(tk.END, '** Results will display here **\n')
 
-# ----------------------------------------------------------------------------
 
+# main
+# ----------------------------------------------------------------------------
 tk.mainloop()
