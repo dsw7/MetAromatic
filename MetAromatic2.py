@@ -8,7 +8,7 @@ from sys                    import path as PATH; PATH.append('./utils')  # built
 from os                     import path, getcwd, remove                  # built in
 from csv                    import DictWriter, writer, QUOTE_MINIMAL     # built in
 from platform               import platform                              # built in
-from re                     import search                                # built in
+from re                     import search, match                         # built in
 from time                   import time                                  # built in
 from tkinter.scrolledtext   import ScrolledText                          # built in
 from tkinter                import messagebox, filedialog                # built in
@@ -19,7 +19,11 @@ from get_organism_from_file import get_organism                          # local
 
 
 # new engine
-from ma                     import MetAromatic 
+from ma                     import MetAromatic
+
+
+
+ 
 
 
 # constants
@@ -35,6 +39,7 @@ HEADER = ['RECORD', 'AROMATIC', 'ARO POS', 'MET', 'MET POS', 'NORM', 'MET-THETA'
 DICT_MODEL = {}
 DICT_MODEL[1] = ('Cross product', 'cp')
 DICT_MODEL[2] = ('Rodrigues', 'rm')
+CHAIN = 'A'
 
 
 # some helper functions
@@ -53,6 +58,7 @@ def write_to_csv(data, path, header):
             
             
 def get_aromatic_pattern(var_phe={}, var_tyr={}, var_trp={}):
+    # function needed for getting PHE, TYR, TRP pattern from checkboxes
     dict_aromatics = {
         'PHE': var_phe.get(), 
         'TYR': var_tyr.get(), 
@@ -62,12 +68,9 @@ def get_aromatic_pattern(var_phe={}, var_tyr={}, var_trp={}):
     return '|'.join(list_aromatics)
     
 
-
-# master window and downstream definitions
+# master window and tkinter variable declarations
 # ----------------------------------------------------------------------------
 master = tk.Tk()
-master.geometry('{}x{}'.format(WIDTH_OVERALL, HEIGHT_OVERALL))
-
 
 if 'Windows' in PLATFORM:
     master.iconbitmap('./img/icon_gaJ_icon.ico')
@@ -79,24 +82,18 @@ else:
     input('Unrecognized operating system. Press any button to exit.')
     exit()
     
-master.winfo_toplevel().title('MetAromaticWrapper - dsw7@sfu.ca - v{}'.format(CURR_VER))
 VAR_PHE = tk.IntVar()
 VAR_TYR = tk.IntVar()
 VAR_TRP = tk.IntVar()
 VAR_MOD = tk.IntVar()
 
-# set defaults
 VAR_PHE.set(1)
 VAR_TYR.set(1)
 VAR_TRP.set(1)
-VAR_MOD.set(1)
-
-"""
-def get_pattern():
-    get_d = {'PHE': VAR_PHE.get(), 'TYR': VAR_TYR.get(), 'TRP': VAR_TRP.get()}
-    list_d = [j for j in ['PHE', 'TYR', 'TRP'] if get_d.get(j) == True]
-    return '|'.join(list_d)
-"""          
+VAR_MOD.set(1)    
+    
+master.geometry('{}x{}'.format(WIDTH_OVERALL, HEIGHT_OVERALL))
+master.winfo_toplevel().title('MetAromaticWrapper - dsw7@sfu.ca - v{}'.format(CURR_VER))
 
 
 # add input and output frames
@@ -145,6 +142,64 @@ tk.Radiobutton(frame_input, text='Cross product interpolation', font=FONT, indic
                variable=VAR_MOD, value=1).pack(side='top', fill='x', padx=35, pady=5)
 tk.Radiobutton(frame_input, text='Rodrigues method interpolation', font=FONT, indicatoron=0, 
                variable=VAR_MOD, value=2).pack(side='top', fill='x', padx=35, pady=5)
+
+
+
+# testing
+# ----------------------------------------------------------------------------
+def print_header(pdbcode, distance, angle, method):
+    pat = get_aromatic_pattern(var_phe=VAR_PHE, var_tyr=VAR_TYR, var_trp=VAR_TRP)
+    text_output.delete('1.0', tk.END)
+    text_output.insert(tk.END, 'HEADER Data for: {} \n'.format(pdbcode))
+    text_output.insert(tk.END, 'HEADER Cutoff distance: {} Angstroms \n'.format(distance))
+    text_output.insert(tk.END, 'HEADER Cutoff angle: {} degrees \n'.format(angle))
+    for p in pat.split('|'):
+        text_output.insert(tk.END, 'HEADER {} included in this search \n'.format(p))     
+    text_output.insert(tk.END, 'HEADER Interpolation method: {} \n'.format(method))
+    
+
+def print_raw_data(pdbcode, data):
+    pat = get_aromatic_pattern(var_phe=VAR_PHE, var_tyr=VAR_TYR, var_trp=VAR_TRP)
+    text_output.insert(tk.END, 'UPDATE Successfully retrieved {}'.format(pdbcode) + '\n')
+    for row in data:
+        if row[0] in pat:
+            rounded_row = [str(round(i, 3)) for i in row[4:7]]
+            str_out = ('RESULT ' + '{} '*7).format(*row[0:4], *rounded_row)
+            text_output.insert(tk.END, str_out + '\n')
+        else:
+            continue
+    else:
+        text_output.insert(tk.END, 'END\n')
+
+
+def print_main():
+    pdbcode = code_input.get().lower()
+    distance = dist_input.get()
+    angle = angle_input.get()
+    method = VAR_MOD.get()
+    
+    if pdbcode == STR_CODE.lower():
+        messagebox.showwarning('Warning', 'Input a PDB code!'); return
+    elif distance == STR_DIST:
+        messagebox.showwarning('Warning', 'Input a cutoff distance!'); return
+    elif angle == STR_ANGL:
+        messagebox.showwarning('Warning', 'Input a cutoff angle!'); return
+    else:
+        model = DICT_MODEL.get(method)[1]
+        data = MetAromatic(
+                code=pdbcode, chain=CHAIN, cutoff=float(distance),
+                angle=float(angle), model=model
+        ).met_aromatic()
+        print_header(pdbcode=pdbcode, distance=distance, angle=angle, method=model)
+        print_raw_data(pdbcode=pdbcode, data=data)
+
+
+
+# go button       
+test = tk.Button(frame_input, text='Go', font=FONT, command=print_main, bg='gray50')
+test.pack(fill='x', padx=5, pady=(5, 1.5))
+
+# ----------------------------------------------------------------------------
 
 
 
@@ -244,7 +299,7 @@ def wrapper_over_data_passer():
 
 
 # go button       
-go_input = tk.Button(frame_input, text='Go', font=FONT, command=wrapper_over_data_passer, bg='gray50')
+go_input = tk.Button(frame_input, text='Old', font=FONT, command=wrapper_over_data_passer, bg='gray50')
 go_input.pack(fill='x', padx=5, pady=(5, 1.5))
 
 # display a legend showing what output means
