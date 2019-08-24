@@ -50,6 +50,17 @@ def write_to_csv(data, path, header):
         obj_writer = writer(f, delimiter=',', quotechar='"', quoting=QUOTE_MINIMAL)
         for item in data:
             obj_writer.writerow(item)
+            
+            
+def get_aromatic_pattern(var_phe={}, var_tyr={}, var_trp={}):
+    dict_aromatics = {
+        'PHE': var_phe.get(), 
+        'TYR': var_tyr.get(), 
+        'TRP': var_trp.get()
+    }
+    list_aromatics = [d for d in ['PHE', 'TYR', 'TRP'] if dict_aromatics.get(d) == True]
+    return '|'.join(list_aromatics)
+    
 
 
 # master window and downstream definitions
@@ -57,8 +68,7 @@ def write_to_csv(data, path, header):
 master = tk.Tk()
 master.geometry('{}x{}'.format(WIDTH_OVERALL, HEIGHT_OVERALL))
 
-# I'm trying my best to keep this project on one script regardless of OS
-# there's a chance we may need two different scripts for each OS?
+
 if 'Windows' in PLATFORM:
     master.iconbitmap('./img/icon_gaJ_icon.ico')
     FONT = ('Consolas', 9)
@@ -81,12 +91,12 @@ VAR_TYR.set(1)
 VAR_TRP.set(1)
 VAR_MOD.set(1)
 
-
+"""
 def get_pattern():
     get_d = {'PHE': VAR_PHE.get(), 'TYR': VAR_TYR.get(), 'TRP': VAR_TRP.get()}
     list_d = [j for j in ['PHE', 'TYR', 'TRP'] if get_d.get(j) == True]
     return '|'.join(list_d)
-          
+"""          
 
 
 # add input and output frames
@@ -137,12 +147,6 @@ tk.Radiobutton(frame_input, text='Rodrigues method interpolation', font=FONT, in
                variable=VAR_MOD, value=2).pack(side='top', fill='x', padx=35, pady=5)
 
 
-"""
-def get_pattern():
-	get_d = {'PHE': VAR_PHE.get(), 'TYR': VAR_TYR.get(), 'TRP': VAR_TRP.get()}
-	list_d = [j for j in ['PHE', 'TYR', 'TRP'] if get_d.get(j) == True]
-	return '|'.join(list_d)
-"""
 
 
 # get data from PDB / met aromatic algorithm
@@ -188,7 +192,8 @@ def pass_data_from_PDB_to_console(CODE, CHAIN, ANGLE, CUTOFF, METHOD):
     for r in DATA:
         r_r = [str(round(i, 3)) for i in r[4:7]]
         str_out = ('RESULT ' + '{} '*7).format(*r[0:4], *r_r)
-        pat = get_pattern()
+        # pat = get_pattern()
+        pat = get_aromatic_pattern(var_phe=VAR_PHE, var_tyr=VAR_TYR, var_trp=VAR_TRP)
         if bool(search(pat, str_out)) and pat != '':
             text_output.insert(tk.END, str_out + '\n')
         else:
@@ -218,7 +223,8 @@ def wrapper_over_data_passer():
     text_output.insert(tk.END, 'HEADER Data for: {} \n'.format(CODE_PDB))
     text_output.insert(tk.END, 'HEADER Cutoff distance: {} Angstroms \n'.format(DIST))
     text_output.insert(tk.END, 'HEADER Cutoff angle: {} degrees \n'.format(ANGLE))
-    pattern_aromatic = get_pattern()
+    # pattern_aromatic = get_pattern()
+    pattern_aromatic = get_aromatic_pattern(var_phe=VAR_PHE, var_tyr=VAR_TYR, var_trp=VAR_TRP)
     for p in pattern_aromatic.split('|'):
         text_output.insert(tk.END, 'HEADER {} included in this search \n'.format(p))     
     text_output.insert(tk.END, 'HEADER Interpolation method: {} \n'.format(DICT_MODEL.get(METHOD)[0]))
