@@ -65,9 +65,6 @@ Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints
     ./utils/ma_lowlevel.py            // a raw implementation of the Met-aromatic algorithm  
     ./utils/methods.py                // some linear algebraic methods for computing lone pair positions  
    
-## TODO:  
---- 
-1. Consider refactoring met_aromatic() in ~/utils/ma_lowlevel.py in the future?  
   
 ---  
 ## Legacy notes from SFU Vault  
@@ -84,18 +81,8 @@ the typical string formatting error: could not convert string to float: '67.440-
 which is basically a crashed string. I've had this problem... pretty much forever  
   
 **TODO:**   
-1. Fix issue with uppercase PDB code string literals not equating to lowercase string literals   % DONE  
-2. RESULT records are not properly labelled - consider a short "header RESULT record"            % DONE
-3. Automate version number in main window title                                                  % DONE  
-4. Change 'src' label in MacOSX toolbar upon program start                                       % DONE  
-5. Deploy Windows binaries  
-6. Create proper save window (like I did in laser program)                                       % DONE  
-7. Throw in a proper exception handler for bad PDB codes                                         % DONE  
-8. Low level routine processes all entries in multimodel entries -> fix this                     % DONE  
-    $%&* I had this bug before too....  
-9. Add dropdown menu for chains and structures  
-10. Redeploy for (8-11)  
-11. Fix issue with lowlevel AMET BMET separation                                                 % DONE  
+1. Add dropdown menu for chains and structures. Currently defaults to chain A
+
 
 
 
