@@ -24,7 +24,7 @@ master = tk.Tk()
 CURR_VER = get_commit_count()
 PLATFORM = platform()
 HEIGHT_OVERALL = 470
-WIDTH_OVERALL = 1000
+WIDTH_OVERALL = 1300
 STR_CODE = 'Enter a PDB code here (ex. 1rcy)'
 STR_DIST = 'Enter a cutoff distance here (Angstroms) (ex. 4.9)'
 STR_ANGL = 'Enter a cutoff angle here (degrees) (ex. 109.5)'
@@ -37,6 +37,7 @@ FONT = ('Consolas', 9)
 FILETYPES = (('Text:', '*.txt'), ('CSV:', '*.csv'))
 CP_INT = 'Cross product interpolation'
 RM_INT = 'Rodrigues method interpolation'
+BUILD = 'MetAromaticWrapper - dsw7@sfu.ca - v1.{}'.format(CURR_VER)
 
 VAR_PHE = tk.IntVar()
 VAR_TYR = tk.IntVar()
@@ -64,14 +65,15 @@ def get_aromatic_pattern(var_phe={}, var_tyr={}, var_trp={}):
 
 def display_legend():
     # display a legend showing what output means
+    text_output.delete('1.0', tk.END)
     text_output.insert(tk.END, 'UPDATE ' + '-' * 30 + '\n')
     text_output.insert(tk.END, 'UPDATE Here is a legend: \n')
     text_output.insert(tk.END, 'UPDATE TYR 122 MET 18 4.211 75.766 64.317  \n')
-    text_output.insert(tk.END, 'UPDATE TYR -> The aromatic residue paired with MET \n')
-    text_output.insert(tk.END, 'UPDATE 122 -> The position of the aromatic residue \n')
-    text_output.insert(tk.END, 'UPDATE MET -> Methionine \n')
-    text_output.insert(tk.END, 'UPDATE 18 -> The methionine position \n')
-    text_output.insert(tk.END, 'UPDATE 4.211 -> The distance between MET SD and a midpoint (Angstroms) \n')
+    text_output.insert(tk.END, 'UPDATE TYR    -> The aromatic residue paired with MET \n')
+    text_output.insert(tk.END, 'UPDATE 122    -> The position of the aromatic residue \n')
+    text_output.insert(tk.END, 'UPDATE MET    -> Methionine \n')
+    text_output.insert(tk.END, 'UPDATE 18     -> The methionine position \n')
+    text_output.insert(tk.END, 'UPDATE 4.211  -> The distance between MET SD and a midpoint (Angstroms) \n')
     text_output.insert(tk.END, 'UPDATE 75.766 -> Met-theta angle (degrees) \n')
     text_output.insert(tk.END, 'UPDATE 64.317 -> Met-phi angle (degrees) \n')
     text_output.insert(tk.END, 'UPDATE ' + '-' * 30 + '\n')
@@ -80,7 +82,6 @@ def display_legend():
 def print_header(pdbcode, distance, angle, method):
     # print a basic header into terminal
     pattern = get_aromatic_pattern(var_phe=VAR_PHE, var_tyr=VAR_TYR, var_trp=VAR_TRP)
-    text_output.delete('1.0', tk.END)
     text_output.insert(tk.END, 'HEADER Data for: {} \n'.format(pdbcode))
     text_output.insert(tk.END, 'HEADER Cutoff distance: {} Angstroms \n'.format(distance))
     text_output.insert(tk.END, 'HEADER Cutoff angle: {} degrees \n'.format(angle))
@@ -116,6 +117,9 @@ def print_main():
     if angle == STR_ANGL:
         messagebox.showwarning('Warning', 'Input a cutoff angle!'); return
         
+    # clear terminal for every query
+    text_output.delete('1.0', tk.END)    
+        
     try:
         model = DICT_MODEL.get(method)[1]
         t_start = time()
@@ -148,6 +152,7 @@ def write_to_txt(data, path):
 
 
 def output_save():
+    # saves data from terminal into a .txt or .csv file
     data = text_output.get('1.0', tk.END)  # read from line '1', char '0'    
     spath = filedialog.asksaveasfilename(parent=frame_go, title='Choose a save location', filetypes=FILETYPES)   
     extension = path.splitext(spath)[-1]
@@ -167,7 +172,7 @@ def output_save():
 # ----------------------------------------------------------------------------
 master.iconbitmap('./img/icon_gaJ_icon.ico')
 master.geometry('{}x{}'.format(WIDTH_OVERALL, HEIGHT_OVERALL))
-master.winfo_toplevel().title('MetAromaticWrapper - dsw7@sfu.ca - v1.{}'.format(CURR_VER))
+master.winfo_toplevel().title(BUILD)
 
 
 # set up all frames
@@ -190,10 +195,13 @@ frame_model.pack(side='top', fill='both', expand=True, padx=5, pady=5)
 frame_go = tk.Frame(frame_input, relief=tk.GROOVE, bd=1)
 frame_go.pack(side='top', fill='both', expand=True, padx=5, pady=5)
 
+# fixes resize issue when loading widgets
+frame_input.pack_propagate(False)
+frame_output.pack_propagate(False)
+
 
 # input window
 # ----------------------------------------------------------------------------
-frame_input.pack_propagate(False)  # fixes resize issue when loading widgets
 
 # input pdb code
 code_input = tk.Entry(frame_pdb_code, relief=tk.GROOVE, bd=1, font=FONT)
@@ -225,8 +233,8 @@ rm_rad = tk.Radiobutton(frame_model, text=RM_INT, font=FONT, indicatoron=0, vari
 rm_rad.pack(side='top', fill='x', padx=35, pady=5)
 
 # go button       
-test = tk.Button(frame_go, text='Go', font=FONT, command=print_main, bg='gray50')
-test.pack(fill='x', padx=5, pady=(5, 1.5))
+button_go = tk.Button(frame_go, text='Go', font=FONT, command=print_main, bg='gray50')
+button_go.pack(fill='x', padx=5, pady=(5, 1.5))
 
 # print a legend button to console
 handle_legend = tk.Button(frame_go, text='Legend', font=FONT, command=display_legend, bg='gray50')
@@ -243,11 +251,10 @@ button_exit.pack(fill='x', padx=5, pady=1.5)
 
 # output window
 # ----------------------------------------------------------------------------
-frame_output.pack_propagate(False)  # fixes resize issue when loading widgets
 text_output = ScrolledText(frame_output, relief=tk.GROOVE, bd=1, font=FONT, bg='gray12', fg='yellow green')
 text_output.pack(fill='both', expand=True, padx=5, pady=5)
 text_output.insert(tk.END, '** Prompt **\n')
-text_output.insert(tk.END, '** MetAromaticProgram - dsw7@sfu.ca - v1.{}'.format(CURR_VER) + ' ** \n')
+text_output.insert(tk.END, '** {} ** \n'.format(BUILD))
 text_output.insert(tk.END, '** Detected: {} **\n'.format(PLATFORM))
 text_output.insert(tk.END, '** Results will display here **\n')
 
