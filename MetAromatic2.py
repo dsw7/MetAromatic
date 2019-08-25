@@ -13,6 +13,9 @@ from tkinter.scrolledtext   import ScrolledText                          # built
 from tkinter                import messagebox, filedialog                # built in
 from ma                     import MetAromatic                           # local
 from get_commit_count       import get_commit_count                      # local
+from traceback              import format_exc                            # built in
+from argparse               import ArgumentParser                        # built in
+
 
 # top level setup
 # ----------------------------------------------------------------------------
@@ -39,6 +42,7 @@ CP_INT = 'Cross product interpolation'
 RM_INT = 'Rodrigues method interpolation'
 BUILD = 'MetAromaticWrapper - dsw7@sfu.ca - v1.{}'.format(CURR_VER)
 
+
 VAR_PHE = tk.IntVar()
 VAR_TYR = tk.IntVar()
 VAR_TRP = tk.IntVar()
@@ -47,7 +51,15 @@ VAR_MOD = tk.IntVar()
 VAR_PHE.set(1)
 VAR_TYR.set(1)
 VAR_TRP.set(1)
-VAR_MOD.set(1)    
+VAR_MOD.set(1)
+
+
+# CLI args
+# ----------------------------------------------------------------------------
+# pass cmd args for displaying full traceback for debugging purposes
+parser = ArgumentParser()
+parser.add_argument('--debug', default=False, action='store_true')
+debug = parser.parse_args().debug
 
 
 # helper functions
@@ -132,7 +144,11 @@ def print_main():
         print_raw_data(pdbcode=pdbcode, data=data)
     except Exception as exception:
         text_output.insert(tk.END, 'ERROR An exception has occurred: \n')
-        text_output.insert(tk.END, '{}\n'.format(exception))
+        if debug:
+            tb = format_exc()
+            text_output.insert(tk.END, '{}\n'.format(tb))
+        else:
+            text_output.insert(tk.END, '{}\n'.format(exception))
     else:
         text_output.insert(tk.END, 'END\n')
         
@@ -257,7 +273,8 @@ text_output.insert(tk.END, '** Prompt **\n')
 text_output.insert(tk.END, '** {} ** \n'.format(BUILD))
 text_output.insert(tk.END, '** Detected: {} **\n'.format(PLATFORM))
 text_output.insert(tk.END, '** Results will display here **\n')
-
+if debug: text_output.insert(tk.END, '** Running in DEBUG mode **\n')
+    
 
 # main
 # ----------------------------------------------------------------------------
