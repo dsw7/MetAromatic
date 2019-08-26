@@ -49,23 +49,6 @@ Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints
 
 ## Description of directories  
 
-    ./MetAromatic/docs                              // contains deploy instructions + other supporting info  
-    ./MetAromatic/MetAromatic.py                    // the "main" file - this runs the Tkinter master  
-    ./MetAromatic/img/icon_gaJ_icon.ico             // a custom .ico icon
-    ./MetAromatic/img/gui_example_v1_4_labelled.png // example UI layout .png
-    ./MetAromatic/img/cd_schematic_chapter2.png     // chemdraw schematic for observing Met-aromatic feature space
-    ./MetAromatic/img/results_1rcy.png              // example analysis of rusticyanin using application
-    ./MetAromatic/utils                             // all dependency scripts are located here  
-  
-    ->
-  
-    ./utils/PDB_filegetter.py         // connects to RCSB PDB and fetches a PDB file  
-    ./utils/EC_classifier.py          // tries to get EC classifier from a local PDB file  
-    ./utils/get_organism_from_file.py // attempts to find protein's host organism  
-    ./utils/ma_lowlevel.py            // a raw implementation of the Met-aromatic algorithm  
-    ./utils/methods.py                // some linear algebraic methods for computing lone pair positions  
-    
-    
     .\MetAromatic\docs       // contains deploy instructions + other supporting info
     .\img                    // all images
     .\LICENSE.md
