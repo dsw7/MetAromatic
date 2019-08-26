@@ -64,7 +64,17 @@ Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints
     ./utils/get_organism_from_file.py // attempts to find protein's host organism  
     ./utils/ma_lowlevel.py            // a raw implementation of the Met-aromatic algorithm  
     ./utils/methods.py                // some linear algebraic methods for computing lone pair positions  
-   
+    
+    
+    .\MetAromatic\docs       // contains deploy instructions + other supporting info
+    .\img                    // all images
+    .\LICENSE.md
+    .\MetAromatic.py         // updated UI "main" file
+    .\MetAromaticLegacy.py   // older UI "main" file (use for testing)
+    .\README.md
+    .\tests                   
+    .\utils                  // utilities for new main script
+    .\utilsLegacy            // utilities for old main script
   
 ---  
 ## Legacy notes from SFU Vault  
