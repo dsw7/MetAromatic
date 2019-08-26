@@ -1,5 +1,5 @@
 # delete this eventually
-# test that old data matches new data
+# test that data from non-OO met-aromatic matches newer OO version
 # time
 
 from sys import path as PATH; PATH.extend(['../utils', '../utilsLegacy'])  
@@ -9,6 +9,7 @@ from PDB_filegetter import PDBFile
 from ma import MetAromatic
 from re import sub
 from pandas import DataFrame, testing
+
 
 CHAIN = "A"
 CUTOFF = 4.9
@@ -22,13 +23,10 @@ codes = """
 1A2B,1A2C,1A31,1A35,1A36,1A3B,1A3E,1A3K,1A3N,1A3O,
 1A3Q,1A3S,1A42,1A46,1A4I,1A4P,1A4R,1A4V,1A4W,1A4Y,
 1A52,1A5E,1A5G,1A5H,1A5R,1A5Y,1A61,1A66,1A6A,1A6Q,
-1A6Y,1A6Z,1A7A,1A7C,1A7F,1A7S,1A7X,1A81,1A85,1A86,
+1A6Y,1A6Z,1A7A,1A7C,1A7F,1A7X,1A81,1A85,1A86,
 1A8E,1A8F,1A8J,1A8M,1A93,1A9B,1A9E,1A9N,1A9U,1A9W,
 1AA2,1AA9,1AAP,1AAX,1AB2,1ABI,1ABJ,1ABN,1ABW,1ABY
 """
-
-def sort_nested(sublist): 
-    return sublist.sort(key = lambda x: x[4])
 
 
 def test_old_ma(code):
@@ -44,7 +42,6 @@ def test_new_ma(code):
     t_start = time()
     data = MetAromatic(code, CHAIN, CUTOFF, ANGLE).met_aromatic()
     return data, round(time() - t_start, 4)
-    
 
 
 if __name__ == '__main__':
