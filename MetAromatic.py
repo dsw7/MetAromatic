@@ -1,11 +1,12 @@
 # Written by David Weber
 # dsw7@sfu.ca
 
+
 # dependencies
 # ----------------------------------------------------------------------------
 import tkinter as tk
 from sys                    import path as PATH; PATH.append('./utils')  # built in
-from os                     import path, getcwd, remove                  # built in
+from os                     import path                                  # built in
 from csv                    import DictWriter, writer, QUOTE_MINIMAL     # built in
 from platform               import platform                              # built in
 from time                   import time                                  # built in
@@ -97,8 +98,11 @@ def print_header(pdbcode, distance, angle, method):
     text_output.insert(tk.END, 'HEADER Data for: {} \n'.format(pdbcode))
     text_output.insert(tk.END, 'HEADER Cutoff distance: {} Angstroms \n'.format(distance))
     text_output.insert(tk.END, 'HEADER Cutoff angle: {} degrees \n'.format(angle))
-    for p in pattern.split('|'):
-        text_output.insert(tk.END, 'HEADER {} included in this search \n'.format(p))     
+    if pattern == '':
+        text_output.insert(tk.END, 'HEADER No aromatics included in this search! \n')
+    else:
+        for p in pattern.split('|'):
+            text_output.insert(tk.END, 'HEADER {} included in this search \n'.format(p))
     text_output.insert(tk.END, 'HEADER Interpolation method: {} \n'.format(method))
     
 
@@ -113,8 +117,55 @@ def print_raw_data(pdbcode, data):
             text_output.insert(tk.END, str_out + '\n')
         else:
             continue
+                
+        
+def verify_pdbcode(pdbcode):
+    if pdbcode == STR_CODE.lower():
+        messagebox.showwarning('Warning', 'Input a PDB code!'); return -1
+    elif pdbcode == '':
+        messagebox.showwarning('Warning', 'Input a PDB code!'); return -1
+    elif len(pdbcode) != 4:
+        messagebox.showwarning('Warning', 'Invalid PDB code!'); return -1
+    else:
+        return 0
+    
 
-
+def verify_distance(distance):
+    if distance == STR_DIST:
+        messagebox.showwarning('Warning', 'Input a cutoff distance!'); return -1
+    elif distance == '':
+        messagebox.showwarning('Warning', 'Input a cutoff distance!'); return -1
+    else:
+        try:
+            distance = float(distance)  # catch 4.x instead of 4.9, etc.
+        except Exception:
+            messagebox.showwarning('Warning', 'Invalid input!'); return -1
+        else:
+            if distance <= 0:
+                messagebox.showwarning('Warning', 'Distance must exceed 0 Angstroms!'); return -1
+            else:
+                return 0
+    
+    
+def verify_angle(angle):
+    if angle == STR_ANGL:
+        messagebox.showwarning('Warning', 'Input a cutoff angle!'); return -1
+    elif angle == '':
+        messagebox.showwarning('Warning', 'Input a cutoff angle!'); return -1
+    else:
+        try:
+            angle = float(angle)
+        except Exception:
+             messagebox.showwarning('Warning', 'Invalid input!'); return -1
+        else:
+            if angle <= 0:
+                messagebox.showwarning('Warning', 'Angle must be greater than or equal to 0 degrees!'); return -1
+            elif angle > 360:
+                messagebox.showwarning('Warning', 'Angle must not exceed 360 degrees!'); return -1
+            else:
+                return 0
+    
+    
 def print_main():
     # print header + Met-aromatic output to terminal
     pdbcode = code_input.get().lower()
@@ -122,13 +173,10 @@ def print_main():
     angle = angle_input.get()
     method = VAR_MOD.get()
     
-    if pdbcode == STR_CODE.lower():
-        messagebox.showwarning('Warning', 'Input a PDB code!'); return
-    if distance == STR_DIST:
-        messagebox.showwarning('Warning', 'Input a cutoff distance!'); return
-    if angle == STR_ANGL:
-        messagebox.showwarning('Warning', 'Input a cutoff angle!'); return
-        
+    if verify_pdbcode(pdbcode) == -1: return
+    if verify_distance(distance) == -1: return
+    if verify_angle(angle) == -1: return
+
     # clear terminal for every query
     text_output.delete('1.0', tk.END)    
         
@@ -140,7 +188,8 @@ def print_main():
                 angle=float(angle), model=model
         ).met_aromatic()
         print_header(pdbcode=pdbcode, distance=distance, angle=angle, method=model)
-        text_output.insert(tk.END, 'UPDATE Total execution time: {} s\n'.format(time() - t_start))
+        t_exec = round(time() - t_start, 4)
+        text_output.insert(tk.END, 'UPDATE Total execution time: {} s\n'.format(t_exec))
         print_raw_data(pdbcode=pdbcode, data=data)
     except Exception as exception:
         text_output.insert(tk.END, 'ERROR An exception has occurred: \n')
