@@ -106,10 +106,19 @@ def print_header(pdbcode, distance, angle, method):
     text_output.insert(tk.END, 'HEADER Interpolation method: {} \n'.format(method))
     
 
-def print_raw_data(pdbcode, data):
+def print_ec(ec):
+    # print EC classifier above raw data
+    text_output.insert(tk.END, 'RESULT EC classifier: {} \n'.format(ec))
+    
+    
+def print_organism(organism):
+    # print organism above raw data
+    text_output.insert(tk.END, 'RESULT Organism: {} \n'.format(organism[0]))
+
+
+def print_raw_data(data):
     # print data directly from Met-aromatic algorithm results to terminal
     pattern = get_aromatic_pattern(var_phe=VAR_PHE, var_tyr=VAR_TYR, var_trp=VAR_TRP)
-    text_output.insert(tk.END, 'UPDATE Successfully retrieved {}'.format(pdbcode) + '\n')
     for row in data:
         if row[0] in pattern:
             rounded_row = [str(round(i, 3)) for i in row[4:7]]
@@ -187,19 +196,14 @@ def print_main():
                 code=pdbcode, chain=CHAIN, cutoff=float(distance),
                 angle=float(angle), model=model
         )
-        
         data = obj_ma.met_aromatic()
-        
-        # TODO: work this into console stdout
-        # ------------------------------------
-        print(obj_ma.get_ec_classifier())
-        print(obj_ma.get_organism())
-        # ------------------------------------
-        
         print_header(pdbcode=pdbcode, distance=distance, angle=angle, method=model)
-        t_exec = round(time() - t_start, 4)
-        text_output.insert(tk.END, 'UPDATE Total execution time: {} s\n'.format(t_exec))
-        print_raw_data(pdbcode=pdbcode, data=data)
+        t_exec = round(time() - t_start, 5)
+        text_output.insert(tk.END, 'UPDATE Successfully retrieved {}'.format(pdbcode) + '\n')
+        text_output.insert(tk.END, 'UPDATE Processing time: {} s\n'.format(t_exec))
+        print_ec(obj_ma.get_ec_classifier())
+        print_organism(obj_ma.get_organism())
+        print_raw_data(data=data)
     except Exception as exception:
         text_output.insert(tk.END, 'ERROR An exception has occurred: \n')
         if debug:
