@@ -183,10 +183,19 @@ def print_main():
     try:
         model = DICT_MODEL.get(method)[1]
         t_start = time()
-        data = MetAromatic(
+        obj_ma = MetAromatic(
                 code=pdbcode, chain=CHAIN, cutoff=float(distance),
                 angle=float(angle), model=model
-        ).met_aromatic()
+        )
+        
+        data = obj_ma.met_aromatic()
+        
+        # TODO: work this into console stdout
+        # ------------------------------------
+        print(obj_ma.get_ec_classifier())
+        print(obj_ma.get_organism())
+        # ------------------------------------
+        
         print_header(pdbcode=pdbcode, distance=distance, angle=angle, method=model)
         t_exec = round(time() - t_start, 4)
         text_output.insert(tk.END, 'UPDATE Total execution time: {} s\n'.format(t_exec))

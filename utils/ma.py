@@ -74,6 +74,19 @@ class MetAromatic(MetAromaticConstants):
                 return line.split()[-1].strip(';')
             else:
                 pass
+            
+    def get_organism(self, *args):
+        lines = [line.split() for line in self.data]
+        lines = [line for line in lines if 'SOURCE' in line]  # TODO regex this
+        lines = [line for line in lines if 'ORGANISM_SCIENTIFIC:' in line]
+        
+        organism = []
+        for item in lines:
+            idx = item.index('ORGANISM_SCIENTIFIC:')
+            out_str = '{} ' * len(item[idx + 1:])
+            organism.append(out_str.format(*item[idx + 1:]))
+            
+        return organism
 
     def get_first_model(self, *args):
         # split downstream as get_ec_classifier() requires unsplit strings
