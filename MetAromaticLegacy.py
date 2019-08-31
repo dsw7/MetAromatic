@@ -30,7 +30,7 @@ STR_ANGL = 'Enter a cutoff angle here (degrees) (ex. 109.5)'
 HEADER = ['RECORD', 'AROMATIC', 'ARO POS', 'MET', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
 DICT_MODEL = {}
 DICT_MODEL[1] = ('Cross product', 'cp')
-DICT_MODEL[2] = ('Rodrigues', 'rm')
+DICT_MODEL[2] = ('Rodrigues method', 'rm')
 
 
 # some helper functions

@@ -35,7 +35,7 @@ STR_ANGL = 'Enter a cutoff angle here (degrees) (ex. 109.5)'
 HEADER = ['RECORD', 'AROMATIC', 'ARO POS', 'MET', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
 DICT_MODEL = {}
 DICT_MODEL[1] = ('Cross product', 'cp')
-DICT_MODEL[2] = ('Rodrigues', 'rm')
+DICT_MODEL[2] = ('Rodrigues method', 'rm')
 CHAIN = 'A'
 FONT = ('Consolas', 9)
 FILETYPES = (('Text:', '*.txt'), ('CSV:', '*.csv'))
@@ -190,14 +190,14 @@ def print_main():
     text_output.delete('1.0', tk.END)    
         
     try:
-        model = DICT_MODEL.get(method)[1]
+        model = DICT_MODEL.get(method)
         t_start = time()
         obj_ma = MetAromatic(
                 code=pdbcode, chain=CHAIN, cutoff=float(distance),
-                angle=float(angle), model=model
+                angle=float(angle), model=model[1]
         )
         data = obj_ma.met_aromatic()
-        print_header(pdbcode=pdbcode, distance=distance, angle=angle, method=model)
+        print_header(pdbcode=pdbcode, distance=distance, angle=angle, method=model[0])
         t_exec = round(time() - t_start, 5)
         text_output.insert(tk.END, 'UPDATE Successfully retrieved {}'.format(pdbcode) + '\n')
         text_output.insert(tk.END, 'UPDATE Processing time: {} s\n'.format(t_exec))
