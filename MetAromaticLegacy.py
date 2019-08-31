@@ -31,6 +31,7 @@ HEADER = ['RECORD', 'AROMATIC', 'ARO POS', 'MET', 'MET POS', 'NORM', 'MET-THETA'
 DICT_MODEL = {}
 DICT_MODEL[1] = ('Cross product', 'cp')
 DICT_MODEL[2] = ('Rodrigues method', 'rm')
+ROUND_T = 1
 
 
 # some helper functions
@@ -167,7 +168,7 @@ def pass_data_from_PDB_to_console(CODE, CHAIN, ANGLE, CUTOFF, METHOD):
     
     # print data to console
     text_output.insert(tk.END, 'UPDATE Successfully retrieved {}'.format(CODE) + '\n')
-    text_output.insert(tk.END, 'UPDATE Processing time: {} s'.format(round(t_end - t_start, 5)) + '\n')
+    text_output.insert(tk.END, 'UPDATE Processing time: {} s'.format(round(t_end - t_start, ROUND_T)) + '\n')
     text_output.insert(tk.END, 'RESULT EC classifier: {} \n'.format(EC))
     
     for org in ORG:

@@ -42,6 +42,7 @@ FILETYPES = (('Text:', '*.txt'), ('CSV:', '*.csv'))
 CP_INT = 'Cross product interpolation'
 RM_INT = 'Rodrigues method interpolation'
 BUILD = 'MetAromaticWrapper - dsw7@sfu.ca - v1.{}'.format(CURR_VER)
+ROUND_T = 5
 
 VAR_PHE = tk.IntVar()
 VAR_TYR = tk.IntVar()
@@ -60,7 +61,10 @@ VAR_MOD.set(1)
 # this is important for debugging string crashes, AMET/MET, etc.
 parser = ArgumentParser()
 parser.add_argument('--debug', default=False, action='store_true')
-debug = parser.parse_args().debug
+parser.add_argument('--round_time', default=ROUND_T, type=int)
+args = parser.parse_args()
+debug = args.debug
+round_time = args.round_time
 
 
 # helper functions
@@ -178,12 +182,12 @@ def verify_angle(angle):
 def print_main():
     # print header + Met-aromatic output to terminal
     pdbcode = code_input.get().lower()
-    distance = dist_input.get()
+    dist = dist_input.get()
     angle = angle_input.get()
     method = VAR_MOD.get()
     
     if verify_pdbcode(pdbcode) == -1: return
-    if verify_distance(distance) == -1: return
+    if verify_distance(dist) == -1: return
     if verify_angle(angle) == -1: return
 
     # clear terminal for every query
@@ -192,13 +196,10 @@ def print_main():
     try:
         model = DICT_MODEL.get(method)
         t_start = time()
-        obj_ma = MetAromatic(
-                code=pdbcode, chain=CHAIN, cutoff=float(distance),
-                angle=float(angle), model=model[1]
-        )
+        obj_ma = MetAromatic(code=pdbcode, chain=CHAIN, cutoff=float(dist), angle=float(angle), model=model[1])
         data = obj_ma.met_aromatic()
-        print_header(pdbcode=pdbcode, distance=distance, angle=angle, method=model[0])
-        t_exec = round(time() - t_start, 5)
+        print_header(pdbcode=pdbcode, distance=dist, angle=angle, method=model[0])
+        t_exec = round(time() - t_start, round_time)
         text_output.insert(tk.END, 'UPDATE Successfully retrieved {}'.format(pdbcode) + '\n')
         text_output.insert(tk.END, 'UPDATE Processing time: {} s\n'.format(t_exec))
         print_ec(obj_ma.get_ec_classifier())
