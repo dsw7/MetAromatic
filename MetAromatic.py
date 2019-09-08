@@ -5,7 +5,7 @@
 # dependencies
 # ----------------------------------------------------------------------------
 import tkinter as tk
-from sys                    import path as PATH; PATH.append('./utils')  # built in
+from sys                    import path as PATH; PATH.append('./engine') # built in
 from os                     import path                                  # built in
 from csv                    import DictWriter, writer, QUOTE_MINIMAL     # built in
 from platform               import platform                              # built in
