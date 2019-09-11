@@ -5,7 +5,6 @@
 # dependencies
 # ----------------------------------------------------------------------------
 import tkinter as tk
-# from sys                     import path as PATH; PATH.append('./engine') # built in
 from os                      import path                                  # built in
 from csv                     import DictWriter, writer, QUOTE_MINIMAL     # built in
 from platform                import platform                              # built in
@@ -25,7 +24,7 @@ master = tk.Tk()
 
 # constants
 # ----------------------------------------------------------------------------
-CURR_VER = get_commit_count()
+CURR_VER = 2  #get_commit_count()
 PLATFORM = platform()
 HEIGHT_OVERALL = 470
 WIDTH_OVERALL = 1300
@@ -43,6 +42,7 @@ CP_INT = 'Cross product interpolation'
 RM_INT = 'Rodrigues method interpolation'
 BUILD = 'MetAromaticWrapper - dsw7@sfu.ca - v1.{}'.format(CURR_VER)
 ROUND_T = 5
+PATH_TO_ICO = './icon.ico'
 
 VAR_PHE = tk.IntVar()
 VAR_TYR = tk.IntVar()
@@ -249,7 +249,7 @@ def output_save():
     
 # master panel setup
 # ----------------------------------------------------------------------------
-master.iconbitmap('./img/icon_gaJ_icon.ico')
+master.iconbitmap(PATH_TO_ICO)
 master.geometry('{}x{}'.format(WIDTH_OVERALL, HEIGHT_OVERALL))
 master.winfo_toplevel().title(BUILD)
 
