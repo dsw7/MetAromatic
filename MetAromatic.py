@@ -5,17 +5,17 @@
 # dependencies
 # ----------------------------------------------------------------------------
 import tkinter as tk
-from sys                    import path as PATH; PATH.append('./engine') # built in
-from os                     import path                                  # built in
-from csv                    import DictWriter, writer, QUOTE_MINIMAL     # built in
-from platform               import platform                              # built in
-from time                   import time                                  # built in
-from tkinter.scrolledtext   import ScrolledText                          # built in
-from tkinter                import messagebox, filedialog                # built in
-from ma                     import MetAromatic                           # local
-from get_commit_count       import get_commit_count                      # local
-from traceback              import format_exc                            # built in
-from argparse               import ArgumentParser                        # built in
+# from sys                     import path as PATH; PATH.append('./engine') # built in
+from os                      import path                                  # built in
+from csv                     import DictWriter, writer, QUOTE_MINIMAL     # built in
+from platform                import platform                              # built in
+from time                    import time                                  # built in
+from tkinter.scrolledtext    import ScrolledText                          # built in
+from tkinter                 import messagebox, filedialog                # built in
+from engine.ma               import MetAromatic                           # local
+from engine.get_commit_count import get_commit_count                      # local
+from traceback               import format_exc                            # built in
+from argparse                import ArgumentParser                        # built in
 
 
 # top level setup

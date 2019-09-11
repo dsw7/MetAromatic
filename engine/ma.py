@@ -11,15 +11,15 @@ imported into a separate workspace.
 
 # ------------------------------------------------------------------------------
 
-from filegetter import PDBFile
+from engine.filegetter import PDBFile
 from urllib.error import URLError
 from re import search
 from itertools import groupby
 from operator import itemgetter
-from utils import get_hexagon_midpoints
-from utils import LonePairs
-from utils import RodriguesMethod
-from utils import vector_angle
+from engine.utils import get_hexagon_midpoints
+from engine.utils import LonePairs
+from engine.utils import RodriguesMethod
+from engine.utils import vector_angle
 from numpy import array
 from numpy.linalg import norm
 
