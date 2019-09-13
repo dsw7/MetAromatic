@@ -9,7 +9,7 @@ This file does the following:
 """
 
 from subprocess import call
-from os import path
+from os import path, remove
 from shutil import copyfile
 
 dump = path.join(path.expanduser('~'), 'Desktop')
@@ -20,6 +20,7 @@ icon_dst = path.join(loc_dist, icon_src)
 
 
 def bundle():
+    """ Runs the pyinstaller command """
     cmd = r"""
     pyinstaller 
     MetAromatic.py 
@@ -33,6 +34,11 @@ def bundle():
     copyfile(icon_src, icon_dst)
     
 
+def remove_spec_file():
+    """ We don't need the spec file as we have the dispatcher """
+    remove('./MetAromatic.spec')
+    
+
 if __name__ == '__main__':
     bundle()
-    
+    remove_spec_file()
