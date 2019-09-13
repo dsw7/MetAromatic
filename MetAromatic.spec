@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['MetAromatic.py'],
-             pathex=['/Users/davidweber/Dropbox/git/MetAromatic'],
+             pathex=['C:\\Users\\David\\Dropbox\\git\\MetAromatic'],
              binaries=[],
              datas=[],
              hiddenimports=['tkinter'],
