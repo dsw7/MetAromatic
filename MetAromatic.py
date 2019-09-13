@@ -12,9 +12,10 @@ from time                    import time                                  # buil
 from tkinter.scrolledtext    import ScrolledText                          # built in
 from tkinter                 import messagebox, filedialog                # built in
 from engine.ma               import MetAromatic                           # local
-from engine.get_commit_count import get_commit_count                      # local
 from traceback               import format_exc                            # built in
 from argparse                import ArgumentParser                        # built in
+from version                 import version_handler                       # local
+# from engine.get_commit_count import get_commit_count                    # local
 
 
 # top level setup
@@ -24,7 +25,8 @@ master = tk.Tk()
 
 # constants
 # ----------------------------------------------------------------------------
-CURR_VER = 2  #get_commit_count()
+REPO_PATH = '.git'
+CURR_VER = version_handler(REPO_PATH)  # get_commit_count()
 PLATFORM = platform()
 HEIGHT_OVERALL = 470
 WIDTH_OVERALL = 1300
