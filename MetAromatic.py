@@ -14,19 +14,17 @@ from tkinter                 import messagebox, filedialog                # buil
 from engine.ma               import MetAromatic                           # local
 from traceback               import format_exc                            # built in
 from argparse                import ArgumentParser                        # built in
-from version                 import version_handler                       # local
-# from engine.get_commit_count import get_commit_count                    # local
+from versionhandler          import VersionHandler                        # local
 
 
 # top level setup
 # ----------------------------------------------------------------------------
+__version__ = VersionHandler('.').get_version().get('__version__')
 master = tk.Tk()
 
 
 # constants
 # ----------------------------------------------------------------------------
-REPO_PATH = '.git'
-CURR_VER = version_handler(REPO_PATH)  # get_commit_count()
 PLATFORM = platform()
 HEIGHT_OVERALL = 470
 WIDTH_OVERALL = 1300
@@ -42,7 +40,7 @@ FONT = ('Consolas', 9)
 FILETYPES = (('Text:', '*.txt'), ('CSV:', '*.csv'))
 CP_INT = 'Cross product interpolation'
 RM_INT = 'Rodrigues method interpolation'
-BUILD = 'MetAromaticWrapper - dsw7@sfu.ca - v1.{}'.format(CURR_VER)
+BUILD = 'MetAromaticWrapper - dsw7@sfu.ca - v.{}'.format(__version__)
 ROUND_T = 5
 PATH_TO_ICO = './icon.ico'
 
