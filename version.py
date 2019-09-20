@@ -1,1 +1,1 @@
-version = {'__version__': '19.85', 'UUID': '86a91947a1204ddcac9b86ea30c25adb', 'sha': 'a86b7362ed71330ba17e14d42dc90d96053ee442', 'message': 'Add new version handler'}
+version = {'__version__': '19.86', 'UUID': 'f633990b06674c2d86538ccffdac67f0', 'sha': 'becbe39ab1b4c379073d9b4444d27d6ffd1bf19f', 'message': 'Remove __pycache__'}
