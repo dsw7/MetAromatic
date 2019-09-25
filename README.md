@@ -9,7 +9,8 @@ do not have to manually run scripts using interpreters/DEs.
 
 ---
 ## Instructions  
-<img src="https://github.com/dsw7/MetAromatic/blob/master/img/gui_example_v19_90_labelled.png">     
+<img src="https://github.com/dsw7/MetAromatic/blob/master/img/gui_example_v19_90_labelled.png">    
+
 1. User must input a PDB code into **A**.  
 2. User then selects the minimum distance between a methionine SD and an aromatic carbon atom (Phe, Tyr or Trp) that is deemed "interacting". This selection is made in edit box **B**. The vector has been termed vector v throughout literature. See **More information about cutoff distances and cutoff angles**.  
 3. User selects the minimum cutoff angle between a methionine SD lone pair and vector v. Any lone pair / vector v combination is "deemed non-interacting". This selection is made in edit box **C**. See **More information about cutoff distances and cutoff angles**.  
