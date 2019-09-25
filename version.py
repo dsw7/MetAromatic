@@ -1,1 +1,1 @@
-version = {'__version__': '19.88', 'UUID': 'aa4fb6a296ad496798cfe5de26ebc2ba', 'sha': '8d0cf86020ac844639bc6cbe1fc15629e85380e6', 'message': 'Remove antiquated unit tests'}
+version = {'__version__': '19.90', 'UUID': 'd4bfd98121e04fcdadcfe32e057d0fdc', 'sha': 'cb20398dc468056dff9b3b602f9e897f1633dcdb', 'message': 'Update image for README'}
