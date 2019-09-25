@@ -43,7 +43,21 @@ Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints
 
 ---  
 ## Running the program
+Simply run:
+```
+$ python MetAromatic.py
+```
+The program can be run in a debug mode as follows:
+```
+$ python MetAromatic.py --debug
+```
+This option will print full error tracebacks to the terminal.
 
-
-
-
+## Generating binaries
+Simply run:
+```
+$ python dispatcher.py
+```
+This script will package the program into a standalone executable file. The executable
+file will be located inside the _dist_ folder which will be placed onto the host machine's
+Desktop. A _build_ folder will also be generated. This folder can be discarded.
