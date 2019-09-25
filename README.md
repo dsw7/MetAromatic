@@ -34,7 +34,7 @@ The following figure provides an excellent overview of the geometry of the syste
 ## Interpreting the results  
 The protein 1rcy was analyzed using the MetAromatic application. Here we set ||**v**|| ≤ 4.9 Angstroms and the cutoff angle ≤ 109.5 degrees. The results are as follows:  
 
-<img src="https://github.com/dsw7/MetAromatic/blob/master/img/results_1rcy.png">  
+<img src="https://github.com/dsw7/MetAromatic/blob/master/img/results_1rcy_v19_90.png">  
   
 Consider the last three RESULT lines:  
     
