@@ -1,1 +1,1 @@
-version = {'__version__': '19.86', 'UUID': 'f633990b06674c2d86538ccffdac67f0', 'sha': 'becbe39ab1b4c379073d9b4444d27d6ffd1bf19f', 'message': 'Remove __pycache__'}
+version = {'__version__': '19.88', 'UUID': 'aa4fb6a296ad496798cfe5de26ebc2ba', 'sha': '8d0cf86020ac844639bc6cbe1fc15629e85380e6', 'message': 'Remove antiquated unit tests'}
