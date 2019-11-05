@@ -5,15 +5,15 @@
 # dependencies
 # ----------------------------------------------------------------------------
 import tkinter as tk
+from traceback               import format_exc
+from argparse                import ArgumentParser
 from os                      import path
 from csv                     import DictWriter, writer, QUOTE_MINIMAL
 from platform                import platform
 from time                    import time
 from tkinter.scrolledtext    import ScrolledText
 from tkinter                 import messagebox, filedialog
-from metaromatic.ma          import MetAromatic
-from traceback               import format_exc
-from argparse                import ArgumentParser
+from metaromatic.ma3         import MetAromatic
 from versionhandler          import VersionHandler
 
 
@@ -32,9 +32,7 @@ STR_CODE = 'Enter a PDB code here (ex. 1rcy)'
 STR_DIST = 'Enter a cutoff distance here (Angstroms) (ex. 4.9)'
 STR_ANGL = 'Enter a cutoff angle here (degrees) (ex. 109.5)'
 HEADER = ['RECORD', 'AROMATIC', 'ARO POS', 'MET', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
-DICT_MODEL = {}
-DICT_MODEL[1] = ('Cross product', 'cp')
-DICT_MODEL[2] = ('Rodrigues method', 'rm')
+DICT_MODEL = {1: ('Cross product', 'cp'), 2: ('Rodrigues method', 'rm')}
 CHAIN = 'A'
 FONT = ('Consolas', 9)
 FILETYPES = (('Text:', '*.txt'), ('CSV:', '*.csv'))
@@ -72,11 +70,11 @@ round_time = args.round_time
 def get_aromatic_pattern(var_phe={}, var_tyr={}, var_trp={}):
     # function needed for getting PHE, TYR, TRP pattern from checkboxes
     dict_aromatics = {
-        'PHE': var_phe.get(), 
-        'TYR': var_tyr.get(), 
+        'PHE': var_phe.get(),
+        'TYR': var_tyr.get(),
         'TRP': var_trp.get()
     }
-    list_aromatics = [d for d in ['PHE', 'TYR', 'TRP'] if dict_aromatics.get(d) == True]
+    list_aromatics = [d for d in ['PHE', 'TYR', 'TRP'] if dict_aromatics.get(d)]
     return '|'.join(list_aromatics)
 
 
@@ -108,16 +106,16 @@ def print_header(pdbcode, distance, angle, method):
         for p in pattern.split('|'):
             text_output.insert(tk.END, 'HEADER {} included in this search \n'.format(p))
     text_output.insert(tk.END, 'HEADER Interpolation method: {} \n'.format(method))
-    
+
 
 def print_ec(ec):
     # print EC classifier above raw data
     text_output.insert(tk.END, 'RESULT EC classifier: {} \n'.format(ec))
-    
-    
+
+
 def print_organism(organism):
     # print organism above raw data
-    text_output.insert(tk.END, 'RESULT Organism: {} \n'.format(organism[0]))
+    text_output.insert(tk.END, 'RESULT Organism: {} \n'.format(organism))
 
 
 def print_raw_data(data):
@@ -130,69 +128,81 @@ def print_raw_data(data):
             text_output.insert(tk.END, str_out + '\n')
         else:
             continue
-                
-        
+
+
 def verify_pdbcode(pdbcode):
     if pdbcode == STR_CODE.lower():
-        messagebox.showwarning('Warning', 'Input a PDB code!'); return -1
+        messagebox.showwarning('Warning', 'Input a PDB code!')
+        return -1
     elif pdbcode == '':
-        messagebox.showwarning('Warning', 'Input a PDB code!'); return -1
+        messagebox.showwarning('Warning', 'Input a PDB code!')
+        return -1
     elif len(pdbcode) != 4:
-        messagebox.showwarning('Warning', 'Invalid PDB code!'); return -1
+        messagebox.showwarning('Warning', 'Invalid PDB code!')
+        return -1
     else:
         return 0
-    
+
 
 def verify_distance(distance):
     if distance == STR_DIST:
-        messagebox.showwarning('Warning', 'Input a cutoff distance!'); return -1
+        messagebox.showwarning('Warning', 'Input a cutoff distance!')
+        return -1
     elif distance == '':
-        messagebox.showwarning('Warning', 'Input a cutoff distance!'); return -1
+        messagebox.showwarning('Warning', 'Input a cutoff distance!')
+        return -1
     else:
         try:
             distance = float(distance)  # catch 4.x instead of 4.9, etc.
         except Exception:
-            messagebox.showwarning('Warning', 'Invalid input!'); return -1
+            messagebox.showwarning('Warning', 'Invalid input!')
+            return -1
         else:
             if distance <= 0:
-                messagebox.showwarning('Warning', 'Distance must exceed 0 Angstroms!'); return -1
+                messagebox.showwarning('Warning', 'Distance must exceed 0 Angstroms!')
+                return -1
             else:
                 return 0
-    
-    
+
+
 def verify_angle(angle):
     if angle == STR_ANGL:
-        messagebox.showwarning('Warning', 'Input a cutoff angle!'); return -1
+        messagebox.showwarning('Warning', 'Input a cutoff angle!')
+        return -1
     elif angle == '':
-        messagebox.showwarning('Warning', 'Input a cutoff angle!'); return -1
+        messagebox.showwarning('Warning', 'Input a cutoff angle!')
+        return -1
     else:
         try:
             angle = float(angle)
         except Exception:
-             messagebox.showwarning('Warning', 'Invalid input!'); return -1
+            messagebox.showwarning('Warning', 'Invalid input!')
+            return -1
         else:
             if angle <= 0:
-                messagebox.showwarning('Warning', 'Angle must be greater than or equal to 0 degrees!'); return -1
+                messagebox.showwarning('Warning', 'Angle must be greater than or equal to 0 degrees!')
+                return -1
             elif angle > 360:
-                messagebox.showwarning('Warning', 'Angle must not exceed 360 degrees!'); return -1
+                messagebox.showwarning('Warning', 'Angle must not exceed 360 degrees!')
+                return -1
             else:
                 return 0
-    
-    
+
+
 def print_main():
     # print header + Met-aromatic output to terminal
     pdbcode = code_input.get().lower()
     dist = dist_input.get()
     angle = angle_input.get()
     method = VAR_MOD.get()
-    
+
     if verify_pdbcode(pdbcode) == -1: return
     if verify_distance(dist) == -1: return
     if verify_angle(angle) == -1: return
 
     # clear terminal for every query
-    text_output.delete('1.0', tk.END)    
-        
+    text_output.delete('1.0', tk.END)
+
     try:
         model = DICT_MODEL.get(method)
         t_start = time()
@@ -214,16 +224,16 @@ def print_main():
             text_output.insert(tk.END, '{}\n'.format(exception))
     else:
         text_output.insert(tk.END, 'END\n')
-        
+
 
 def write_to_csv(data, path, header):
     with open(path, mode='w', newline='') as f:
         obj_header = DictWriter(f, fieldnames=header)
-        obj_header.writeheader()         
+        obj_header.writeheader()
         obj_writer = writer(f, delimiter=',', quotechar='"', quoting=QUOTE_MINIMAL)
         for item in data:
             obj_writer.writerow(item)
-            
+
 
 def write_to_txt(data, path):
     with open(path, 'w') as f:
@@ -232,21 +242,21 @@ def write_to_txt(data, path):
 
 def output_save():
     # saves data from terminal into a .txt or .csv file
-    data = text_output.get('1.0', tk.END)  # read from line '1', char '0'    
-    spath = filedialog.asksaveasfilename(parent=frame_go, title='Choose a save location', filetypes=FILETYPES)   
+    data = text_output.get('1.0', tk.END)  # read from line '1', char '0'
+    spath = filedialog.asksaveasfilename(parent=frame_go, title='Choose a save location', filetypes=FILETYPES)
     extension = path.splitext(spath)[-1]
-    
+
     if extension == '.txt':
-        write_to_txt(data, spath)     
+        write_to_txt(data, spath)
     elif extension == '.csv':
         data = [i.split(' ') for i in data.split('\n') if 'RESULT' in i]
-        write_to_csv(data, spath, HEADER)       
+        write_to_csv(data, spath, HEADER)
     else:
         text_output.insert(tk.END, 'ERROR Invalid file format. Valid formats: .csv, .txt\n'); return
-        
-    text_output.insert(tk.END, 'UPDATE Data has been saved to: {}\n'.format(spath))  
-    
-    
+
+    text_output.insert(tk.END, 'UPDATE Data has been saved to: {}\n'.format(spath))
+
+
 # master panel setup
 # ----------------------------------------------------------------------------
 master.iconbitmap(PATH_TO_ICO)
@@ -310,7 +320,7 @@ cp_rad.pack(side='top', fill='x', padx=35, pady=5)
 rm_rad = tk.Radiobutton(frame_model, text=RM_INT, font=FONT, indicatoron=0, variable=VAR_MOD, value=2)
 rm_rad.pack(side='top', fill='x', padx=35, pady=5)
 
-# go button       
+# go button
 button_go = tk.Button(frame_go, text='Go', font=FONT, command=print_main, bg='gray50')
 button_go.pack(fill='x', padx=5, pady=(5, 1.5))
 
@@ -318,7 +328,7 @@ button_go.pack(fill='x', padx=5, pady=(5, 1.5))
 handle_legend = tk.Button(frame_go, text='Legend', font=FONT, command=display_legend, bg='gray50')
 handle_legend.pack(fill='x', padx=5, pady=1.5)
 
-# save button                                   
+# save button
 save_data = tk.Button(frame_go, text='Save data?', font=FONT, command=output_save, bg='gray50')
 save_data.pack(fill='x', padx=5, pady=1.5)
 
@@ -335,8 +345,9 @@ text_output.insert(tk.END, '** Prompt **\n')
 text_output.insert(tk.END, '** {} ** \n'.format(BUILD))
 text_output.insert(tk.END, '** Detected: {} **\n'.format(PLATFORM))
 text_output.insert(tk.END, '** Results will display here **\n')
-if debug: text_output.insert(tk.END, '** Running in DEBUG mode **\n')
-    
+if debug:
+    text_output.insert(tk.END, '** Running in DEBUG mode **\n')
+
 
 # main
 # ----------------------------------------------------------------------------
