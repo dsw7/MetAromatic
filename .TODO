@@ -1,1 +1,2 @@
 [1] Update ma to ma3 in unit test directory
+[2] Actually need to remove test directory - it is deprecated and useless now
