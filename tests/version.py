@@ -1,1 +1,1 @@
-version = {'__version__': '19.124', 'UUID': '22b6635818954de298eb1f0f96cdd5de', 'sha': '6ea81c11e81a9656cc25538ab0996ba6feccdc32', 'message': 'Add README'}
+version = {'__version__': '19.129', 'UUID': '668b3293d35847259c022efe95410284', 'sha': '5810d1f3fe20d395e10409987503b4d8754a7186', 'message': 'Delete workspace.ini'}
