@@ -6,9 +6,9 @@ from conftest import Setup
 
 
 DISABLE_EC_TESTS = False
-DISABLE_PROTEIN_ID_TESTS = False
-DISABLE_BRIDGE_TESTS = False
-DISABLE_MA_2_483_TESTS = False
+DISABLE_PROTEIN_ID_TESTS = True
+DISABLE_BRIDGE_TESTS = True
+DISABLE_MA_2_483_TESTS = True
 CONTROL_EC_CODES = './controls/test_dataset_ec_codes.csv'
 CONTROL_BRIDGE_DATA = './controls/test_n_3_bridges_no_ang_limit_6_angstroms.json'
 CONTROL_483_DATA = './controls/test_483OutputA3-3-M-Benchmark_2.csv'
