@@ -9,7 +9,7 @@ do not have to manually run scripts using interpreters/DEs.
 
 ---
 ## Instructions  
-<img src="https://github.com/dsw7/MetAromaticEngine/blob/master/frontend/images/gui_example_v19_90_labelled.png">    
+<img src="https://github.com/dsw7/MetAromatic/blob/master/frontend/images/gui_example_v19_90_labelled.png">    
 
 1. User must input a PDB code into **A**.  
 2. User then selects the minimum distance between a methionine SD and an aromatic carbon atom (Phe, Tyr or Trp) that is deemed "interacting". This selection is made in edit box **B**. The vector has been termed vector v throughout literature. See **More information about cutoff distances and cutoff angles**.  
@@ -24,13 +24,13 @@ do not have to manually run scripts using interpreters/DEs.
 
 ## More information about cutoff distances and cutoff angles  
 The following figure provides an excellent overview of the geometry of the system being probed by Met-aromatic. We have a vector **v** in our figure below. **v** points from the methionine SD coordinate to a midpoint between two aromatic carbon atoms. _Distance condition_. Methionine / aromatic residue pairs are saved for further analysis if the vector **v** between the two is of magnitude ≤ to the value inputted in **B**. _Angular condition_. We also have two vectors, **a** and **g**. These vectors estimate the position and direction of the lone pairs of the sulfur atom. Here, an interaction is printed to the prompt **if** either the **a** / **v** angle **or** the **g** / **v** angle is ≤ the value inputted into edit box **C**.    
-<img src="https://github.com/dsw7/MetAromaticEngine/blob/master/frontend/images/cd_schematic_chapter2.png" width="400">  
+<img src="https://github.com/dsw7/MetAromatic/blob/master/frontend/images/cd_schematic_chapter2.png" width="400">  
 
 ---  
 ## Interpreting the results  
 The protein 1rcy was analyzed using the MetAromatic application. Here we set ||**v**|| ≤ 4.9 Angstroms and the cutoff angle ≤ 109.5 degrees. The results are as follows:  
 
-<img src="https://github.com/dsw7/MetAromaticEngine/blob/master/frontend/images/results_1rcy_v19_90.png">  
+<img src="https://github.com/dsw7/MetAromatic/blob/master/frontend/images/results_1rcy_v19_90.png">  
   
 Consider the last three RESULT lines:  
     
