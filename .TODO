@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-[1] Update ma to ma3 in unit test directory
-[2] Actually need to remove test directory - it is deprecated and useless now
-=======
 [1] Update documentation
-[2] Eventually remove legacy folders -> removed ma3 legacy and legacy folder from metaromatic folder
+[2] Create global constants file
+[3] Eventually remove legacy folders -> removed ma3 legacy and legacy folder from metaromatic folder
 [4] Need to replace hard regex for A chain with variable regex in ma3
-[6] Finish refactoring the UI
->>>>>>> merge-engine

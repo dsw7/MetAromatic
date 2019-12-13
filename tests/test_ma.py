@@ -9,9 +9,10 @@ DISABLE_EC_TESTS = False
 DISABLE_PROTEIN_ID_TESTS = False
 DISABLE_BRIDGE_TESTS = False
 DISABLE_MA_2_483_TESTS = False
+DISABLE_ORGANISM_GETTER_TESTS = False
 CONTROL_EC_CODES = './controls/test_dataset_ec_codes.csv'
 CONTROL_BRIDGE_DATA = './controls/test_n_3_bridges_no_ang_limit_6_angstroms.json'
-CONTROL_483_DATA = './controls/test_483OutputA3-3-M-Benchmark_2.csv'
+CONTROL_483_DATA = './controls/test_483OutputA3-3-M-Benchmark.csv'
 CONTROL_483_DATA_DF = read_csv(CONTROL_483_DATA)
 ANGLE_BRIDGE_TESTS = 360.00
 CUTOFF_BRIDGE_TESTS = 6.0
@@ -44,7 +45,7 @@ class TestMetAromatic:
 
 
     bridge_data = Setup.get_control_bridges(CONTROL_BRIDGE_DATA)
-    bridge_data_ids = [i.get('pdb_code') for i in bridge_data]
+    bridge_data_ids = [i.get('pdb_code').lower() for i in bridge_data]
     @mark.skipif(DISABLE_BRIDGE_TESTS, reason='Skip if disabled')
     @mark.parametrize('bridges', bridge_data, ids=bridge_data_ids)
     def test_bridge_collector(self, bridges):
@@ -88,3 +89,11 @@ class TestMetAromatic:
         df_control = self.get_ma_2_483_control_dataset_using_pandas(code=code)
         df_test = self.get_current_algorithm_test_dataset_using_pandas(code=code)
         testing.assert_frame_equal(df_control, df_test)
+
+
+    protein_organism_data = Setup.protein_organisms
+    protein_organism_ids = [i.get('pdb_code') for i in protein_organism_data]
+    @mark.skipif(DISABLE_ORGANISM_GETTER_TESTS, reason='Skip if disabled')
+    @mark.parametrize('organism_data', Setup.protein_organisms, ids=protein_organism_ids)
+    def test_metaromatic_algorithm_organism_getter(self, organism_data):
+        assert MetAromatic(organism_data.get('pdb_code')).get_organism() == organism_data.get('organism')
