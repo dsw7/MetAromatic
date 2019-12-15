@@ -1,4 +1,12 @@
-## Met-aromatic low level routine
+## Met-aromatic
+Code for the following publications:  
+* Weber, D. S.; Warren, J. J. The Interaction between Methionine and Two Aromatic Amino Acids Is an Abundant and Multifunctional Motif in Proteins. _Arch. Biochem. Biophys._ **2019**, _672_, 108053.  
+* Weber, D. S.; Warren, J. J. A Survey of Methionine-Aromatic Interaction Geometries in the Oxidoreductase Class of Enzymes: What Could Met-Aromatic Interactions be Doing Near Metal Sites? _J. Inorg. Biochem._ **2018**, _186_, 34-41.  
+## Synopsis
+The majority of the driver code is located in the ```metaromatic/``` directory. A simple Tkinter GUI is available for staff who prefer to use user interfaces and is located under ```frontend/```. Unit tests are located in the ```tests/``` directory.
+
+
+
 ---  
 A low level object oriented package for running the Met-aromatic algorithm. See DSW thesis for a theoretical description.
 
