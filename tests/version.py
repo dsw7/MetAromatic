@@ -1,1 +1,1 @@
-version = {'__version__': '19.140', 'UUID': '28782d82caf64823ac3963c6333baa99', 'sha': '8458c57658a4e6ee64d84dd26dc3079235a634b9', 'message': 'Update README.md'}
+version = {'__version__': '19.144', 'UUID': 'c92aff49b867496d8a7c8b632b89f5f3', 'sha': '361097d3b97a992f6ec3a4b31c0785b1899cc951', 'message': 'Merge branch 'master' of https://github.com/dsw7/MetAromatic'}
