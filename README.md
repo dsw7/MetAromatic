@@ -43,7 +43,12 @@ Default MongoDB parameters are passed if no export parameters are specified. No 
 ## The (optional) Tkinter user interface
 The Tkinter user interface is basically the GUI version of `runner.py` with the `--code` parameter. There is one major difference however: data in the user interface can only be exported in the form of .txt/.csv. An image of the layout is shown below:
 <img src="https://github.com/dsw7/MetAromatic/blob/master/frontend/images/gui_example_v19_90_labelled.png">    
-Usage follows the example:
+Start the user interface as follows:
+```
+$ cd frontend/
+$ python frontend.py
+```
+Then follow the instructions:
 1. User must input a PDB code into **A**.  
 2. User then selects the minimum distance between a methionine SD and an aromatic carbon atom (Phe, Tyr or Trp) that is deemed "interacting". This selection is made in edit box **B**. The vector has been termed vector v throughout literature. See **More information about cutoff distances and cutoff angles**.  
 3. User selects the minimum cutoff angle between a methionine SD lone pair and vector v. Any lone pair / vector v combination is "deemed non-interacting". This selection is made in edit box **C**. See **More information about cutoff distances and cutoff angles**.  
@@ -67,18 +72,3 @@ Consider the last three RESULT lines:
     RESULT PHE 54 MET 148 4.610 93.3820 156.922  
     RESULT PHE 54 MET 148 4.756 93.2870 154.630  
 Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints on the PHE 54 aromatic ring. The angle between 3 vectors **v** and the two SD lone pairs is ≤ 109.5 degrees in three cases.  
-
----  
-## Running the program
-Simply run:
-```
-$ python MetAromatic.py
-```
-## Generating binaries (deprecated)
-Simply run:
-```
-$ python dispatcher.py
-```
-This script will package the program into a standalone executable file. The executable
-file will be located inside the _dist_ folder which will be placed onto the host machine's
-Desktop. A _build_ folder will also be generated. This folder can be discarded.
