@@ -78,3 +78,12 @@ Almost all Met-aromatic code is thoroughly tested. Test can be run as follows:
 $ cd tests/
 $ python test_main.py
 ```
+## Requirements
+Project dependencies are located in the `requirements.txt` file. This file may not necessarily be up to date. To get up to date requirements, run:
+```
+$ pipreqs --force
+```
+The ```pipreqs``` utility can be installed as follows:
+```
+$ python -m pip install pipreqs
+```
