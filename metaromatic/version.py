@@ -1,1 +1,1 @@
-version = {'__version__': '19.134', 'UUID': '8e90f58ae9e241ecb5115c6223decd23', 'sha': 'c5bc4b617076743a7163260f565d1503af42d179', 'message': 'Update README.md'}
+version = {'__version__': '19.138', 'UUID': '4e99d375677940568388378732e0b93c', 'sha': '0ce21befd0c1afa1b51f9ac32d5248d61c993f08', 'message': 'Delete readme'}

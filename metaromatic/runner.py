@@ -48,7 +48,7 @@ class Runner:
         self.database = parser.parse_args().database
         self.collection = parser.parse_args().collection
 
-        print_version(self.__version__)
+        # print_version(self.__version__)
 
         self.parser = parser  # verify_user_input() makes a ref to parser object
         self.verify_user_input()
