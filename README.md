@@ -72,3 +72,9 @@ Consider the last three RESULT lines:
     RESULT PHE 54 MET 148 4.610 93.3820 156.922  
     RESULT PHE 54 MET 148 4.756 93.2870 154.630  
 Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints on the PHE 54 aromatic ring. The angle between 3 vectors **v** and the two SD lone pairs is ≤ 109.5 degrees in three cases.  
+## Tests 
+Almost all Met-aromatic code is thoroughly tested. Test can be run as follows:
+```
+$ cd tests/
+$ python test_main.py
+```
