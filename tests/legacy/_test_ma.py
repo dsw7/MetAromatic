@@ -2,7 +2,7 @@ from sys import path; path.append('../metaromatic')
 from pytest import mark, skip
 from pandas import read_csv, DataFrame, testing
 from ma3 import MetAromatic
-from conftest import Setup
+from _conftest import Setup
 
 
 DISABLE_EC_TESTS = False

@@ -3,12 +3,6 @@ from sys import path; path.append('../metaromatic')
 from csv import reader
 from random import sample
 from json import loads
-from versionhandler import VersionHandler
-
-
-def pytest_report_header(config):
-    version = VersionHandler('..').get_version().get('__version__')
-    return 'Testing MetAromatic v. {}'.format(version)
 
 
 class Setup:

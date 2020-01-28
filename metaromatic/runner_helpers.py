@@ -2,6 +2,7 @@ from hashlib import md5
 from pandas import DataFrame
 from colorama import Fore, Style
 
+
 def mapper(result, ec, pdbcode):
     """ A helper for adapting Met-aromatic results to MongoDB """
     outgoing = []

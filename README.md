@@ -76,7 +76,7 @@ Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints
 Almost all Met-aromatic code is thoroughly tested. Tests can be run as follows:
 ```
 $ cd tests/
-$ python test_main.py
+$ cd tests && python -m pytest -vs .
 ```
 ## Requirements
 Project dependencies are located in the `requirements.txt` file. This file may not necessarily be up to date. To get up to date requirements, run:
