@@ -75,7 +75,6 @@ Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints
 ## Tests 
 Almost all Met-aromatic code is thoroughly tested. Tests can be run as follows:
 ```
-$ cd tests/
 $ cd tests && python -m pytest -vs .
 ```
 ## Requirements
