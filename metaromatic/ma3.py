@@ -1,17 +1,7 @@
 # Written by David Weber
 # dsw7@sfu.ca
 
-"""
-A low level implementation of the Met-Aromatic algorithm. I wrote this mainly
-as an alternative to the more high level Pandas/BioPython implementation
-of the algorithm. Here I mostly use built in libraries. This script would
-be well suited for use in large mining jobs as the main function can be
-imported into a separate workspace.
-"""
 
-# -----------------------------------------------------------------------------
-# Dependencies
-# -----------------------------------------------------------------------------
 from re import search, match
 from copy import deepcopy
 from itertools import groupby
@@ -26,40 +16,31 @@ from linear_algebraic_helpers import RodriguesMethod
 from linear_algebraic_helpers import vector_angle
 
 
-# -----------------------------------------------------------------------------
-# Constants
-# -----------------------------------------------------------------------------
 ATOMS_MET = r'CE|SD|CG'
 ATOMS_TYR = r'CD1|CE1|CZ|CG|CD2|CE2'
 ATOMS_TRP = r'CD2|CE3|CZ2|CH2|CZ3|CE2'
 ATOMS_PHE = r'CD1|CE1|CZ|CG|CD2|CE2'
-
 PATTERN_MET = r'(ATOM.*({})\s*MET\s*A\s*)'.format(ATOMS_MET)   # TODO: replace hard regex for A chain with variable
-PATTERN_PHE = r'(ATOM.*({})\s*PHE\s*A\s*)'.format(ATOMS_PHE)   # TODO: replace hard regex for A chain with variable   
+PATTERN_PHE = r'(ATOM.*({})\s*PHE\s*A\s*)'.format(ATOMS_PHE)   # TODO: replace hard regex for A chain with variable
 PATTERN_TYR = r'(ATOM.*({})\s*TYR\s*A\s*)'.format(ATOMS_TYR)   # TODO: replace hard regex for A chain with variable
 PATTERN_TRP = r'(ATOM.*({})\s*TRP\s*A\s*)'.format(ATOMS_TRP)   # TODO: replace hard regex for A chain with variable
+
 
 DICT_ATOMS_PHE = {
     'CG': 'A', 'CD2': 'B', 'CE2': 'C',
     'CZ': 'D', 'CE1': 'E', 'CD1': 'F'
 }
-
 DICT_ATOMS_TYR = {
     'CG': 'A', 'CD2': 'B', 'CE2': 'C',
     'CZ': 'D', 'CE1': 'E', 'CD1': 'F'
 }
-
 DICT_ATOMS_TRP = {
     'CD2': 'A', 'CE3': 'B', 'CZ3': 'C',
     'CH2': 'D', 'CZ2': 'E', 'CE2': 'F'
 }
 
 
-# -----------------------------------------------------------------------------
-# Helpers
-# -----------------------------------------------------------------------------
 def get_aromatic_midpoints(aromatics, keys):
-    # group prior to getting midpoints
     aromatics = [list(group) for _, group in groupby(aromatics, lambda entry: entry[5])]
 
     midpoints = []
@@ -80,9 +61,6 @@ def get_aromatic_midpoints(aromatics, keys):
     return midpoints
 
 
-# -----------------------------------------------------------------------------
-# The master class
-# -----------------------------------------------------------------------------
 class MetAromatic:
     def __init__(self, code, chain="A", cutoff=6.0, angle=109.5, model="cp"):
         self.code = code
@@ -113,9 +91,6 @@ class MetAromatic:
                 break
         pdb_file_object.clear()
 
-    # ------------------------------------------------------
-    # Other helpers
-    # ------------------------------------------------------
     def get_ec_classifier(self):
         """ COMPND   5 EC: 6.1.1.13; -> 6.1.1.13 """
         for line in self.first_model:
@@ -149,9 +124,6 @@ class MetAromatic:
         bridges = [bridge for bridge in bridges if len(bridge) == n]
         return bridges  # note that inverse bridges (MET-ARO-MET) not removed!
 
-    # ------------------------------------------------------
-    # Regex core Met-aromatic data
-    # ------------------------------------------------------
     def get_relevant_coordinates_from_met(self):
         self.methionine_coords = [line.split() for line in self.first_model \
                 if match(PATTERN_MET, line)]
@@ -168,9 +140,6 @@ class MetAromatic:
         self.tryptophan_coords = [line.split() for line in self.first_model \
                 if match(PATTERN_TRP, line)]
 
-    # ------------------------------------------------------
-    # Preprocessing methods
-    # ------------------------------------------------------
     def get_phe_midpoints(self):
         self.midpoints_phe = get_aromatic_midpoints(self.phenylalanine_coords, DICT_ATOMS_PHE)
 
@@ -210,9 +179,6 @@ class MetAromatic:
             dict_lone_pairs['position'] = dict_met['position']
             self.lone_pairs.append(dict_lone_pairs)
 
-    # ------------------------------------------------------
-    # Postprocessing methods
-    # ------------------------------------------------------
     def met_constructor(self):
         self.get_relevant_coordinates_from_met()
         self.preprocess_met_data()
@@ -248,27 +214,3 @@ class MetAromatic:
                         self.pairs.append([midpoints[1], midpoints[0], 'MET',
                                            dict_met['position'], norm_v, met_theta, met_phi])
         return self.pairs
-
-
-# -----------------------------------------------------------------------------
-# Examples
-# -----------------------------------------------------------------------------
-def example_get_ec_classifier(code):
-    obj = MetAromatic(code=code)
-    return obj.get_ec_classifier()
-
-def example_get_protein_identity(code):
-    obj = MetAromatic(code=code)
-    return obj.get_protein_identity()
-
-def example_get_organism(code):
-    obj = MetAromatic(code=code)
-    return obj.get_organism()
-
-def example_get_bridges(code):
-    obj = MetAromatic(code=code)
-    obj.met_aromatic()
-    # have to use n + 1 to include met
-    # have to use in clause because ma returns
-    # multiple bridges (including inverts)
-    return obj.bridging_interactions(n=4)
