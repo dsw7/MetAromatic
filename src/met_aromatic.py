@@ -1,4 +1,5 @@
-from argparse import ArgumentParser
+import sys
+from argparse import ArgumentParser, RawTextHelpFormatter
 from networkx import Graph, connected_components
 from utilities import filegetter
 from utilities import preprocessing
@@ -7,10 +8,11 @@ from utilities import get_lone_pairs
 from utilities import distance_angular
 from utilities import errors
 from utilities import verifications
+from utilities import help_messages
 
 
 class MetAromatic:
-    def __init__(self, code, cutoff_distance=4.9, cutoff_angle=109.5, chain='A', model='cp'):
+    def __init__(self, code, cutoff_distance, cutoff_angle, chain, model):
         self.code = code
         self.cutoff_distance = cutoff_distance
         self.cutoff_angle = cutoff_angle
@@ -105,32 +107,44 @@ class MetAromatic:
         return results
 
 
-def command_line_interface():
-    parser = ArgumentParser()
-    pass
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+def main():
+    parser = ArgumentParser(formatter_class=RawTextHelpFormatter)
+    parser.add_argument('--code', help=help_messages.MSG_CODE, default='0', type=str, required=True)
+    parser.add_argument('--cutoff_distance', help=help_messages.MSG_CUTOFF, default=6.0, type=float)
+    parser.add_argument('--cutoff_angle', help=help_messages.MSG_ANGLE, default=109.5, type=float)
+    parser.add_argument('--model', help=help_messages.MSG_MODEL, default='cp')
+    parser.add_argument('--chain', help=help_messages.MSG_CHAIN, default='A')
+    parser.add_argument('--query', help=help_messages.MSG_QUERIES, default='ai')
+    parser.add_argument('--vertices', help=help_messages.MSG_VERTICES, default=3)
+
+    code = parser.parse_args().code
+    cutoff_distance = parser.parse_args().cutoff_distance
+    cutoff_angle = parser.parse_args().cutoff_angle
+    model = parser.parse_args().model
+    chain = parser.parse_args().chain
+    query = parser.parse_args().query
+    vertices = parser.parse_args().vertices
+
+    ma = MetAromatic(
+        code,
+        cutoff_distance=cutoff_distance,
+        cutoff_angle=cutoff_angle,
+        chain=chain,
+        model=model
+    )
+
+    if query == 'ai':
+        results = ma.get_met_aromatic_interactions()
+    elif query == 'bi':
+        results = ma.get_bridging_interactions(number_vertices=vertices)
+    else:
+        sys.exit(1)
+
+    if not isinstance(results, list):
+        sys.exit(1)
+
+    return results
+
+
+if __name__ == '__main__':
+    print(main())
