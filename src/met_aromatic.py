@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 from networkx import Graph, connected_components
 from utilities import filegetter
 from utilities import preprocessing
@@ -102,3 +103,34 @@ class MetAromatic:
             })
 
         return results
+
+
+def command_line_interface():
+    parser = ArgumentParser()
+    pass
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
