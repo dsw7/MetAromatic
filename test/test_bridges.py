@@ -9,6 +9,8 @@ CONTROL_BRIDGE_DATA = './controls/test_n_3_bridges_no_ang_limit_6_angstroms.json
 ANGLE_BRIDGE_TESTS = 360.00
 CUTOFF_BRIDGE_TESTS = 6.0
 SIZE_NETWORK = 4
+MODEL = 'cp'
+CHAIN = 'A'
 
 
 def get_control_bridges(file, size=100):
@@ -50,7 +52,9 @@ def test_bridge_collector(bridges):
         bridging_interactions = MetAromatic(
             code=bridges.get('pdb_code'),
             cutoff_angle=ANGLE_BRIDGE_TESTS,
-            cutoff_distance=CUTOFF_BRIDGE_TESTS
+            cutoff_distance=CUTOFF_BRIDGE_TESTS,
+            model=MODEL,
+            chain=CHAIN
         ).get_bridging_interactions(number_vertices=SIZE_NETWORK)
     except IndexError:
         skip('Skipping list index out of range error. Occurs because of missing data.')
@@ -80,5 +84,7 @@ def test_no_bridges_response(code, cutoff_distance, cutoff_angle):
         MetAromatic(
             code=code,
             cutoff_angle=cutoff_angle,
-            cutoff_distance=cutoff_distance
+            cutoff_distance=cutoff_distance,
+            model=MODEL,
+            chain=CHAIN
         ).get_bridging_interactions(number_vertices=SIZE_NETWORK), errors.Error)

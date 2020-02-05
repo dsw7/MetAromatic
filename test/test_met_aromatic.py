@@ -9,6 +9,8 @@ CONTROL_483_DATA_DF = read_csv(CONTROL_483_DATA)
 CUTOFF_483_TESTS = 4.9
 ANGLE_483_TESTS = 109.5
 COLUMNS_483_TESTS = ['ARO', 'ARO RES', 'MET', 'MET RES', 'NORM', 'MET-THETA', 'MET-PHI']
+CHAIN = 'A'
+MODEL = 'cp'
 
 
 def get_ma_2_483_control_dataset_using_pandas(code):
@@ -25,7 +27,9 @@ def get_current_algorithm_test_dataset_using_pandas(code):
         test_data = MetAromatic(
             code=code,
             cutoff_angle=ANGLE_483_TESTS,
-            cutoff_distance=CUTOFF_483_TESTS
+            cutoff_distance=CUTOFF_483_TESTS,
+            chain=CHAIN,
+            model=MODEL
         ).get_met_aromatic_interactions()
     except IndexError:
         skip('Skipping list index out of range error. Occurs because of missing data.')

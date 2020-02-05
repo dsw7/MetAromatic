@@ -4,6 +4,12 @@ from met_aromatic import MetAromatic
 from utilities import errors
 
 
+CHAIN = 'A'
+MODEL = 'cp'
+CUTOFF_DISTANCE = 4.9
+CUTOFF_ANGLE = 109.5
+
+
 VALID_RESULTS_1RCY = [{
     'aromatic_residue': 'TYR',
     'aromatic_position': '122',
@@ -92,11 +98,17 @@ def test_mongodb_output_invalid_results(code, cutoff_distance, cutoff_angle):
         MetAromatic(
             code=code,
             cutoff_angle=cutoff_angle,
-            cutoff_distance=cutoff_distance
+            cutoff_distance=cutoff_distance,
+            chain=CHAIN,
+            model=MODEL
         ).get_met_aromatic_interactions_mongodb_output(), errors.Error)
 
 
 def test_mongodb_output_valid_results():
     assert MetAromatic(
-        code='1rcy'
+        code='1rcy',
+        cutoff_angle=CUTOFF_ANGLE,
+        cutoff_distance=CUTOFF_DISTANCE,
+        chain=CHAIN,
+        model=MODEL
     ).get_met_aromatic_interactions_mongodb_output() == VALID_RESULTS_1RCY

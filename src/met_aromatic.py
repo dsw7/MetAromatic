@@ -9,6 +9,7 @@ from utilities import distance_angular
 from utilities import errors
 from utilities import verifications
 from utilities import help_messages
+from utilities import formatter
 
 
 class MetAromatic:
@@ -109,13 +110,13 @@ class MetAromatic:
 
 def main():
     parser = ArgumentParser(formatter_class=RawTextHelpFormatter)
-    parser.add_argument('--code', help=help_messages.MSG_CODE, default='0', type=str, required=True)
+    parser.add_argument('--code', help=help_messages.MSG_CODE, type=str, required=True)
     parser.add_argument('--cutoff_distance', help=help_messages.MSG_CUTOFF, default=6.0, type=float)
     parser.add_argument('--cutoff_angle', help=help_messages.MSG_ANGLE, default=109.5, type=float)
-    parser.add_argument('--model', help=help_messages.MSG_MODEL, default='cp')
-    parser.add_argument('--chain', help=help_messages.MSG_CHAIN, default='A')
-    parser.add_argument('--query', help=help_messages.MSG_QUERIES, default='ai')
-    parser.add_argument('--vertices', help=help_messages.MSG_VERTICES, default=3)
+    parser.add_argument('--model', help=help_messages.MSG_MODEL, default='cp', type=str)
+    parser.add_argument('--chain', help=help_messages.MSG_CHAIN, default='A', type=str)
+    parser.add_argument('--query', help=help_messages.MSG_QUERIES, default='ai', type=str)
+    parser.add_argument('--vertices', help=help_messages.MSG_VERTICES, default=3, type=int)
 
     code = parser.parse_args().code
     cutoff_distance = parser.parse_args().cutoff_distance
@@ -138,13 +139,24 @@ def main():
     elif query == 'bi':
         results = ma.get_bridging_interactions(number_vertices=vertices)
     else:
-        sys.exit(1)
+        sys.exit(errors.ErrorCodes.BadQueryType)
 
     if not isinstance(results, list):
-        sys.exit(1)
+        if issubclass(results, errors.InvalidCutoffsError):    
+            sys.exit(errors.ErrorCodes.InvalidCutoffs)
+        elif issubclass(results, errors.InvalidPDBFileError):    
+            sys.exit(errors.ErrorCodes.InvalidPDBFile)
+        elif issubclass(results, errors.NoMetCoordinatesError):    
+            sys.exit(errors.ErrorCodes.NoMetCoordinates)
+        elif issubclass(results, errors.NoAromaticCoordinatesError):    
+            sys.exit(errors.ErrorCodes.NoAromaticCoordinates)
+        elif issubclass(results, errors.InvalidModelError):    
+            sys.exit(errors.ErrorCodes.InvalidModel)
+        elif issubclass(results, errors.NoResultsError):    
+            sys.exit(errors.ErrorCodes.NoResults)
 
-    return results
+    formatter.custom_pretty_print(results)
 
 
 if __name__ == '__main__':
-    print(main())
+    main()
