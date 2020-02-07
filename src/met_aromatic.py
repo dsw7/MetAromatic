@@ -39,6 +39,7 @@ class MetAromatic:
         first_model = preprocessing.get_first_model_from_raw_data(raw_data)
 
         met_coordinates = preprocessing.get_relevant_met_coordinates(first_model, self.chain)
+
         if not met_coordinates:
             return errors.NoMetCoordinatesError
 
