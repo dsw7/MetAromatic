@@ -1,16 +1,10 @@
-from sys import path; path.append('../src')
 from json import loads
 from pytest import mark, skip, exit
-from met_aromatic import MetAromatic
-from utilities import errors
+from .met_aromatic import MetAromatic
+from .utilities import errors
 
 
-CONTROL_BRIDGE_DATA = './controls/test_n_3_bridges_no_ang_limit_6_angstroms.json'
-ANGLE_BRIDGE_TESTS = 360.00
-CUTOFF_BRIDGE_TESTS = 6.0
-SIZE_NETWORK = 4
-MODEL = 'cp'
-CHAIN = 'A'
+CONTROL_BRIDGE_DATA = './test_data/test_n_3_bridges_no_ang_limit_6_angstroms.json'
 
 
 def get_control_bridges(file, size=100):
@@ -47,15 +41,17 @@ def get_control_bridge_test_ids(file, size=100):
     get_control_bridges(CONTROL_BRIDGE_DATA),
     ids=get_control_bridge_test_ids(CONTROL_BRIDGE_DATA)
 )
-def test_bridge_collector(bridges):
+def test_bridge_collector(bridges, default_bridge_testing_parameters):
     try:
         bridging_interactions = MetAromatic(
             code=bridges.get('pdb_code'),
-            cutoff_angle=ANGLE_BRIDGE_TESTS,
-            cutoff_distance=CUTOFF_BRIDGE_TESTS,
-            model=MODEL,
-            chain=CHAIN
-        ).get_bridging_interactions(number_vertices=SIZE_NETWORK)
+            cutoff_angle=default_bridge_testing_parameters['angle'],
+            cutoff_distance=default_bridge_testing_parameters['distance'],
+            model=default_bridge_testing_parameters['model'],
+            chain=default_bridge_testing_parameters['chain']
+        ).get_bridging_interactions(
+            number_vertices=default_bridge_testing_parameters['network_size']
+        )
     except IndexError:
         skip('Skipping list index out of range error. Occurs because of missing data.')
     else:
@@ -79,12 +75,14 @@ def test_bridge_collector(bridges):
         "Testing errors.InvalidPDBFileError"
     ]
 )
-def test_no_bridges_response(code, cutoff_distance, cutoff_angle):
+def test_no_bridges_response(code, cutoff_distance, cutoff_angle, default_bridge_testing_parameters):
     assert issubclass(
         MetAromatic(
             code=code,
             cutoff_angle=cutoff_angle,
             cutoff_distance=cutoff_distance,
-            model=MODEL,
-            chain=CHAIN
-        ).get_bridging_interactions(number_vertices=SIZE_NETWORK), errors.Error)
+            model=default_bridge_testing_parameters['model'],
+            chain=default_bridge_testing_parameters['chain']
+        ).get_bridging_interactions(
+            number_vertices=default_bridge_testing_parameters['network_size']),
+        errors.Error)

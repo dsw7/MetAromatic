@@ -1,5 +1,5 @@
 from numpy.linalg import norm
-from utilities.math_utils.cross_product_method import vector_angle
+from .math_utils.cross_product_method import vector_angle
 
 def apply_distance_angular_condition(midpoints, lone_pairs, cutoff_distance, cutoff_angle):
     pairs = []    

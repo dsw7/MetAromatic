@@ -1,13 +1,6 @@
-from sys import path; path.append('../src')
 from pytest import mark
-from met_aromatic import MetAromatic
-from utilities import errors
-
-
-CHAIN = 'A'
-MODEL = 'cp'
-CUTOFF_DISTANCE = 4.9
-CUTOFF_ANGLE = 109.5
+from .met_aromatic import MetAromatic
+from .utilities import errors
 
 
 VALID_RESULTS_1RCY = [{
@@ -86,29 +79,29 @@ VALID_RESULTS_1RCY = [{
         ('abcd', 4.95, 109.5)
     ],
     ids=[
-        "Testing errors.InvalidCutoffsError",
-        "Testing errors.InvalidCutoffsError",
-        "Testing errors.NoMetCoordinatesError",
-        "Testing errors.NoMetCoordinatesError",
+        "Testing errors.InvalidCutoffsError - 1",
+        "Testing errors.InvalidCutoffsError - 2",
+        "Testing errors.NoMetCoordinatesError - 1",
+        "Testing errors.NoMetCoordinatesError - 2",
         "Testing errors.InvalidPDBFileError"
     ]
 )
-def test_mongodb_output_invalid_results(code, cutoff_distance, cutoff_angle):
+def test_mongodb_output_invalid_results(code, cutoff_distance, cutoff_angle, default_met_aromatic_parameters):
     assert issubclass(
         MetAromatic(
             code=code,
             cutoff_angle=cutoff_angle,
             cutoff_distance=cutoff_distance,
-            chain=CHAIN,
-            model=MODEL
+            chain=default_met_aromatic_parameters['chain'],
+            model=default_met_aromatic_parameters['model']
         ).get_met_aromatic_interactions_mongodb_output(), errors.Error)
 
 
-def test_mongodb_output_valid_results():
+def test_mongodb_output_valid_results(default_met_aromatic_parameters):
     assert MetAromatic(
         code='1rcy',
-        cutoff_angle=CUTOFF_ANGLE,
-        cutoff_distance=CUTOFF_DISTANCE,
-        chain=CHAIN,
-        model=MODEL
+        cutoff_angle=default_met_aromatic_parameters['angle'],
+        cutoff_distance=default_met_aromatic_parameters['distance'],
+        chain=default_met_aromatic_parameters['chain'],
+        model=default_met_aromatic_parameters['model']
     ).get_met_aromatic_interactions_mongodb_output() == VALID_RESULTS_1RCY
