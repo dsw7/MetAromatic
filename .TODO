@@ -1,4 +1,0 @@
-[1] Update documentation
-[2] Create global constants file
-[3] Eventually remove legacy folders -> removed ma3 legacy and legacy folder from metaromatic folder
-[4] Need to replace hard regex for A chain with variable regex in ma3
