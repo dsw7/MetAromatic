@@ -12,3 +12,5 @@ MSG_COL = 'Choose a MongoDB export collection name. \nDefault = ma. \nUsage: $ p
 MSG_CHAIN = 'Choose a chain. \nDefault = A. \nUsage: $ python runner.py --chain <chain>'
 MSG_QUERIES = 'Choose whether to find aromatic interactions or bridging interactions. \nDefault = ai. \nUsage: $ python runner.py --query <ai|bi>'
 MSG_VERTICES = 'Choose number of vertices for bridging interactions. \nDefault = 3. \nUsage: $ python runner.py --vertices <3|4|5...>'
+MSG_TEST = 'Run pytest over this project. \nUsage: $ python runner.py --test'
+MSG_TEST_COV = 'Run pytest over this project with a coverage report. \nUsage: $ python runner.py --testcov'
