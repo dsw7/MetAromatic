@@ -19,11 +19,11 @@ def run_tests(root):
 
 def run_tests_with_coverage(root):
     return pytest_main([
-        f'{root}',
+        fr'{root}',
         '-vs',
         f'--cov={root}',
-        f'--cov-report=html:{root}/htmlcov',
-        f'--cov-config={root}/.coveragerc'
+        fr'--cov-report=html:{root}\htmlcov',
+        fr'--cov-config={root}\.coveragerc'
     ])
 
 
