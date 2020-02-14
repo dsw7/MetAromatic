@@ -1,10 +1,14 @@
 from json import loads
+from os import path
 from pytest import mark, skip, exit
 from .met_aromatic import MetAromatic
 from .utilities import errors
 
 
-CONTROL_BRIDGE_DATA = './test_data/test_n_3_bridges_no_ang_limit_6_angstroms.json'
+CONTROL_BRIDGE_DATA = path.join(
+    path.dirname(path.abspath(__file__)),
+    './test_data/test_n_3_bridges_no_ang_limit_6_angstroms.json'
+)
 
 
 def get_control_bridges(file, size=100):
