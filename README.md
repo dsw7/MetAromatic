@@ -69,20 +69,8 @@ denoted using capital letters. By default, this program searches for "A" delimit
 ```
 $ python runner.py --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm --chain B
 ```
-In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain.
-### More information about cutoff distances and cutoff angles  
-The following figure provides an excellent overview of the geometry of the system being probed by Met-aromatic. We have a vector **v** in our figure below. **v** points from the methionine SD coordinate to a midpoint between two aromatic carbon atoms. _Distance condition_. Methionine / aromatic residue pairs are saved for further analysis if the vector **v** between the two is of magnitude ≤ to the value inputted in **B**. _Angular condition_. We also have two vectors, **a** and **g**. These vectors estimate the position and direction of the lone pairs of the sulfur atom. Here, an interaction is printed to the prompt **if** either the **a** / **v** angle **or** the **g** / **v** angle is ≤ the value inputted into edit box **C**.    
-<img src="https://github.com/dsw7/MetAromatic/blob/master/frontend/images/cd_schematic_chapter2.png" width="400">  
-### Interpreting the results  
-The protein 1rcy was analyzed using the MetAromatic application. Here we set ||**v**|| ≤ 4.9 Angstroms and the cutoff angle ≤ 109.5 degrees. The results are as follows:  
-<img src="https://github.com/dsw7/MetAromatic/blob/master/frontend/images/results_1rcy_v19_90.png">  
-Consider the last three RESULT lines:  
-    
-    #                     ||v|| Met-theta Met-phi
-    RESULT PHE 54 MET 148 4.777 105.947 143.022  
-    RESULT PHE 54 MET 148 4.610 93.3820 156.922  
-    RESULT PHE 54 MET 148 4.756 93.2870 154.630  
-Here the SD on MET 148 is ≤ 4.9 Angstroms of a total of three of six midpoints on the PHE 54 aromatic ring. The angle between 3 vectors **v** and the two SD lone pairs is ≤ 109.5 degrees in three cases.  
+In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:
+![Alt text](docs/tyr-bridge.png?raw=true "Title")
 ## Tests 
 Almost all Met-aromatic code is thoroughly tested. Tests can be run as follows:
 ```
