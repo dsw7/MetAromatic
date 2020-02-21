@@ -1,9 +1,10 @@
 import sys
 from os import path
 from argparse import ArgumentParser, RawTextHelpFormatter
-from pytest import main as pytest_main
 from src import met_aromatic
 from src.utilities import (
+    check_python_version,
+    pytest_runners,
     help_messages,
     formatter,
     errors
@@ -11,23 +12,13 @@ from src.utilities import (
 
 
 ROOT = path.dirname(path.abspath(__file__))
-
-
-def run_tests(root):
-    return pytest_main(f'{root} -vs'.split())
-
-
-def run_tests_with_coverage(root):
-    return pytest_main([
-        fr'{root}',
-        '-vs',
-        f'--cov={root}',
-        fr'--cov-report=html:{root}\htmlcov',
-        fr'--cov-config={root}\.coveragerc'
-    ])
+MINIMUM_PYTHON_VERSION = '3.6'
 
 
 def main():
+    if not check_python_version.is_valid_python_version(MINIMUM_PYTHON_VERSION):
+        sys.exit('Minimum Python version: {MINIMUM_PYTHON_VERSION}')
+
     parser = ArgumentParser(formatter_class=RawTextHelpFormatter)
     parser.add_argument('--code', help=help_messages.MSG_CODE, type=str, default='1rcy')
     parser.add_argument('--cutoff_distance', help=help_messages.MSG_CUTOFF, default=6.0, type=float)
@@ -50,10 +41,10 @@ def main():
     run_tests_coverage_bool = parser.parse_args().testcov
 
     if run_tests_bool:
-        sys.exit(run_tests(ROOT))
+        sys.exit(pytest_runners.run_tests(ROOT))
 
     if run_tests_coverage_bool:
-        sys.exit(run_tests_with_coverage(ROOT))
+        sys.exit(pytest_runners.run_tests_with_coverage(ROOT))
 
     ma = met_aromatic.MetAromatic(
         code,
