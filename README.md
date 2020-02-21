@@ -3,43 +3,73 @@ Code for the following publications:
 * Weber, D. S.; Warren, J. J. The Interaction between Methionine and Two Aromatic Amino Acids Is an Abundant and Multifunctional Motif in Proteins. _Arch. Biochem. Biophys._ **2019**, _672_, 108053.  
 * Weber, D. S.; Warren, J. J. A Survey of Methionine-Aromatic Interaction Geometries in the Oxidoreductase Class of Enzymes: What Could Met-Aromatic Interactions be Doing Near Metal Sites? _J. Inorg. Biochem._ **2018**, _186_, 34-41.  
 ## Synopsis
-The majority of the driver code is located in the ```metaromatic/``` directory. A simple Tkinter GUI is available for staff who prefer to use user interfaces and is located under ```frontend/```. Unit tests are located in the ```tests/``` directory.
+This program returns a list of closely spaced methionine-aromatic residues in a PDB structure of choosing. All code and unit tests are located under `src/`.
 ## Running Met-aromatic jobs in the terminal
-The easiest method of performing Met-aromatic calculations is to run jobs in the terminal. First, change directories:
-```
-$ cd metaromatic/
-```
-The `runner.py` file is the bridge between the user and the program's internals. Access the help menu to see a list of options:
-```
-$ python runner.py -h
-```
-A valid PDB code is passed to the runner to get a list of closely spaced methionine-aromatic residues in a PDB structure. Here the arbitrary PDB code 1rcy is analyzed:
+The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
 $ python runner.py --code 1rcy
 ```
-This will not print the results to the terminal. The results must be accessed by passing the verbosity flag:
+This will yield the following results:
 ```
-$ python runner.py --code 1rcy --verbose
+ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
+===========================================================================
+TYR        122        MET        18         4.21071    75.76586   64.3175
+TYR        122        MET        18         3.95401    60.14475   68.35187
+TYR        122        MET        18         4.05137    47.19765   85.15065
+TYR        122        MET        18         4.38983    53.39991   95.48742
+TYR        122        MET        18         4.61966    68.45225   90.77119
+TYR        122        MET        18         4.53651    78.56813   76.4056
+PHE        54         MET        148        4.77709    105.94702  143.02178
+PHE        54         MET        148        4.6104     93.38207   156.92157
+PHE        54         MET        148        4.75563    93.28732   154.63001
+PHE        54         MET        148        5.05181    105.07358  141.00282
+===========================================================================
 ```
-The verbose flag forces the program to print the results in a nicely formatted Pandas DataFrame. We are ultimately interested in running batch jobs however. To do so, the batch argument is passed with a path to a text file containing a list of PDB codes:
+Here we have an order VI interaction between TYR 122 and MET 18. We also have an order IV interaction between PHE 54 and MET 148.
+The `NORM` column specifies the distance between the MET residue and one of the midpoints between two carbon atoms in an aromatic
+ring. There are six TYR 122 aromatic carbon atom midpoints less than 4.9 Angstroms from MET 18 in the above result. This cutoff distance
+can be specified via the `--cutoff_distance` parameter:
 ```
-$ python runner.py --batch /path/to/delimiter.txt
+$ python runner.py --code 1rcy --cutoff_distance 4.0
 ```
-The PDB codes in the batch job text file should be separated by newline characters. *NOTE:* Both code and batch parameters cannot be passed simultaneously. Next come the Met-aromatic algorithm constraints:
+Reducing the cutoff distance yields an order I interaction between TYR 122 and MET 18.
 ```
-$ python runner.py --code 1rcy --cutoff 4.9 --angle 90.0 --model cp
+ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
+===========================================================================
+TYR        122        MET        18         3.95401    60.14475   68.35187
+===========================================================================
 ```
-Here the cutoff has been set to 4.9 Angstroms (the max norm of vector *v*) and the maximum angle of either Met-theta or Met-phi cannot exceed 90.0 degrees. The model used to interpolate lone pair positions is cp or Cross Product. These parameters do not have to be passed. Default values are used if these values are not specified. Defaults can also be obtained in the help menu.
-
-Next we want to save the results of our batch job. Our results are stored using MongoDB. Data can be exported to a MongoDB database as follows:
+`MET-THETA` and `MET-PHI` refer to the angles between the vector that projects from the methionine SD atom to the aromatic carbon midpoint (termed vector _v_ in literature) and the angles describing the direction of the methionine SD lone pairs (termed vectors _a_ and _g_ in literature). We set a cutoff to ensure that we are not including results where one (or both) lone pairs are pointing away from the aromatic pi system - a condition which doesn't qualify as a true aromatic interaction. The cutoff angle can be specified via the `--cutoff_angle` parameter:
 ```
-$ python runner.py --code 1rcy --export-mongo
+$ python runner.py --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60
 ```
-MongoDB export can be modified as follows:
+The `--cutoff_angle` parameter ensures that **at least one of** _Met-theta_ or _Met-phi_ angles falls below the cutoff. This is seen in the below order II interaction:
 ```
-$ python runner.py --code 1rcy --export-mongo --mongoport 27017 --mongohost localhost --database foobar --collection hamspam
+ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
+===========================================================================
+TYR        122        MET        18         4.05137    47.19765   85.15065
+TYR        122        MET        18         4.38983    53.39991   95.48742
+===========================================================================
 ```
-Default MongoDB parameters are passed if no export parameters are specified. No data is saved if no export parameter is passed.
+The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in https://github.com/dsw7/DSW-Thesis). There exists another model, `rm` or Rodrigues Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
+```
+$ python runner.py --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm
+```
+Which yields similar results:
+```
+ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
+===========================================================================
+TYR        122        MET        18         3.95401    57.23706   64.22606
+TYR        122        MET        18         4.05137    45.0966    80.76811
+TYR        122        MET        18         4.38983    52.50492   91.84111
+===========================================================================
+```
+Note that the Euclidean distances between TYR aromatic carbon atoms and MET remain unchanged. Many PDB entries contain multiple chains
+denoted using capital letters. By default, this program searches for "A" delimited chains. Some researchers may, however, be interested in searching for aromatic interactions in a different chain within a multichain protein. The `--chain` parameter can be used to specify the chain:
+```
+$ python runner.py --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm --chain B
+```
+In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain.
 ### More information about cutoff distances and cutoff angles  
 The following figure provides an excellent overview of the geometry of the system being probed by Met-aromatic. We have a vector **v** in our figure below. **v** points from the methionine SD coordinate to a midpoint between two aromatic carbon atoms. _Distance condition_. Methionine / aromatic residue pairs are saved for further analysis if the vector **v** between the two is of magnitude ≤ to the value inputted in **B**. _Angular condition_. We also have two vectors, **a** and **g**. These vectors estimate the position and direction of the lone pairs of the sulfur atom. Here, an interaction is printed to the prompt **if** either the **a** / **v** angle **or** the **g** / **v** angle is ≤ the value inputted into edit box **C**.    
 <img src="https://github.com/dsw7/MetAromatic/blob/master/frontend/images/cd_schematic_chapter2.png" width="400">  
