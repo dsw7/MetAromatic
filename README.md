@@ -70,7 +70,7 @@ denoted using capital letters. By default, this program searches for "A" delimit
 $ python runner.py --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm --chain B
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:  
-![Alt text](docs/tyr-bridge.png?raw=true "Title")
+![Alt text](docs/tyr-bridge.png?raw=true "Title")  
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `--query` parameter. The default is `ai` for "aromatic interactions". `bi` can be instead be passed to search for bridges meeting defined Met-aromatic criteria. For example, to search for bridging interactions with a 7.0 Angstrom MET SD / midpoint distance in 6LU7:
 ```
 $ python runner.py --code 6lu7 --query bi --cutoff_distance 7.0
