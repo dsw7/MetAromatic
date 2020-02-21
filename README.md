@@ -69,19 +69,29 @@ denoted using capital letters. By default, this program searches for "A" delimit
 ```
 $ python runner.py --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm --chain B
 ```
-In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:
+In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:  
 ![Alt text](docs/tyr-bridge.png?raw=true "Title")
-## Tests 
-Almost all Met-aromatic code is thoroughly tested. Tests can be run as follows:
+We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `--query` parameter. The default is `ai` for "aromatic interactions". `bi` can be instead be passed to search for bridges meeting defined Met-aromatic criteria. For example, to search for bridging interactions with a 7.0 Angstrom MET SD / midpoint distance in 6LU7:
 ```
-$ cd tests && python -m pytest -vs .
+$ python runner.py --code 6lu7 --query bi --cutoff_distance 7.0
 ```
-## Requirements
-Project dependencies are located in the `requirements.txt` file. This file may not necessarily be up to date. To get up to date requirements, run:
+Which will return a list as follows:
 ```
-$ pipreqs --force
+PHE185     MET165     PHE181
+TYR209     PHE219     MET264
+TRP207     TRP218     MET276
 ```
-The ```pipreqs``` utility can be installed as follows:
+Where each row corresponds to a bridge. This program treats bridging interactions as networks with a defined set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The `--vertices` parameter can be passed to search for n-bridges:
 ```
-$ python -m pip install pipreqs
+$ python runner.py --code 6lu7 --query bi --cutoff_distance 6.0 --vertices 4
 ```
+## Tests
+This project is well tested. Tests can be ran as follows:
+```
+python runner.py --test
+```
+Coverage tests can be ran as follows:
+```
+python runner.py --testcov
+```
+This will create an `htmlcov/` directory in the project root. The coverage report can be viewed by opening `htmlcov/index.html` in a browser. 
