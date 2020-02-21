@@ -1,8 +1,8 @@
 from itertools import groupby
 from operator import itemgetter
 from numpy import array
-from utilities.math_utils.rodrigues_method import RodriguesMethod
-from utilities.math_utils.cross_product_method import CrossProductMethod
+from .math_utils.rodrigues_method import RodriguesMethod
+from .math_utils.cross_product_method import CrossProductMethod
 
 
 def get_lone_pairs(methionine_coords, model):
