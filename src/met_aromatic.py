@@ -102,4 +102,7 @@ class MetAromatic:
                 'met_phi_angle': round(row[6], round_to_number)
             })
 
-        return results
+        return {
+            '_id': self.code,
+            'results': results
+        }

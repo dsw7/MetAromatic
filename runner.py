@@ -1,63 +1,44 @@
 import sys
 from os import path
-from argparse import ArgumentParser, RawTextHelpFormatter
-from src import met_aromatic
+
+if sys.version_info[0:2] < (3, 6):
+    sys.exit('Minimum required Python version: 3.6\nExiting!')
+
+from src import (
+    met_aromatic,
+    frontend
+)
+
 from src.utilities import (
-    check_python_version,
     pytest_runners,
-    help_messages,
     formatter,
     errors
 )
 
-
 ROOT = path.dirname(path.abspath(__file__))
-MINIMUM_PYTHON_VERSION = '3.6'
 
 
 def main():
-    if not check_python_version.is_valid_python_version(MINIMUM_PYTHON_VERSION):
-        sys.exit('Minimum Python version: {MINIMUM_PYTHON_VERSION}')
+    cli_args = frontend.get_command_line_arguments()
 
-    parser = ArgumentParser(formatter_class=RawTextHelpFormatter)
-    parser.add_argument('--code', help=help_messages.MSG_CODE, type=str, default='1rcy')
-    parser.add_argument('--cutoff_distance', help=help_messages.MSG_CUTOFF, default=6.0, type=float)
-    parser.add_argument('--cutoff_angle', help=help_messages.MSG_ANGLE, default=109.5, type=float)
-    parser.add_argument('--model', help=help_messages.MSG_MODEL, default='cp', type=str)
-    parser.add_argument('--chain', help=help_messages.MSG_CHAIN, default='A', type=str)
-    parser.add_argument('--query', help=help_messages.MSG_QUERIES, default='ai', type=str)
-    parser.add_argument('--vertices', help=help_messages.MSG_VERTICES, default=3, type=int)
-    parser.add_argument('--test', help=help_messages.MSG_TEST, action='store_true')
-    parser.add_argument('--testcov', help=help_messages.MSG_TEST_COV, action='store_true')
-
-    code = parser.parse_args().code
-    cutoff_distance = parser.parse_args().cutoff_distance
-    cutoff_angle = parser.parse_args().cutoff_angle
-    model = parser.parse_args().model
-    chain = parser.parse_args().chain
-    query = parser.parse_args().query
-    vertices = parser.parse_args().vertices
-    run_tests_bool = parser.parse_args().test
-    run_tests_coverage_bool = parser.parse_args().testcov
-
-    if run_tests_bool:
+    if cli_args.test:
         sys.exit(pytest_runners.run_tests(ROOT))
 
-    if run_tests_coverage_bool:
+    if cli_args.testcov:
         sys.exit(pytest_runners.run_tests_with_coverage(ROOT))
 
     ma = met_aromatic.MetAromatic(
-        code,
-        cutoff_distance=cutoff_distance,
-        cutoff_angle=cutoff_angle,
-        chain=chain,
-        model=model
+        cli_args.code,
+        cutoff_distance=cli_args.cutoff_distance,
+        cutoff_angle=cli_args.cutoff_angle,
+        chain=cli_args.chain,
+        model=cli_args.model
     )
 
-    if query == 'ai':
+    if cli_args.query == 'ai':
         results = ma.get_met_aromatic_interactions()
-    elif query == 'bi':
-        results = ma.get_bridging_interactions(number_vertices=vertices)
+    elif cli_args.query == 'bi':
+        results = ma.get_bridging_interactions(number_vertices=cli_args.vertices)
     else:
         sys.exit(errors.ErrorCodes.BadQueryType)
 
