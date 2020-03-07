@@ -66,6 +66,8 @@ def run_single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, c
             sys.exit(errors.ErrorCodes.InvalidModel)
         elif issubclass(results, errors.NoResultsError):
             sys.exit(errors.ErrorCodes.NoResults)
+        elif issubclass(results, errors.BadVerticesError):
+            sys.exit(errors.ErrorCodes.BadVerticesError)
 
     formatter.custom_pretty_print(results)
 

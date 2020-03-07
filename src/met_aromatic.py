@@ -67,6 +67,9 @@ class MetAromatic:
 
 
     def get_bridging_interactions(self, number_vertices=3):
+        if number_vertices < 3:
+            return errors.BadVerticesError
+
         aromatic_interactions = self.get_met_aromatic_interactions()
         if not (isinstance(aromatic_interactions, list)) and \
                (issubclass(aromatic_interactions, errors.Error)):
