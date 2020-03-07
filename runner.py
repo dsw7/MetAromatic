@@ -3,7 +3,7 @@ import sys
 if sys.version_info[0:2] < (3, 6):
     sys.exit('Minimum required Python version: 3.6\nExiting!')
 from os import path
-from itertools import chain
+from itertools import chain as itertools_chain
 from concurrent import futures
 from pymongo import MongoClient
 from numpy import array_split
@@ -72,7 +72,7 @@ def run_single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, c
 
 class RunBatchJob:
     def __init__(
-            self, batch_file, num_threads, 
+            self, batch_file, num_threads,
             cutoff_distance, cutoff_angle, chain,
             model, host, port, database, collection
         ):
@@ -91,7 +91,7 @@ class RunBatchJob:
         except FileNotFoundError:
             return None   # TODO: create custom exception
         else:
-            return list(chain(*data))
+            return list(itertools_chain(*data))
 
     def met_aromatic_thread(self, list_codes):
         for code in list_codes:
