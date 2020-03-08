@@ -3,7 +3,7 @@ import sys
 if sys.version_info[0:2] < (3, 6):
     sys.exit('Minimum required Python version: 3.6\nExiting!')
 from os import path
-from itertools import chain as itertools_chain
+from re import split
 from concurrent import futures
 from pymongo import MongoClient
 from numpy import array_split
@@ -88,27 +88,32 @@ class RunBatchJob:
         self.collection = MongoClient(host, port)[database][collection]
 
     def open_batch_file(self):
-        try:
+        try:            
+            data = []
             with open(self.batch_file) as f:
-                data = [line.split(', ') for line in f]
+                for line in f:
+                    data.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
         except FileNotFoundError:
             print('Missing batch file!')
             sys.exit(errors.ErrorCodes.MissingFile)
         else:
-            return list(itertools_chain(*data))
+            return data
 
     def met_aromatic_thread(self, list_codes):
         for code in tqdm(list_codes):
-            results = met_aromatic.MetAromatic(
-                code=code,
-                cutoff_distance=self.cutoff_distance,
-                cutoff_angle=self.cutoff_angle,
-                chain=self.chain,
-                model=self.model
-            ).get_met_aromatic_interactions_mongodb_output()
-
-            if isinstance(results, dict):
-                self.collection.insert(results)
+            try:
+                results = met_aromatic.MetAromatic(
+                    code=code,
+                    cutoff_distance=self.cutoff_distance,
+                    cutoff_angle=self.cutoff_angle,
+                    chain=self.chain,
+                    model=self.model
+                ).get_met_aromatic_interactions_mongodb_output()
+            except Exception:
+                pass
+            else:
+                if isinstance(results, dict):
+                    self.collection.insert(results)
 
     def run_batch_job(self):
         pdb_codes = self.open_batch_file()
