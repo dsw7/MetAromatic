@@ -95,4 +95,15 @@ def get_command_line_arguments():
         default=constants['default_mongodb_collection']
     )
 
+    parser.add_argument(
+        '--threads',
+        help=help_messages.MSG_THREADS,
+        default=constants['default_threads']
+    )
+
+    parser.add_argument(
+        '--batch_file',
+        help=help_messages.MSG_BATCH_FILE
+    )
+
     return parser.parse_args()
