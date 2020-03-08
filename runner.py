@@ -88,7 +88,7 @@ class RunBatchJob:
         self.collection = MongoClient(host, port)[database][collection]
 
     def open_batch_file(self):
-        try:            
+        try:
             data = []
             with open(self.batch_file) as f:
                 for line in f:
@@ -110,24 +110,21 @@ class RunBatchJob:
                     model=self.model
                 ).get_met_aromatic_interactions_mongodb_output()
             except Exception as exception:
-                self.collection.insert({'code': code, 'exception': str(exception)})
+                # catch unhandled exceptions
+                self.collection.insert({'code': code, 'exception': repr(exception)})
             else:
                 if isinstance(results, dict):
                     self.collection.insert(results)
-                # TODO: insert error code into mongodb as well
+                else:
+                    # catch handled exceptions
+                    self.collection.insert({'code': code, 'exception': repr(results)})
 
     def run_batch_job(self):
         pdb_codes = self.open_batch_file()
         batch_pdb_codes = array_split(pdb_codes, self.num_threads)
-        future = [None] * self.num_threads
         with futures.ThreadPoolExecutor() as executor:
             for index in range(0, self.num_threads):
-                future[index] = executor.submit(self.met_aromatic_thread, batch_pdb_codes[index])
-
-        for index in range(0, self.num_threads):
-            exit_status = future[index].result()
-            if exit_status:
-                print(exit_status)
+                executor.submit(self.met_aromatic_thread, batch_pdb_codes[index])
 
 
 def main():
