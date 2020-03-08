@@ -9,8 +9,8 @@ class InvalidPDBFileError(Error):
     """ Raised when an invalid PDB entry code is provided """
     pass
 
-class MissingPDBFileError(Error):
-    """ Raised when the PDB file to be deleted does not exist """
+class MissingFileError(Error):
+    """ Raised when a file does not exist """
     pass
 
 class NoMetCoordinatesError(Error):
@@ -37,7 +37,7 @@ class ErrorCodes:
     # errors called from deep within the code
     InvalidCutoffs = 3
     InvalidPDBFile = 4
-    MissingPDBFile = 5
+    MissingFile = 5
     NoMetCoordinates = 6
     NoAromaticCoordinates = 7
     InvalidModel = 8

@@ -91,7 +91,7 @@ class RunBatchJob:
             with open(self.batch_file) as f:
                 data = [line.split(', ') for line in f]
         except FileNotFoundError:
-            return None   # TODO: create custom exception
+            sys.exit(errors.ErrorCodes.MissingFile)
         else:
             return list(itertools_chain(*data))
 

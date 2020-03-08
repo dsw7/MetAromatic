@@ -30,7 +30,7 @@ class MetAromatic:
         raw_data = preprocessing.get_raw_data_from_file(filepath)
 
         if not file_from_pdb.remove_entry():
-            return errors.MissingPDBFileError
+            return errors.MissingFileError
 
         first_model = preprocessing.get_first_model_from_raw_data(raw_data)
 
