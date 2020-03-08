@@ -109,11 +109,12 @@ class RunBatchJob:
                     chain=self.chain,
                     model=self.model
                 ).get_met_aromatic_interactions_mongodb_output()
-            except Exception:
-                pass
+            except Exception as exception:
+                self.collection.insert({'code': code, 'exception': str(exception)})
             else:
                 if isinstance(results, dict):
                     self.collection.insert(results)
+                # TODO: insert error code into mongodb as well
 
     def run_batch_job(self):
         pdb_codes = self.open_batch_file()
