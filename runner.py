@@ -7,6 +7,7 @@ from itertools import chain as itertools_chain
 from concurrent import futures
 from pymongo import MongoClient
 from numpy import array_split
+from tqdm import tqdm
 from src import (
     met_aromatic,
     frontend
@@ -91,12 +92,13 @@ class RunBatchJob:
             with open(self.batch_file) as f:
                 data = [line.split(', ') for line in f]
         except FileNotFoundError:
+            print('Missing batch file!')
             sys.exit(errors.ErrorCodes.MissingFile)
         else:
             return list(itertools_chain(*data))
 
     def met_aromatic_thread(self, list_codes):
-        for code in list_codes:
+        for code in tqdm(list_codes):
             results = met_aromatic.MetAromatic(
                 code=code,
                 cutoff_distance=self.cutoff_distance,
@@ -110,9 +112,6 @@ class RunBatchJob:
 
     def run_batch_job(self):
         pdb_codes = self.open_batch_file()
-        if not pdb_codes:
-            return None    # TODO: create custom exception
-
         batch_pdb_codes = array_split(pdb_codes, self.num_threads)
         future = [None] * self.num_threads
         with futures.ThreadPoolExecutor() as executor:
@@ -142,7 +141,13 @@ def main():
             model=cli_args.model, vertices=cli_args.vertices
         )
     elif cli_args.batch:
-        print('batch')
+        RunBatchJob(
+            batch_file=cli_args.batch_file, num_threads=cli_args.threads,
+            cutoff_distance=cli_args.cutoff_distance, cutoff_angle=cli_args.cutoff_angle,
+            chain=cli_args.chain, model=cli_args.model,
+            database=cli_args.database, collection=cli_args.collection,
+            host=cli_args.host, port=cli_args.port
+        ).run_batch_job()
     elif cli_args.test:
         pytest_runners.run_tests(project_root)
     elif cli_args.testcov:

@@ -98,7 +98,8 @@ def get_command_line_arguments():
     parser.add_argument(
         '--threads',
         help=help_messages.MSG_THREADS,
-        default=constants['default_threads']
+        default=constants['default_threads'],
+        type=int
     )
 
     parser.add_argument(
