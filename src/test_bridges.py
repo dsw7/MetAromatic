@@ -63,30 +63,29 @@ def test_bridge_collector(bridges, default_bridge_testing_parameters):
 
 
 @mark.parametrize(
-    'code, cutoff_distance, cutoff_angle',
+    'code, cutoff_distance, cutoff_angle, error',
     [
-        ('1rcy', 0.00, 109.5),
-        ('1rcy', 4.95, 720.0),
-        ('2rcy', 4.95, 109.5),
-        ('3nir', 4.95, 109.5),
-        ('abcd', 4.95, 109.5)
+        ('1rcy', 0.00, 109.5, errors.ErrorCodes.InvalidCutoffsError),
+        ('1rcy', 4.95, 720.0, errors.ErrorCodes.InvalidCutoffsError),
+        ('2rcy', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
+        ('3nir', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
+        ('abcd', 4.95, 109.5, errors.ErrorCodes.InvalidPDBFileError)
     ],
     ids=[
-        "Testing errors.InvalidCutoffsError",
-        "Testing errors.InvalidCutoffsError",
-        "Testing errors.NoMetCoordinatesError",
-        "Testing errors.NoMetCoordinatesError",
-        "Testing errors.InvalidPDBFileError"
+        "Testing errors.ErrorCodes.InvalidCutoffsError",
+        "Testing errors.ErrorCodes.InvalidCutoffsError",
+        "Testing errors.ErrorCodes.NoMetCoordinatesError",
+        "Testing errors.ErrorCodes.NoMetCoordinatesError",
+        "Testing errors.ErrorCodes.InvalidPDBFileError"
     ]
 )
-def test_no_bridges_response(code, cutoff_distance, cutoff_angle, default_bridge_testing_parameters):
-    assert issubclass(
-        MetAromatic(
-            code=code,
-            cutoff_angle=cutoff_angle,
-            cutoff_distance=cutoff_distance,
-            model=default_bridge_testing_parameters['model'],
-            chain=default_bridge_testing_parameters['chain']
-        ).get_bridging_interactions(
-            number_vertices=default_bridge_testing_parameters['network_size']),
-        errors.Error)
+def test_no_bridges_response(code, cutoff_distance, cutoff_angle, default_bridge_testing_parameters, error):
+    assert MetAromatic(
+        code=code,
+        cutoff_angle=cutoff_angle,
+        cutoff_distance=cutoff_distance,
+        model=default_bridge_testing_parameters['model'],
+        chain=default_bridge_testing_parameters['chain']
+    ).get_bridging_interactions(
+        number_vertices=default_bridge_testing_parameters['network_size']
+    ) == error

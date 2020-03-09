@@ -70,31 +70,30 @@ VALID_RESULTS_1RCY = [{
 
 
 @mark.parametrize(
-    'code, cutoff_distance, cutoff_angle',
+    'code, cutoff_distance, cutoff_angle, error',
     [
-        ('1rcy', 0.00, 109.5),
-        ('1rcy', 4.95, 720.0),
-        ('2rcy', 4.95, 109.5),
-        ('3nir', 4.95, 109.5),
-        ('abcd', 4.95, 109.5)
+        ('1rcy', 0.00, 109.5, errors.ErrorCodes.InvalidCutoffsError),
+        ('1rcy', 4.95, 720.0, errors.ErrorCodes.InvalidCutoffsError),
+        ('2rcy', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
+        ('3nir', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
+        ('abcd', 4.95, 109.5, errors.ErrorCodes.InvalidPDBFileError)
     ],
     ids=[
-        "Testing errors.InvalidCutoffsError - 1",
-        "Testing errors.InvalidCutoffsError - 2",
-        "Testing errors.NoMetCoordinatesError - 1",
-        "Testing errors.NoMetCoordinatesError - 2",
-        "Testing errors.InvalidPDBFileError"
+        "Testing errors.ErrorCodes.InvalidCutoffsError - 1",
+        "Testing errors.ErrorCodes.InvalidCutoffsError - 2",
+        "Testing errors.ErrorCodes.NoMetCoordinatesError - 1",
+        "Testing errors.ErrorCodes.NoMetCoordinatesError - 2",
+        "Testing errors.ErrorCodes.InvalidPDBFileError"
     ]
 )
-def test_mongodb_output_invalid_results(code, cutoff_distance, cutoff_angle, default_met_aromatic_parameters):
-    assert issubclass(
-        MetAromatic(
-            code=code,
-            cutoff_angle=cutoff_angle,
-            cutoff_distance=cutoff_distance,
-            chain=default_met_aromatic_parameters['chain'],
-            model=default_met_aromatic_parameters['model']
-        ).get_met_aromatic_interactions_mongodb_output(), errors.Error)
+def test_mongodb_output_invalid_results(code, cutoff_distance, cutoff_angle, default_met_aromatic_parameters, error):
+    assert MetAromatic(
+        code=code,
+        cutoff_angle=cutoff_angle,
+        cutoff_distance=cutoff_distance,
+        chain=default_met_aromatic_parameters['chain'],
+        model=default_met_aromatic_parameters['model']
+    ).get_met_aromatic_interactions_mongodb_output().get('error_code') == error
 
 
 def test_mongodb_output_valid_results(default_met_aromatic_parameters):

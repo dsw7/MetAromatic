@@ -31,6 +31,6 @@ def get_483_control_data(scope='session'):
 
 
 @fixture
-def path_runner():
+def path_runner(scope='session'):
     root = path.dirname(path.dirname(path.abspath(__file__)))
     return path.join(root, 'runner.py')

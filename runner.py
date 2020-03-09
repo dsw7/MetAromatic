@@ -29,18 +29,7 @@ def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, mo
     ).get_met_aromatic_interactions()
 
     if not isinstance(results, list):
-        if issubclass(results, errors.InvalidCutoffsError):
-            sys.exit(errors.ErrorCodes.InvalidCutoffs)
-        elif issubclass(results, errors.InvalidPDBFileError):
-            sys.exit(errors.ErrorCodes.InvalidPDBFile)
-        elif issubclass(results, errors.NoMetCoordinatesError):
-            sys.exit(errors.ErrorCodes.NoMetCoordinates)
-        elif issubclass(results, errors.NoAromaticCoordinatesError):
-            sys.exit(errors.ErrorCodes.NoAromaticCoordinates)
-        elif issubclass(results, errors.InvalidModelError):
-            sys.exit(errors.ErrorCodes.InvalidModel)
-        elif issubclass(results, errors.NoResultsError):
-            sys.exit(errors.ErrorCodes.NoResults)
+        sys.exit(results)
 
     formatter.custom_pretty_print(results)
 
@@ -55,20 +44,7 @@ def run_single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, c
     ).get_bridging_interactions(number_vertices=vertices)
 
     if not isinstance(results, list):
-        if issubclass(results, errors.InvalidCutoffsError):
-            sys.exit(errors.ErrorCodes.InvalidCutoffs)
-        elif issubclass(results, errors.InvalidPDBFileError):
-            sys.exit(errors.ErrorCodes.InvalidPDBFile)
-        elif issubclass(results, errors.NoMetCoordinatesError):
-            sys.exit(errors.ErrorCodes.NoMetCoordinates)
-        elif issubclass(results, errors.NoAromaticCoordinatesError):
-            sys.exit(errors.ErrorCodes.NoAromaticCoordinates)
-        elif issubclass(results, errors.InvalidModelError):
-            sys.exit(errors.ErrorCodes.InvalidModel)
-        elif issubclass(results, errors.NoResultsError):
-            sys.exit(errors.ErrorCodes.NoResults)
-        elif issubclass(results, errors.BadVerticesError):
-            sys.exit(errors.ErrorCodes.BadVerticesError)
+        sys.exit(results)
 
     formatter.custom_pretty_print(results)
 
@@ -95,7 +71,7 @@ class RunBatchJob:
                     data.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
         except FileNotFoundError:
             print('Missing batch file!')
-            sys.exit(errors.ErrorCodes.MissingFile)
+            sys.exit(errors.ErrorCodes.MissingFileError)
         else:
             return data
 
@@ -113,11 +89,7 @@ class RunBatchJob:
                 # catch unhandled exceptions
                 self.collection.insert({'code': code, 'exception': repr(exception)})
             else:
-                if isinstance(results, dict):
-                    self.collection.insert(results)
-                else:
-                    # catch handled exceptions
-                    self.collection.insert({'code': code, 'exception': repr(results)})
+                self.collection.insert(results)
 
     def run_batch_job(self):
         pdb_codes = self.open_batch_file()
@@ -137,12 +109,14 @@ def main():
             cutoff_angle=cli_args.cutoff_angle, chain=cli_args.chain,
             model=cli_args.model
         )
+
     elif cli_args.bi:
         run_single_bridging_interaction_query(
             cli_args.code, cutoff_distance=cli_args.cutoff_distance,
             cutoff_angle=cli_args.cutoff_angle, chain=cli_args.chain,
             model=cli_args.model, vertices=cli_args.vertices
         )
+
     elif cli_args.batch:
         RunBatchJob(
             batch_file=cli_args.batch_file, num_threads=cli_args.threads,
@@ -151,8 +125,10 @@ def main():
             database=cli_args.database, collection=cli_args.collection,
             host=cli_args.host, port=cli_args.port
         ).run_batch_job()
+
     elif cli_args.test:
         pytest_runners.run_tests(project_root)
+
     elif cli_args.testcov:
         pytest_runners.run_tests_with_coverage(project_root)
 

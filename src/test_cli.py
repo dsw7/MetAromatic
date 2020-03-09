@@ -38,7 +38,7 @@ def test_bridging_interaction_working_query_vertices_2(path_runner):
 def test_invalid_cutoff_distance(path_runner):
     assert run(
         f'python {path_runner} --ai --code 1rcy --cutoff_distance 0.00'
-    ).returncode == errors.ErrorCodes.InvalidCutoffs
+    ).returncode == errors.ErrorCodes.InvalidCutoffsError
 
 
 def test_invalid_cutoff_distance_stringified(path_runner):
@@ -51,31 +51,31 @@ def test_invalid_cutoff_distance_stringified(path_runner):
 def test_invalid_cutoff_angle(path_runner):
     assert run(
         f'python {path_runner} --ai --code 1rcy --cutoff_angle 361.00'
-    ).returncode == errors.ErrorCodes.InvalidCutoffs
+    ).returncode == errors.ErrorCodes.InvalidCutoffsError
 
 
 def test_invalid_code(path_runner):
     assert run(
         f'python {path_runner} --ai --code foobar'
-    ).returncode == errors.ErrorCodes.InvalidPDBFile
+    ).returncode == errors.ErrorCodes.InvalidPDBFileError
 
 
 def test_no_met_coordinates(path_runner):
     assert run(
         f'python {path_runner} --ai --code 3nir'
-    ).returncode == errors.ErrorCodes.NoMetCoordinates
+    ).returncode == errors.ErrorCodes.NoMetCoordinatesError
 
 
 def test_invalid_model(path_runner):
     assert run(
         f'python {path_runner} --ai --code 1rcy --model foobarbaz'
-    ).returncode == errors.ErrorCodes.InvalidModel
+    ).returncode == errors.ErrorCodes.InvalidModelError
 
 
 def test_no_results(path_runner):
     assert run(
         f'python {path_runner} --ai --code 1a5r'
-    ).returncode == errors.ErrorCodes.NoResults
+    ).returncode == errors.ErrorCodes.NoResultsError
 
 
 def test_bad_query_type(path_runner):
