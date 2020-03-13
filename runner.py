@@ -97,7 +97,7 @@ class RunBatchJob:
             else:
                 self.collection_results.insert(results)
 
-    def prepare_batch_job_info(self, execution_time):
+    def prepare_batch_job_info(self, execution_time, number_entries):
         return {
             'num_threads': self.num_threads,
             'cutoff_distance': self.cutoff_distance,
@@ -105,22 +105,30 @@ class RunBatchJob:
             'chain': self.chain,
             'model': self.model,
             'batch_job_execution_time': execution_time,
-            'data_acquisition_date': datetime.now()
+            'data_acquisition_date': datetime.now(),
+            'number_of_entries': number_entries
         }
 
     def run_batch_job(self):
         pdb_codes = self.open_batch_file()
         batch_pdb_codes = array_split(pdb_codes, self.num_threads)
+        workers = [None] * self.num_threads
 
         start_time = time()
         with futures.ThreadPoolExecutor() as executor:
             for index in range(0, self.num_threads):
-                executor.submit(self.worker, batch_pdb_codes[index])
+                workers[index] = executor.submit(self.worker, batch_pdb_codes[index])
         overall_execution_time = time() - start_time
 
-        self.collection_info.insert(
-            self.prepare_batch_job_info(overall_execution_time)
-        )
+        if all(result is None for result in (item.result() for item in workers)):
+            self.collection_info.insert(
+                self.prepare_batch_job_info(
+                    overall_execution_time,
+                    len(pdb_codes)
+                )
+            )
+        else:
+            sys.exit('One or more threads failed.')
 
 
 def main():
