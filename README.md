@@ -102,7 +102,20 @@ The MongoDB dump database is specified using the `--database` parameter. The col
 100%|████████████████████████████████████████████████████████████████████| 7/7 [00:05<00:00,  1.36it/s]
 100%|████████████████████████████████████████████████████████████████████| 6/6 [00:05<00:00,  1.09it/s]
 ```
-The recommended number of threads is 30 on a 300 Mbps network and a machine that is running no other processes. By default, mining jobs are run on `localhost` and on port `27017`. However, results can be routed to other servers by specifying hosts and/or ports using the `--host` and `--port` parameters.  
+The recommended number of threads is 30 on a 300 Mbps network and a machine that is running no other processes. By default, mining jobs are run on `localhost` and on port `27017`. However, results can be routed to other servers by specifying hosts and/or ports using the `--host` and `--port` parameters. A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary collection will house all the batch job parameters and other statistics and the collection name will be suffixed with `_info`. An example `*_info` collection for the above example follows:
+```
+{
+        "_id" : ObjectId("5e6b2e1326dea0202cec2963"),
+        "num_threads" : 3,
+        "cutoff_distance" : 6,
+        "cutoff_angle" : 109.5,
+        "chain" : "A",
+        "model" : "cp",
+        "batch_job_execution_time" : 4.938377618789673,
+        "data_acquisition_date" : ISODate("2020-03-12T23:54:11.719Z"),
+        "number_of_entries" : 19
+}
+```
 ## Tests
 This project is well tested. Tests can be ran as follows:
 ```
