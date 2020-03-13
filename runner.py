@@ -64,18 +64,21 @@ class RunBatchJob:
         self.collection = MongoClient(host, port)[database][collection]
 
     def open_batch_file(self):
+        if not self.batch_file:
+            sys.exit('The --batch_file </path/to/file> parameter was not provided.')
+
         try:
             data = []
-            with open(self.batch_file) as f:
-                for line in f:
+            with open(self.batch_file) as batch:
+                for line in batch:
                     data.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
         except FileNotFoundError:
-            print('Missing batch file!')
+            print('Invalid batch file!')
             sys.exit(errors.ErrorCodes.MissingFileError)
         else:
             return data
 
-    def met_aromatic_thread(self, list_codes):
+    def worker(self, list_codes):
         for code in tqdm(list_codes):
             try:
                 results = met_aromatic.MetAromatic(
@@ -86,7 +89,7 @@ class RunBatchJob:
                     model=self.model
                 ).get_met_aromatic_interactions_mongodb_output()
             except Exception as exception:
-                # catch unhandled exceptions
+                # catch remaining unhandled exceptions
                 self.collection.insert({'code': code, 'exception': repr(exception)})
             else:
                 self.collection.insert(results)
@@ -96,7 +99,7 @@ class RunBatchJob:
         batch_pdb_codes = array_split(pdb_codes, self.num_threads)
         with futures.ThreadPoolExecutor() as executor:
             for index in range(0, self.num_threads):
-                executor.submit(self.met_aromatic_thread, batch_pdb_codes[index])
+                executor.submit(self.worker, batch_pdb_codes[index])
 
 
 def main():
