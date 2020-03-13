@@ -31,7 +31,7 @@ def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, mo
     if not isinstance(results, list):
         sys.exit(results)
 
-    formatter.custom_pretty_print(results)
+    formatter.custom_pretty_print_single_aromatic_interaction(results)
 
 
 def run_single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain, model, vertices):
@@ -46,7 +46,7 @@ def run_single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, c
     if not isinstance(results, list):
         sys.exit(results)
 
-    formatter.custom_pretty_print(results)
+    formatter.custom_pretty_print_single_bridging_interaction(results)
 
 
 class RunBatchJob:
