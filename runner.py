@@ -4,6 +4,8 @@ if sys.version_info[0:2] < (3, 6):
     sys.exit('Minimum required Python version: 3.6\nExiting!')
 from os import path
 from re import split
+from time import time
+from datetime import datetime
 from concurrent import futures
 from pymongo import MongoClient
 from numpy import array_split
@@ -61,7 +63,8 @@ class RunBatchJob:
         self.cutoff_angle = cutoff_angle
         self.chain = chain
         self.model = model
-        self.collection = MongoClient(host, port)[database][collection]
+        self.collection_results = MongoClient(host, port)[database][collection]
+        self.collection_info = MongoClient(host, port)[database][f'{collection}_info']
 
     def open_batch_file(self):
         if not self.batch_file:
@@ -90,16 +93,34 @@ class RunBatchJob:
                 ).get_met_aromatic_interactions_mongodb_output()
             except Exception as exception:
                 # catch remaining unhandled exceptions
-                self.collection.insert({'code': code, 'exception': repr(exception)})
+                self.collection_results.insert({'code': code, 'exception': repr(exception)})
             else:
-                self.collection.insert(results)
+                self.collection_results.insert(results)
+
+    def prepare_batch_job_info(self, execution_time):
+        return {
+            'num_threads': self.num_threads,
+            'cutoff_distance': self.cutoff_distance,
+            'cutoff_angle': self.cutoff_angle,
+            'chain': self.chain,
+            'model': self.model,
+            'batch_job_execution_time': execution_time,
+            'data_acquisition_date': datetime.now()
+        }
 
     def run_batch_job(self):
         pdb_codes = self.open_batch_file()
         batch_pdb_codes = array_split(pdb_codes, self.num_threads)
+
+        start_time = time()
         with futures.ThreadPoolExecutor() as executor:
             for index in range(0, self.num_threads):
                 executor.submit(self.worker, batch_pdb_codes[index])
+        overall_execution_time = time() - start_time
+
+        self.collection_info.insert(
+            self.prepare_batch_job_info(overall_execution_time)
+        )
 
 
 def main():
