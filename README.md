@@ -7,9 +7,9 @@ This program returns a list of closely spaced methionine-aromatic residues in a 
 ## Running Met-aromatic jobs in the terminal
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
-$ python runner.py --code 1rcy
+$ python runner.py --ai --code 1rcy
 ```
-This will yield the following results:
+Here, `--ai` specifies that we want to run a single aromatic interaction calculation. The query will yield the following results:
 ```
 ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 ===========================================================================
@@ -30,7 +30,7 @@ The `NORM` column specifies the distance between the MET residue and one of the 
 ring. There are six TYR 122 aromatic carbon atom midpoints less than 4.9 Angstroms from MET 18 in the above result. This cutoff distance
 can be specified via the `--cutoff_distance` parameter:
 ```
-$ python runner.py --code 1rcy --cutoff_distance 4.0
+$ python runner.py --ai --code 1rcy --cutoff_distance 4.0
 ```
 Reducing the cutoff distance yields an order I interaction between TYR 122 and MET 18.
 ```
@@ -41,7 +41,7 @@ TYR        122        MET        18         3.95401    60.14475   68.35187
 ```
 `MET-THETA` and `MET-PHI` refer to the angles between the vector that projects from the methionine SD atom to the aromatic carbon midpoint (termed vector _v_ in literature) and the angles describing the direction of the methionine SD lone pairs (termed vectors _a_ and _g_ in literature). We set a cutoff to ensure that we are not including results where one (or both) lone pairs are pointing away from the aromatic pi system - a condition which doesn't qualify as a true aromatic interaction. The cutoff angle can be specified via the `--cutoff_angle` parameter:
 ```
-$ python runner.py --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60
+$ python runner.py --ai --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60
 ```
 The `--cutoff_angle` parameter ensures that **at least one of** _Met-theta_ or _Met-phi_ angles falls below the cutoff. This is seen in the below order II interaction:
 ```
@@ -53,7 +53,7 @@ TYR        122        MET        18         4.38983    53.39991   95.48742
 ```
 The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in https://github.com/dsw7/DSW-Thesis). There exists another model, `rm` or Rodrigues Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
 ```
-$ python runner.py --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm
+$ python runner.py --ai --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm
 ```
 Which yields similar results:
 ```
@@ -67,13 +67,13 @@ TYR        122        MET        18         4.38983    52.50492   91.84111
 Note that the Euclidean distances between TYR aromatic carbon atoms and MET remain unchanged. Many PDB entries contain multiple chains
 denoted using capital letters. By default, this program searches for "A" delimited chains. Some researchers may, however, be interested in searching for aromatic interactions in a different chain within a multichain protein. The `--chain` parameter can be used to specify the chain:
 ```
-$ python runner.py --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm --chain B
+$ python runner.py --ai --code 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm --chain B
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:  
 ![Alt text](docs/tyr-bridge.png?raw=true "Title")  
-We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `--query` parameter. The default is `ai` for "aromatic interactions". `bi` can be instead be passed to search for bridges meeting defined Met-aromatic criteria. For example, to search for bridging interactions with a 7.0 Angstrom MET SD / midpoint distance in 6LU7:
+We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `--bi` flag. For example, to search for bridging interactions with a 7.0 Angstrom MET SD / midpoint distance in 6LU7:
 ```
-$ python runner.py --code 6lu7 --query bi --cutoff_distance 7.0
+$ python runner.py --bi --code 6lu7 --cutoff_distance 7.0
 ```
 Which will return a list as follows:
 ```
@@ -83,8 +83,26 @@ TRP207     TRP218     MET276
 ```
 Where each row corresponds to a bridge. This program treats bridging interactions as networks with a defined set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The `--vertices` parameter can be passed to search for n-bridges:
 ```
-$ python runner.py --code 6lu7 --query bi --cutoff_distance 6.0 --vertices 4
+$ python runner.py --bi --code 6lu7 --cutoff_distance 6.0 --vertices 4
 ```
+## Batch jobs
+This software is normally used for large scale Protein Data Bank mining efforts. To run a batch job, first supply a batch. A batch
+can be a regular text file consisting of delimited PDB codes:
+```
+1BPY, 1CWE, 1DZI, 1EAK, 1EB1, 1GU4, 1GU5, 1GXC, 1GY3, 1H6F,
+1JYR, 1M4H, 1MCD, 1N0X, 1NU8, 1O6P, 1OKV, 2A2X, 1WB0
+```
+The results of the batch job are stored in a MongoDB database (https://www.mongodb.com/). The command follows:
+```
+$ ./runner.py --batch --batch_file /path/to/pdb_codes.txt --threads 3 --database small_batch --collection example
+```
+The MongoDB dump database is specified using the `--database` parameter. The collection is specified with the `--collection` parameter. The `--threads` parameter specifies how many threads to use for processing the batch. The progress of the batch job will be displayed in the terminal as a set of progress bars, where the number of progress bars corresponds to the number of assigned threads:
+```
+100%|████████████████████████████████████████████████████████████████████| 6/6 [00:04<00:00,  1.22it/s]
+100%|████████████████████████████████████████████████████████████████████| 7/7 [00:05<00:00,  1.36it/s]
+100%|████████████████████████████████████████████████████████████████████| 6/6 [00:05<00:00,  1.09it/s]
+```
+The recommended number of threads is 30 on a 300 Mbps network and a machine that is running no other processes. By default, mining jobs are run on `localhost` and on port `27017`. However, results can be routed to other servers by specifying hosts and/or ports using the `--host` and `--port` parameters.  
 ## Tests
 This project is well tested. Tests can be ran as follows:
 ```
