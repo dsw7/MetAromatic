@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 import sys
-if sys.version_info[0:2] < (3, 6):
-    sys.exit('Minimum required Python version: 3.6\nExiting!')
 from os import path
 from re import split
 from time import time
@@ -10,6 +8,10 @@ from concurrent import futures
 from pymongo import MongoClient
 from numpy import array_split
 from tqdm import tqdm
+
+if sys.version_info[0:2] < (3, 6):
+    sys.exit('Minimum required Python version: 3.6\nExiting!')
+
 from src import (
     met_aromatic,
     frontend
@@ -36,7 +38,9 @@ def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, mo
     formatter.custom_pretty_print_single_aromatic_interaction(results)
 
 
-def run_single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain, model, vertices):
+def run_single_bridging_interaction_query(code, cutoff_distance,
+                                          cutoff_angle, chain,
+                                          model, vertices):
     results = met_aromatic.MetAromatic(
         code,
         cutoff_distance=cutoff_distance,
@@ -112,23 +116,22 @@ class RunBatchJob:
     def run_batch_job(self):
         pdb_codes = self.open_batch_file()
         batch_pdb_codes = array_split(pdb_codes, self.num_threads)
-        workers = [None] * self.num_threads
 
-        start_time = time()
         with futures.ThreadPoolExecutor() as executor:
-            for index in range(0, self.num_threads):
-                workers[index] = executor.submit(self.worker, batch_pdb_codes[index])
-        overall_execution_time = time() - start_time
+            start_time = time()
+            workers = [
+                executor.submit(
+                    self.worker, batch_pdb_codes[index]
+                ) for index in range(0, self.num_threads)
+            ]
 
-        if all(result is None for result in (item.result() for item in workers)):
-            self.collection_info.insert(
-                self.prepare_batch_job_info(
-                    overall_execution_time,
-                    len(pdb_codes)
+            if futures.wait(workers, return_when=futures.ALL_COMPLETED):
+                self.collection_info.insert(
+                    self.prepare_batch_job_info(
+                        time() - start_time,
+                        len(pdb_codes)
+                    )
                 )
-            )
-        else:
-            sys.exit('One or more threads failed.')
 
 
 def main():
