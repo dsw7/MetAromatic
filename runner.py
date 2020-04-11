@@ -23,6 +23,9 @@ from src.utilities import (
 )
 
 
+MAX_WORKERS = 15  # put into met_aromatic.conf?
+
+
 def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model):
     results = met_aromatic.MetAromatic(
         code,
@@ -56,19 +59,18 @@ def run_single_bridging_interaction_query(code, cutoff_distance,
 
 
 class RunBatchJob:
-    def __init__(
-            self, batch_file, num_threads,
-            cutoff_distance, cutoff_angle, chain,
-            model, host, port, database, collection
-        ):
+    def __init__(self, batch_file, num_workers,
+                 cutoff_distance, cutoff_angle, chain,
+                 model, host, port, database, collection):
         self.batch_file = batch_file
-        self.num_threads = num_threads
+        self.num_workers = num_workers
         self.cutoff_distance = cutoff_distance
         self.cutoff_angle = cutoff_angle
         self.chain = chain
         self.model = model
         self.collection_results = MongoClient(host, port)[database][collection]
         self.collection_info = MongoClient(host, port)[database][f'{collection}_info']
+
 
     def open_batch_file(self):
         if not self.batch_file:
@@ -84,6 +86,7 @@ class RunBatchJob:
             sys.exit(errors.ErrorCodes.MissingFileError)
         else:
             return data
+
 
     def worker(self, list_codes):
         for code in tqdm(list_codes):
@@ -101,9 +104,10 @@ class RunBatchJob:
             else:
                 self.collection_results.insert(results)
 
+
     def prepare_batch_job_info(self, execution_time, number_entries):
         return {
-            'num_threads': self.num_threads,
+            'num_workers': self.num_workers,
             'cutoff_distance': self.cutoff_distance,
             'cutoff_angle': self.cutoff_angle,
             'chain': self.chain,
@@ -113,16 +117,15 @@ class RunBatchJob:
             'number_of_entries': number_entries
         }
 
-    def run_batch_job(self):
-        pdb_codes = self.open_batch_file()
-        batch_pdb_codes = array_split(pdb_codes, self.num_threads)
 
-        with futures.ThreadPoolExecutor() as executor:
+    def run_batch_job_threadpoolexecutor(self):
+        pdb_codes = self.open_batch_file()
+        chunked_pdb_codes = array_split(pdb_codes, self.num_workers)
+
+        with futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             start_time = time()
             workers = [
-                executor.submit(
-                    self.worker, batch_pdb_codes[index]
-                ) for index in range(0, self.num_threads)
+                executor.submit(self.worker, chunk) for chunk in chunked_pdb_codes
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
@@ -140,26 +143,36 @@ def main():
 
     if cli_args.ai:
         run_single_met_aromatic_query(
-            cli_args.code, cutoff_distance=cli_args.cutoff_distance,
-            cutoff_angle=cli_args.cutoff_angle, chain=cli_args.chain,
+            cli_args.code,
+            cutoff_distance=cli_args.cutoff_distance,
+            cutoff_angle=cli_args.cutoff_angle,
+            chain=cli_args.chain,
             model=cli_args.model
         )
 
     elif cli_args.bi:
         run_single_bridging_interaction_query(
-            cli_args.code, cutoff_distance=cli_args.cutoff_distance,
-            cutoff_angle=cli_args.cutoff_angle, chain=cli_args.chain,
-            model=cli_args.model, vertices=cli_args.vertices
+            cli_args.code,
+            cutoff_distance=cli_args.cutoff_distance,
+            cutoff_angle=cli_args.cutoff_angle,
+            chain=cli_args.chain,
+            model=cli_args.model,
+            vertices=cli_args.vertices
         )
 
     elif cli_args.batch:
         RunBatchJob(
-            batch_file=cli_args.batch_file, num_threads=cli_args.threads,
-            cutoff_distance=cli_args.cutoff_distance, cutoff_angle=cli_args.cutoff_angle,
-            chain=cli_args.chain, model=cli_args.model,
-            database=cli_args.database, collection=cli_args.collection,
-            host=cli_args.host, port=cli_args.port
-        ).run_batch_job()
+            batch_file=cli_args.batch_file,
+            num_workers=cli_args.threads,
+            cutoff_distance=cli_args.cutoff_distance,
+            cutoff_angle=cli_args.cutoff_angle,
+            chain=cli_args.chain,
+            model=cli_args.model,
+            database=cli_args.database,
+            collection=cli_args.collection,
+            host=cli_args.host,
+            port=cli_args.port
+        ).run_batch_job_threadpoolexecutor()
 
     elif cli_args.test:
         pytest_runners.run_tests(project_root)
