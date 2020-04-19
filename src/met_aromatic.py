@@ -1,5 +1,5 @@
 from networkx import Graph, connected_components
-from .utilities import (
+from utilities import (
     filegetter,
     preprocessing,
     get_aromatic_midpoints,

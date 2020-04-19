@@ -1,6 +1,6 @@
 import sys
-from src.met_aromatic import MetAromatic
-from src.utilities import formatter
+from met_aromatic import MetAromatic
+from utilities import formatter
 
 
 def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model):

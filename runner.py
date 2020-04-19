@@ -2,15 +2,18 @@
 import sys
 if sys.version_info[0:2] < (3, 6):
     sys.exit('Minimum required Python version: 3.6\nExiting!')
+sys.path.append('src/')
+
+
 from os import path
 from src import frontend
-from src.utilities import pytest_runners
+from utilities import pytest_runners
 
-#sys.path.append('src/')
 
 MAX_WORKERS = 15  # put into met_aromatic.conf?
 
-#import parallel_processing
+import parallel_processing
+import single_processing
 
 
 def main():

@@ -7,7 +7,7 @@ from pymongo import MongoClient
 from numpy import array_split
 from tqdm import tqdm
 from met_aromatic import MetAromatic
-from src.utilities import errors
+from utilities import errors
 
 
 MAX_WORKERS = 15  # put into met_aromatic.conf?
