@@ -4,12 +4,12 @@ if sys.version_info[0:2] < (3, 6):
     sys.exit('Minimum required Python version: 3.6\nExiting!')
 sys.path.append('src/')
 from os import path
-import frontend
+from frontend import get_command_line_arguments
 
 
 def main():
     project_root = path.dirname(path.abspath(__file__))
-    cli_args = frontend.get_command_line_arguments()
+    cli_args = get_command_line_arguments()
 
     if cli_args.ai:
         from single_processing import run_single_met_aromatic_query

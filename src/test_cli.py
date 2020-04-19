@@ -1,4 +1,4 @@
-from subprocess import run, DEVNULL
+from subprocess import call, DEVNULL
 from pytest import mark
 from utilities import errors
 
@@ -8,93 +8,81 @@ EXIT_GENERAL_PROGRAM_FAILURES = 2
 
 
 def test_aromatic_interaction_working_query(path_runner):
-    assert run(
-        f'python {path_runner} --ai --code 1rcy',
-        stdout=DEVNULL,
-        check=True
-    ).returncode == EXIT_SUCCESS
+    assert call(
+        f'python {path_runner} --ai --code 1rcy'.split(),
+        stdout=DEVNULL
+    ) == EXIT_SUCCESS
 
 
 def test_bridging_interaction_working_query(path_runner):
-    assert run(
-        f'python {path_runner} --bi --code 1rcy',
-        stdout=DEVNULL,
-        check=True
-    ).returncode == EXIT_SUCCESS
+    assert call(
+        f'python {path_runner} --bi --code 1rcy'.split(),
+        stdout=DEVNULL
+    ) == EXIT_SUCCESS
 
 
 def test_bridging_interaction_working_query_vertices_3(path_runner):
-    assert run(
-        f'python {path_runner} --bi --code 1rcy --vertices 3',
-        stdout=DEVNULL,
-        check=True
-    ).returncode == EXIT_SUCCESS
+    assert call(
+        f'python {path_runner} --bi --code 1rcy --vertices 3'.split(),
+        stdout=DEVNULL
+    ) == EXIT_SUCCESS
 
 
 def test_bridging_interaction_working_query_vertices_2(path_runner):
-    assert run(
-        f'python {path_runner} --bi --code 1rcy --vertices 2',
-        stdout=DEVNULL,
-        check=True
-    ).returncode == errors.ErrorCodes.BadVerticesError
+    assert call(
+        f'python {path_runner} --bi --code 1rcy --vertices 2'.split(),
+        stdout=DEVNULL
+    ) == errors.ErrorCodes.BadVerticesError
 
 
 def test_invalid_cutoff_distance(path_runner):
-    assert run(
-        f'python {path_runner} --ai --code 1rcy --cutoff_distance 0.00',
-        check=True
-    ).returncode == errors.ErrorCodes.InvalidCutoffsError
+    assert call(
+        f'python {path_runner} --ai --code 1rcy --cutoff_distance 0.00'.split()
+    ) == errors.ErrorCodes.InvalidCutoffsError
 
 
 def test_invalid_cutoff_distance_stringified(path_runner):
-    assert run(
-        f'python {path_runner} --ai --code 1rcy --cutoff_distance foo',
-        stderr=DEVNULL,
-        check=True
-    ).returncode == EXIT_GENERAL_PROGRAM_FAILURES
+    assert call(
+        f'python {path_runner} --ai --code 1rcy --cutoff_distance foo'.split(),
+        stderr=DEVNULL
+    ) == EXIT_GENERAL_PROGRAM_FAILURES
 
 
 def test_invalid_cutoff_angle(path_runner):
-    assert run(
-        f'python {path_runner} --ai --code 1rcy --cutoff_angle 361.00',
-        check=True
-    ).returncode == errors.ErrorCodes.InvalidCutoffsError
+    assert call(
+        f'python {path_runner} --ai --code 1rcy --cutoff_angle 361.00'.split()
+    ) == errors.ErrorCodes.InvalidCutoffsError
 
 
 def test_invalid_code(path_runner):
-    assert run(
-        f'python {path_runner} --ai --code foobar',
-        check=True
-    ).returncode == errors.ErrorCodes.InvalidPDBFileError
+    assert call(
+        f'python {path_runner} --ai --code foobar'.split()
+    ) == errors.ErrorCodes.InvalidPDBFileError
 
 
 def test_no_met_coordinates(path_runner):
-    assert run(
-        f'python {path_runner} --ai --code 3nir',
-        check=True
-    ).returncode == errors.ErrorCodes.NoMetCoordinatesError
+    assert call(
+        f'python {path_runner} --ai --code 3nir'.split()
+    ) == errors.ErrorCodes.NoMetCoordinatesError
 
 
 def test_invalid_model(path_runner):
-    assert run(
-        f'python {path_runner} --ai --code 1rcy --model foobarbaz',
-        check=True
-    ).returncode == errors.ErrorCodes.InvalidModelError
+    assert call(
+        f'python {path_runner} --ai --code 1rcy --model foobarbaz'.split()
+    ) == errors.ErrorCodes.InvalidModelError
 
 
 def test_no_results(path_runner):
-    assert run(
-        f'python {path_runner} --ai --code 1a5r',
-        check=True
-    ).returncode == errors.ErrorCodes.NoResultsError
+    assert call(
+        f'python {path_runner} --ai --code 1a5r'.split()
+    ) == errors.ErrorCodes.NoResultsError
 
 
 def test_bad_query_type(path_runner):
-    assert run(
-        f'python {path_runner} --ai --code 1rcy --query foobarbaz',
-        stderr=DEVNULL,
-        check=True
-    ).returncode == EXIT_GENERAL_PROGRAM_FAILURES
+    assert call(
+        f'python {path_runner} --ai --code 1rcy --query foobarbaz'.split(),
+        stderr=DEVNULL
+    ) == EXIT_GENERAL_PROGRAM_FAILURES
 
 
 @mark.parametrize(
@@ -107,8 +95,7 @@ def test_bad_query_type(path_runner):
     ]
 )
 def test_general_argparse_failures(subquery, path_runner):
-    assert run(
-        f'python {path_runner} {subquery}',
-        stderr=DEVNULL,
-        check=True
-    ).returncode == EXIT_GENERAL_PROGRAM_FAILURES
+    assert call(
+        f'python {path_runner} {subquery}'.split(),
+        stderr=DEVNULL
+    ) == EXIT_GENERAL_PROGRAM_FAILURES
