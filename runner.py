@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 import sys
+
 if sys.version_info[0:2] < (3, 6):
     sys.exit('Minimum required Python version: 3.6\nExiting!')
+
 sys.path.append('src/')
+
 from os import path
 from frontend import get_command_line_arguments
 
