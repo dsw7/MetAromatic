@@ -6,6 +6,7 @@ from concurrent import futures
 from pymongo import MongoClient
 from numpy import array_split
 from tqdm import tqdm
+from colorama import Fore, Style
 from met_aromatic import MetAromatic
 from utilities.errors import ErrorCodes
 
@@ -25,6 +26,8 @@ class RunBatchJob:
         self.model = model
         self.collection_results = MongoClient(host, port)[database][collection]
         self.collection_info = MongoClient(host, port)[database][f'{collection}_info']
+        self.collection_name = collection
+        self.database_name = database
 
 
     def open_batch_file(self):
@@ -84,6 +87,13 @@ class RunBatchJob:
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
+                print(Fore.GREEN)
+                print('Batch job complete!\nMongoDB destination: ')
+                print(f'> Database:       {self.database_name}')
+                print(f'> Collection:     {self.collection_name}')
+                print(f'> Job statistics: {self.collection_name}_info')
+                print(Style.RESET_ALL)
+
                 self.collection_info.insert(
                     self.prepare_batch_job_info(
                         time() - start_time,
