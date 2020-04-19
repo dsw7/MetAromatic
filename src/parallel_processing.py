@@ -7,7 +7,7 @@ from pymongo import MongoClient
 from numpy import array_split
 from tqdm import tqdm
 from met_aromatic import MetAromatic
-from utilities import errors
+from utilities.errors import ErrorCodes
 
 
 MAX_WORKERS = 15  # put into met_aromatic.conf?
@@ -38,7 +38,7 @@ class RunBatchJob:
                     data.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
         except FileNotFoundError:
             print('Invalid batch file!')
-            sys.exit(errors.ErrorCodes.MissingFileError)
+            sys.exit(ErrorCodes.MissingFileError)
         else:
             return data
 

@@ -2,7 +2,7 @@ import sys
 from os import path
 from argparse import ArgumentParser, RawTextHelpFormatter
 from yaml import safe_load
-from .utilities import (
+from utilities import (
     help_messages,
     errors
 )

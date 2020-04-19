@@ -1,19 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import sys
 if sys.version_info[0:2] < (3, 6):
     sys.exit('Minimum required Python version: 3.6\nExiting!')
 sys.path.append('src/')
-
-
 from os import path
-from src import frontend
-from utilities import pytest_runners
-
-
-MAX_WORKERS = 15  # put into met_aromatic.conf?
-
-import parallel_processing
-import single_processing
+import frontend
 
 
 def main():
@@ -21,8 +12,8 @@ def main():
     cli_args = frontend.get_command_line_arguments()
 
     if cli_args.ai:
-        from src import single_processing
-        single_processing.run_single_met_aromatic_query(
+        from single_processing import run_single_met_aromatic_query
+        run_single_met_aromatic_query(
             cli_args.code,
             cutoff_distance=cli_args.cutoff_distance,
             cutoff_angle=cli_args.cutoff_angle,
@@ -31,8 +22,8 @@ def main():
         )
 
     elif cli_args.bi:
-        from src import single_processing
-        single_processing.run_single_bridging_interaction_query(
+        from single_processing import run_single_bridging_interaction_query
+        run_single_bridging_interaction_query(
             cli_args.code,
             cutoff_distance=cli_args.cutoff_distance,
             cutoff_angle=cli_args.cutoff_angle,
@@ -42,8 +33,8 @@ def main():
         )
 
     elif cli_args.batch:
-        from src import parallel_processing
-        parallel_processing.RunBatchJob(
+        from parallel_processing import RunBatchJob
+        RunBatchJob(
             batch_file=cli_args.batch_file,
             num_workers=cli_args.threads,
             cutoff_distance=cli_args.cutoff_distance,
@@ -57,10 +48,12 @@ def main():
         ).run_batch_job_threadpoolexecutor()
 
     elif cli_args.test:
-        pytest_runners.run_tests(project_root)
+        from utilities.pytest_runners import run_tests
+        run_tests(project_root)
 
     elif cli_args.testcov:
-        pytest_runners.run_tests_with_coverage(project_root)
+        from utilities.pytest_runners import run_tests_with_coverage
+        run_tests_with_coverage(project_root)
 
 
 if __name__ == '__main__':
