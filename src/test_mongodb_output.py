@@ -1,6 +1,6 @@
 from pytest import mark
-from .met_aromatic import MetAromatic
-from .utilities import errors
+from met_aromatic import MetAromatic
+from utilities import errors
 
 
 VALID_RESULTS_1RCY = [{

@@ -1,7 +1,7 @@
 from os import path
 from subprocess import call, DEVNULL
 from pymongo import MongoClient
-from .utilities import errors
+from utilities import errors
 
 
 class TestBatchJob:

@@ -1,5 +1,5 @@
-from .met_aromatic import MetAromatic
-from .utilities import errors
+from met_aromatic import MetAromatic
+from utilities import errors
 
 
 def test_invalid_distance_error(default_met_aromatic_parameters):

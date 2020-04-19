@@ -1,6 +1,6 @@
 from pytest import mark, skip
 from pandas import DataFrame, testing
-from .met_aromatic import MetAromatic
+from met_aromatic import MetAromatic
 
 
 TEST_CODES = {

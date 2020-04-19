@@ -1,8 +1,8 @@
 from json import loads
 from os import path
 from pytest import mark, skip, exit
-from .met_aromatic import MetAromatic
-from .utilities import errors
+from met_aromatic import MetAromatic
+from utilities import errors
 
 
 CONTROL_BRIDGE_DATA = path.join(
