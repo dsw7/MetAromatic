@@ -36,8 +36,8 @@ def main():
         )
 
     elif cli_args.batch:
-        from parallel_processing import RunBatchJob
-        RunBatchJob(
+        from parallel_processing import BatchJobOrchestrator
+        BatchJobOrchestrator(
             batch_file=cli_args.batch_file,
             num_workers=cli_args.threads,
             cutoff_distance=cli_args.cutoff_distance,

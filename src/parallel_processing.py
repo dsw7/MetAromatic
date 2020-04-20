@@ -14,7 +14,7 @@ from utilities.errors import ErrorCodes
 MAX_WORKERS = 15  # put into met_aromatic.conf?
 
 
-class RunBatchJob:
+class BatchJobOrchestrator:
     def __init__(self, batch_file, num_workers,
                  cutoff_distance, cutoff_angle, chain,
                  model, host, port, database, collection):
@@ -58,7 +58,9 @@ class RunBatchJob:
                 ).get_met_aromatic_interactions_mongodb_output()
             except Exception as exception:
                 # catch remaining unhandled exceptions
-                self.collection_results.insert({'code': code, 'exception': repr(exception)})
+                self.collection_results.insert(
+                    {'code': code, 'exception': repr(exception)}
+                )
             else:
                 self.collection_results.insert(results)
 
