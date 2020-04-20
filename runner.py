@@ -48,7 +48,7 @@ def main():
             collection=cli_args.collection,
             host=cli_args.host,
             port=cli_args.port
-        ).run_batch_job_threadpoolexecutor()
+        ).deploy_jobs()
 
     elif cli_args.test:
         from utilities.pytest_runners import run_tests

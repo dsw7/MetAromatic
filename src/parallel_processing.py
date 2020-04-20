@@ -24,16 +24,14 @@ class BatchJobOrchestrator:
         self.cutoff_angle = cutoff_angle
         self.chain = chain
         self.model = model
-        self.collection_results = MongoClient(host, port)[database][collection]
-        self.collection_info = MongoClient(host, port)[database][f'{collection}_info']
+        self.client = MongoClient(host, port)
         self.collection_name = collection
         self.database_name = database
-
+        self.collection_info = MongoClient(host, port)[database][f'{collection}_info']
 
     def open_batch_file(self):
         if not self.batch_file:
             sys.exit('The --batch_file </path/to/file> parameter was not provided.')
-
         try:
             data = []
             with open(self.batch_file) as batch:
@@ -44,26 +42,6 @@ class BatchJobOrchestrator:
             sys.exit(ErrorCodes.MissingFileError)
         else:
             return data
-
-
-    def worker(self, list_codes):
-        for code in tqdm(list_codes):
-            try:
-                results = MetAromatic(
-                    code=code,
-                    cutoff_distance=self.cutoff_distance,
-                    cutoff_angle=self.cutoff_angle,
-                    chain=self.chain,
-                    model=self.model
-                ).get_met_aromatic_interactions_mongodb_output()
-            except Exception as exception:
-                # catch remaining unhandled exceptions
-                self.collection_results.insert(
-                    {'code': code, 'exception': repr(exception)}
-                )
-            else:
-                self.collection_results.insert(results)
-
 
     def prepare_batch_job_info(self, execution_time, number_entries):
         return {
@@ -77,8 +55,39 @@ class BatchJobOrchestrator:
             'number_of_entries': number_entries
         }
 
+    def worker(self, list_codes):
+        collection_results = self.client[self.database_name][self.collection_name]
 
-    def run_batch_job_threadpoolexecutor(self):
+        for code in tqdm(list_codes):
+            try:
+                results = MetAromatic(
+                    code=code,
+                    cutoff_distance=self.cutoff_distance,
+                    cutoff_angle=self.cutoff_angle,
+                    chain=self.chain,
+                    model=self.model
+                ).get_met_aromatic_interactions_mongodb_output()
+            except Exception as exception:
+                # catch remaining unhandled exceptions
+                collection_results.insert(
+                    {'code': code, 'exception': repr(exception)}
+                )
+            else:
+                collection_results.insert(results)
+
+    def database_collection_exists(self):
+        retval = True
+        if self.database_name in self.client.list_database_names():
+            if not self.collection_name in self.client[self.database_name].list_collection_names():
+                retval = False
+        else:
+            retval = False
+        return retval
+
+    def deploy_jobs(self):
+        if self.database_collection_exists():
+            sys.exit('Exists. Cannot proceed.')
+        
         pdb_codes = self.open_batch_file()
         chunked_pdb_codes = array_split(pdb_codes, self.num_workers)
 
