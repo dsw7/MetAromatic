@@ -17,7 +17,7 @@ def main():
     if cli_args.ai:
         from single_processing import run_single_met_aromatic_query
         run_single_met_aromatic_query(
-            cli_args.code,
+            cli_args.ai,
             cutoff_distance=cli_args.cutoff_distance,
             cutoff_angle=cli_args.cutoff_angle,
             chain=cli_args.chain,
@@ -27,7 +27,7 @@ def main():
     elif cli_args.bi:
         from single_processing import run_single_bridging_interaction_query
         run_single_bridging_interaction_query(
-            cli_args.code,
+            cli_args.bi,
             cutoff_distance=cli_args.cutoff_distance,
             cutoff_angle=cli_args.cutoff_angle,
             chain=cli_args.chain,
@@ -38,7 +38,7 @@ def main():
     elif cli_args.batch:
         from parallel_processing import BatchJobOrchestrator
         BatchJobOrchestrator(
-            batch_file=cli_args.batch_file,
+            batch_file=cli_args.batch,
             num_workers=cli_args.threads,
             cutoff_distance=cli_args.cutoff_distance,
             cutoff_angle=cli_args.cutoff_angle,

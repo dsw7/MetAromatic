@@ -23,9 +23,9 @@ def get_command_line_arguments():
     constants = get_defaults()
     parser = ArgumentParser(formatter_class=RawTextHelpFormatter)
     job_type = parser.add_mutually_exclusive_group()
-    job_type.add_argument('--ai', help=help_messages.MSG_AI, action='store_true')
-    job_type.add_argument('--bi', help=help_messages.MSG_BI, action='store_true')
-    job_type.add_argument('--batch', help=help_messages.MSG_BATCH, action='store_true')
+    job_type.add_argument('--ai', help=help_messages.MSG_AI)
+    job_type.add_argument('--bi', help=help_messages.MSG_BI)
+    job_type.add_argument('--batch', help=help_messages.MSG_BATCH)
     job_type.add_argument('--test', help=help_messages.MSG_TEST, action='store_true')
     job_type.add_argument('--testcov', help=help_messages.MSG_TEST_COV, action='store_true')
 
