@@ -27,7 +27,12 @@ class BatchJobOrchestrator:
         self.client = MongoClient(host, port)
         self.collection_name = collection
         self.database_name = database
-        self.collection_info = MongoClient(host, port)[database][f'{collection}_info']
+
+        if self.num_workers > MAX_WORKERS:
+            print(Fore.YELLOW)
+            print('Number of selected workers exceeds maximum number of workers.')
+            print(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
+            print(Style.RESET_ALL)
 
     def open_batch_file(self):
         if not self.batch_file:
@@ -38,7 +43,7 @@ class BatchJobOrchestrator:
                 for line in batch:
                     data.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
         except FileNotFoundError:
-            print('Invalid batch file!')
+            print(Fore.RED + 'Invalid batch file!' + Style.RESET_ALL)
             sys.exit(ErrorCodes.MissingFileError)
         else:
             return data
@@ -86,12 +91,24 @@ class BatchJobOrchestrator:
 
     def deploy_jobs(self):
         if self.database_collection_exists():
-            sys.exit('Exists. Cannot proceed.')
-        
+            print((
+                f'{Fore.RED}'
+                f'Database/collection pair '
+                f'{self.database_name}.{self.collection_name} exists. '
+                f'Use a different collection name. '
+                f'Exiting. {Style.RESET_ALL}'
+            ))
+            sys.exit(ErrorCodes.BadDatabaseCollectionError)
+
         pdb_codes = self.open_batch_file()
         chunked_pdb_codes = array_split(pdb_codes, self.num_workers)
 
+        name_collection_info = f'{self.collection_name}_info'
+        collection_info = self.client[self.database_name][name_collection_info]
+
         with futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            print(Fore.GREEN + f'Deploying {self.num_workers} workers!\n' + Style.RESET_ALL)
+
             start_time = time()
             workers = [
                 executor.submit(self.worker, chunk) for chunk in chunked_pdb_codes
@@ -102,10 +119,10 @@ class BatchJobOrchestrator:
                 print('Batch job complete!\nMongoDB destination: ')
                 print(f'> Database:       {self.database_name}')
                 print(f'> Collection:     {self.collection_name}')
-                print(f'> Job statistics: {self.collection_name}_info')
+                print(f'> Job statistics: {name_collection_info}')
                 print(Style.RESET_ALL)
 
-                self.collection_info.insert(
+                collection_info.insert(
                     self.prepare_batch_job_info(
                         time() - start_time,
                         len(pdb_codes)
