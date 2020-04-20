@@ -30,12 +30,6 @@ def get_command_line_arguments():
     job_type.add_argument('--testcov', help=help_messages.MSG_TEST_COV, action='store_true')
 
     parser.add_argument(
-        '--code',
-        help=help_messages.MSG_CODE,
-        type=str, default=constants['default_pdb_code']
-    )
-
-    parser.add_argument(
         '--cutoff_distance',
         help=help_messages.MSG_CUTOFF,
         default=constants['default_cutoff_distance'],
@@ -100,11 +94,6 @@ def get_command_line_arguments():
         help=help_messages.MSG_THREADS,
         default=constants['default_threads'],
         type=int
-    )
-
-    parser.add_argument(
-        '--batch_file',
-        help=help_messages.MSG_BATCH_FILE
     )
 
     return parser.parse_args()

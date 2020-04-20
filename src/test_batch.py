@@ -17,9 +17,8 @@ class TestBatchJob:
         self.cursor = self.client[self.database_name][self.collection_name]
         cmd = (
             f'python {path_runner} '
-            f'--batch '
+            f'--batch {path_test_data} '
             f'--threads {self.threads} '
-            f'--batch_file {path_test_data} '
             f'--database {self.database_name} '
             f'--collection {self.collection_name}'
         )
