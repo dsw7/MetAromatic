@@ -51,11 +51,11 @@ def main():
         ).deploy_jobs()
 
     elif cli_args.test:
-        from utilities.pytest_runners import run_tests
+        from testing import run_tests
         run_tests(project_root)
 
     elif cli_args.testcov:
-        from utilities.pytest_runners import run_tests_with_coverage
+        from testing import run_tests_with_coverage
         run_tests_with_coverage(project_root)
 
 
