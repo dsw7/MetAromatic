@@ -18,3 +18,8 @@ MSG_HOST = 'Set a MongoDB host. \nUsage: --mongohost <host>'
 MSG_DB = 'Choose a MongoDB export database name. \nUsage: --database <name>'
 MSG_COL = 'Choose a MongoDB export collection name. \nUsage: --collection <name>'
 MSG_THREADS = 'Choose number of threads to use for batch job. \nUsage: --threads <num_threads>'
+
+#### testing
+MSG_TEST_EXPRESSION = 'Run a subset of tests matching expression. \nUsage: --test-expression <Test*|test*>'
+MSG_EXIT_ON_FAILURE = 'Exit on first failure. \nUsage: --exit-on-failure'
+MSG_QUIET = 'Disable test verbosity. \nUsage: --quiet'

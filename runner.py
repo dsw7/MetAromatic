@@ -51,12 +51,22 @@ def main():
         ).deploy_jobs()
 
     elif cli_args.test:
-        from testing import run_tests
-        run_tests(project_root)
+        from testing import TestRunner
+        TestRunner(
+            project_root,
+            expression=cli_args.test_expression,
+            exit_on_failure=cli_args.exit_on_failure,
+            verbose=(not cli_args.quiet)
+        ).run_tests()
 
     elif cli_args.testcov:
-        from testing import run_tests_with_coverage
-        run_tests_with_coverage(project_root)
+        from testing import TestRunner
+        TestRunner(
+            project_root,
+            expression=cli_args.test_expression,
+            exit_on_failure=cli_args.exit_on_failure,
+            verbose=(not cli_args.quiet)
+        ).run_tests_with_coverage()
 
 
 if __name__ == '__main__':

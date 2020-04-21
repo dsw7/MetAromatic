@@ -14,7 +14,7 @@ def get_defaults():
         with open(path.join(root, 'met_aromatic.conf')) as conf_file:
             constants = safe_load(conf_file)
     except FileNotFoundError:
-        sys.exit(errors.ErrorCodes.MissingFile)
+        sys.exit(errors.ErrorCodes.MissingFileError)
     else:
         return constants
 
@@ -94,6 +94,26 @@ def get_command_line_arguments():
         help=help_messages.MSG_THREADS,
         default=constants['default_threads'],
         type=int
+    )
+
+    parser.add_argument(
+        '--test-expression',
+        help=help_messages.MSG_TEST_EXPRESSION,
+        dest='test_expression'
+    )
+
+    parser.add_argument(
+        '--exit-on-failure',
+        action='store_true',
+        help=help_messages.MSG_EXIT_ON_FAILURE,
+        dest='exit_on_failure'
+    )
+
+    parser.add_argument(
+        '--quiet',
+        action='store_true',
+        default=False,
+        help=help_messages.MSG_QUIET
     )
 
     return parser.parse_args()
