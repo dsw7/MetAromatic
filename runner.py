@@ -1,71 +1,77 @@
 #!/usr/bin/env python3
 import sys
-
-if sys.version_info[0:2] < (3, 6):
-    sys.exit('Minimum required Python version: 3.6\nExiting!')
-
-sys.path.append('src/')
-
 from os import path
-from frontend import get_command_line_arguments
+
+MINIMUM_VERSION_PY = (3, 6)
+PROJECT_ROOT = path.dirname(path.abspath(__file__))
+
+if sys.version_info[0:2] < MINIMUM_VERSION_PY:
+    sys.exit(
+        'Minimum required Python version: %s.%s\nExiting!' % MINIMUM_VERSION_PY
+    )
+else:
+    sys.path.append(path.join(PROJECT_ROOT, 'src/'))
+    from frontend import get_command_line_arguments
 
 
 def main():
-    project_root = path.dirname(path.abspath(__file__))
-    cli_args = get_command_line_arguments()
+    # Import runners in main function on an as-needed basis - don't force users
+    # to import everything just to run --help...
 
-    if cli_args.ai:
+    command_line_args = get_command_line_arguments()
+
+    if command_line_args.single_aromatic_interaction_query:
         from single_processing import run_single_met_aromatic_query
         run_single_met_aromatic_query(
-            cli_args.ai,
-            cutoff_distance=cli_args.cutoff_distance,
-            cutoff_angle=cli_args.cutoff_angle,
-            chain=cli_args.chain,
-            model=cli_args.model
+            command_line_args.single_aromatic_interaction_query,
+            cutoff_distance=command_line_args.cutoff_distance,
+            cutoff_angle=command_line_args.cutoff_angle,
+            chain=command_line_args.chain,
+            model=command_line_args.model
         )
 
-    elif cli_args.bi:
+    elif command_line_args.single_bridging_interaction_query:
         from single_processing import run_single_bridging_interaction_query
         run_single_bridging_interaction_query(
-            cli_args.bi,
-            cutoff_distance=cli_args.cutoff_distance,
-            cutoff_angle=cli_args.cutoff_angle,
-            chain=cli_args.chain,
-            model=cli_args.model,
-            vertices=cli_args.vertices
+            command_line_args.single_bridging_interaction_query,
+            cutoff_distance=command_line_args.cutoff_distance,
+            cutoff_angle=command_line_args.cutoff_angle,
+            chain=command_line_args.chain,
+            model=command_line_args.model,
+            vertices=command_line_args.vertices
         )
 
-    elif cli_args.batch:
+    elif command_line_args.run_batch_job:
         from parallel_processing import BatchJobOrchestrator
         BatchJobOrchestrator(
-            batch_file=cli_args.batch,
-            num_workers=cli_args.threads,
-            cutoff_distance=cli_args.cutoff_distance,
-            cutoff_angle=cli_args.cutoff_angle,
-            chain=cli_args.chain,
-            model=cli_args.model,
-            database=cli_args.database,
-            collection=cli_args.collection,
-            host=cli_args.host,
-            port=cli_args.port
+            batch_file=command_line_args.batch,
+            num_workers=command_line_args.threads,
+            cutoff_distance=command_line_args.cutoff_distance,
+            cutoff_angle=command_line_args.cutoff_angle,
+            chain=command_line_args.chain,
+            model=command_line_args.model,
+            database=command_line_args.database,
+            collection=command_line_args.collection,
+            host=command_line_args.host,
+            port=command_line_args.port
         ).deploy_jobs()
 
-    elif cli_args.test:
+    elif command_line_args.run_tests:
         from testing import TestRunner
         TestRunner(
-            project_root,
-            expression=cli_args.test_expression,
-            exit_on_failure=cli_args.exit_on_failure,
-            verbose=(not cli_args.quiet)
+            PROJECT_ROOT,
+            expression=command_line_args.test_expression,
+            exit_on_failure=command_line_args.exit_on_failure,
+            verbose=(not command_line_args.quiet)
         ).run_tests()
 
-    elif cli_args.testcov:
+    elif command_line_args.run_tests_with_coverage:
         from testing import TestRunner
         TestRunner(
-            project_root,
-            expression=cli_args.test_expression,
-            exit_on_failure=cli_args.exit_on_failure,
-            verbose=(not cli_args.quiet)
+            PROJECT_ROOT,
+            expression=command_line_args.test_expression,
+            exit_on_failure=command_line_args.exit_on_failure,
+            verbose=(not command_line_args.quiet)
         ).run_tests_with_coverage()
 
 

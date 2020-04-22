@@ -89,6 +89,7 @@ def test_bad_query_type(path_runner):
     'subquery',
     [
         '--ai ',
+        '--ai 1rcy --bi 1rcy',        
         '--ai 1rcy --cutoff_distance foobar',
         '--ai 1rcy --cutoff_angle foobar',
         '--ai 1rcy --vertices foo',
