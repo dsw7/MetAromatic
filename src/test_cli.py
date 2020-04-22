@@ -5,7 +5,30 @@ from utilities import errors
 
 
 EXIT_SUCCESS = 0
+EXIT_FAILURE = 1
 EXIT_GENERAL_PROGRAM_FAILURES = 2
+
+
+def test_aromatic_interaction_working_query(path_runner):
+    assert call(
+        f'python3 {path_runner} --ai 1rcy'.split(),
+        stdout=DEVNULL
+    ) == EXIT_SUCCESS
+
+
+def test_bridging_interaction_working_query(path_runner):
+    assert call(
+        f'python3 {path_runner} --bi 1rcy'.split(),
+        stdout=DEVNULL
+    ) == EXIT_SUCCESS
+
+
+def test_exit_with_python_2(path_runner):
+    assert call(
+        f'python2 {path_runner} --ai 1rcy'.split(),
+        stdout=DEVNULL,
+        stderr=DEVNULL
+    ) == EXIT_FAILURE
 
 
 def test_aromatic_interaction_run_from_parent_directory(path_runner):
@@ -72,20 +95,6 @@ def test_bridging_interaction_run_from_child_child_directory(path_runner):
     )
     chdir(pwd)
     assert retval == EXIT_SUCCESS
-
-
-def test_aromatic_interaction_working_query(path_runner):
-    assert call(
-        f'python3 {path_runner} --ai 1rcy'.split(),
-        stdout=DEVNULL
-    ) == EXIT_SUCCESS
-
-
-def test_bridging_interaction_working_query(path_runner):
-    assert call(
-        f'python3 {path_runner} --bi 1rcy'.split(),
-        stdout=DEVNULL
-    ) == EXIT_SUCCESS
 
 
 def test_bridging_interaction_working_query_vertices_3(path_runner):
