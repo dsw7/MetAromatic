@@ -16,7 +16,7 @@ class TestBatchJob:
         self.client = MongoClient(host='localhost', port=27017)
         self.cursor = self.client[self.database_name][self.collection_name]
         cmd = (
-            f'python {path_runner} '
+            f'python3 {path_runner} '
             f'--batch {path_test_data} '
             f'--threads {self.threads} '
             f'--database {self.database_name} '

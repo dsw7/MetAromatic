@@ -44,7 +44,7 @@ def main():
     elif command_line_args.run_batch_job:
         from parallel_processing import BatchJobOrchestrator
         BatchJobOrchestrator(
-            batch_file=command_line_args.batch,
+            batch_file=command_line_args.run_batch_job,
             num_workers=command_line_args.threads,
             cutoff_distance=command_line_args.cutoff_distance,
             cutoff_angle=command_line_args.cutoff_angle,
