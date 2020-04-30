@@ -11,13 +11,17 @@ if sys.version_info[0:2] < MINIMUM_VERSION_PY:
     )
 else:
     sys.path.append(path.join(PROJECT_ROOT, 'src/'))
-    from frontend import get_command_line_arguments
+    from frontend import (
+        get_command_line_arguments,
+        check_network_connection
+    )
 
 
 def main():
     # Import runners in main function on an as-needed basis - don't force users
     # to import everything just to run --help...
 
+    check_network_connection()
     command_line_args = get_command_line_arguments()
 
     if command_line_args.single_aromatic_interaction_query:
