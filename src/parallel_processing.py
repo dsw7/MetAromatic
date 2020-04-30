@@ -75,7 +75,7 @@ class BatchJobOrchestrator:
             except Exception as exception:
                 # catch remaining unhandled exceptions
                 collection_results.insert(
-                    {'code': code, 'exception': repr(exception)}
+                    {'_id': code, 'exception': repr(exception)}
                 )
             else:
                 collection_results.insert(results)
