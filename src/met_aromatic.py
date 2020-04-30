@@ -110,11 +110,13 @@ class MetAromatic:
 
             return {
                 '_id': self.code,
+                'exception': False,
                 'results': results
             }
 
         else:
             return {
                 '_id': self.code,
+                'exception': True,
                 'error_code': met_aromatic_results
             }

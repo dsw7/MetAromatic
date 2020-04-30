@@ -27,6 +27,30 @@ class TestBatchJob:
     def test_correct_count(self):
         assert len(list(self.cursor.find())) == self.num_coronavirus_entries
 
+    def test_correct_exception_boolean_2ca1(self):
+        assert not list(self.cursor.find({'_id': '2ca1'}))[0]['exception']
+
+    def test_correct_exception_boolean_2fyg(self):
+        assert not list(self.cursor.find({'_id': '2fyg'}))[0]['exception']
+
+    def test_correct_exception_boolean_1uw7(self):
+        assert not list(self.cursor.find({'_id': '1uw7'}))[0]['exception']
+
+    def test_correct_exception_boolean_1xak(self):
+        assert list(self.cursor.find({'_id': '1xak'}))[0]['exception']
+
+    def test_correct_exception_boolean_2fxp(self):
+        assert list(self.cursor.find({'_id': '2fxp'}))[0]['exception']
+
+    def test_correct_exception_boolean_6mwm(self):
+        assert list(self.cursor.find({'_id': '6mwm'}))[0]['exception']
+
+    def test_correct_exception_boolean_2cme(self):
+        assert list(self.cursor.find({'_id': '2cme'}))[0]['exception']
+
+    def test_correct_exception_boolean_spam(self):
+        assert list(self.cursor.find({'_id': 'spam'}))[0]['exception']
+
     def test_correct_error_code_1xak(self):
         assert list(
             self.cursor.find({'_id': '1xak'})
