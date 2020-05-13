@@ -101,8 +101,8 @@ class MetAromatic:
             for row in met_aromatic_results:
                 results.append({
                     'aromatic_residue': row[0],
-                    'aromatic_position': row[1],
-                    'methionine_position': row[3],
+                    'aromatic_position': int(row[1]),
+                    'methionine_position': int(row[3]),
                     'norm': round(row[4], round_to_number),
                     'met_theta_angle': round(row[5], round_to_number),
                     'met_phi_angle': round(row[6], round_to_number)
