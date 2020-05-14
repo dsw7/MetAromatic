@@ -59,7 +59,7 @@ def test_bridge_collector(bridges, default_bridge_testing_parameters):
     except IndexError:
         skip('Skipping list index out of range error. Occurs because of missing data.')
     else:
-        assert set(bridges.get('bridge')) in bridging_interactions
+        assert set(bridges.get('bridge')) in bridging_interactions['results']
 
 
 @mark.parametrize(
@@ -88,4 +88,4 @@ def test_no_bridges_response(code, cutoff_distance, cutoff_angle, default_bridge
         chain=default_bridge_testing_parameters['chain']
     ).get_bridging_interactions(
         number_vertices=default_bridge_testing_parameters['network_size']
-    ) == error
+    )['exit_code'] == error
