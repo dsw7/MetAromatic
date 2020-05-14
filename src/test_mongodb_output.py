@@ -94,7 +94,7 @@ def test_mongodb_output_invalid_results(code, cutoff_distance, cutoff_angle,
         cutoff_distance=cutoff_distance,
         chain=default_met_aromatic_parameters['chain'],
         model=default_met_aromatic_parameters['model']
-    ).get_met_aromatic_interactions_mongodb_output().get('error_code') == error
+    ).get_met_aromatic_interactions()['exit_code'] == error
 
 
 @mark.parametrize(
@@ -116,14 +116,23 @@ def test_mongodb_output_invalid_results_exception_boolean(code, cutoff_distance,
         cutoff_distance=cutoff_distance,
         chain=default_met_aromatic_parameters['chain'],
         model=default_met_aromatic_parameters['model']
-    ).get_met_aromatic_interactions_mongodb_output().get('exception')
+    ).get_met_aromatic_interactions().get('exit_status')
 
 
 def test_mongodb_output_valid_results(default_met_aromatic_parameters):
-    assert MetAromatic(
+    sum_met_theta_control = sum([i['met_theta_angle'] for i in VALID_RESULTS_1RCY])
+    sum_met_phi_control = sum([i['met_phi_angle'] for i in VALID_RESULTS_1RCY])
+
+    test_results = MetAromatic(
         code='1rcy',
         cutoff_angle=default_met_aromatic_parameters['angle'],
         cutoff_distance=default_met_aromatic_parameters['distance'],
         chain=default_met_aromatic_parameters['chain'],
         model=default_met_aromatic_parameters['model']
-    ).get_met_aromatic_interactions_mongodb_output() == VALID_RESULTS_1RCY
+    ).get_met_aromatic_interactions()['results']
+
+    sum_met_theta_test = sum([i['met_theta_angle'] for i in test_results])
+    sum_met_phi_test = sum([i['met_phi_angle'] for i in test_results])
+
+    assert sum_met_theta_control == sum_met_theta_test
+    assert sum_met_phi_control == sum_met_phi_test
