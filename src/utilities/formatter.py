@@ -17,17 +17,6 @@ def header(printer):
     return wrapper
 
 
-@header
-def custom_pretty_print_single_aromatic_interaction(data):
-    for row in data:
-        string = ''
-        for entry in row:
-            if isinstance(entry, float):
-                entry = str(round(entry, SIZE_COLUMN  - 6))
-            string += entry + ' ' * (SIZE_COLUMN  - len(entry))
-        print(string)
-
-
 def custom_pretty_print_single_bridging_interaction(data):
     for row in data:
         string = ''

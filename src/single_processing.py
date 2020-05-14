@@ -1,9 +1,9 @@
 import sys
 from met_aromatic import MetAromatic
-from utilities.formatter import (
-    custom_pretty_print_single_aromatic_interaction,
-    custom_pretty_print_single_bridging_interaction
-)
+from utilities.formatter import custom_pretty_print_single_bridging_interaction
+
+
+HEADER = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
 
 
 def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model):
@@ -15,10 +15,9 @@ def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, mo
         model=model
     ).get_met_aromatic_interactions()
 
-    if not isinstance(results, list):
-        sys.exit(results)
-
-    custom_pretty_print_single_aromatic_interaction(results)
+    print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*HEADER))
+    for line in results:
+        print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
 
 
 def run_single_bridging_interaction_query(code, cutoff_distance,
