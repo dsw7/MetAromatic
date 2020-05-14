@@ -113,7 +113,8 @@ def test_bridging_interaction_working_query_vertices_2(path_runner):
 
 def test_invalid_cutoff_distance(path_runner):
     assert call(
-        f'python3 {path_runner} --ai 1rcy --cutoff_distance 0.00'.split()
+        f'python3 {path_runner} --ai 1rcy --cutoff_distance 0.00'.split(),
+        stdout=DEVNULL
     ) == errors.ErrorCodes.InvalidCutoffsError
 
 
@@ -126,31 +127,36 @@ def test_invalid_cutoff_distance_stringified(path_runner):
 
 def test_invalid_cutoff_angle(path_runner):
     assert call(
-        f'python3 {path_runner} --ai 1rcy --cutoff_angle 361.00'.split()
+        f'python3 {path_runner} --ai 1rcy --cutoff_angle 361.00'.split(),
+        stdout=DEVNULL
     ) == errors.ErrorCodes.InvalidCutoffsError
 
 
 def test_invalid_code(path_runner):
     assert call(
-        f'python3 {path_runner} --ai foobar'.split()
+        f'python3 {path_runner} --ai foobar'.split(),
+        stdout=DEVNULL
     ) == errors.ErrorCodes.InvalidPDBFileError
 
 
 def test_no_met_coordinates(path_runner):
     assert call(
-        f'python3 {path_runner} --ai 3nir'.split()
+        f'python3 {path_runner} --ai 3nir'.split(),
+        stdout=DEVNULL
     ) == errors.ErrorCodes.NoMetCoordinatesError
 
 
 def test_invalid_model(path_runner):
     assert call(
-        f'python3 {path_runner} --ai 1rcy --model foobarbaz'.split()
+        f'python3 {path_runner} --ai 1rcy --model foobarbaz'.split(),
+        stdout=DEVNULL
     ) == errors.ErrorCodes.InvalidModelError
 
 
 def test_no_results(path_runner):
     assert call(
-        f'python3 {path_runner} --ai 1a5r'.split()
+        f'python3 {path_runner} --ai 1a5r'.split(),
+        stdout=DEVNULL
     ) == errors.ErrorCodes.NoResultsError
 
 

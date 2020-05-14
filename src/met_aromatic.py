@@ -95,10 +95,11 @@ class MetAromatic:
         return results
 
     def get_bridging_interactions(self, number_vertices=3):
-#        if number_vertices < 3:
-#            return errors.ErrorCodes.BadVerticesError
-
         results = self.get_met_aromatic_interactions()
+
+        if number_vertices < 3:
+            results['exit_code'] = errors.ErrorCodes.BadVerticesError
+            results['exit_status'] = "Vertices must be > 2"
 
         if results['exit_code'] == 0:
             joined_pairs = set()

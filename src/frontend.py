@@ -116,7 +116,7 @@ def get_command_line_arguments():
     )
 
     parser.add_argument(
-        '--test-expression',
+        '--test-expression', '-k',
         help=help_messages.MSG_TEST_EXPRESSION,
         dest='test_expression',
         metavar='<Test*|test*>'
