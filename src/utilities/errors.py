@@ -9,3 +9,4 @@ class ErrorCodes:
     NoResultsError = 9
     BadVerticesError = 10
     BadDatabaseCollectionError = 11
+    OtherError = 12
