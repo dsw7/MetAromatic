@@ -27,54 +27,42 @@ class TestBatchJob:
     def test_correct_count(self):
         assert len(list(self.cursor.find())) == self.num_coronavirus_entries
 
-    def test_correct_exception_boolean_2ca1(self):
-        assert not list(self.cursor.find({'_id': '2ca1'}))[0]['exception']
+    def test_correct_exit_code_2ca1(self):
+        assert list(self.cursor.find({'_id': '2ca1'}))[0]['exit_code'] == 0
 
-    def test_correct_exception_boolean_2fyg(self):
-        assert not list(self.cursor.find({'_id': '2fyg'}))[0]['exception']
+    def test_correct_exit_code_2fyg(self):
+        assert list(self.cursor.find({'_id': '2fyg'}))[0]['exit_code'] == 0
 
-    def test_correct_exception_boolean_1uw7(self):
-        assert not list(self.cursor.find({'_id': '1uw7'}))[0]['exception']
+    def test_correct_exit_status_2ca1(self):
+        assert not list(self.cursor.find({'_id': '2ca1'}))[0]['exit_status']
 
-    def test_correct_exception_boolean_1xak(self):
-        assert list(self.cursor.find({'_id': '1xak'}))[0]['exception']
+    def test_correct_exit_status_2fyg(self):
+        assert not list(self.cursor.find({'_id': '2fyg'}))[0]['exit_status']
 
-    def test_correct_exception_boolean_2fxp(self):
-        assert list(self.cursor.find({'_id': '2fxp'}))[0]['exception']
-
-    def test_correct_exception_boolean_6mwm(self):
-        assert list(self.cursor.find({'_id': '6mwm'}))[0]['exception']
-
-    def test_correct_exception_boolean_2cme(self):
-        assert list(self.cursor.find({'_id': '2cme'}))[0]['exception']
-
-    def test_correct_exception_boolean_spam(self):
-        assert list(self.cursor.find({'_id': 'spam'}))[0]['exception']
-
-    def test_correct_error_code_1xak(self):
+    def test_correct_exit_code_1xak(self):
         assert list(
             self.cursor.find({'_id': '1xak'})
-        )[0]['error_code'] == errors.ErrorCodes.NoMetCoordinatesError
+        )[0]['exit_code'] == errors.ErrorCodes.NoMetCoordinatesError
 
-    def test_correct_error_code_2fxp(self):
+    def test_correct_exit_code_2fxp(self):
         assert list(
             self.cursor.find({'_id': '2fxp'})
-        )[0]['error_code'] == errors.ErrorCodes.NoMetCoordinatesError
+        )[0]['exit_code'] == errors.ErrorCodes.NoMetCoordinatesError
 
-    def test_correct_error_code_6mwm(self):
+    def test_correct_exit_code_6mwm(self):
         assert list(
             self.cursor.find({'_id': '6mwm'})
-        )[0]['error_code'] == errors.ErrorCodes.NoResultsError
+        )[0]['exit_code'] == errors.ErrorCodes.NoResultsError
 
-    def test_correct_error_code_2cme(self):
+    def test_correct_exit_code_2cme(self):
         assert list(
             self.cursor.find({'_id': '2cme'})
-        )[0]['error_code'] == errors.ErrorCodes.NoResultsError
+        )[0]['exit_code'] == errors.ErrorCodes.NoResultsError
 
-    def test_correct_error_code_spam(self):
+    def test_correct_exit_code_spam(self):
         assert list(
             self.cursor.find({'_id': 'spam'})
-        )[0]['error_code'] == errors.ErrorCodes.InvalidPDBFileError
+        )[0]['exit_code'] == errors.ErrorCodes.InvalidPDBFileError
 
     def test_info_file_in_results(self):
         collections = self.client[self.database_name].list_collection_names()

@@ -71,7 +71,7 @@ class BatchJobOrchestrator:
                     cutoff_angle=self.cutoff_angle,
                     chain=self.chain,
                     model=self.model
-                ).get_met_aromatic_interactions_mongodb_output()
+                ).get_met_aromatic_interactions()
             except Exception as exception:
                 # catch remaining unhandled exceptions
                 collection_results.insert(
