@@ -1,6 +1,5 @@
 from os import path
 from pytest import fixture
-from pandas import read_csv
 
 
 @fixture
@@ -27,7 +26,11 @@ def default_bridge_testing_parameters(scope='session'):
 @fixture
 def get_483_control_data(scope='session'):
     root = path.dirname(path.abspath(__file__))
-    return read_csv(path.join(root, './test_data/test_483OutputA3-3-M-Benchmark.csv'))
+    path_to_file = path.join(root, './test_data/test_483OutputA3-3-M-Benchmark.csv')
+    data = []
+    for line in open(path_to_file):
+        data.append(line.strip('\n').split(','))
+    return data
 
 
 @fixture

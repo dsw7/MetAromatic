@@ -1,5 +1,4 @@
 from pytest import mark, skip
-from pandas import DataFrame, testing
 from met_aromatic import MetAromatic
 
 
@@ -29,11 +28,10 @@ TEST_CODES = {
     TEST_CODES
 )
 def test_metaromatic_algorithm_against_483_data(code, default_met_aromatic_parameters, get_483_control_data):
-    df_control = get_483_control_data[get_483_control_data.PDBCODE == code]
-    df_control = df_control.drop(['PDBCODE'], axis=1)
-    df_control = df_control.reindex(sorted(df_control.columns), axis=1)
-    df_control = df_control.sort_values(by='NORM')
-    df_control = df_control.reset_index(drop=True)
+    control = []
+    for row in get_483_control_data:
+        if row[7] == code:
+            control.append(row)
 
     try:
         test_data = MetAromatic(
@@ -42,21 +40,18 @@ def test_metaromatic_algorithm_against_483_data(code, default_met_aromatic_param
             cutoff_distance=default_met_aromatic_parameters['distance'],
             chain=default_met_aromatic_parameters['chain'],
             model=default_met_aromatic_parameters['model']
-        ).get_met_aromatic_interactions()
+        ).get_met_aromatic_interactions()['results']
 
     except IndexError:
         skip('Skipping list index out of range error. Occurs because of missing data.')
 
-    df_test = DataFrame(
-        test_data,
-        columns=[
-            'ARO', 'ARO RES', 'MET', 'MET RES',
-            'NORM', 'MET-THETA', 'MET-PHI'
-        ]
-    )
+    sum_norms_control = sum([float(i[6]) for i in control])
+    sum_theta_control = sum([float(i[5]) for i in control])
+    sum_phi_control = sum([float(i[4]) for i in control])
+    sum_norms_test = sum([float(i['norm']) for i in test_data])
+    sum_theta_test = sum([float(i['met_theta_angle']) for i in test_data])
+    sum_phi_test = sum([float(i['met_phi_angle']) for i in test_data])
 
-    df_test = df_test.reindex(sorted(df_test.columns), axis=1)
-    df_test = df_test.sort_values(by='NORM')
-    df_test = df_test.reset_index(drop=True)
-    df_test = df_test.astype({'MET RES': 'int64', 'ARO RES': 'int64'})
-    testing.assert_frame_equal(df_control, df_test)
+    assert abs(sum_norms_control - sum_norms_test) < 0.01
+    assert abs(sum_theta_control - sum_theta_test) < 0.01
+    assert abs(sum_phi_control - sum_phi_test) < 0.01
