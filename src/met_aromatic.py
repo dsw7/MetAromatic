@@ -100,10 +100,23 @@ class MetAromatic:
 
         met_aromatic_results = self.get_met_aromatic_interactions()
 
-        if isinstance(met_aromatic_results, list):
-            joined_pairs = list(set(
-                (''.join(pair[0:2]), ''.join(pair[2:4])) for pair in met_aromatic_results
-            ))
+        if met_aromatic_results['exit_code'] == 0:
+            joined_pairs = set()
+            for result in met_aromatic_results['results']:
+                joined_pairs.add(
+                    (
+                        result['aromatic_residue'] + str(result['aromatic_position']),
+                        'MET' + str(result['methionine_position'])
+                    )
+                )
+
+            #print(joined_pairs)
+            
+        
+            #if isinstance(met_aromatic_results, list):
+            #joined_pairs = list(set(
+            #    (''.join(pair[0:2]), ''.join(pair[2:4])) for pair in met_aromatic_results
+            #))
 
             nx_graph = Graph()
             nx_graph.add_edges_from(joined_pairs)
@@ -115,32 +128,3 @@ class MetAromatic:
 
         else:
             return met_aromatic_results
-
-
-    def get_met_aromatic_interactions_mongodb_output(self, round_to_number=3):
-        met_aromatic_results = self.get_met_aromatic_interactions()
-
-        if isinstance(met_aromatic_results, list):
-            results = []
-            for row in met_aromatic_results:
-                results.append({
-                    'aromatic_residue': row[0],
-                    'aromatic_position': int(row[1]),
-                    'methionine_position': int(row[3]),
-                    'norm': round(row[4], round_to_number),
-                    'met_theta_angle': round(row[5], round_to_number),
-                    'met_phi_angle': round(row[6], round_to_number)
-                })
-
-            return {
-                '_id': self.code,
-                'exception': False,
-                'results': results
-            }
-
-        else:
-            return {
-                '_id': self.code,
-                'exception': True,
-                'error_code': met_aromatic_results
-            }

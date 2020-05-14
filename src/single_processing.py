@@ -25,7 +25,7 @@ def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, mo
         print("{:<10} {:<10}".format(results['exit_code'], results['exit_status']))
 
 
-def run_single_bridging_interaction_query(code, cutoff_distance,
+def run_single_bridging_interaction_query(code, cutoff_distance, 
                                           cutoff_angle, chain,
                                           model, vertices):
     results = MetAromatic(
