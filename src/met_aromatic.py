@@ -19,39 +19,60 @@ class MetAromatic:
         self.model = model
 
     def get_met_aromatic_interactions(self):
+        results = {
+            '_id': self.code,
+            'exit_code': 0,
+            'exit_status': None,
+            'results': None
+        }
+
         if not verifications.verify_input_distance(self.cutoff_distance):
-            return errors.ErrorCodes.InvalidCutoffsError
+            results['exit_status'] = "Invalid cutoff distance"
+            results['exit_code'] = errors.ErrorCodes.InvalidCutoffsError
+            return results
 
         if not verifications.verify_input_angle(self.cutoff_angle):
-            return errors.ErrorCodes.InvalidCutoffsError
+            results['exit_status'] = "Invalid cutoff angle"
+            results['exit_code'] = errors.ErrorCodes.InvalidCutoffsError
+            return results
 
         file_from_pdb = filegetter.PDBFileGetter(self.code)
 
         filepath = file_from_pdb.fetch_entry_from_pdb()
         if not filepath:
-            return errors.ErrorCodes.InvalidPDBFileError
+            results['exit_status'] = "Invalid PDB file"
+            results['exit_code'] = errors.ErrorCodes.InvalidPDBFileError
+            return results
 
         raw_data = preprocessing.get_raw_data_from_file(filepath)
 
         if not file_from_pdb.remove_entry():
-            return errors.ErrorCodes.MissingFileError
+            results['exit_status'] = "Could not remove PDB file"
+            results['exit_code'] = errors.ErrorCodes.MissingFileError
+            return results
 
         first_model = preprocessing.get_first_model_from_raw_data(raw_data)
 
         met_coordinates = preprocessing.get_relevant_met_coordinates(first_model, self.chain)
 
         if not met_coordinates:
-            return errors.ErrorCodes.NoMetCoordinatesError
+            results['exit_status'] = "No MET residues"
+            results['exit_code'] = errors.ErrorCodes.NoMetCoordinatesError
+            return results
 
         phe_coordinates = preprocessing.get_relevant_phe_coordinates(first_model, self.chain)
         tyr_coordinates = preprocessing.get_relevant_tyr_coordinates(first_model, self.chain)
         trp_coordinates = preprocessing.get_relevant_trp_coordinates(first_model, self.chain)
         if not any((phe_coordinates, tyr_coordinates, trp_coordinates)):
-            return errors.ErrorCodes.NoAromaticCoordinatesError
+            results['exit_status'] = "No PHE/TYR/TRP residues"
+            results['exit_code'] = errors.ErrorCodes.NoAromaticCoordinatesError
+            return results
 
         met_lone_pairs = get_lone_pairs.get_lone_pairs(met_coordinates, self.model)
         if not met_lone_pairs:
-            return errors.ErrorCodes.InvalidModelError
+            results['exit_status'] = "Invalid model"
+            results['exit_code'] = errors.ErrorCodes.InvalidModelError
+            return results
 
         phe_midpoints = get_aromatic_midpoints.get_phe_midpoints(phe_coordinates)
         tyr_midpoints = get_aromatic_midpoints.get_tyr_midpoints(tyr_coordinates)
@@ -65,10 +86,13 @@ class MetAromatic:
         )
 
         if not interactions:
-            return errors.ErrorCodes.NoResultsError
+            results['exit_status'] = "No interactions"
+            results['exit_code'] = errors.ErrorCodes.NoResultsError
+            return results
 
-        return interactions
+        results['results'] = interactions
 
+        return results
 
     def get_bridging_interactions(self, number_vertices=3):
         if number_vertices < 3:

@@ -15,9 +15,11 @@ def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, mo
         model=model
     ).get_met_aromatic_interactions()
 
-    print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*HEADER))
-    for line in results:
-        print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
+
+    if results['exit_code'] == 0:
+        print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*HEADER))
+        for line in results['results']:
+            print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
 
 
 def run_single_bridging_interaction_query(code, cutoff_distance,
