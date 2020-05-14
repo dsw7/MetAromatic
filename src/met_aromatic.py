@@ -95,14 +95,14 @@ class MetAromatic:
         return results
 
     def get_bridging_interactions(self, number_vertices=3):
-        if number_vertices < 3:
-            return errors.ErrorCodes.BadVerticesError
+#        if number_vertices < 3:
+#            return errors.ErrorCodes.BadVerticesError
 
-        met_aromatic_results = self.get_met_aromatic_interactions()
+        results = self.get_met_aromatic_interactions()
 
-        if met_aromatic_results['exit_code'] == 0:
+        if results['exit_code'] == 0:
             joined_pairs = set()
-            for result in met_aromatic_results['results']:
+            for result in results['results']:
                 joined_pairs.add(
                     (
                         result['aromatic_residue'] + str(result['aromatic_position']),
@@ -110,21 +110,14 @@ class MetAromatic:
                     )
                 )
 
-            #print(joined_pairs)
-            
-        
-            #if isinstance(met_aromatic_results, list):
-            #joined_pairs = list(set(
-            #    (''.join(pair[0:2]), ''.join(pair[2:4])) for pair in met_aromatic_results
-            #))
-
             nx_graph = Graph()
             nx_graph.add_edges_from(joined_pairs)
-
             bridges = list(connected_components(nx_graph))
-            return [
+            bridges = [
                 bridge for bridge in bridges if len(bridge) == number_vertices
             ]  # note that inverse bridges (MET-ARO-MET) not removed!
 
+            results['results'] = bridges
+            return results
         else:
-            return met_aromatic_results
+            return results
