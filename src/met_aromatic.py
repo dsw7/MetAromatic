@@ -90,6 +90,7 @@ class MetAromatic:
             results['exit_code'] = errors.ErrorCodes.NoResultsError
             return results
 
+        results['exit_status'] = "Success"
         results['results'] = interactions
 
         return results

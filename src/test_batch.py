@@ -34,10 +34,10 @@ class TestBatchJob:
         assert list(self.cursor.find({'_id': '2fyg'}))[0]['exit_code'] == 0
 
     def test_correct_exit_status_2ca1(self):
-        assert not list(self.cursor.find({'_id': '2ca1'}))[0]['exit_status']
+        assert list(self.cursor.find({'_id': '2ca1'}))[0]['exit_status'] == 'Success'
 
     def test_correct_exit_status_2fyg(self):
-        assert not list(self.cursor.find({'_id': '2fyg'}))[0]['exit_status']
+        assert list(self.cursor.find({'_id': '2fyg'}))[0]['exit_status'] == 'Success'
 
     def test_correct_exit_code_1xak(self):
         assert list(
