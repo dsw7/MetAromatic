@@ -1,5 +1,4 @@
 class ErrorCodes:
-    # errors called from deep within the code
     InvalidCutoffsError = 3
     InvalidPDBFileError = 4
     MissingFileError = 5
