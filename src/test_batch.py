@@ -52,7 +52,7 @@ class TestBatchJob:
     def test_correct_exit_code_6mwm(self):
         assert list(
             self.cursor.find({'_id': '6mwm'})
-        )[0]['exit_code'] == errors.ErrorCodes.NoResultsError
+        )[0]['exit_code'] == errors.ErrorCodes.NoAromaticCoordinatesError
 
     def test_correct_exit_code_2cme(self):
         assert list(
