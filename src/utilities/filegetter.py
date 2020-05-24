@@ -1,36 +1,38 @@
 import gzip
 from urllib.request import urlretrieve, urlcleanup
 from urllib.error import URLError
-from os import remove, getcwd, path
+from os import remove, path
+from tempfile import gettempdir
+
+
+TMP_DIR = gettempdir()
 
 
 class PDBFileGetter:
     def __init__(self, code):
         self.code = code.lower()
+        tar = f'pdb{self.code}.ent.gz'
+        self.url = f'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{self.code[1:3]}/{tar}'
+        self.res_tar = path.join(TMP_DIR, tar)
+        self.res_untar = self.res_tar.strip('.gz')
 
     def fetch_entry_from_pdb(self):
-        subdir = self.code[1:3]
-        infile = f'pdb{self.code}.ent.gz'
-        decompressed = infile.strip('.gz')
-        fullpath = f'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{subdir}/{infile}'
-
         try:
             urlcleanup()
-            urlretrieve(fullpath, infile)
+            urlretrieve(self.url, self.res_tar)
         except URLError:
             pass
         else:
-            with gzip.open(infile, 'rb') as gz:
-                with open(decompressed, 'wb') as out:
+            with gzip.open(self.res_tar, 'rb') as gz:
+                with open(self.res_untar, 'wb') as out:
                     out.writelines(gz)
-            remove(infile)
-            return path.join(getcwd(), decompressed)
+            remove(self.res_tar)
+            return self.res_untar
 
     def remove_entry(self):
-        filename = f'pdb{self.code}.ent'
+        retbool = True
         try:
-            remove(path.join(getcwd(), filename))
+            remove(self.res_untar)
         except FileNotFoundError:
-            return False
-        else:
-            return True
+            retbool = False
+        return retbool
