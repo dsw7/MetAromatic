@@ -1,20 +1,11 @@
 import sys
 from os import path
-from subprocess import Popen, PIPE
 from argparse import ArgumentParser, RawTextHelpFormatter
 from yaml import safe_load
 from utilities import (
     help_messages,
     errors
 )
-
-
-def check_network_connection():
-    process = Popen(['ping', '-n', '2', '8.8.8.8'], stdout=PIPE)
-    stdout = process.communicate()
-    process.wait()
-    if "Destination host unreachable" in stdout[0].decode():
-        sys.exit('Cannot establish network connection.')
 
 
 def get_defaults():

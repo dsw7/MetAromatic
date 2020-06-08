@@ -11,10 +11,8 @@ if sys.version_info[0:2] < MINIMUM_VERSION_PY:
     )
 else:
     sys.path.append(path.join(PROJECT_ROOT, 'src/'))
-    from frontend import (
-        get_command_line_arguments,
-        check_network_connection
-    )
+    from frontend import get_command_line_arguments
+    from utilities.check_network import check_network_connection
 
 
 def main():
