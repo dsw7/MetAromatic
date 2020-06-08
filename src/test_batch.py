@@ -5,7 +5,6 @@ from pymongo import MongoClient
 from utilities import errors
 
 
-
 class TestBatchJob:
     def setup_class(self):
         project_root = path.dirname(path.dirname(path.abspath(__file__)))
