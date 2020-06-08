@@ -1,171 +1,157 @@
 from os import path, chdir, getcwd
+from platform import platform
 from subprocess import call, DEVNULL
 from pytest import mark
 from utilities import errors
-
 
 EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
 EXIT_GENERAL_PROGRAM_FAILURES = 2
 
+if 'Windows' in platform():
+    INTERP = 'python'
+else:
+    INTERP = 'python3'
 
 def test_aromatic_interaction_working_query(path_runner):
     assert call(
-        f'python3 {path_runner} --ai 1rcy'.split(),
+        f'{INTERP} {path_runner} --ai 1rcy'.split(),
         stdout=DEVNULL
     ) == EXIT_SUCCESS
-
 
 def test_bridging_interaction_working_query(path_runner):
     assert call(
-        f'python3 {path_runner} --bi 1rcy'.split(),
+        f'{INTERP} {path_runner} --bi 1rcy'.split(),
         stdout=DEVNULL
     ) == EXIT_SUCCESS
 
+def test_aromatic_interaction_run_from_parent_directory(path_runner):
+    pwd = getcwd()
+    chdir(path.dirname(path.dirname(path_runner)))
+    retval = call(
+        f'{INTERP} MetAromatic/runner.py --ai 1rcy'.split(),
+        stdout=DEVNULL
+    )
+    chdir(pwd)
+    assert retval == EXIT_SUCCESS
 
+def test_aromatic_interaction_run_from_child_directory(path_runner):
+    pwd = getcwd()
+    chdir(path.join(path.dirname(path_runner), 'src/'))
+    retval = call(
+        f'{INTERP} ../runner.py --ai 1rcy'.split(),
+        stdout=DEVNULL
+    )
+    chdir(pwd)
+    assert retval == EXIT_SUCCESS
+
+def test_aromatic_interaction_run_from_child_child_directory(path_runner):
+    pwd = getcwd()
+    chdir(path.join(path.dirname(path_runner), 'src/utilities'))
+    retval = call(
+        f'{INTERP} ../../runner.py --ai 1rcy'.split(),
+        stdout=DEVNULL
+    )
+    chdir(pwd)
+    assert retval == EXIT_SUCCESS
+
+def test_bridging_interaction_run_from_parent_directory(path_runner):
+    pwd = getcwd()
+    chdir(path.dirname(path.dirname(path_runner)))
+    retval = call(
+        f'{INTERP} MetAromatic/runner.py --bi 6lu7'.split(),
+        stdout=DEVNULL
+    )
+    chdir(pwd)
+    assert retval == EXIT_SUCCESS
+
+def test_bridging_interaction_run_from_child_directory(path_runner):
+    pwd = getcwd()
+    chdir(path.join(path.dirname(path_runner), 'src/'))
+    retval = call(
+        f'{INTERP} ../runner.py --bi 6lu7'.split(),
+        stdout=DEVNULL
+    )
+    chdir(pwd)
+    assert retval == EXIT_SUCCESS
+
+def test_bridging_interaction_run_from_child_child_directory(path_runner):
+    pwd = getcwd()
+    chdir(path.join(path.dirname(path_runner), 'src/utilities'))
+    retval = call(
+        f'{INTERP} ../../runner.py --bi 6lu7'.split(),
+        stdout=DEVNULL
+    )
+    chdir(pwd)
+    assert retval == EXIT_SUCCESS
+
+def test_bridging_interaction_working_query_vertices_3(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --bi 1rcy --vertices 3'.split(),
+        stdout=DEVNULL
+    ) == EXIT_SUCCESS
+
+def test_bridging_interaction_working_query_vertices_2(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --bi 1rcy --vertices 2'.split(),
+        stdout=DEVNULL
+    ) == errors.ErrorCodes.BadVerticesError
+
+def test_invalid_cutoff_distance(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --ai 1rcy --cutoff_distance 0.00'.split(),
+        stdout=DEVNULL
+    ) == errors.ErrorCodes.InvalidCutoffsError
+
+def test_invalid_cutoff_distance_stringified(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --ai 1rcy --cutoff_distance foo'.split(),
+        stderr=DEVNULL
+    ) == EXIT_GENERAL_PROGRAM_FAILURES
+
+def test_invalid_cutoff_angle(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --ai 1rcy --cutoff_angle 361.00'.split(),
+        stdout=DEVNULL
+    ) == errors.ErrorCodes.InvalidCutoffsError
+
+def test_invalid_code(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --ai foobar'.split(),
+        stdout=DEVNULL
+    ) == errors.ErrorCodes.InvalidPDBFileError
+
+def test_no_met_coordinates(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --ai 3nir'.split(),
+        stdout=DEVNULL
+    ) == errors.ErrorCodes.NoMetCoordinatesError
+
+def test_invalid_model(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --ai 1rcy --model foobarbaz'.split(),
+        stdout=DEVNULL
+    ) == errors.ErrorCodes.InvalidModelError
+
+def test_no_results(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --ai 1a5r'.split(),
+        stdout=DEVNULL
+    ) == errors.ErrorCodes.NoResultsError
+
+def test_bad_query_type(path_runner):
+    assert call(
+        f'{INTERP} {path_runner} --ai 1rcy --query foobarbaz'.split(),
+        stderr=DEVNULL
+    ) == EXIT_GENERAL_PROGRAM_FAILURES
+
+@mark.skipif('Windows' in platform(), reason='Python 2 path cannot be resolved on Windows.')
 def test_exit_with_python_2(path_runner):
     assert call(
         f'python2 {path_runner} --ai 1rcy'.split(),
         stdout=DEVNULL,
         stderr=DEVNULL
     ) == EXIT_FAILURE
-
-
-def test_aromatic_interaction_run_from_parent_directory(path_runner):
-    pwd = getcwd()
-    chdir(path.dirname(path.dirname(path_runner)))
-    retval = call(
-        f'python3 MetAromatic/runner.py --ai 1rcy'.split(),
-        stdout=DEVNULL
-    )
-    chdir(pwd)
-    assert retval == EXIT_SUCCESS
-
-
-def test_aromatic_interaction_run_from_child_directory(path_runner):
-    pwd = getcwd()
-    chdir(path.join(path.dirname(path_runner), 'src/'))
-    retval = call(
-        f'python3 ../runner.py --ai 1rcy'.split(),
-        stdout=DEVNULL
-    )
-    chdir(pwd)
-    assert retval == EXIT_SUCCESS
-
-
-def test_aromatic_interaction_run_from_child_child_directory(path_runner):
-    pwd = getcwd()
-    chdir(path.join(path.dirname(path_runner), 'src/utilities'))
-    retval = call(
-        f'python3 ../../runner.py --ai 1rcy'.split(),
-        stdout=DEVNULL
-    )
-    chdir(pwd)
-    assert retval == EXIT_SUCCESS
-
-
-def test_bridging_interaction_run_from_parent_directory(path_runner):
-    pwd = getcwd()
-    chdir(path.dirname(path.dirname(path_runner)))
-    retval = call(
-        f'python3 MetAromatic/runner.py --bi 6lu7'.split(),
-        stdout=DEVNULL
-    )
-    chdir(pwd)
-    assert retval == EXIT_SUCCESS
-
-
-def test_bridging_interaction_run_from_child_directory(path_runner):
-    pwd = getcwd()
-    chdir(path.join(path.dirname(path_runner), 'src/'))
-    retval = call(
-        f'python3 ../runner.py --bi 6lu7'.split(),
-        stdout=DEVNULL
-    )
-    chdir(pwd)
-    assert retval == EXIT_SUCCESS
-
-
-def test_bridging_interaction_run_from_child_child_directory(path_runner):
-    pwd = getcwd()
-    chdir(path.join(path.dirname(path_runner), 'src/utilities'))
-    retval = call(
-        f'python3 ../../runner.py --bi 6lu7'.split(),
-        stdout=DEVNULL
-    )
-    chdir(pwd)
-    assert retval == EXIT_SUCCESS
-
-
-def test_bridging_interaction_working_query_vertices_3(path_runner):
-    assert call(
-        f'python3 {path_runner} --bi 1rcy --vertices 3'.split(),
-        stdout=DEVNULL
-    ) == EXIT_SUCCESS
-
-
-def test_bridging_interaction_working_query_vertices_2(path_runner):
-    assert call(
-        f'python3 {path_runner} --bi 1rcy --vertices 2'.split(),
-        stdout=DEVNULL
-    ) == errors.ErrorCodes.BadVerticesError
-
-
-def test_invalid_cutoff_distance(path_runner):
-    assert call(
-        f'python3 {path_runner} --ai 1rcy --cutoff_distance 0.00'.split(),
-        stdout=DEVNULL
-    ) == errors.ErrorCodes.InvalidCutoffsError
-
-
-def test_invalid_cutoff_distance_stringified(path_runner):
-    assert call(
-        f'python3 {path_runner} --ai 1rcy --cutoff_distance foo'.split(),
-        stderr=DEVNULL
-    ) == EXIT_GENERAL_PROGRAM_FAILURES
-
-
-def test_invalid_cutoff_angle(path_runner):
-    assert call(
-        f'python3 {path_runner} --ai 1rcy --cutoff_angle 361.00'.split(),
-        stdout=DEVNULL
-    ) == errors.ErrorCodes.InvalidCutoffsError
-
-
-def test_invalid_code(path_runner):
-    assert call(
-        f'python3 {path_runner} --ai foobar'.split(),
-        stdout=DEVNULL
-    ) == errors.ErrorCodes.InvalidPDBFileError
-
-
-def test_no_met_coordinates(path_runner):
-    assert call(
-        f'python3 {path_runner} --ai 3nir'.split(),
-        stdout=DEVNULL
-    ) == errors.ErrorCodes.NoMetCoordinatesError
-
-
-def test_invalid_model(path_runner):
-    assert call(
-        f'python3 {path_runner} --ai 1rcy --model foobarbaz'.split(),
-        stdout=DEVNULL
-    ) == errors.ErrorCodes.InvalidModelError
-
-
-def test_no_results(path_runner):
-    assert call(
-        f'python3 {path_runner} --ai 1a5r'.split(),
-        stdout=DEVNULL
-    ) == errors.ErrorCodes.NoResultsError
-
-
-def test_bad_query_type(path_runner):
-    assert call(
-        f'python3 {path_runner} --ai 1rcy --query foobarbaz'.split(),
-        stderr=DEVNULL
-    ) == EXIT_GENERAL_PROGRAM_FAILURES
-
 
 @mark.parametrize(
     'subquery',
@@ -180,6 +166,6 @@ def test_bad_query_type(path_runner):
 )
 def test_general_argparse_failures(subquery, path_runner):
     assert call(
-        f'python3 {path_runner} {subquery}'.split(),
+        f'{INTERP} {path_runner} {subquery}'.split(),
         stderr=DEVNULL
     ) == EXIT_GENERAL_PROGRAM_FAILURES
