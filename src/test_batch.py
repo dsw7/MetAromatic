@@ -1,7 +1,9 @@
 from os import path
 from subprocess import call, DEVNULL
+from platform import platform
 from pymongo import MongoClient
 from utilities import errors
+
 
 
 class TestBatchJob:
@@ -15,8 +17,14 @@ class TestBatchJob:
         self.collection_name = 'collection_coronavirus'
         self.client = MongoClient(host='localhost', port=27017)
         self.cursor = self.client[self.database_name][self.collection_name]
+
+        if 'Windows' in platform():
+            interpreter = 'python'
+        else:
+            interpreter = 'python3'
+
         cmd = (
-            f'python3 {path_runner} '
+            f'{interpreter} {path_runner} '
             f'--batch {path_test_data} '
             f'--threads {self.threads} '
             f'--database {self.database_name} '
