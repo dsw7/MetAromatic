@@ -1,6 +1,6 @@
 from os import path
 from subprocess import call, DEVNULL
-from platform import platform
+from platform import system 
 from pymongo import MongoClient
 from utilities import errors
 
@@ -17,7 +17,7 @@ class TestBatchJob:
         self.client = MongoClient(host='localhost', port=27017)
         self.cursor = self.client[self.database_name][self.collection_name]
 
-        if 'Windows' in platform():
+        if 'Windows' in system():
             interpreter = 'python'
         else:
             interpreter = 'python3'

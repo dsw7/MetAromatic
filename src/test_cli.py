@@ -1,5 +1,5 @@
 from os import path, chdir, getcwd
-from platform import platform
+from platform import system 
 from subprocess import call, DEVNULL
 from pytest import mark
 from utilities import errors
@@ -8,7 +8,7 @@ EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
 EXIT_GENERAL_PROGRAM_FAILURES = 2
 
-if 'Windows' in platform():
+if 'Windows' in system():
     INTERP = 'python'
 else:
     INTERP = 'python3'
@@ -145,7 +145,7 @@ def test_bad_query_type(path_runner):
         stderr=DEVNULL
     ) == EXIT_GENERAL_PROGRAM_FAILURES
 
-@mark.skipif('Windows' in platform(), reason='Python 2 path cannot be resolved on Windows.')
+@mark.skipif('Windows' in system(), reason='Python 2 path cannot be resolved on Windows.')
 def test_exit_with_python_2(path_runner):
     assert call(
         f'python2 {path_runner} --ai 1rcy'.split(),
