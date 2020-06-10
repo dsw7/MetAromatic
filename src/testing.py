@@ -1,7 +1,6 @@
 import sys
 from pytest import main as pytest_main
 
-
 class TestRunner:
     def __init__(self, root, capture=True,
                  verbose=True, exit_on_failure=False, expression=None):

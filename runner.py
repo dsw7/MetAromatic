@@ -4,11 +4,11 @@ from os import path
 
 MINIMUM_VERSION_PY = (3, 6)
 PROJECT_ROOT = path.dirname(path.abspath(__file__))
+EXIT_FAILURE = 1
 
 if sys.version_info[0:2] < MINIMUM_VERSION_PY:
-    sys.exit(
-        'Minimum required Python version: %s.%s\nExiting!' % MINIMUM_VERSION_PY
-    )
+    print('Minimum required Python version: %s.%s\nExiting!' % MINIMUM_VERSION_PY)
+    sys.exit(EXIT_FAILURE)
 else:
     sys.path.append(path.join(PROJECT_ROOT, 'src/'))
     from frontend import get_command_line_arguments
