@@ -12,14 +12,17 @@ if sys.version_info[0:2] < MINIMUM_VERSION_PY:
 else:
     sys.path.append(path.join(PROJECT_ROOT, 'src/'))
     from frontend import get_command_line_arguments
-    from utilities.check_network import check_network_connection
-
+    from utilities.check_network import is_network_good
+    from utilities.logger import print_error
 
 def main():
     # Import runners in main function on an as-needed basis - don't force users
     # to import everything just to run --help...
 
-    check_network_connection()
+    if not is_network_good():
+        print_error('Check network connection.')
+        sys.exit(EXIT_FAILURE)
+
     command_line_args = get_command_line_arguments()
 
     if command_line_args.single_aromatic_interaction_query:
@@ -75,7 +78,6 @@ def main():
             exit_on_failure=command_line_args.exit_on_failure,
             verbose=(not command_line_args.quiet)
         ).run_tests_with_coverage()
-
 
 if __name__ == '__main__':
     main()
