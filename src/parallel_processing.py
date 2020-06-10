@@ -9,9 +9,16 @@ from tqdm import tqdm
 from colorama import Fore, Style
 from met_aromatic import MetAromatic
 from utilities.errors import ErrorCodes
+from utilities.logger import (
+    print_error,
+    print_message,
+    print_warning
+)
 
 
 MAX_WORKERS = 15  # put into met_aromatic.conf?
+EXIT_FAILURE = 1
+EXIT_SUCCESS = 0
 
 
 class BatchJobOrchestrator:
@@ -29,21 +36,20 @@ class BatchJobOrchestrator:
         self.database_name = database
 
         if self.num_workers > MAX_WORKERS:
-            print(Fore.YELLOW)
-            print('Number of selected workers exceeds maximum number of workers.')
-            print(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
-            print(Style.RESET_ALL)
+            print_warning('Number of selected workers exceeds maximum number of workers.')
+            print_warning(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
 
     def open_batch_file(self):
         if not self.batch_file:
-            sys.exit('The --batch_file </path/to/file> parameter was not provided.')
+            print_error('The --batch </path/to/file> parameter was not provided.')
+            sys.exit(EXIT_FAILURE)
         try:
             data = []
             with open(self.batch_file) as batch:
                 for line in batch:
                     data.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
         except FileNotFoundError:
-            print(Fore.RED + 'Invalid batch file!' + Style.RESET_ALL)
+            print_error('Invalid batch file!')
             sys.exit(ErrorCodes.MissingFileError)
         else:
             return data
@@ -96,13 +102,8 @@ class BatchJobOrchestrator:
 
     def deploy_jobs(self):
         if self.database_collection_exists():
-            print((
-                f'{Fore.RED}'
-                f'Database/collection pair '
-                f'{self.database_name}.{self.collection_name} exists. '
-                f'Use a different collection name. '
-                f'Exiting. {Style.RESET_ALL}'
-            ))
+            print_error(f'Database/collection pair {self.database_name}.{self.collection_name} exists.')
+            print_error('Use a different collection name.')
             sys.exit(ErrorCodes.BadDatabaseCollectionError)
 
         pdb_codes = self.open_batch_file()
@@ -112,7 +113,7 @@ class BatchJobOrchestrator:
         collection_info = self.client[self.database_name][name_collection_info]
 
         with futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            print(Fore.GREEN + f'Deploying {self.num_workers} workers!\n' + Style.RESET_ALL)
+            print_message(f'Deploying {self.num_workers} workers!')
 
             start_time = time()
             workers = [
@@ -120,12 +121,10 @@ class BatchJobOrchestrator:
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
-                print(Fore.GREEN)
-                print('Batch job complete!\nMongoDB destination: ')
-                print(f'> Database:       {self.database_name}')
-                print(f'> Collection:     {self.collection_name}')
-                print(f'> Job statistics: {name_collection_info}')
-                print(Style.RESET_ALL)
+                print_message('Batch job complete!\nMongoDB destination: ')
+                print_message(f'> Database:       {self.database_name}')
+                print_message(f'> Collection:     {self.collection_name}')
+                print_message(f'> Job statistics: {name_collection_info}')
 
                 collection_info.insert(
                     self.prepare_batch_job_info(

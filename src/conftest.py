@@ -1,7 +1,6 @@
 from os import path
 from pytest import fixture
 
-
 @fixture
 def default_met_aromatic_parameters(scope='session'):
     return {
@@ -10,7 +9,6 @@ def default_met_aromatic_parameters(scope='session'):
         'chain': 'A',
         'model': 'cp',
     }
-
 
 @fixture
 def default_bridge_testing_parameters(scope='session'):
@@ -22,7 +20,6 @@ def default_bridge_testing_parameters(scope='session'):
         'network_size': 4
     }
 
-
 @fixture
 def get_483_control_data(scope='session'):
     root = path.dirname(path.abspath(__file__))
@@ -31,7 +28,6 @@ def get_483_control_data(scope='session'):
     for line in open(path_to_file):
         data.append(line.strip('\n').split(','))
     return data
-
 
 @fixture
 def path_runner(scope='session'):
