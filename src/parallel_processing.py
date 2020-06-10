@@ -6,7 +6,6 @@ from concurrent import futures
 from pymongo import MongoClient
 from numpy import array_split
 from tqdm import tqdm
-from colorama import Fore, Style
 from met_aromatic import MetAromatic
 from utilities.errors import ErrorCodes
 from utilities.logger import (
@@ -121,10 +120,11 @@ class BatchJobOrchestrator:
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
-                print_message('Batch job complete!\nMongoDB destination: ')
-                print_message(f'> Database:       {self.database_name}')
-                print_message(f'> Collection:     {self.collection_name}')
-                print_message(f'> Job statistics: {name_collection_info}')
+                print_message('Batch job complete!')
+                print_message('MongoDB destination:')
+                print_message(f'Database:       {self.database_name}')
+                print_message(f'Collection:     {self.collection_name}')
+                print_message(f'Job statistics: {name_collection_info}')
 
                 collection_info.insert(
                     self.prepare_batch_job_info(
