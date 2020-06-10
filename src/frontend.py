@@ -4,9 +4,9 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from yaml import safe_load
 from utilities import (
     help_messages,
-    errors
+    errors,
+    logger
 )
-
 
 def get_defaults():
     root = path.dirname(path.abspath(__file__))
@@ -14,10 +14,10 @@ def get_defaults():
         with open(path.join(root, 'met_aromatic.conf')) as conf_file:
             constants = safe_load(conf_file)
     except FileNotFoundError:
+        logger.print_error('Configuration file met_aromatic.conf not found.')
         sys.exit(errors.ErrorCodes.MissingFileError)
     else:
         return constants
-
 
 def get_command_line_arguments():
     constants = get_defaults()

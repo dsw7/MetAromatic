@@ -4,7 +4,6 @@ from operator import itemgetter
 from numpy import array
 from .math_utils import get_hexagon_midpoints
 
-
 DICT_ATOMS_PHE = {
     'CG': 'A', 'CD2': 'B', 'CE2': 'C',
     'CZ': 'D', 'CE1': 'E', 'CD1': 'F'
@@ -19,7 +18,6 @@ DICT_ATOMS_TRP = {
     'CD2': 'A', 'CE3': 'B', 'CZ3': 'C',
     'CH2': 'D', 'CZ2': 'E', 'CE2': 'F'
 }
-
 
 def get_aromatic_midpoints(aromatics, keys):
     aromatics = [list(group) for _, group in groupby(aromatics, lambda entry: entry[5])]
