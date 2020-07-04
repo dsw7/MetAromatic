@@ -6,7 +6,6 @@ from datetime import datetime
 from concurrent import futures
 from pymongo import MongoClient
 from numpy import array_split
-from tqdm import tqdm
 from met_aromatic import MetAromatic
 from utilities.errors import ErrorCodes
 
@@ -90,7 +89,7 @@ class BatchJobOrchestrator:
     def worker(self, list_codes):
         collection_results = self.client[self.database_name][self.collection_name]
 
-        for code in tqdm(list_codes):
+        for code in list_codes:
             try:
                 results = MetAromatic(
                     code=code,
@@ -110,6 +109,7 @@ class BatchJobOrchestrator:
                     }
                 )
             else:
+                self.logger.info(f'Processed {code}')
                 collection_results.insert(results)
 
     def database_collection_exists(self):
