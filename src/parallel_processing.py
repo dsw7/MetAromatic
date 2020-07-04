@@ -19,8 +19,8 @@ class Logging:
     def __init__(self):
         logging.basicConfig(
             level=logging.INFO,
-            format='%(levelname)s:%(asctime)s: -> %(message)s',
-            datefmt='%d-%b-%y %H:%M:%S',
+            format='%(levelname)s:%(asctime)s: %(message)s',
+            datefmt='%d-%b-%y:%H:%M:%S',
             handlers=[
                 logging.FileHandler('file.log'),
                 logging.StreamHandler()
@@ -34,6 +34,9 @@ class Logging:
 
     def warning(self, message):
         self.logger.warning(message)
+
+    def exception(self, message):
+        self.logger.exception(message)
 
     def error(self, message):
         self.logger.error(message)
@@ -53,6 +56,7 @@ class BatchJobOrchestrator:
         self.client = MongoClient(host, port)
         self.collection_name = collection
         self.database_name = database
+        self.count = 0
         self.logger = Logging()
 
         if self.num_workers > MAX_WORKERS:
@@ -98,18 +102,12 @@ class BatchJobOrchestrator:
                     chain=self.chain,
                     model=self.model
                 ).get_met_aromatic_interactions()
-            except Exception as exception:
-                # catch remaining unhandled exceptions
-                collection_results.insert(
-                    {
-                        '_id': code,
-                        'exit_code': ErrorCodes.OtherError,
-                        'exit_status': repr(exception),
-                        'results': None
-                    }
-                )
+            except Exception:  # catch remaining unhandled exceptions
+                self.count += 1
+                self.logger.exception(f'Could not process code: {code}. Count: {self.count}')
             else:
-                self.logger.info(f'Processed {code}')
+                self.count += 1
+                self.logger.info(f'Processed {code}. Count: {self.count}')
                 collection_results.insert(results)
 
     def database_collection_exists(self):
@@ -143,10 +141,9 @@ class BatchJobOrchestrator:
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
                 self.logger.info('Batch job complete!')
-                self.logger.info('MongoDB destination:')
-                self.logger.info(f'Database:       {self.database_name}')
-                self.logger.info(f'Collection:     {self.collection_name}')
-                self.logger.info(f'Job statistics: {name_collection_info}')
+                self.logger.info(f'Results loaded into database: {self.database_name}')
+                self.logger.info(f'Results loaded into collection: {self.collection_name}')
+                self.logger.info(f'Batch job statistics loaded into collection: {name_collection_info}')
 
                 collection_info.insert(
                     self.prepare_batch_job_info(
