@@ -98,13 +98,7 @@ The results of the batch job are stored in a MongoDB database (https://www.mongo
 ```
 $ ./runner.py --batch /path/to/pdb_codes.txt --threads 3 --database small_batch --collection example
 ```
-The MongoDB dump database is specified using the `--database` parameter. The collection is specified with the `--collection` parameter. The `--threads` parameter specifies how many threads to use for processing the batch. The progress of the batch job will be displayed in the terminal as a set of progress bars, where the number of progress bars corresponds to the number of assigned threads:
-```
-100%|████████████████████████████████████████████████████████████████████| 6/6 [00:04<00:00,  1.22it/s]
-100%|████████████████████████████████████████████████████████████████████| 7/7 [00:05<00:00,  1.36it/s]
-100%|████████████████████████████████████████████████████████████████████| 6/6 [00:05<00:00,  1.09it/s]
-```
-The recommended number of threads is 12 on a 300 Mbps network and a machine that is running no other processes. By default, mining jobs are run on `localhost` and on port `27017`. However, results can be routed to other servers by specifying hosts and/or ports using the `--host` and `--port` parameters. A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary collection will house all the batch job parameters and other statistics and the collection name will be suffixed with `_info`. An example `*_info` collection for the above example follows:
+The MongoDB dump database is specified using the `--database` parameter. The collection is specified with the `--collection` parameter. The `--threads` parameter specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and a machine that is running no other processes. By default, mining jobs are run on `localhost` and on port `27017`. However, results can be routed to other servers by specifying hosts and/or ports using the `--host` and `--port` parameters. A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary collection will house all the batch job parameters and other statistics and the collection name will be suffixed with `_info`. An example `*_info` collection for the above example follows:
 ```
 {
         "_id" : ObjectId("5e6b2e1326dea0202cec2963"),
