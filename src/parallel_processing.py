@@ -9,11 +9,6 @@ from numpy import array_split
 from tqdm import tqdm
 from met_aromatic import MetAromatic
 from utilities.errors import ErrorCodes
-from utilities.logger import (
-    print_error,
-    print_message,
-    print_warning
-)
 
 
 MAX_WORKERS = 15  # put into met_aromatic.conf?
@@ -23,36 +18,17 @@ EXIT_SUCCESS = 0
 
 class Logging:
     def __init__(self):
-        """
         logging.basicConfig(
             level=logging.INFO,
             format='%(levelname)s:%(asctime)s: -> %(message)s',
-            datefmt='%d-%b-%y %H:%M:%S'
-        )
-        """
-
-        self.logger = logging.getLogger(__name__)
-
-        handler_stream = logging.StreamHandler()
-        handler_logfile = logging.FileHandler('file.log')
-
-        handler_stream.setLevel(logging.INFO)
-        handler_logfile.setLevel(logging.INFO)
-
-        handler_stream_format = logging.Formatter(
-            fmt='%(levelname)s:%(asctime)s: -> %(message)s',
-            datefmt='%d-%b-%y %H:%M:%S'
-        )
-        handler_logfile_format = logging.Formatter(
-            fmt='%(levelname)s:%(asctime)s: -> %(message)s',
-            datefmt='%d-%b-%y %H:%M:%S'
+            datefmt='%d-%b-%y %H:%M:%S',
+            handlers=[
+                logging.FileHandler('file.log'),
+                logging.StreamHandler()
+            ]
         )
 
-        handler_stream.setFormatter(handler_stream_format)
-        handler_logfile.setFormatter(handler_logfile_format)
-
-        self.logger.addHandler(handler_stream)
-        self.logger.addHandler(handler_logfile)
+        self.logger = logging.getLogger()
 
     def info(self, message):
         self.logger.info(message)
@@ -68,6 +44,7 @@ class BatchJobOrchestrator:
     def __init__(self, batch_file, num_workers,
                  cutoff_distance, cutoff_angle, chain,
                  model, host, port, database, collection):
+
         self.batch_file = batch_file
         self.num_workers = num_workers
         self.cutoff_distance = cutoff_distance
@@ -77,14 +54,11 @@ class BatchJobOrchestrator:
         self.client = MongoClient(host, port)
         self.collection_name = collection
         self.database_name = database
-
         self.logger = Logging()
 
         if self.num_workers > MAX_WORKERS:
-            #print_warning('Number of selected workers exceeds maximum number of workers.')
-            #print_warning(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
-            logging.warning('Number of selected workers exceeds maximum number of workers.')
-            logging.warning(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
+            self.logger.warning('Number of selected workers exceeds maximum number of workers.')
+            self.logger.warning(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
 
     def open_batch_file(self):
         if not self.batch_file:
@@ -159,20 +133,20 @@ class BatchJobOrchestrator:
         name_collection_info = f'{self.collection_name}_info'
         collection_info = self.client[self.database_name][name_collection_info]
 
-        with futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            print_message(f'Deploying {self.num_workers} workers!')
+        self.logger.info(f'Deploying {self.num_workers} workers!')
 
+        with futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             start_time = time()
             workers = [
                 executor.submit(self.worker, chunk) for chunk in chunked_pdb_codes
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
-                print_message('Batch job complete!')
-                print_message('MongoDB destination:')
-                print_message(f'Database:       {self.database_name}')
-                print_message(f'Collection:     {self.collection_name}')
-                print_message(f'Job statistics: {name_collection_info}')
+                self.logger.info('Batch job complete!')
+                self.logger.info('MongoDB destination:')
+                self.logger.info(f'Database:       {self.database_name}')
+                self.logger.info(f'Collection:     {self.collection_name}')
+                self.logger.info(f'Job statistics: {name_collection_info}')
 
                 collection_info.insert(
                     self.prepare_batch_job_info(
