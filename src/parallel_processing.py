@@ -1,4 +1,5 @@
 import sys
+import logging
 from re import split
 from time import time
 from datetime import datetime
@@ -34,9 +35,17 @@ class BatchJobOrchestrator:
         self.collection_name = collection
         self.database_name = database
 
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(levelname)s:%(asctime)s: -> %(message)s',
+            datefmt='%d-%b-%y %H:%M:%S'
+        )
+
         if self.num_workers > MAX_WORKERS:
-            print_warning('Number of selected workers exceeds maximum number of workers.')
-            print_warning(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
+            #print_warning('Number of selected workers exceeds maximum number of workers.')
+            #print_warning(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
+            logging.warning('Number of selected workers exceeds maximum number of workers.')
+            logging.warning(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
 
     def open_batch_file(self):
         if not self.batch_file:
