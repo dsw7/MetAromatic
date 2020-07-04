@@ -21,6 +21,49 @@ EXIT_FAILURE = 1
 EXIT_SUCCESS = 0
 
 
+class Logging:
+    def __init__(self):
+        """
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(levelname)s:%(asctime)s: -> %(message)s',
+            datefmt='%d-%b-%y %H:%M:%S'
+        )
+        """
+
+        self.logger = logging.getLogger(__name__)
+
+        handler_stream = logging.StreamHandler()
+        handler_logfile = logging.FileHandler('file.log')
+
+        handler_stream.setLevel(logging.INFO)
+        handler_logfile.setLevel(logging.INFO)
+
+        handler_stream_format = logging.Formatter(
+            fmt='%(levelname)s:%(asctime)s: -> %(message)s',
+            datefmt='%d-%b-%y %H:%M:%S'
+        )
+        handler_logfile_format = logging.Formatter(
+            fmt='%(levelname)s:%(asctime)s: -> %(message)s',
+            datefmt='%d-%b-%y %H:%M:%S'
+        )
+
+        handler_stream.setFormatter(handler_stream_format)
+        handler_logfile.setFormatter(handler_logfile_format)
+
+        self.logger.addHandler(handler_stream)
+        self.logger.addHandler(handler_logfile)
+
+    def info(self, message):
+        self.logger.info(message)
+
+    def warning(self, message):
+        self.logger.warning(message)
+
+    def error(self, message):
+        self.logger.error(message)
+
+
 class BatchJobOrchestrator:
     def __init__(self, batch_file, num_workers,
                  cutoff_distance, cutoff_angle, chain,
@@ -35,11 +78,7 @@ class BatchJobOrchestrator:
         self.collection_name = collection
         self.database_name = database
 
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(levelname)s:%(asctime)s: -> %(message)s',
-            datefmt='%d-%b-%y %H:%M:%S'
-        )
+        self.logger = Logging()
 
         if self.num_workers > MAX_WORKERS:
             #print_warning('Number of selected workers exceeds maximum number of workers.')
@@ -49,7 +88,7 @@ class BatchJobOrchestrator:
 
     def open_batch_file(self):
         if not self.batch_file:
-            print_error('The --batch </path/to/file> parameter was not provided.')
+            self.logger.error('The --batch </path/to/file> parameter was not provided.')
             sys.exit(EXIT_FAILURE)
         try:
             data = []
@@ -57,7 +96,7 @@ class BatchJobOrchestrator:
                 for line in batch:
                     data.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
         except FileNotFoundError:
-            print_error('Invalid batch file!')
+            self.logger.error('Invalid batch file!')
             sys.exit(ErrorCodes.MissingFileError)
         else:
             return data
@@ -110,8 +149,8 @@ class BatchJobOrchestrator:
 
     def deploy_jobs(self):
         if self.database_collection_exists():
-            print_error(f'Database/collection pair {self.database_name}.{self.collection_name} exists.')
-            print_error('Use a different collection name.')
+            self.logger.error(f'Database/collection pair {self.database_name}.{self.collection_name} exists.')
+            self.logger.error('Use a different collection name.')
             sys.exit(ErrorCodes.BadDatabaseCollectionError)
 
         pdb_codes = self.open_batch_file()
