@@ -12,8 +12,11 @@ if sys.version_info[0:2] < MINIMUM_VERSION_PY:
     sys.exit(EXIT_FAILURE)
 else:
     sys.path.append(path.join(PROJECT_ROOT, 'src/'))
-    from frontend import get_command_line_arguments
-    from utilities.logger import print_error
+
+from frontend import get_command_line_arguments
+from utilities.logger import print_error
+from single_processing import RunSingleQuery
+
 
 def main():
     # Import runners in main function on an as-needed basis - don't force users
@@ -22,25 +25,10 @@ def main():
     command_line_args = get_command_line_arguments()
 
     if command_line_args.single_aromatic_interaction_query:
-        from single_processing import run_single_met_aromatic_query
-        run_single_met_aromatic_query(
-            command_line_args.single_aromatic_interaction_query,
-            cutoff_distance=command_line_args.cutoff_distance,
-            cutoff_angle=command_line_args.cutoff_angle,
-            chain=command_line_args.chain,
-            model=command_line_args.model
-        )
+        RunSingleQuery(command_line_args).single_met_aromatic_query()
 
-    elif command_line_args.single_bridging_interaction_query:
-        from single_processing import run_single_bridging_interaction_query
-        run_single_bridging_interaction_query(
-            command_line_args.single_bridging_interaction_query,
-            cutoff_distance=command_line_args.cutoff_distance,
-            cutoff_angle=command_line_args.cutoff_angle,
-            chain=command_line_args.chain,
-            model=command_line_args.model,
-            vertices=command_line_args.vertices
-        )
+    elif command_line_args.single_bridging_interaction_query: 
+        RunSingleQuery(command_line_args).single_bridging_interaction_query()
 
     elif command_line_args.run_batch_job:
         from parallel_processing import BatchJobOrchestrator

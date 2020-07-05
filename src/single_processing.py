@@ -10,7 +10,7 @@ class RunSingleQuery:
 
     def single_met_aromatic_query(self):
         results = MetAromatic(
-            self.command_line_arguments.code,
+            self.command_line_arguments.single_aromatic_interaction_query,
             cutoff_distance=self.command_line_arguments.cutoff_distance,
             cutoff_angle=self.command_line_arguments.cutoff_angle,
             chain=self.command_line_arguments.chain,
@@ -27,9 +27,9 @@ class RunSingleQuery:
 
         sys.exit(results['exit_code'])
 
-    def run_single_bridging_interaction_query(self):
+    def single_bridging_interaction_query(self):
         results = MetAromatic(
-            self.command_line_arguments.code,
+            self.command_line_arguments.single_bridging_interaction_query,
             cutoff_distance=self.command_line_arguments.cutoff_distance,
             cutoff_angle=self.command_line_arguments.cutoff_angle,
             chain=self.command_line_arguments.chain,
