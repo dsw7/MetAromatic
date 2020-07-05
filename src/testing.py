@@ -11,8 +11,8 @@ class RunTests:
             self.cmd.append('-v')
         if command_line_arguments.exit_on_failure:
             self.cmd.append('-x')
-        if command_line_arguments.expression:
-            self.cmd.append(f'-k{command_line_arguments.aexpression}')
+        if command_line_arguments.test_expression:
+            self.cmd.append(f'-k{command_line_arguments.test_expression}')
 
     def run_tests(self):
         sys.exit(pytest_main(self.cmd))
