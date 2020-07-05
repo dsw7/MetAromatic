@@ -1,7 +1,6 @@
 class ErrorCodes:
     InvalidCutoffsError = 3
     InvalidPDBFileError = 4
-    MissingFileError = 5
     NoMetCoordinatesError = 6
     NoAromaticCoordinatesError = 7
     InvalidModelError = 8

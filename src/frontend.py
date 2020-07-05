@@ -5,9 +5,10 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from yaml import safe_load
 from utilities import (
     help_messages,
-    errors,
     logger
 )
+
+EXIT_FAILURE = 1
 
 def get_defaults():
     root = path.dirname(path.abspath(__file__))
@@ -16,7 +17,7 @@ def get_defaults():
             constants = safe_load(conf_file)
     except FileNotFoundError:
         logger.print_error('Configuration file met_aromatic.conf not found.')
-        sys.exit(errors.ErrorCodes.MissingFileError)
+        sys.exit(EXIT_FAILURE)
     else:
         return constants
 

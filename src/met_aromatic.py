@@ -48,7 +48,7 @@ class MetAromatic:
 
         if not file_from_pdb.remove_entry():
             results['exit_status'] = "Could not remove PDB file"
-            results['exit_code'] = errors.ErrorCodes.MissingFileError
+            results['exit_code'] = errors.ErrorCodes.OtherError
             return results
 
         first_model = preprocessing.get_first_model_from_raw_data(raw_data)
