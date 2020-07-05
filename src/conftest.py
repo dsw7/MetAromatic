@@ -9,12 +9,3 @@ def default_met_aromatic_parameters(scope='session'):
         'chain': 'A',
         'model': 'cp',
     }
-
-@fixture
-def get_483_control_data(scope='session'):
-    root = path.dirname(path.abspath(__file__))
-    path_to_file = path.join(root, './test_data/test_483OutputA3-3-M-Benchmark.csv')
-    data = []
-    for line in open(path_to_file):
-        data.append(line.strip('\n').split(','))
-    return data

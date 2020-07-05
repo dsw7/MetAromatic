@@ -1,3 +1,4 @@
+from os import path
 from pytest import mark, skip
 from met_aromatic import MetAromatic
 
@@ -23,35 +24,43 @@ TEST_CODES = {
 }
 
 
-@mark.parametrize(
-    "code",
-    TEST_CODES
-)
-def test_metaromatic_algorithm_against_483_data(code, default_met_aromatic_parameters, get_483_control_data):
-    control = []
-    for row in get_483_control_data:
-        if row[7] == code:
-            control.append(row)
+class TestMetAromaticAlgorithmAgainst483Data:
+    def setup_class(self):
+        root = path.dirname(path.abspath(__file__))
+        path_to_file = path.join(root, './test_data/test_483OutputA3-3-M-Benchmark.csv')
+        self.control_data = []
+        for line in open(path_to_file):
+            self.control_data.append(line.strip('\n').split(','))
 
-    try:
-        test_data = MetAromatic(
-            code=code,
-            cutoff_angle=default_met_aromatic_parameters['angle'],
-            cutoff_distance=default_met_aromatic_parameters['distance'],
-            chain=default_met_aromatic_parameters['chain'],
-            model=default_met_aromatic_parameters['model']
-        ).get_met_aromatic_interactions()['results']
+    @mark.parametrize(
+        "code",
+        TEST_CODES
+    )
+    def test_metaromatic_algorithm_against_483_data(self, code, default_met_aromatic_parameters):
+        control = []
+        for row in self.control_data:
+            if row[7] == code:
+                control.append(row)
 
-    except IndexError:
-        skip('Skipping list index out of range error. Occurs because of missing data.')
+        try:
+            test_data = MetAromatic(
+                code=code,
+                cutoff_angle=default_met_aromatic_parameters['angle'],
+                cutoff_distance=default_met_aromatic_parameters['distance'],
+                chain=default_met_aromatic_parameters['chain'],
+                model=default_met_aromatic_parameters['model']
+            ).get_met_aromatic_interactions()['results']
 
-    sum_norms_control = sum([float(i[6]) for i in control])
-    sum_theta_control = sum([float(i[5]) for i in control])
-    sum_phi_control = sum([float(i[4]) for i in control])
-    sum_norms_test = sum([float(i['norm']) for i in test_data])
-    sum_theta_test = sum([float(i['met_theta_angle']) for i in test_data])
-    sum_phi_test = sum([float(i['met_phi_angle']) for i in test_data])
+        except IndexError:
+            skip('Skipping list index out of range error. Occurs because of missing data.')
 
-    assert abs(sum_norms_control - sum_norms_test) < 0.01
-    assert abs(sum_theta_control - sum_theta_test) < 0.01
-    assert abs(sum_phi_control - sum_phi_test) < 0.01
+        sum_norms_control = sum([float(i[6]) for i in control])
+        sum_theta_control = sum([float(i[5]) for i in control])
+        sum_phi_control = sum([float(i[4]) for i in control])
+        sum_norms_test = sum([float(i['norm']) for i in test_data])
+        sum_theta_test = sum([float(i['met_theta_angle']) for i in test_data])
+        sum_phi_test = sum([float(i['met_phi_angle']) for i in test_data])
+
+        assert abs(sum_norms_control - sum_norms_test) < 0.01
+        assert abs(sum_theta_control - sum_theta_test) < 0.01
+        assert abs(sum_phi_control - sum_phi_test) < 0.01
