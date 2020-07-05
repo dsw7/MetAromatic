@@ -2,37 +2,46 @@ import sys
 from met_aromatic import MetAromatic
 from utilities.logger import print_error
 
-HEADER_SUCCESS = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
-HEADER_FAILURE = ['EXIT CODE', 'EXIT STATUS']
 
+class RunSingleQuery:
+    def __init__(self, command_line_arguments):
+        self.command_line_arguments = command_line_arguments
+        self.header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
 
-def run_single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model):
-    results = MetAromatic(
-        code, cutoff_distance=cutoff_distance, cutoff_angle=cutoff_angle,
-        chain=chain, model=model
-    ).get_met_aromatic_interactions()
+    def single_met_aromatic_query(self):
+        results = MetAromatic(
+            self.command_line_arguments.code,
+            cutoff_distance=self.command_line_arguments.cutoff_distance,
+            cutoff_angle=self.command_line_arguments.cutoff_angle,
+            chain=self.command_line_arguments.chain,
+            model=self.command_line_arguments.model
+        ).get_met_aromatic_interactions()
 
-    if results['exit_code'] == 0:
-        print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*HEADER_SUCCESS))
-        for line in results['results']:
-            print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
-    else:
-        print_error(results['exit_status'])
-        print_error(f"Exited with code: {results['exit_code']}")
+        if results['exit_code'] == 0:
+            print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*self.header_success))
+            for line in results['results']:
+                print("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
+        else:
+            print_error(results['exit_status'])
+            print_error(f"Exited with code: {results['exit_code']}")
 
-    sys.exit(results['exit_code'])
+        sys.exit(results['exit_code'])
 
+    def run_single_bridging_interaction_query(self):
+        results = MetAromatic(
+            self.command_line_arguments.code,
+            cutoff_distance=self.command_line_arguments.cutoff_distance,
+            cutoff_angle=self.command_line_arguments.cutoff_angle,
+            chain=self.command_line_arguments.chain,
+            model=self.command_line_arguments.model
+        ).get_bridging_interactions(
+            number_vertices=self.command_line_arguments.vertices
+        )
 
-def run_single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain, model, vertices):
-    results = MetAromatic(
-        code, cutoff_distance=cutoff_distance, cutoff_angle=cutoff_angle,
-        chain=chain, model=model
-    ).get_bridging_interactions(number_vertices=vertices)
+        if results['exit_code'] == 0:
+            print(results['results'])
+        else:
+            print_error(results['exit_status'])
+            print_error(f"Exited with code: {results['exit_code']}")
 
-    if results['exit_code'] == 0:
-        print(results['results'])
-    else:
-        print_error(results['exit_status'])
-        print_error(f"Exited with code: {results['exit_code']}")
-
-    sys.exit(results['exit_code'])
+        sys.exit(results['exit_code'])
