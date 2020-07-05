@@ -28,8 +28,3 @@ def get_483_control_data(scope='session'):
     for line in open(path_to_file):
         data.append(line.strip('\n').split(','))
     return data
-
-@fixture
-def path_runner(scope='session'):
-    root = path.dirname(path.dirname(path.abspath(__file__)))
-    return path.join(root, 'runner.py')
