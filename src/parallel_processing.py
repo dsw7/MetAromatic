@@ -10,19 +10,19 @@ from met_aromatic import MetAromatic
 from utilities.errors import ErrorCodes
 
 
-MAX_WORKERS = 15  # put into met_aromatic.conf?
+MAX_WORKERS = 15
 EXIT_FAILURE = 1
 EXIT_SUCCESS = 0
 
 
 class Logging:
-    def __init__(self):
+    def __init__(self, path_logfile):
         logging.basicConfig(
             level=logging.INFO,
             format='%(levelname)s:%(asctime)s: %(message)s',
             datefmt='%d-%b-%y:%H:%M:%S',
             handlers=[
-                logging.FileHandler('file.log'),
+                logging.FileHandler(path_logfile, 'w'),
                 logging.StreamHandler()
             ]
         )
@@ -55,7 +55,10 @@ class RunBatchQueries:
         self.collection_name = command_line_arguments.collection
         self.database_name = command_line_arguments.database
         self.count = 0
-        self.logger = Logging()
+
+        path_logfile = command_line_arguments.path_logfile
+        self.logger = Logging(path_logfile)
+        self.logger.info(f'Job progress is being logged to {path_logfile}')
 
         if self.num_workers > MAX_WORKERS:
             self.logger.warning('Number of selected workers exceeds maximum number of workers.')

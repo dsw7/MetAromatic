@@ -1,5 +1,6 @@
 import sys
 from os import path
+from tempfile import gettempdir
 from argparse import ArgumentParser, RawTextHelpFormatter
 from yaml import safe_load
 from utilities import (
@@ -104,6 +105,14 @@ def get_command_line_arguments():
         default=constants['default_threads'],
         type=int,
         metavar='<number-threads>'
+    )
+
+    parser.add_argument(
+        '--path-to-log-file',
+        help=help_messages.MSG_PATH_TO_LOG_FILE,
+        default=path.join(gettempdir(), 'met_aromatic.log'),
+        metavar='</path/to/file.log>',
+        dest='path_logfile'
     )
 
     parser.add_argument(

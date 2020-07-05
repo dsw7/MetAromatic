@@ -12,6 +12,12 @@ MSG_MODEL = 'Set a lone pair interpolation model.'
 MSG_CHAIN = 'Choose a protein chain identifier.'
 MSG_VERTICES = 'Choose number of vertices for bridging interactions.'
 
+#### log files
+MSG_PATH_TO_LOG_FILE = (
+    'Enter a path / log file name.\n'
+    'The default path is /tmp/met_aromatic.log'
+)
+
 #### mongodb batch job parameters
 MSG_PORT = 'Set a MongoDB port.'
 MSG_HOST = 'Set a MongoDB host.'
