@@ -42,20 +42,18 @@ class Logging:
         self.logger.error(message)
 
 
-class BatchJobOrchestrator:
-    def __init__(self, batch_file, num_workers,
-                 cutoff_distance, cutoff_angle, chain,
-                 model, host, port, database, collection):
+class RunBatchQueries:
+    def __init__(self, command_line_arguments):
 
-        self.batch_file = batch_file
-        self.num_workers = num_workers
-        self.cutoff_distance = cutoff_distance
-        self.cutoff_angle = cutoff_angle
-        self.chain = chain
-        self.model = model
-        self.client = MongoClient(host, port)
-        self.collection_name = collection
-        self.database_name = database
+        self.batch_file = command_line_arguments.run_batch_job
+        self.num_workers = command_line_arguments.threads
+        self.cutoff_distance = command_line_arguments.cutoff_distance
+        self.cutoff_angle = command_line_arguments.cutoff_angle
+        self.chain = command_line_arguments.chain
+        self.model = command_line_arguments.model
+        self.client = MongoClient(command_line_arguments.host, command_line_arguments.port)
+        self.collection_name = command_line_arguments.collection
+        self.database_name = command_line_arguments.database
         self.count = 0
         self.logger = Logging()
 

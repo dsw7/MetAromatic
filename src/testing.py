@@ -1,20 +1,18 @@
 import sys
 from pytest import main as pytest_main
 
-class TestRunner:
-    def __init__(self, root, capture=True,
-                 verbose=True, exit_on_failure=False, expression=None):
+class RunTests:
+    def __init__(self, command_line_arguments, root):
         self.root = root
         self.cmd = [root]
+        self.cmd.append('-s')
 
-        if capture:
-            self.cmd.append('-s')
-        if verbose:
+        if not command_line_arguments.quiet:
             self.cmd.append('-v')
-        if exit_on_failure:
+        if command_line_arguments.exit_on_failure:
             self.cmd.append('-x')
-        if expression:
-            self.cmd.append(f'-k{expression}')
+        if command_line_arguments.expression:
+            self.cmd.append(f'-k{command_line_arguments.aexpression}')
 
     def run_tests(self):
         sys.exit(pytest_main(self.cmd))
