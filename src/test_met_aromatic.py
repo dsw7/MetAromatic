@@ -26,6 +26,13 @@ TEST_CODES = {
 
 class TestMetAromaticAlgorithmAgainst483Data:
     def setup_class(self):
+        self.default_parameters = {
+            'distance': 4.9,
+            'angle': 109.5,
+            'chain': 'A',
+            'model': 'cp',
+        }
+
         root = path.dirname(path.abspath(__file__))
         path_to_file = path.join(root, './test_data/test_483OutputA3-3-M-Benchmark.csv')
         self.control_data = []
@@ -36,7 +43,7 @@ class TestMetAromaticAlgorithmAgainst483Data:
         "code",
         TEST_CODES
     )
-    def test_metaromatic_algorithm_against_483_data(self, code, default_met_aromatic_parameters):
+    def test_metaromatic_algorithm_against_483_data(self, code):
         control = []
         for row in self.control_data:
             if row[7] == code:
@@ -45,10 +52,10 @@ class TestMetAromaticAlgorithmAgainst483Data:
         try:
             test_data = MetAromatic(
                 code=code,
-                cutoff_angle=default_met_aromatic_parameters['angle'],
-                cutoff_distance=default_met_aromatic_parameters['distance'],
-                chain=default_met_aromatic_parameters['chain'],
-                model=default_met_aromatic_parameters['model']
+                cutoff_angle=self.default_parameters['angle'],
+                cutoff_distance=self.default_parameters['distance'],
+                chain=self.default_parameters['chain'],
+                model=self.default_parameters['model']
             ).get_met_aromatic_interactions()['results']
 
         except IndexError:
