@@ -7,5 +7,4 @@ class ErrorCodes:
     InvalidModelError = 8
     NoResultsError = 9
     BadVerticesError = 10
-    BadDatabaseCollectionError = 11
     OtherError = 12

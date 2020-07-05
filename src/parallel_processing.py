@@ -7,7 +7,6 @@ from concurrent import futures
 from pymongo import MongoClient
 from numpy import array_split
 from met_aromatic import MetAromatic
-from utilities.errors import ErrorCodes
 
 
 MAX_WORKERS = 15
@@ -75,7 +74,7 @@ class RunBatchQueries:
                     data.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
         except FileNotFoundError:
             self.logger.error('Invalid batch file!')
-            sys.exit(ErrorCodes.MissingFileError)
+            sys.exit(EXIT_FAILURE)
         else:
             return data
 
@@ -124,7 +123,7 @@ class RunBatchQueries:
         if self.database_collection_exists():
             self.logger.error(f'Database/collection pair {self.database_name}.{self.collection_name} exists.')
             self.logger.error('Use a different collection name.')
-            sys.exit(ErrorCodes.BadDatabaseCollectionError)
+            sys.exit(EXIT_FAILURE)
 
         pdb_codes = self.open_batch_file()
         chunked_pdb_codes = array_split(pdb_codes, self.num_workers)
