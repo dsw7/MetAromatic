@@ -9,6 +9,8 @@ from utilities import (
     verifications
 )
 
+EXIT_FAILURE = 1
+
 
 class MetAromatic:
     def __init__(self, code, cutoff_distance, cutoff_angle, chain, model):
@@ -99,7 +101,7 @@ class MetAromatic:
         results = self.get_met_aromatic_interactions()
 
         if number_vertices < 3:
-            results['exit_code'] = errors.ErrorCodes.BadVerticesError
+            results['exit_code'] = EXIT_FAILURE
             results['exit_status'] = "Vertices must be > 2"
 
         if results['exit_code'] == 0:

@@ -101,7 +101,7 @@ class TestCommandLineInterface:
         assert call(
             f'{INTERP} {self.path_runner} --bi 1rcy --vertices 2'.split(),
             stdout=DEVNULL
-        ) == errors.ErrorCodes.BadVerticesError
+        ) == EXIT_FAILURE 
 
     def test_invalid_cutoff_distance(self):
         assert call(

@@ -5,5 +5,4 @@ class ErrorCodes:
     NoAromaticCoordinatesError = 7
     InvalidModelError = 8
     NoResultsError = 9
-    BadVerticesError = 10
     OtherError = 12
