@@ -1,6 +1,6 @@
 from os import path
 from subprocess import call, DEVNULL
-from platform import system 
+from platform import system
 from pymongo import MongoClient
 from utilities import errors
 
