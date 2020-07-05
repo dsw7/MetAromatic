@@ -13,16 +13,11 @@ if sys.version_info[0:2] < MINIMUM_VERSION_PY:
 else:
     sys.path.append(path.join(PROJECT_ROOT, 'src/'))
     from frontend import get_command_line_arguments
-    from utilities.check_network import is_network_good
     from utilities.logger import print_error
 
 def main():
     # Import runners in main function on an as-needed basis - don't force users
     # to import everything just to run --help...
-
-    if not is_network_good():
-        print_error('Check network connection.')
-        sys.exit(EXIT_FAILURE)
 
     command_line_args = get_command_line_arguments()
 
