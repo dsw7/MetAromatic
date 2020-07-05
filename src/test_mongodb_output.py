@@ -69,7 +69,7 @@ VALID_RESULTS_1RCY = [{
 }]
 
 
-class TestErrors:
+class TestMongoDBOutput:
     def setup_class(self):
         self.default_parameters = {
             'distance': 4.9,
