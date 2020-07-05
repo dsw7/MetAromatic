@@ -40,52 +40,61 @@ def get_control_bridge_test_ids(file, size=100):
         return outgoing
 
 
-@mark.parametrize(
-    'bridges',
-    get_control_bridges(CONTROL_BRIDGE_DATA),
-    ids=get_control_bridge_test_ids(CONTROL_BRIDGE_DATA)
-)
-def test_bridge_collector(bridges, default_bridge_testing_parameters):
-    try:
-        bridging_interactions = MetAromatic(
-            code=bridges.get('pdb_code'),
-            cutoff_angle=default_bridge_testing_parameters['angle'],
-            cutoff_distance=default_bridge_testing_parameters['distance'],
-            model=default_bridge_testing_parameters['model'],
-            chain=default_bridge_testing_parameters['chain']
+class TestBridges:
+    def setup_class(self):
+        self.default_bridge_testing_parameters = {
+            'distance': 6.0,
+            'angle': 360.0,
+            'chain': 'A',
+            'model': 'cp',
+            'network_size': 4
+        }
+
+    @mark.parametrize(
+        'bridges',
+        get_control_bridges(CONTROL_BRIDGE_DATA),
+        ids=get_control_bridge_test_ids(CONTROL_BRIDGE_DATA)
+    )
+    def test_bridge_collector(self, bridges):
+        try:
+            bridging_interactions = MetAromatic(
+                code=bridges.get('pdb_code'),
+                cutoff_angle=self.default_bridge_testing_parameters['angle'],
+                cutoff_distance=self.default_bridge_testing_parameters['distance'],
+                model=self.default_bridge_testing_parameters['model'],
+                chain=self.default_bridge_testing_parameters['chain']
+            ).get_bridging_interactions(
+                number_vertices=self.default_bridge_testing_parameters['network_size']
+            )
+        except IndexError:
+            skip('Skipping list index out of range error. Occurs because of missing data.')
+        else:
+            assert set(bridges.get('bridge')) in bridging_interactions['results']
+
+    @mark.parametrize(
+        'code, cutoff_distance, cutoff_angle, error',
+        [
+            ('1rcy', 0.00, 109.5, errors.ErrorCodes.InvalidCutoffsError),
+            ('1rcy', 4.95, 720.0, errors.ErrorCodes.InvalidCutoffsError),
+            ('2rcy', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
+            ('3nir', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
+            ('abcd', 4.95, 109.5, errors.ErrorCodes.InvalidPDBFileError)
+        ],
+        ids=[
+            "Testing errors.ErrorCodes.InvalidCutoffsError",
+            "Testing errors.ErrorCodes.InvalidCutoffsError",
+            "Testing errors.ErrorCodes.NoMetCoordinatesError",
+            "Testing errors.ErrorCodes.NoMetCoordinatesError",
+            "Testing errors.ErrorCodes.InvalidPDBFileError"
+        ]
+    )
+    def test_no_bridges_response(self, code, cutoff_distance, cutoff_angle, error):
+        assert MetAromatic(
+            code=code,
+            cutoff_angle=cutoff_angle,
+            cutoff_distance=cutoff_distance,
+            model=self.default_bridge_testing_parameters['model'],
+            chain=self.default_bridge_testing_parameters['chain']
         ).get_bridging_interactions(
-            number_vertices=default_bridge_testing_parameters['network_size']
-        )
-    except IndexError:
-        skip('Skipping list index out of range error. Occurs because of missing data.')
-    else:
-        assert set(bridges.get('bridge')) in bridging_interactions['results']
-
-
-@mark.parametrize(
-    'code, cutoff_distance, cutoff_angle, error',
-    [
-        ('1rcy', 0.00, 109.5, errors.ErrorCodes.InvalidCutoffsError),
-        ('1rcy', 4.95, 720.0, errors.ErrorCodes.InvalidCutoffsError),
-        ('2rcy', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
-        ('3nir', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
-        ('abcd', 4.95, 109.5, errors.ErrorCodes.InvalidPDBFileError)
-    ],
-    ids=[
-        "Testing errors.ErrorCodes.InvalidCutoffsError",
-        "Testing errors.ErrorCodes.InvalidCutoffsError",
-        "Testing errors.ErrorCodes.NoMetCoordinatesError",
-        "Testing errors.ErrorCodes.NoMetCoordinatesError",
-        "Testing errors.ErrorCodes.InvalidPDBFileError"
-    ]
-)
-def test_no_bridges_response(code, cutoff_distance, cutoff_angle, default_bridge_testing_parameters, error):
-    assert MetAromatic(
-        code=code,
-        cutoff_angle=cutoff_angle,
-        cutoff_distance=cutoff_distance,
-        model=default_bridge_testing_parameters['model'],
-        chain=default_bridge_testing_parameters['chain']
-    ).get_bridging_interactions(
-        number_vertices=default_bridge_testing_parameters['network_size']
-    )['exit_code'] == error
+            number_vertices=self.default_bridge_testing_parameters['network_size']
+        )['exit_code'] == error
