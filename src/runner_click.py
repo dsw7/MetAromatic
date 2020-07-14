@@ -5,30 +5,37 @@ from click import (
     argument,
     echo,
     secho,
-    option
+    option,
+    pass_context
 )
 from met_aromatic import MetAromatic
 
 
 @group()
-def main():
-    pass
+@option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
+@option('--cutoff-angle', default=109.5, type=float, metavar='<angle-in-degrees>')
+@option('--chain', default='A', metavar='<chain>')
+@option('--model', default='cp', metavar='<model>')
+@pass_context
+def main(context=None, cutoff_distance=None, cutoff_angle=None, chain=None, model=None):
+    context.ensure_object(dict)
+    context.obj['cutoff_distance'] = cutoff_distance
+    context.obj['cutoff_angle'] = cutoff_angle
+    context.obj['chain'] = chain
+    context.obj['model'] = model
 
 
 @main.command()
+@pass_context
 @argument('code')
-@option('--cutoff-distance', default=4.9, type=float)
-@option('--cutoff-angle', default=109.5, type=float)
-@option('--chain', default='A')
-@option('--model', default='cp')
-def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model):
+def single_met_aromatic_query(context, code):
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     results = MetAromatic(
         code,
-        cutoff_distance=cutoff_distance,
-        cutoff_angle=cutoff_angle,
-        chain=chain,
-        model=model
+        cutoff_distance=context.obj['cutoff_distance'],
+        cutoff_angle=context.obj['cutoff_angle'],
+        chain=context.obj['chain'],
+        model=context.obj['model']
     ).get_met_aromatic_interactions()
 
     if results['exit_code'] == 0:
@@ -42,19 +49,16 @@ def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model)
 
 
 @main.command()
+@pass_context
 @argument('code')
-@option('--cutoff-distance', default=4.9, type=float)
-@option('--cutoff-angle', default=109.5, type=float)
-@option('--chain', default='A')
-@option('--model', default='cp')
-@option('--vertices', default=3, type=int)
-def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain, model, vertices):
+@option('--vertices', default=3, metavar='<vertices>')
+def single_bridging_interaction_query(context, code, vertices):
     results = MetAromatic(
         code,
-        cutoff_distance=cutoff_distance,
-        cutoff_angle=cutoff_angle,
-        chain=chain,
-        model=model
+        cutoff_distance=context.obj['cutoff_distance'],
+        cutoff_angle=context.obj['cutoff_angle'],
+        chain=context.obj['chain'],
+        model=context.obj['model']
     ).get_bridging_interactions(
         number_vertices=vertices
     )
