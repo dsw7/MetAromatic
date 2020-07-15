@@ -42,20 +42,20 @@ class Logging:
 
 
 class RunBatchQueries:
-    def __init__(self, command_line_arguments):
+    def __init__(self, path_batch_file, context):
 
-        self.batch_file = command_line_arguments.run_batch_job
-        self.num_workers = command_line_arguments.threads
-        self.cutoff_distance = command_line_arguments.cutoff_distance
-        self.cutoff_angle = command_line_arguments.cutoff_angle
-        self.chain = command_line_arguments.chain
-        self.model = command_line_arguments.model
-        self.client = MongoClient(command_line_arguments.host, command_line_arguments.port)
-        self.collection_name = command_line_arguments.collection
-        self.database_name = command_line_arguments.database
+        self.batch_file = path_batch_file 
+        self.num_workers = context.obj['threads']
+        self.cutoff_distance = context.obj['cutoff_distance']
+        self.cutoff_angle = context.obj['cutoff_angle']
+        self.chain = context.obj['chain']
+        self.model = context.obj['model']
+        self.client = MongoClient(context.obj['host'], context.obj['port'])
+        self.collection_name = context.obj['collection']
+        self.database_name = context.obj['database']
         self.count = 0
 
-        path_logfile = command_line_arguments.path_logfile
+        path_logfile = context.obj['path_logfile']
         self.logger = Logging(path_logfile)
         self.logger.info(f'Job progress is being logged to {path_logfile}')
 
