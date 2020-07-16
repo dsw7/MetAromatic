@@ -1,9 +1,11 @@
 import sys
 import logging
+from os import path
 from re import split
 from time import time
 from datetime import datetime
 from concurrent import futures
+from tempfile import gettempdir
 from pymongo import MongoClient
 from numpy import array_split
 from met_aromatic import MetAromatic
@@ -15,13 +17,13 @@ EXIT_SUCCESS = 0
 
 
 class Logging:
-    def __init__(self, path_logfile):
+    def __init__(self):
         logging.basicConfig(
             level=logging.INFO,
             format='%(levelname)s:%(asctime)s: %(message)s',
             datefmt='%d-%b-%y:%H:%M:%S',
             handlers=[
-                logging.FileHandler(path_logfile, 'w'),
+                logging.FileHandler(path.join(gettempdir(), 'met_aromatic.log'), 'w'),
                 logging.StreamHandler()
             ]
         )
@@ -42,22 +44,19 @@ class Logging:
 
 
 class RunBatchQueries:
-    def __init__(self, path_batch_file, context):
-
-        self.batch_file = path_batch_file 
-        self.num_workers = context.obj['threads']
-        self.cutoff_distance = context.obj['cutoff_distance']
-        self.cutoff_angle = context.obj['cutoff_angle']
-        self.chain = context.obj['chain']
-        self.model = context.obj['model']
-        self.client = MongoClient(context.obj['host'], context.obj['port'])
-        self.collection_name = context.obj['collection']
-        self.database_name = context.obj['database']
+    def __init__(self, path_batch_file, cutoff_distance, cutoff_angle,
+                 chain, model, threads, collection, database):
+        self.batch_file = path_batch_file
+        self.cutoff_distance = cutoff_distance
+        self.cutoff_angle = cutoff_angle
+        self.chain = chain
+        self.model = model
+        self.num_workers = threads
+        self.collection_name = collection
+        self.database_name = database
+        self.client = MongoClient('localhost', 27017)
         self.count = 0
-
-        path_logfile = context.obj['path_logfile']
-        self.logger = Logging(path_logfile)
-        self.logger.info(f'Job progress is being logged to {path_logfile}')
+        self.logger = Logging()
 
         if self.num_workers > MAX_WORKERS:
             self.logger.warning('Number of selected workers exceeds maximum number of workers.')
