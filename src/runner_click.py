@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+from os import path
 from click import (
     group,
     argument,
@@ -8,6 +9,7 @@ from click import (
     option,
     Path
 )
+from pytest import main as pytest_runner
 from met_aromatic import MetAromatic
 from parallel_processing import RunBatchQueries
 
@@ -83,6 +85,23 @@ def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, 
         path_batch_file, cutoff_distance, cutoff_angle,
         chain, model, threads, collection, database
     ).deploy_jobs()
+
+
+@main.command()
+@option('--verbose', '-v', is_flag=True)
+@option('--exit-on-failure', '-x', is_flag=True)
+@option('--test-expression', '-k', default=None)
+def run_tests(verbose, exit_on_failure, test_expression):
+    cmd = []
+    cmd.append(path.dirname(path.abspath(__file__)))
+    cmd.append('-s')
+    if verbose:
+        cmd.append('-v')
+    if exit_on_failure:
+        cmd.append('-x')
+    if test_expression:
+        cmd.append('-k' + test_expression)
+    sys.exit(pytest_runner(cmd))
 
 
 if __name__ == '__main__':
