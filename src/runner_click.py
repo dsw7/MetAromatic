@@ -104,5 +104,26 @@ def run_tests(verbose, exit_on_failure, test_expression):
     sys.exit(pytest_runner(cmd))
 
 
+@main.command()
+@option('--verbose', '-v', is_flag=True)
+@option('--exit-on-failure', '-x', is_flag=True)
+@option('--test-expression', '-k', default=None)
+def run_tests_with_coverage(verbose, exit_on_failure, test_expression):
+    root = path.dirname(path.abspath(__file__))
+    cmd = []
+    cmd.append(path.dirname(root))
+    cmd.append('-s')
+    if verbose:
+        cmd.append('-v')
+    if exit_on_failure:
+        cmd.append('-x')
+    if test_expression:
+        cmd.append('-k' + test_expression)
+    cmd.append(f'--cov={root}')
+    cmd.append(f'--cov-report=html:{path.join(root, "htmlcov")}')
+    cmd.append(f'--cov-config={path.join(root, ".coveragerc")}')
+    sys.exit(pytest_runner(cmd))
+
+
 if __name__ == '__main__':
     main()
