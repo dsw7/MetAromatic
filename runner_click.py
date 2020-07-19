@@ -10,6 +10,7 @@ from click import (
     Path
 )
 from pytest import main as pytest_runner
+sys.path.append(path.join(path.dirname(path.abspath(__file__)), 'src/'))
 from met_aromatic import MetAromatic
 from parallel_processing import RunBatchQueries
 
