@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 import sys
 from os import path
+
+MINIMUM_VERSION_PY = (3, 6)
+
+if sys.version_info[0:2] < MINIMUM_VERSION_PY:
+    print('Minimum required Python version: %s.%s\nExiting!' % MINIMUM_VERSION_PY)
+    sys.exit(1)
+
+sys.path.append(path.join(path.dirname(path.abspath(__file__)), 'src/'))
+
 from click import (
     group,
     argument,
@@ -10,7 +19,6 @@ from click import (
     Path
 )
 from pytest import main as pytest_runner
-sys.path.append(path.join(path.dirname(path.abspath(__file__)), 'src/'))
 from met_aromatic import MetAromatic
 from parallel_processing import RunBatchQueries
 
