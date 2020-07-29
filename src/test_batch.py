@@ -7,7 +7,7 @@ from utilities import errors
 class TestBatchJob:
     def setup_class(self):
         project_root = path.dirname(path.dirname(path.abspath(__file__)))
-        path_runner = path.join(project_root, 'runner_click.py')
+        path_runner = path.join(project_root, 'runner.py')
         path_test_data = path.join(project_root, 'src/test_data/coronavirus_test_entries.txt')
         self.threads = 3
         self.num_coronavirus_entries = 9
