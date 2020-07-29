@@ -1,6 +1,5 @@
 from os import path
 from subprocess import call, DEVNULL
-from platform import system
 from pymongo import MongoClient
 from utilities import errors
 
@@ -8,7 +7,7 @@ from utilities import errors
 class TestBatchJob:
     def setup_class(self):
         project_root = path.dirname(path.dirname(path.abspath(__file__)))
-        path_runner = path.join(project_root, 'runner.py')
+        path_runner = path.join(project_root, 'runner_click.py')
         path_test_data = path.join(project_root, 'src/test_data/coronavirus_test_entries.txt')
         self.threads = 3
         self.num_coronavirus_entries = 9
@@ -17,14 +16,8 @@ class TestBatchJob:
         self.client = MongoClient(host='localhost', port=27017)
         self.cursor = self.client[self.database_name][self.collection_name]
 
-        if 'Windows' in system():
-            interpreter = 'python'
-        else:
-            interpreter = 'python3'
-
         cmd = (
-            f'{interpreter} {path_runner} '
-            f'--batch {path_test_data} '
+            f'{path_runner} run-batch-job {path_test_data} '
             f'--threads {self.threads} '
             f'--database {self.database_name} '
             f'--collection {self.collection_name}'
