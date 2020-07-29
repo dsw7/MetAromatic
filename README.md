@@ -9,9 +9,9 @@ This program returns a list of closely spaced methionine-aromatic residues in a 
 ## Running Met-aromatic jobs in the terminal
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
-$ python runner.py --ai 1rcy
+$ ./runner.py single-met-aromatic-query 1rcy
 ```
-Here, `--ai` specifies that we want to run a single aromatic interaction calculation. The query will yield the following results:
+Here, `single-met-aromatic-query` specifies that we want to run a single aromatic interaction calculation. The query will yield the following results:
 ```
 ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 ===========================================================================
@@ -30,9 +30,9 @@ PHE        54         MET        148        5.05181    105.07358  141.00282
 Here we have an order VI interaction between TYR 122 and MET 18. We also have an order IV interaction between PHE 54 and MET 148.
 The `NORM` column specifies the distance between the MET residue and one of the midpoints between two carbon atoms in an aromatic
 ring. There are six TYR 122 aromatic carbon atom midpoints less than 4.9 Angstroms from MET 18 in the above result. This cutoff distance
-can be specified via the `--cutoff_distance` parameter:
+can be specified via the `--cutoff-distance` parameter:
 ```
-$ python runner.py --ai 1rcy --cutoff_distance 4.0
+$ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.0
 ```
 Reducing the cutoff distance yields an order I interaction between TYR 122 and MET 18.
 ```
@@ -41,11 +41,11 @@ ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 TYR        122        MET        18         3.95401    60.14475   68.35187
 ===========================================================================
 ```
-`MET-THETA` and `MET-PHI` refer to the angles between the vector that projects from the methionine SD atom to the aromatic carbon midpoint (termed vector _v_ in literature) and the angles describing the direction of the methionine SD lone pairs (termed vectors _a_ and _g_ in literature). We set a cutoff to ensure that we are not including results where one (or both) lone pairs are pointing away from the aromatic pi system - a condition which doesn't qualify as a true aromatic interaction. The cutoff angle can be specified via the `--cutoff_angle` parameter:
+`MET-THETA` and `MET-PHI` refer to the angles between the vector that projects from the methionine SD atom to the aromatic carbon midpoint (termed vector _v_ in literature) and the angles describing the direction of the methionine SD lone pairs (termed vectors _a_ and _g_ in literature). We set a cutoff to ensure that we are not including results where one (or both) lone pairs are pointing away from the aromatic pi system - a condition which doesn't qualify as a true aromatic interaction. The cutoff angle can be specified via the `--cutoff-angle` parameter:
 ```
-$ python runner.py --ai 1rcy --cutoff_distance 4.5 --cutoff_angle 60
+$ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.5 --cutoff-angle 60
 ```
-The `--cutoff_angle` parameter ensures that **at least one of** _Met-theta_ or _Met-phi_ angles falls below the cutoff. This is seen in the below order II interaction:
+The `--cutoff-angle` parameter ensures that **at least one of** _Met-theta_ or _Met-phi_ angles falls below the cutoff. This is seen in the below order II interaction:
 ```
 ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 ===========================================================================
@@ -55,7 +55,7 @@ TYR        122        MET        18         4.38983    53.39991   95.48742
 ```
 The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in https://github.com/dsw7/DSW-Thesis). There exists another model, `rm` or Rodrigues Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
 ```
-$ python runner.py --ai 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm
+$ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.5 --cutoff-angle 60 --model rm
 ```
 Which yields similar results:
 ```
@@ -69,13 +69,13 @@ TYR        122        MET        18         4.38983    52.50492   91.84111
 Note that the Euclidean distances between TYR aromatic carbon atoms and MET remain unchanged. Many PDB entries contain multiple chains
 denoted using capital letters. By default, this program searches for "A" delimited chains. Some researchers may, however, be interested in searching for aromatic interactions in a different chain within a multichain protein. The `--chain` parameter can be used to specify the chain:
 ```
-$ python runner.py --ai 1rcy --cutoff_distance 4.5 --cutoff_angle 60 --model rm --chain B
+$ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:  
 ![Alt text](docs/tyr-bridge.png?raw=true "Title")  
-We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `--bi` parameter. For example, to search for bridging interactions with a 7.0 Angstrom MET SD / midpoint distance in 6LU7:
+We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `single-bridging-interaction-query` parameter. For example, to search for bridging interactions with a 7.0 Angstrom MET SD / midpoint distance in 6LU7:
 ```
-$ python runner.py --bi 6lu7 --cutoff_distance 7.0
+$ ./runner.py single-bridging-interaction-query 6lu7 --cutoff-distance 7.0
 ```
 Which will return a list as follows:
 ```
@@ -85,7 +85,7 @@ TRP207     TRP218     MET276
 ```
 Where each row corresponds to a bridge. This program treats bridging interactions as networks with a defined set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The `--vertices` parameter can be passed to search for n-bridges:
 ```
-$ python runner.py --bi 6lu7 --cutoff_distance 6.0 --vertices 4
+$ ./runner.py single-bridging-interaction-query 6lu7 --cutoff-distance 6.0 --vertices 4
 ```
 ## Batch jobs
 This software is normally used for large scale Protein Data Bank mining efforts. To run a batch job, first supply a batch. A batch
@@ -96,7 +96,7 @@ can be a regular text file consisting of delimited PDB codes:
 ```
 The results of the batch job are stored in a MongoDB database (https://www.mongodb.com/). The command follows:
 ```
-$ ./runner.py --batch /path/to/pdb_codes.txt --threads 3 --database small_batch --collection example
+$ ./runner.py run-batch-job /path/to/pdb_codes.txt --threads 3 --database small_batch --collection example
 ```
 The MongoDB dump database is specified using the `--database` parameter. The collection is specified with the `--collection` parameter. The `--threads` parameter specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and a machine that is running no other processes. By default, mining jobs are run on `localhost` and on port `27017`. However, results can be routed to other servers by specifying hosts and/or ports using the `--host` and `--port` parameters. A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary collection will house all the batch job parameters and other statistics and the collection name will be suffixed with `_info`. An example `*_info` collection for the above example follows:
 ```
@@ -115,10 +115,10 @@ The MongoDB dump database is specified using the `--database` parameter. The col
 ## Tests
 This project is well tested. Tests can be ran as follows:
 ```
-python runner.py --test
+./runner.py run-tests
 ```
 Coverage tests can be ran as follows:
 ```
-python runner.py --testcov
+./runner.py run-tests-with-coverage
 ```
 This will create an `htmlcov/` directory in the project root. The coverage report can be viewed by opening `htmlcov/index.html` in a browser. 
