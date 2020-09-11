@@ -35,11 +35,8 @@ def main():
 def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model):
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     results = MetAromatic(
-        code,
-        cutoff_distance=cutoff_distance,
-        cutoff_angle=cutoff_angle,
-        chain=chain,
-        model=model
+        code, cutoff_distance=cutoff_distance,
+        cutoff_angle=cutoff_angle, chain=chain, model=model
     ).get_met_aromatic_interactions()
 
     if results['exit_code'] == 0:
@@ -60,11 +57,8 @@ def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model)
 @option('--vertices', default=3, type=int, metavar='<vertices>')
 def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain, model, vertices):
     results = MetAromatic(
-        code,
-        cutoff_distance=cutoff_distance,
-        cutoff_angle=cutoff_angle,
-        chain=chain,
-        model=model
+        code, cutoff_distance=cutoff_distance,
+        cutoff_angle=cutoff_angle, chain=chain, model=model
     ).get_bridging_interactions(
         number_vertices=vertices
     )
