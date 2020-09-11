@@ -10,7 +10,10 @@ from utilities import (
 from consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
-    MINIMUM_VERTICES
+    MINIMUM_VERTICES,
+    MINIMUM_CUTOFF_DIST,
+    MINIMUM_CUTOFF_ANGLE,
+    MAXIMUM_CUTOFF_ANGLE
 )
 
 
@@ -30,12 +33,12 @@ class MetAromatic:
             'results': None
         }
 
-        if self.cutoff_distance <= 0.00:
+        if self.cutoff_distance <= MINIMUM_CUTOFF_DIST:
             results['exit_status'] = "Invalid cutoff distance"
             results['exit_code'] = errors.ErrorCodes.InvalidCutoffsError
             return results
 
-        if not 360.00 >= self.cutoff_angle >= 0.00:
+        if not MAXIMUM_CUTOFF_ANGLE >= self.cutoff_angle >= MINIMUM_CUTOFF_ANGLE:
             results['exit_status'] = "Invalid cutoff angle"
             results['exit_code'] = errors.ErrorCodes.InvalidCutoffsError
             return results
