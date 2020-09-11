@@ -20,35 +20,33 @@ from consts import (
 )
 
 
-class Logging:
-    def __init__(self):
-        logging.basicConfig(
-            level=LOG_LEVEL,
-            format='%(levelname)s:%(asctime)s: %(message)s',
+class Logger:
+    def __init__(self, filename=None):
+        if not filename:
+            self.filename = DEFAULT_LOGFILE_NAME
+        else:
+            self.filename = filename
+
+    def get_log_handle(self):
+        self.formatter = logging.Formatter(
+            '%(levelname)s:%(asctime)s: %(message)s',
             datefmt='%d-%b-%y:%H:%M:%S',
-            handlers=[
-                logging.FileHandler(path.join(gettempdir(), DEFAULT_LOGFILE_NAME), 'w'),
-                logging.StreamHandler()
-            ]
         )
-        self.logger = logging.getLogger()
+        handler = logging.FileHandler(path.join(gettempdir(), self.filename), 'w')
+        handler.setFormatter(self.formatter)
 
-    def info(self, message):
-        self.logger.info(message)
-
-    def warning(self, message):
-        self.logger.warning(message)
-
-    def exception(self, message):
-        self.logger.exception(message)
-
-    def error(self, message):
-        self.logger.error(message)
+        logger = logging.getLogger()
+        logger.setLevel(LOG_LEVEL)
+        logger.addHandler(handler)
+        return logger
 
 
-class RunBatchQueries:
+class RunBatchQueries(Logger):
     def __init__(self, path_batch_file, cutoff_distance, cutoff_angle,
                  chain, model, threads, collection, database):
+
+        super().__init__(None)
+        self.logger = self.get_log_handle()
 
         # click does existence check - no need for try / except
         self.pdb_codes = []
@@ -68,22 +66,18 @@ class RunBatchQueries:
 
         self.client = MongoClient(DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT)
         self.count = 0
-        self.logger = Logging()
 
         if self.num_workers > MAXIMUM_WORKERS:
             self.logger.warning('Number of selected workers exceeds maximum number of workers.')
             self.logger.warning(f'The thread pool will use a maximum of {MAXIMUM_WORKERS} workers.')
 
-    def prepare_batch_job_info(self, execution_time, number_entries):
-        return {
+        self.batch_job_metadata = {
             'num_workers': self.num_workers,
             'cutoff_distance': self.cutoff_distance,
             'cutoff_angle': self.cutoff_angle,
             'chain': self.chain,
             'model': self.model,
-            'batch_job_execution_time': execution_time,
-            'data_acquisition_date': datetime.now(),
-            'number_of_entries': number_entries
+            'data_acquisition_date': datetime.now()
         }
 
     def worker(self, list_codes):
@@ -140,9 +134,7 @@ class RunBatchQueries:
                 self.logger.info(f'Results loaded into collection: {self.collection_name}')
                 self.logger.info(f'Batch job statistics loaded into collection: {name_collection_info}')
 
-                collection_info.insert(
-                    self.prepare_batch_job_info(
-                        time() - start_time,
-                        len(self.pdb_codes)
-                    )
-                )
+                self.batch_job_metadata['batch_job_execution_time'] = time() - start_time
+                self.batch_job_metadata['number_of_entries'] = len(self.pdb_codes)
+
+                collection_info.insert(self.batch_job_metadata)
