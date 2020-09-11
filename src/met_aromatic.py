@@ -5,8 +5,7 @@ from utilities import (
     get_aromatic_midpoints,
     get_lone_pairs,
     distance_angular,
-    errors,
-    verifications
+    errors
 )
 from consts import (
     EXIT_FAILURE,
@@ -31,12 +30,12 @@ class MetAromatic:
             'results': None
         }
 
-        if not verifications.verify_input_distance(self.cutoff_distance):
+        if self.cutoff_distance <= 0.00:
             results['exit_status'] = "Invalid cutoff distance"
             results['exit_code'] = errors.ErrorCodes.InvalidCutoffsError
             return results
 
-        if not verifications.verify_input_angle(self.cutoff_angle):
+        if not 360.00 >= self.cutoff_angle >= 0.00:
             results['exit_status'] = "Invalid cutoff angle"
             results['exit_code'] = errors.ErrorCodes.InvalidCutoffsError
             return results
