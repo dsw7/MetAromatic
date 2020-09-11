@@ -1,11 +1,11 @@
 from os import path, chdir, getcwd
 from subprocess import call, DEVNULL
 from pytest import mark
-from utilities import errors
-
-EXIT_SUCCESS = 0
-EXIT_FAILURE = 1
-EXIT_GENERAL_PROGRAM_FAILURES = 2
+from consts import (
+    EXIT_SUCCESS,
+    EXIT_FAILURE,
+    EXIT_GENERAL_PROGRAM_FAILURES
+)
 
 
 class TestCommandLineInterface:
@@ -101,7 +101,7 @@ class TestCommandLineInterface:
         assert call(
             f'{self.path_runner} single-met-aromatic-query 1rcy --cutoff-distance 0.00'.split(),
             stdout=DEVNULL
-        ) == errors.ErrorCodes.InvalidCutoffsError
+        ) == EXIT_FAILURE
 
     def test_invalid_cutoff_distance_stringified(self):
         assert call(
@@ -113,31 +113,31 @@ class TestCommandLineInterface:
         assert call(
             f'{self.path_runner} single-met-aromatic-query 1rcy --cutoff-angle 361.00'.split(),
             stdout=DEVNULL
-        ) == errors.ErrorCodes.InvalidCutoffsError
+        ) == EXIT_FAILURE
 
     def test_invalid_code(self):
         assert call(
             f'{self.path_runner} single-met-aromatic-query foobar'.split(),
             stdout=DEVNULL
-        ) == errors.ErrorCodes.InvalidPDBFileError
+        ) == EXIT_FAILURE
 
     def test_no_met_coordinates(self):
         assert call(
             f'{self.path_runner} single-met-aromatic-query 3nir'.split(),
             stdout=DEVNULL
-        ) == errors.ErrorCodes.NoMetCoordinatesError
+        ) == EXIT_FAILURE
 
     def test_invalid_model(self):
         assert call(
             f'{self.path_runner} single-met-aromatic-query 1rcy --model foobarbaz'.split(),
             stdout=DEVNULL
-        ) == errors.ErrorCodes.InvalidModelError
+        ) == EXIT_FAILURE
 
     def test_no_results(self):
         assert call(
             f'{self.path_runner} single-met-aromatic-query 1a5r'.split(),
             stdout=DEVNULL
-        ) == errors.ErrorCodes.NoResultsError
+        ) == EXIT_FAILURE
 
     def test_bad_query_type(self):
         assert call(
