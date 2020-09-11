@@ -2,13 +2,12 @@
 import sys
 from os import path
 
+EXIT_FAILURE = 1
 MINIMUM_VERSION_PY = (3, 6)
 
 if sys.version_info[0:2] < MINIMUM_VERSION_PY:
     print('Minimum required Python version: %s.%s\nExiting!' % MINIMUM_VERSION_PY)
-    sys.exit(1)
-
-sys.path.append(path.join(path.dirname(path.abspath(__file__)), 'src/'))
+    sys.exit(EXIT_FAILURE)
 
 from click import (
     group,
@@ -19,8 +18,8 @@ from click import (
     Path
 )
 from pytest import main as pytest_runner
-from met_aromatic import MetAromatic
-from parallel_processing import RunBatchQueries
+from utils.met_aromatic import MetAromatic
+from utils.parallel_processing import RunBatchQueries
 
 @group()
 def main():

@@ -8,8 +8,8 @@ from concurrent import futures
 from tempfile import gettempdir
 from pymongo import MongoClient
 from numpy import array_split
-from met_aromatic import MetAromatic
-from consts import (
+from .met_aromatic import MetAromatic
+from .consts import (
     EXIT_FAILURE,
     MAXIMUM_WORKERS,
     LEN_PDB_CODE,

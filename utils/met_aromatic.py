@@ -1,12 +1,12 @@
 from networkx import Graph, connected_components
-from utilities import (
+from .utilities import (
     filegetter,
     preprocessing,
     get_aromatic_midpoints,
     get_lone_pairs,
     distance_angular
 )
-from consts import (
+from .consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
     MINIMUM_VERTICES,
