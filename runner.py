@@ -126,7 +126,7 @@ def run_tests_with_coverage(verbose, exit_on_failure, test_expression):
     command.append(f'--cov={root}')
     command.append(f'--cov-report=html:{path.join(root, "htmlcov")}')
     command.append(f'--cov-config={path.join(root, ".coveragerc")}')
-    sys.exit(pytest_runner(command))
+    ys.exit(pytest_runner(command))
 
 if __name__ == '__main__':
     main()
