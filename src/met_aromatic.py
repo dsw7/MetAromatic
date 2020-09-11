@@ -35,12 +35,12 @@ class MetAromatic:
 
         if self.cutoff_distance <= MINIMUM_CUTOFF_DIST:
             results['exit_status'] = "Invalid cutoff distance"
-            results['exit_code'] = errors.ErrorCodes.InvalidCutoffsError
+            results['exit_code'] = EXIT_FAILURE
             return results
 
         if not MAXIMUM_CUTOFF_ANGLE >= self.cutoff_angle >= MINIMUM_CUTOFF_ANGLE:
             results['exit_status'] = "Invalid cutoff angle"
-            results['exit_code'] = errors.ErrorCodes.InvalidCutoffsError
+            results['exit_code'] = EXIT_FAILURE
             return results
 
         file_from_pdb = filegetter.PDBFileGetter(self.code)
@@ -48,14 +48,14 @@ class MetAromatic:
         filepath = file_from_pdb.fetch_entry_from_pdb()
         if not filepath:
             results['exit_status'] = "Invalid PDB file"
-            results['exit_code'] = errors.ErrorCodes.InvalidPDBFileError
+            results['exit_code'] = EXIT_FAILURE
             return results
 
         raw_data = preprocessing.get_raw_data_from_file(filepath)
 
         if not file_from_pdb.remove_entry():
             results['exit_status'] = "Could not remove PDB file"
-            results['exit_code'] = errors.ErrorCodes.OtherError
+            results['exit_code'] = EXIT_FAILURE
             return results
 
         first_model = preprocessing.get_first_model_from_raw_data(raw_data)
@@ -64,7 +64,7 @@ class MetAromatic:
 
         if not met_coordinates:
             results['exit_status'] = "No MET residues"
-            results['exit_code'] = errors.ErrorCodes.NoMetCoordinatesError
+            results['exit_code'] = EXIT_FAILURE
             return results
 
         phe_coordinates = preprocessing.get_relevant_phe_coordinates(first_model, self.chain)
@@ -72,13 +72,13 @@ class MetAromatic:
         trp_coordinates = preprocessing.get_relevant_trp_coordinates(first_model, self.chain)
         if not any((phe_coordinates, tyr_coordinates, trp_coordinates)):
             results['exit_status'] = "No PHE/TYR/TRP residues"
-            results['exit_code'] = errors.ErrorCodes.NoAromaticCoordinatesError
+            results['exit_code'] = EXIT_FAILURE
             return results
 
         met_lone_pairs = get_lone_pairs.get_lone_pairs(met_coordinates, self.model)
         if not met_lone_pairs:
             results['exit_status'] = "Invalid model"
-            results['exit_code'] = errors.ErrorCodes.InvalidModelError
+            results['exit_code'] = EXIT_FAILURE
             return results
 
         phe_midpoints = get_aromatic_midpoints.get_phe_midpoints(phe_coordinates)
@@ -94,7 +94,7 @@ class MetAromatic:
 
         if not interactions:
             results['exit_status'] = "No interactions"
-            results['exit_code'] = errors.ErrorCodes.NoResultsError
+            results['exit_code'] = EXIT_FAILURE
             return results
 
         results['exit_status'] = "Success"
@@ -104,6 +104,9 @@ class MetAromatic:
 
     def get_bridging_interactions(self, number_vertices=3):
         results = self.get_met_aromatic_interactions()
+
+        if results['exit_code'] == EXIT_FAILURE:  # failed in upstream call
+            return results
 
         if number_vertices < MINIMUM_VERTICES:
             results['exit_code'] = EXIT_FAILURE
