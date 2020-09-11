@@ -22,11 +22,9 @@ from pytest import main as pytest_runner
 from met_aromatic import MetAromatic
 from parallel_processing import RunBatchQueries
 
-
 @group()
 def main():
     pass
-
 
 @main.command()
 @argument('code')
@@ -53,7 +51,6 @@ def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model)
         secho(f"Exited with code: {results['exit_code']}", fg='red')
     sys.exit(results['exit_code'])
 
-
 @main.command()
 @argument('code')
 @option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
@@ -79,7 +76,6 @@ def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain
         secho(f"Exited with code: {results['exit_code']}", fg='red')
     sys.exit(results['exit_code'])
 
-
 @main.command()
 @argument('path_batch_file', type=Path('rb'))
 @option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
@@ -94,7 +90,6 @@ def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, 
         path_batch_file, cutoff_distance, cutoff_angle,
         chain, model, threads, collection, database
     ).deploy_jobs()
-
 
 @main.command()
 @option('--verbose', '-v', is_flag=True)
@@ -111,7 +106,6 @@ def run_tests(verbose, exit_on_failure, test_expression):
     if test_expression:
         cmd.append('-k' + test_expression)
     sys.exit(pytest_runner(cmd))
-
 
 @main.command()
 @option('--verbose', '-v', is_flag=True)
@@ -132,7 +126,6 @@ def run_tests_with_coverage(verbose, exit_on_failure, test_expression):
     cmd.append(f'--cov-report=html:{path.join(root, "htmlcov")}')
     cmd.append(f'--cov-config={path.join(root, ".coveragerc")}')
     sys.exit(pytest_runner(cmd))
-
 
 if __name__ == '__main__':
     main()
