@@ -1,7 +1,6 @@
 from pytest import mark
 from met_aromatic import MetAromatic
-from utilities import errors
-
+from consts import EXIT_FAILURE
 
 VALID_RESULTS_1RCY = [{
     'aromatic_residue': 'TYR',
@@ -81,18 +80,18 @@ class TestMongoDBOutput:
     @mark.parametrize(
         'code, cutoff_distance, cutoff_angle, error',
         [
-            ('1rcy', 0.00, 109.5, errors.ErrorCodes.InvalidCutoffsError),
-            ('1rcy', 4.95, 720.0, errors.ErrorCodes.InvalidCutoffsError),
-            ('2rcy', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
-            ('3nir', 4.95, 109.5, errors.ErrorCodes.NoMetCoordinatesError),
-            ('abcd', 4.95, 109.5, errors.ErrorCodes.InvalidPDBFileError)
+            ('1rcy', 0.00, 109.5, EXIT_FAILURE),
+            ('1rcy', 4.95, 720.0, EXIT_FAILURE),
+            ('2rcy', 4.95, 109.5, EXIT_FAILURE),
+            ('3nir', 4.95, 109.5, EXIT_FAILURE),
+            ('abcd', 4.95, 109.5, EXIT_FAILURE)
         ],
         ids=[
-            "Testing errors.ErrorCodes.InvalidCutoffsError - 1",
-            "Testing errors.ErrorCodes.InvalidCutoffsError - 2",
-            "Testing errors.ErrorCodes.NoMetCoordinatesError - 1",
-            "Testing errors.ErrorCodes.NoMetCoordinatesError - 2",
-            "Testing errors.ErrorCodes.InvalidPDBFileError"
+            "Testing InvalidCutoffsError - 1",
+            "Testing InvalidCutoffsError - 2",
+            "Testing NoMetCoordinatesError - 1",
+            "Testing NoMetCoordinatesError - 2",
+            "Testing InvalidPDBFileError"
         ]
     )
     def test_mongodb_output_invalid_results(self, code, cutoff_distance, cutoff_angle, error):

@@ -9,11 +9,10 @@ from tempfile import gettempdir
 from pymongo import MongoClient
 from numpy import array_split
 from met_aromatic import MetAromatic
-
-
-MAX_WORKERS = 15
-EXIT_FAILURE = 1
-EXIT_SUCCESS = 0
+from consts import (
+    EXIT_FAILURE,
+    MAXIMUM_WORKERS
+)
 
 
 class Logging:
@@ -58,24 +57,17 @@ class RunBatchQueries:
         self.count = 0
         self.logger = Logging()
 
-        if self.num_workers > MAX_WORKERS:
+        if self.num_workers > MAXIMUM_WORKERS:
             self.logger.warning('Number of selected workers exceeds maximum number of workers.')
-            self.logger.warning(f'The thread pool will use a maximum of {MAX_WORKERS} workers.')
+            self.logger.warning(f'The thread pool will use a maximum of {MAXIMUM_WORKERS} workers.')
 
     def open_batch_file(self):
-        if not self.batch_file:
-            self.logger.error('The --batch </path/to/file> parameter was not provided.')
-            sys.exit(EXIT_FAILURE)
-        try:
-            data = []
-            with open(self.batch_file) as batch:
-                for line in batch:
-                    data.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
-        except FileNotFoundError:
-            self.logger.error('Invalid batch file!')
-            sys.exit(EXIT_FAILURE)
-        else:
-            return data
+        # click does existence check - no need for try / except
+        pdb_codes = []
+        with open(self.batch_file) as batch:
+            for line in batch:
+                pdb_codes.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
+        return pdb_codes
 
     def prepare_batch_job_info(self, execution_time, number_entries):
         return {
@@ -132,7 +124,7 @@ class RunBatchQueries:
 
         self.logger.info(f'Deploying {self.num_workers} workers!')
 
-        with futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
             start_time = time()
             workers = [
                 executor.submit(self.worker, chunk) for chunk in chunked_pdb_codes

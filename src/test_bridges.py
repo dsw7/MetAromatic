@@ -75,7 +75,7 @@ class TestBridges:
             ('1rcy', 4.95, 720.0, EXIT_FAILURE),
             ('2rcy', 4.95, 109.5, EXIT_FAILURE),
             ('3nir', 4.95, 109.5, EXIT_FAILURE),
-            ('abcd', 4.95, 109.5, EXIT_FAILURE),
+            ('abcd', 4.95, 109.5, EXIT_FAILURE)
         ],
         ids=[
             "Testing InvalidCutoffsError",
