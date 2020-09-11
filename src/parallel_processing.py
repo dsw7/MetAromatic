@@ -11,7 +11,10 @@ from numpy import array_split
 from met_aromatic import MetAromatic
 from consts import (
     EXIT_FAILURE,
-    MAXIMUM_WORKERS
+    MAXIMUM_WORKERS,
+    LEN_PDB_CODE,
+    DEFAULT_MONGO_HOST,
+    DEFAULT_MONGO_PORT
 )
 
 
@@ -53,7 +56,7 @@ class RunBatchQueries:
         self.num_workers = threads
         self.collection_name = collection
         self.database_name = database
-        self.client = MongoClient('localhost', 27017)
+        self.client = MongoClient(DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT)
         self.count = 0
         self.logger = Logging()
 
@@ -66,7 +69,7 @@ class RunBatchQueries:
         pdb_codes = []
         with open(self.batch_file) as batch:
             for line in batch:
-                pdb_codes.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == 4])
+                pdb_codes.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == LEN_PDB_CODE])
         return pdb_codes
 
     def prepare_batch_job_info(self, execution_time, number_entries):
