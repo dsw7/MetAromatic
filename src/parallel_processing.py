@@ -14,22 +14,23 @@ from consts import (
     MAXIMUM_WORKERS,
     LEN_PDB_CODE,
     DEFAULT_MONGO_HOST,
-    DEFAULT_MONGO_PORT
+    DEFAULT_MONGO_PORT,
+    DEFAULT_LOGFILE_NAME,
+    LOG_LEVEL
 )
 
 
 class Logging:
     def __init__(self):
         logging.basicConfig(
-            level=logging.INFO,
+            level=LOG_LEVEL,
             format='%(levelname)s:%(asctime)s: %(message)s',
             datefmt='%d-%b-%y:%H:%M:%S',
             handlers=[
-                logging.FileHandler(path.join(gettempdir(), 'met_aromatic.log'), 'w'),
+                logging.FileHandler(path.join(gettempdir(), DEFAULT_LOGFILE_NAME), 'w'),
                 logging.StreamHandler()
             ]
         )
-
         self.logger = logging.getLogger()
 
     def info(self, message):
@@ -48,7 +49,15 @@ class Logging:
 class RunBatchQueries:
     def __init__(self, path_batch_file, cutoff_distance, cutoff_angle,
                  chain, model, threads, collection, database):
-        self.batch_file = path_batch_file
+
+        # click does existence check - no need for try / except
+        self.pdb_codes = []
+        with open(path_batch_file) as batch_file:
+            for line in batch_file:
+                self.pdb_codes.extend(
+                    [row for row in split(r'(;|,|\s)\s*', line) if len(row) == LEN_PDB_CODE]
+                )
+
         self.cutoff_distance = cutoff_distance
         self.cutoff_angle = cutoff_angle
         self.chain = chain
@@ -56,6 +65,7 @@ class RunBatchQueries:
         self.num_workers = threads
         self.collection_name = collection
         self.database_name = database
+
         self.client = MongoClient(DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT)
         self.count = 0
         self.logger = Logging()
@@ -63,14 +73,6 @@ class RunBatchQueries:
         if self.num_workers > MAXIMUM_WORKERS:
             self.logger.warning('Number of selected workers exceeds maximum number of workers.')
             self.logger.warning(f'The thread pool will use a maximum of {MAXIMUM_WORKERS} workers.')
-
-    def open_batch_file(self):
-        # click does existence check - no need for try / except
-        pdb_codes = []
-        with open(self.batch_file) as batch:
-            for line in batch:
-                pdb_codes.extend([i for i in split(r'(;|,|\s)\s*', line) if len(i) == LEN_PDB_CODE])
-        return pdb_codes
 
     def prepare_batch_job_info(self, execution_time, number_entries):
         return {
@@ -119,8 +121,7 @@ class RunBatchQueries:
             self.logger.error('Use a different collection name.')
             sys.exit(EXIT_FAILURE)
 
-        pdb_codes = self.open_batch_file()
-        chunked_pdb_codes = array_split(pdb_codes, self.num_workers)
+        chunked_pdb_codes = array_split(self.pdb_codes, self.num_workers)
 
         name_collection_info = f'{self.collection_name}_info'
         collection_info = self.client[self.database_name][name_collection_info]
@@ -142,6 +143,6 @@ class RunBatchQueries:
                 collection_info.insert(
                     self.prepare_batch_job_info(
                         time() - start_time,
-                        len(pdb_codes)
+                        len(self.pdb_codes)
                     )
                 )
