@@ -69,7 +69,7 @@ class RunBatchQueries(Logger):
 
         if self.num_workers > MAXIMUM_WORKERS:
             self.logger.warning('Number of selected workers exceeds maximum number of workers.')
-            self.logger.warning(f'The thread pool will use a maximum of {MAXIMUM_WORKERS} workers.')
+            self.logger.warning('The thread pool will use a maximum of %i workers.', MAXIMUM_WORKERS)
 
         self.batch_job_metadata = {
             'num_workers': self.num_workers,
@@ -94,10 +94,10 @@ class RunBatchQueries(Logger):
                 ).get_met_aromatic_interactions()
             except Exception:  # catch remaining unhandled exceptions
                 self.count += 1
-                self.logger.exception(f'Could not process code: {code}. Count: {self.count}')
+                self.logger.exception('Could not process code: %s. Count: %i', code, self.count)
             else:
                 self.count += 1
-                self.logger.info(f'Processed {code}. Count: {self.count}')
+                self.logger.info('Processed %s. Count: %i', code, self.count)
                 collection_results.insert(results)
 
     def database_collection_exists(self):
@@ -111,7 +111,7 @@ class RunBatchQueries(Logger):
 
     def deploy_jobs(self):
         if self.database_collection_exists():
-            self.logger.error(f'Database/collection pair {self.database_name}.{self.collection_name} exists.')
+            self.logger.error('Database/collection pair %s.%s exists.', self.database_name, self.collection_name)
             self.logger.error('Use a different collection name.')
             sys.exit(EXIT_FAILURE)
 
@@ -120,7 +120,7 @@ class RunBatchQueries(Logger):
         name_collection_info = f'{self.collection_name}_info'
         collection_info = self.client[self.database_name][name_collection_info]
 
-        self.logger.info(f'Deploying {self.num_workers} workers!')
+        self.logger.info('Deploying %i workers!', self.num_workers)
 
         with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
             start_time = time()
@@ -130,9 +130,9 @@ class RunBatchQueries(Logger):
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
                 self.logger.info('Batch job complete!')
-                self.logger.info(f'Results loaded into database: {self.database_name}')
-                self.logger.info(f'Results loaded into collection: {self.collection_name}')
-                self.logger.info(f'Batch job statistics loaded into collection: {name_collection_info}')
+                self.logger.info('Results loaded into database: %s', self.database_name)
+                self.logger.info('Results loaded into collection: %s', self.collection_name)
+                self.logger.info('Batch job statistics loaded into collection: %s', name_collection_info)
 
                 self.batch_job_metadata['batch_job_execution_time'] = time() - start_time
                 self.batch_job_metadata['number_of_entries'] = len(self.pdb_codes)
