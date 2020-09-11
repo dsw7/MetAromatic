@@ -97,16 +97,16 @@ def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, 
 @option('--exit-on-failure', '-x', is_flag=True)
 @option('--test-expression', '-k', default=None)
 def run_tests(verbose, exit_on_failure, test_expression):
-    cmd = []
-    cmd.append(path.dirname(path.abspath(__file__)))
-    cmd.append('-s')
+    command = []
+    command.append(path.dirname(path.abspath(__file__)))
+    command.append('-s')
     if verbose:
-        cmd.append('-v')
+        command.append('-v')
     if exit_on_failure:
-        cmd.append('-x')
+        command.append('-x')
     if test_expression:
-        cmd.append('-k' + test_expression)
-    sys.exit(pytest_runner(cmd))
+        command.append('-k' + test_expression)
+    sys.exit(pytest_runner(command))
 
 @main.command()
 @option('--verbose', '-v', is_flag=True)
@@ -114,19 +114,19 @@ def run_tests(verbose, exit_on_failure, test_expression):
 @option('--test-expression', '-k', default=None)
 def run_tests_with_coverage(verbose, exit_on_failure, test_expression):
     root = path.dirname(path.abspath(__file__))
-    cmd = []
-    cmd.append(path.dirname(root))
-    cmd.append('-s')
+    command = []
+    command.append(path.dirname(root))
+    command.append('-s')
     if verbose:
-        cmd.append('-v')
+        command.append('-v')
     if exit_on_failure:
-        cmd.append('-x')
+        command.append('-x')
     if test_expression:
-        cmd.append('-k' + test_expression)
-    cmd.append(f'--cov={root}')
-    cmd.append(f'--cov-report=html:{path.join(root, "htmlcov")}')
-    cmd.append(f'--cov-config={path.join(root, ".coveragerc")}')
-    sys.exit(pytest_runner(cmd))
+        command.append('-k' + test_expression)
+    command.append(f'--cov={root}')
+    command.append(f'--cov-report=html:{path.join(root, "htmlcov")}')
+    command.append(f'--cov-config={path.join(root, ".coveragerc")}')
+    sys.exit(pytest_runner(command))
 
 if __name__ == '__main__':
     main()
