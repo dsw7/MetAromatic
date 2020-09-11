@@ -1,7 +1,7 @@
 from os import path, chdir, getcwd
 from subprocess import call, DEVNULL
 from pytest import mark
-from consts import (
+from .consts import (
     EXIT_SUCCESS,
     EXIT_FAILURE,
     EXIT_GENERAL_PROGRAM_FAILURES
@@ -37,7 +37,7 @@ class TestCommandLineInterface:
 
     def test_aromatic_interaction_run_from_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'src/'))
+        chdir(path.join(path.dirname(self.path_runner), 'utils/'))
         retval = call(
             f'../runner.py single-met-aromatic-query 1rcy'.split(),
             stdout=DEVNULL
@@ -47,7 +47,7 @@ class TestCommandLineInterface:
 
     def test_aromatic_interaction_run_from_child_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'src/utilities'))
+        chdir(path.join(path.dirname(self.path_runner), 'utils/utilities'))
         retval = call(
             f'../../runner.py single-met-aromatic-query 1rcy'.split(),
             stdout=DEVNULL
@@ -67,7 +67,7 @@ class TestCommandLineInterface:
 
     def test_bridging_interaction_run_from_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'src/'))
+        chdir(path.join(path.dirname(self.path_runner), 'utils/'))
         retval = call(
             f'../runner.py single-bridging-interaction-query 6lu7'.split(),
             stdout=DEVNULL
@@ -77,7 +77,7 @@ class TestCommandLineInterface:
 
     def test_bridging_interaction_run_from_child_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'src/utilities'))
+        chdir(path.join(path.dirname(self.path_runner), 'utils/utilities'))
         retval = call(
             f'../../runner.py single-bridging-interaction-query 6lu7'.split(),
             stdout=DEVNULL

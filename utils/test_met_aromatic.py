@@ -1,6 +1,6 @@
 from os import path
 from pytest import mark, skip
-from met_aromatic import MetAromatic
+from .met_aromatic import MetAromatic
 
 
 TEST_CODES = {

@@ -1,7 +1,7 @@
 from os import path
 from subprocess import call, DEVNULL
 from pymongo import MongoClient
-from consts import (
+from .consts import (
     EXIT_SUCCESS,
     EXIT_FAILURE
 )
@@ -10,7 +10,7 @@ class TestBatchJob:
     def setup_class(self):
         project_root = path.dirname(path.dirname(path.abspath(__file__)))
         path_runner = path.join(project_root, 'runner.py')
-        path_test_data = path.join(project_root, 'src/test_data/coronavirus_test_entries.txt')
+        path_test_data = path.join(project_root, 'utils/test_data/coronavirus_test_entries.txt')
         self.threads = 3
         self.num_coronavirus_entries = 9
         self.database_name = 'database_coronavirus'

@@ -1,8 +1,8 @@
 from json import loads
 from os import path
 from pytest import mark, skip, exit
-from met_aromatic import MetAromatic
-from consts import EXIT_FAILURE
+from .met_aromatic import MetAromatic
+from .consts import EXIT_FAILURE
 
 CONTROL_BRIDGE_DATA = path.join(
     path.dirname(path.abspath(__file__)),

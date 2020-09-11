@@ -1,6 +1,6 @@
 from pytest import mark
-from met_aromatic import MetAromatic
-from consts import EXIT_FAILURE
+from .met_aromatic import MetAromatic
+from .consts import EXIT_FAILURE
 
 VALID_RESULTS_1RCY = [{
     'aromatic_residue': 'TYR',
