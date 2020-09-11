@@ -4,8 +4,7 @@ from utilities import (
     preprocessing,
     get_aromatic_midpoints,
     get_lone_pairs,
-    distance_angular,
-    errors
+    distance_angular
 )
 from consts import (
     EXIT_FAILURE,

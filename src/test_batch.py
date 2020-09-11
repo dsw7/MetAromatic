@@ -1,8 +1,10 @@
 from os import path
 from subprocess import call, DEVNULL
 from pymongo import MongoClient
-from utilities import errors
-
+from consts import (
+    EXIT_SUCCESS,
+    EXIT_FAILURE
+)
 
 class TestBatchJob:
     def setup_class(self):
@@ -28,10 +30,10 @@ class TestBatchJob:
         assert len(list(self.cursor.find())) == self.num_coronavirus_entries
 
     def test_correct_exit_code_2ca1(self):
-        assert list(self.cursor.find({'_id': '2ca1'}))[0]['exit_code'] == 0
+        assert list(self.cursor.find({'_id': '2ca1'}))[0]['exit_code'] == EXIT_SUCCESS
 
     def test_correct_exit_code_2fyg(self):
-        assert list(self.cursor.find({'_id': '2fyg'}))[0]['exit_code'] == 0
+        assert list(self.cursor.find({'_id': '2fyg'}))[0]['exit_code'] == EXIT_SUCCESS
 
     def test_correct_exit_status_2ca1(self):
         assert list(self.cursor.find({'_id': '2ca1'}))[0]['exit_status'] == 'Success'
@@ -42,27 +44,27 @@ class TestBatchJob:
     def test_correct_exit_code_1xak(self):
         assert list(
             self.cursor.find({'_id': '1xak'})
-        )[0]['exit_code'] == errors.ErrorCodes.NoMetCoordinatesError
+        )[0]['exit_code'] == EXIT_FAILURE
 
     def test_correct_exit_code_2fxp(self):
         assert list(
             self.cursor.find({'_id': '2fxp'})
-        )[0]['exit_code'] == errors.ErrorCodes.NoMetCoordinatesError
+        )[0]['exit_code'] == EXIT_FAILURE
 
     def test_correct_exit_code_6mwm(self):
         assert list(
             self.cursor.find({'_id': '6mwm'})
-        )[0]['exit_code'] == errors.ErrorCodes.NoAromaticCoordinatesError
+        )[0]['exit_code'] == EXIT_FAILURE
 
     def test_correct_exit_code_2cme(self):
         assert list(
             self.cursor.find({'_id': '2cme'})
-        )[0]['exit_code'] == errors.ErrorCodes.NoResultsError
+        )[0]['exit_code'] == EXIT_FAILURE
 
     def test_correct_exit_code_spam(self):
         assert list(
             self.cursor.find({'_id': 'spam'})
-        )[0]['exit_code'] == errors.ErrorCodes.InvalidPDBFileError
+        )[0]['exit_code'] == EXIT_FAILURE
 
     def test_info_file_in_results(self):
         collections = self.client[self.database_name].list_collection_names()
