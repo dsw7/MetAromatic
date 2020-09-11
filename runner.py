@@ -80,10 +80,17 @@ def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain
 @option('--database', default='default_ma', metavar='<database-name>')
 @option('--collection', default='default_ma', metavar='<collection-name>')
 def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, threads, database, collection):
-    RunBatchQueries(
-        path_batch_file, cutoff_distance, cutoff_angle,
-        chain, model, threads, collection, database
-    ).deploy_jobs()
+    parameters = {
+        'path_batch_file': path_batch_file,
+        'cutoff_distance': cutoff_distance,
+        'cutoff_angle': cutoff_angle,
+        'chain': chain,
+        'model': model,
+        'threads': threads,
+        'database': database,
+        'collection': collection
+    }
+    RunBatchQueries(parameters).deploy_jobs()
 
 @main.command()
 @option('--verbose', '-v', is_flag=True)

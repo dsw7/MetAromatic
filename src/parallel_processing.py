@@ -42,55 +42,47 @@ class Logger:
 
 
 class RunBatchQueries(Logger):
-    def __init__(self, path_batch_file, cutoff_distance, cutoff_angle,
-                 chain, model, threads, collection, database):
+    def __init__(self, parameters):
+        self.parameters = parameters
 
-        super().__init__(None)
+        super().__init__()
         self.logger = self.get_log_handle()
 
         # click does existence check - no need for try / except
         self.pdb_codes = []
-        with open(path_batch_file) as batch_file:
+        with open(self.parameters['path_batch_file']) as batch_file:
             for line in batch_file:
                 self.pdb_codes.extend(
                     [row for row in split(r'(;|,|\s)\s*', line) if len(row) == LEN_PDB_CODE]
                 )
 
-        self.cutoff_distance = cutoff_distance
-        self.cutoff_angle = cutoff_angle
-        self.chain = chain
-        self.model = model
-        self.num_workers = threads
-        self.collection_name = collection
-        self.database_name = database
-
         self.client = MongoClient(DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT)
         self.count = 0
 
-        if self.num_workers > MAXIMUM_WORKERS:
+        if self.parameters['threads'] > MAXIMUM_WORKERS:
             self.logger.warning('Number of selected workers exceeds maximum number of workers.')
             self.logger.warning('The thread pool will use a maximum of %i workers.', MAXIMUM_WORKERS)
 
         self.batch_job_metadata = {
-            'num_workers': self.num_workers,
-            'cutoff_distance': self.cutoff_distance,
-            'cutoff_angle': self.cutoff_angle,
-            'chain': self.chain,
-            'model': self.model,
+            'num_workers': self.parameters['threads'],
+            'cutoff_distance': self.parameters['cutoff_distance'],
+            'cutoff_angle': self.parameters['cutoff_angle'],
+            'chain': self.parameters['chain'],
+            'model': self.parameters['model'],
             'data_acquisition_date': datetime.now()
         }
 
     def worker(self, list_codes):
-        collection_results = self.client[self.database_name][self.collection_name]
+        collection_results = self.client[self.parameters['database']][self.parameters['collection']]
 
         for code in list_codes:
             try:
                 results = MetAromatic(
                     code=code,
-                    cutoff_distance=self.cutoff_distance,
-                    cutoff_angle=self.cutoff_angle,
-                    chain=self.chain,
-                    model=self.model
+                    cutoff_distance=self.parameters['cutoff_distance'],
+                    cutoff_angle=self.parameters['cutoff_angle'],
+                    chain=self.parameters['chain'],
+                    model=self.parameters['model']
                 ).get_met_aromatic_interactions()
             except Exception:  # catch remaining unhandled exceptions
                 self.count += 1
@@ -102,8 +94,8 @@ class RunBatchQueries(Logger):
 
     def database_collection_exists(self):
         retval = True
-        if self.database_name in self.client.list_database_names():
-            if not self.collection_name in self.client[self.database_name].list_collection_names():
+        if self.parameters['database'] in self.client.list_database_names():
+            if not self.parameters['collection'] in self.client[self.parameters['database']].list_collection_names():
                 retval = False
         else:
             retval = False
@@ -111,16 +103,16 @@ class RunBatchQueries(Logger):
 
     def deploy_jobs(self):
         if self.database_collection_exists():
-            self.logger.error('Database/collection pair %s.%s exists.', self.database_name, self.collection_name)
+            self.logger.error('Database/collection pair %s.%s exists.', self.parameters['database'], self.parameters['collection'])
             self.logger.error('Use a different collection name.')
             sys.exit(EXIT_FAILURE)
 
-        chunked_pdb_codes = array_split(self.pdb_codes, self.num_workers)
+        chunked_pdb_codes = array_split(self.pdb_codes, self.parameters['threads'])
 
-        name_collection_info = f'{self.collection_name}_info'
-        collection_info = self.client[self.database_name][name_collection_info]
+        name_collection_info = f"{self.parameters['collection']}_info"
+        collection_info = self.client[self.parameters['database']][name_collection_info]
 
-        self.logger.info('Deploying %i workers!', self.num_workers)
+        self.logger.info('Deploying %i workers!', self.parameters['threads'])
 
         with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
             start_time = time()
@@ -130,8 +122,8 @@ class RunBatchQueries(Logger):
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
                 self.logger.info('Batch job complete!')
-                self.logger.info('Results loaded into database: %s', self.database_name)
-                self.logger.info('Results loaded into collection: %s', self.collection_name)
+                self.logger.info('Results loaded into database: %s', self.parameters['database'])
+                self.logger.info('Results loaded into collection: %s', self.parameters['collection'])
                 self.logger.info('Batch job statistics loaded into collection: %s', name_collection_info)
 
                 self.batch_job_metadata['batch_job_execution_time'] = time() - start_time
