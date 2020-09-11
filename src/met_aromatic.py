@@ -8,8 +8,11 @@ from utilities import (
     errors,
     verifications
 )
-
-EXIT_FAILURE = 1
+from consts import (
+    EXIT_FAILURE,
+    EXIT_SUCCESS,
+    MINIMUM_VERTICES
+)
 
 
 class MetAromatic:
@@ -23,7 +26,7 @@ class MetAromatic:
     def get_met_aromatic_interactions(self):
         results = {
             '_id': self.code,
-            'exit_code': 0,
+            'exit_code': EXIT_SUCCESS,
             'exit_status': None,
             'results': None
         }
@@ -100,28 +103,25 @@ class MetAromatic:
     def get_bridging_interactions(self, number_vertices=3):
         results = self.get_met_aromatic_interactions()
 
-        if number_vertices < 3:
+        if number_vertices < MINIMUM_VERTICES:
             results['exit_code'] = EXIT_FAILURE
             results['exit_status'] = "Vertices must be > 2"
+            return results
 
-        if results['exit_code'] == 0:
-            joined_pairs = set()
-            for result in results['results']:
-                joined_pairs.add(
-                    (
-                        result['aromatic_residue'] + str(result['aromatic_position']),
-                        'MET' + str(result['methionine_position'])
-                    )
+        joined_pairs = set()
+        for result in results['results']:
+            joined_pairs.add(
+                (
+                    result['aromatic_residue'] + str(result['aromatic_position']),
+                    'MET' + str(result['methionine_position'])
                 )
+            )
 
-            nx_graph = Graph()
-            nx_graph.add_edges_from(joined_pairs)
-            bridges = list(connected_components(nx_graph))
-            bridges = [
-                bridge for bridge in bridges if len(bridge) == number_vertices
-            ]  # note that inverse bridges (MET-ARO-MET) not removed!
+        graph = Graph()
+        graph.add_edges_from(joined_pairs)
+        bridges = list(connected_components(graph))
 
-            results['results'] = bridges
-            return results
-        else:
-            return results
+        results['results'] = [
+            bridge for bridge in bridges if len(bridge) == number_vertices
+        ]  # note that inverse bridges (MET-ARO-MET) not removed!
+        return results
