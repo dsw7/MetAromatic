@@ -1,7 +1,7 @@
 from numpy import sin, cos, pi
 from numpy import linalg
 from numpy import matmul
-from numpy import matrix
+from numpy import array
 from numpy import eye
 
 
@@ -42,17 +42,19 @@ class RodriguesMethod:
         r_hat_y = r_hat[1]
         r_hat_z = r_hat[2]
 
-        # get the W matrix
-        W = matrix([[0, -r_hat_z, r_hat_y],
-                    [r_hat_z, 0, -r_hat_x],
-                    [-r_hat_y, r_hat_x, 0]])
+        # get the W array
+        W = array(
+            [[0, -r_hat_z, r_hat_y],
+             [r_hat_z, 0, -r_hat_x],
+             [-r_hat_y, r_hat_x, 0]]
+        )
 
-        # then construct Rodrigues rotation matrix
-        self.rodrigues = matrix(eye(3)) + (SCAL1 * W) + (SCAL2 * matmul(W, W))
+        # then construct Rodrigues rotation array
+        self.rodrigues = array(eye(3)) + (SCAL1 * W) + (SCAL2 * matmul(W, W))
 
     # note that I flipped these methods to match previous algorithm
     def get_vector_g(self):
-        return matmul(self.rodrigues, self.vec_u).tolist()[0]
+        return matmul(self.rodrigues, self.vec_u).tolist()
 
     def get_vector_a(self):
-        return matmul(self.rodrigues, self.vec_v).tolist()[0]
+        return matmul(self.rodrigues, self.vec_v).tolist()
