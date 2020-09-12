@@ -23,16 +23,17 @@ from .consts import (
 class Logger:
     def __init__(self, filename=None):
         if not filename:
-            self.filename = DEFAULT_LOGFILE_NAME
-        else:
-            self.filename = filename
+            filename = DEFAULT_LOGFILE_NAME
+
+        self.filepath = path.join(gettempdir(), filename)
+        print(f'Batch job progress logged to: {self.filepath}')
 
     def get_log_handle(self):
         self.formatter = logging.Formatter(
             '%(levelname)s:%(asctime)s: %(message)s',
             datefmt='%d-%b-%y:%H:%M:%S',
         )
-        handler = logging.FileHandler(path.join(gettempdir(), self.filename), 'w')
+        handler = logging.FileHandler(self.filepath, 'w')
         handler.setFormatter(self.formatter)
 
         logger = logging.getLogger()
@@ -44,6 +45,8 @@ class Logger:
 class RunBatchQueries(Logger):
     def __init__(self, parameters):
         self.parameters = parameters
+
+        print('Starting batch job...')
 
         super().__init__()
         self.logger = self.get_log_handle()
@@ -103,8 +106,9 @@ class RunBatchQueries(Logger):
 
     def deploy_jobs(self):
         if self.database_collection_exists():
-            self.logger.error('Database/collection pair %s.%s exists.', self.parameters['database'], self.parameters['collection'])
-            self.logger.error('Use a different collection name.')
+            err_str = f'Database/collection pair {self.parameters["database"]}.{self.parameters["collection"]} exists!'
+            self.logger.error(err_str)
+            print(err_str, file=sys.stderr)
             sys.exit(EXIT_FAILURE)
 
         chunked_pdb_codes = array_split(self.pdb_codes, self.parameters['threads'])
@@ -130,3 +134,5 @@ class RunBatchQueries(Logger):
                 self.batch_job_metadata['number_of_entries'] = len(self.pdb_codes)
 
                 collection_info.insert(self.batch_job_metadata)
+
+        print('Batch job complete!')

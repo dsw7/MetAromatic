@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
 import sys
 from os import path
-
-EXIT_FAILURE = 1
-MINIMUM_VERSION_PY = (3, 6)
-
-if sys.version_info[0:2] < MINIMUM_VERSION_PY:
-    print('Minimum required Python version: %s.%s\nExiting!' % MINIMUM_VERSION_PY)
-    sys.exit(EXIT_FAILURE)
-
 from click import (
     group,
     argument,
