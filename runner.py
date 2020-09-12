@@ -9,9 +9,9 @@ from click import (
     option,
     Path
 )
-from pytest import main as pytest_runner
-from utils.met_aromatic import MetAromatic
-from utils.parallel_processing import RunBatchQueries
+
+# all Met-aromatic/pytest code is imported lazily within
+# each click subcommand for significant performance improvements
 
 @group()
 def main():
@@ -24,6 +24,7 @@ def main():
 @option('--chain', default='A', metavar='<chain>')
 @option('--model', default='cp', metavar='<model>')
 def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model):
+    from utils.met_aromatic import MetAromatic
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     results = MetAromatic(
         code, cutoff_distance=cutoff_distance,
@@ -47,6 +48,7 @@ def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model)
 @option('--model', default='cp', metavar='<model>')
 @option('--vertices', default=3, type=int, metavar='<vertices>')
 def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain, model, vertices):
+    from utils.met_aromatic import MetAromatic
     results = MetAromatic(
         code, cutoff_distance=cutoff_distance,
         cutoff_angle=cutoff_angle, chain=chain, model=model
@@ -71,6 +73,7 @@ def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain
 @option('--database', default='default_ma', metavar='<database-name>')
 @option('--collection', default='default_ma', metavar='<collection-name>')
 def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, threads, database, collection):
+    from utils.parallel_processing import RunBatchQueries
     parameters = {
         'path_batch_file': path_batch_file,
         'cutoff_distance': cutoff_distance,
@@ -88,6 +91,7 @@ def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, 
 @option('--exit-on-failure', '-x', is_flag=True)
 @option('--test-expression', '-k', default=None)
 def run_tests(verbose, exit_on_failure, test_expression):
+    from pytest import main as test_main
     command = []
     command.append(path.dirname(path.abspath(__file__)))
     command.append('-s')
@@ -97,13 +101,14 @@ def run_tests(verbose, exit_on_failure, test_expression):
         command.append('-x')
     if test_expression:
         command.append('-k' + test_expression)
-    sys.exit(pytest_runner(command))
+    sys.exit(test_main(command))
 
 @main.command()
 @option('--verbose', '-v', is_flag=True)
 @option('--exit-on-failure', '-x', is_flag=True)
 @option('--test-expression', '-k', default=None)
 def run_tests_with_coverage(verbose, exit_on_failure, test_expression):
+    from pytest import main as test_main
     root = path.dirname(path.abspath(__file__))
     command = []
     command.append(path.dirname(root))
@@ -117,7 +122,7 @@ def run_tests_with_coverage(verbose, exit_on_failure, test_expression):
     command.append(f'--cov={root}')
     command.append(f'--cov-report=html:{path.join(root, "htmlcov")}')
     command.append(f'--cov-config={path.join(root, ".coveragerc")}')
-    sys.exit(pytest_runner(command))
+    sys.exit(test_main(command))
 
 if __name__ == '__main__':
     main()
