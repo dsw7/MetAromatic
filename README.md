@@ -54,8 +54,7 @@ PHE        54         MET        148        4.75563    93.28732   154.63001
 PHE        54         MET        148        5.05181    105.07358  141.00282
 ===========================================================================
 ```
-Here we have an order VI interaction between TYR 122 and MET 18. We also have an order IV interaction between PHE 54 and MET 148.
-The `NORM` column specifies the distance between the MET residue and one of the midpoints between two carbon atoms in an aromatic ring, or <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" />. `MET-THETA` and `MET-PHI` refer to <img src="https://latex.codecogs.com/svg.latex?\theta" /> and <img src="https://latex.codecogs.com/svg.latex?\phi" />, respectively. There are six TYR 122 aromatic carbon atom midpoints less than 4.9 Angstroms from MET 18 in the above result. This cutoff distance <img src="https://latex.codecogs.com/svg.latex?c" /> can be specified via the `--cutoff-distance` option:
+Above we have an order VI interaction between TYR 122 and MET 18, that is, all six vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the actual distance between the MET residue and one of the midpoints between two carbon atoms in an aromatic ring, or <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" />. There are six TYR 122 aromatic carbon atom midpoints less than 4.9 Angstroms from MET 18 in the above result. This cutoff distance <img src="https://latex.codecogs.com/svg.latex?c" /> can be specified via the `--cutoff-distance` option:
 ```
 $ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.0
 ```
@@ -66,7 +65,7 @@ ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 TYR        122        MET        18         3.95401    60.14475   68.35187
 ===========================================================================
 ```
-`MET-THETA` and `MET-PHI` refer to the angles between the vector that projects from the methionine SD atom to the aromatic carbon midpoint (termed vector _v_ in literature) and the angles describing the direction of the methionine SD lone pairs (termed vectors _a_ and _g_ in literature). We set a cutoff to ensure that we are not including results where one (or both) lone pairs are pointing away from the aromatic pi system - a condition which doesn't qualify as a true aromatic interaction. The cutoff angle can be specified via the `--cutoff-angle` option:
+`MET-THETA` and `MET-PHI` refer to <img src="https://latex.codecogs.com/svg.latex?\theta" /> and <img src="https://latex.codecogs.com/svg.latex?\phi" />, respectively. We set a cutoff to ensure that we are not including results where one (or both) lone pairs are pointing away from the aromatic pi system - a condition which doesn't qualify as a true aromatic interaction. The cutoff angle can be specified via the `--cutoff-angle` option:
 ```
 $ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.5 --cutoff-angle 60
 ```
