@@ -5,7 +5,7 @@ Code for the following publications:
 ## Updates
 I am porting this code to C++ for increased performance. See [MetAromaticCPP](https://github.com/dsw7/MetAromaticCPP).
 ## Synopsis
-This program returns a list of closely spaced methionine-aromatic residues in a PDB structure of choosing. All code and unit tests are located under `src/`.
+This program returns a list of closely spaced methionine-aromatic residues in a PDB structure of choosing.
 ## Running Met-aromatic jobs in the terminal
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
