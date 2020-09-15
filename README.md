@@ -90,14 +90,13 @@ TYR        122        MET        18         4.05137    45.0966    80.76811
 TYR        122        MET        18         4.38983    52.50492   91.84111
 ===========================================================================
 ```
-Note that the Euclidean distances between TYR aromatic carbon atoms and MET remain unchanged. Many PDB entries contain multiple chains
-denoted using capital letters. By default, this program searches for "A" delimited chains. Some researchers may, however, be interested in searching for aromatic interactions in a different chain within a multichain protein. The `--chain` option can be used to specify the chain:
+Note that the Euclidean distances between TYR aromatic carbon atoms and MET remain unchanged. By default, this program searches for "A" delimited chains. Some researchers may, however, be interested in searching for aromatic interactions in a different chain within a multichain protein. The `--chain` option can be used to specify the chain:
 ```
 $ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:  
 ![Alt text](docs/tyr-bridge.png?raw=true "Title")  
-We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `single-bridging-interaction-query` argument. For example, to search for bridging interactions with a 7.0 Angstrom MET SD / midpoint distance in 6LU7:
+We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `single-bridging-interaction-query` argument. For example, to search for bridging interactions with a 7.0 Angstrom <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" /> cutoff in 6LU7:
 ```
 $ ./runner.py single-bridging-interaction-query 6lu7 --cutoff-distance 7.0
 ```
