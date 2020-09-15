@@ -6,6 +6,33 @@ Code for the following publications:
 I am porting this code to C++ for increased performance. See [MetAromaticCPP](https://github.com/dsw7/MetAromaticCPP).
 ## Synopsis
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein Data Bank](https://www.rcsb.org/) (PDB).
+## How it works
+<!---
+Use svg for rendering and HTML for the embed code!
+--->
+The program starts by downloading a `*.pdb` file from the PDB over FTP. The file is then stripped down to the subset of coordinates corresponding to a chain `[A-Z]` of choosing. Most PDB entries consist of `A` and `B` chains. The program then further strips the set of coordinates down to any of:  
+```
+MET: CE|SD|CG  
+TYR: CD1|CE1|CZ|CG|CD2|CE2
+TRP: CD2|CE3|CZ2|CH2|CZ3|CE2
+PHE: CD1|CE1|CZ|CG|CD2|CE2
+```
+For the three aromatic residues tyrosine (`TYR`), tryptophan, (`TRP`) and phenylalanine (`PHE`) in addition to the sulfur containing residue methionine (`MET`). The alphanumeric strings (i.e. `CD1`) are the designations given to the atoms in each residue. The atoms for the aromatic residues are members of their aromatic rings. The program then finds the midpoints between the aromatic carbon atoms in the `TYR`, `TRP` and `PHE` residues, which will be denoted using `*`:
+```
+TYR: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
+TRP: CD2*|CE3*|CZ2*|CH2*|CZ3*|CE2*
+PHE: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
+```
+For example, `CD1*` in `TYR` is the midpoint between the `CD1` and `CE1` carbon atoms. Next, the program finds the distances between all `SD` atoms and all the midpoints. The vector projecting from an `SD` atom to a midpoint has been granted the designation <img src="https://latex.codecogs.com/svg.latex?\vec{v}" />. Therefore, each methionine-aromatic pair consists of a total of six vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}" />.
+### The distance condition
+Next, the program isolates the dataset only to those pairs where <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> is less than or equal to some cutoff distance <img src="https://latex.codecogs.com/svg.latex?c" />, that is, <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v_n}&space;\right&space;\|\leq&space;c" />.
+### The angular condition
+Two new vectors are introduced for the remaining methionine-aromatic residue pairs. Vector <img src="https://latex.codecogs.com/svg.latex?\vec{a}" /> and vector <img src="https://latex.codecogs.com/svg.latex?\vec{g}" />, which describe the orientation of the `SD` lone pairs in three dimensional space. The position of the lone pairs is interpolated by considering the `SD` atom the center of a regular tetrahedron with vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors <img src="https://latex.codecogs.com/svg.latex?\vec{a}" /> and <img src="https://latex.codecogs.com/svg.latex?\vec{g}" />. Next, the program obtains the angles between the lone pairs and <img src="https://latex.codecogs.com/svg.latex?\vec{v}" />:  
+
+<img src="https://latex.codecogs.com/svg.latex?\theta=cos^{-1}\frac{\left&space;\|&space;\vec{a}&space;\right&space;\|\left&space;\|&space;\vec{v}&space;\right&space;\|}{\vec{a}\cdot\vec{v}}" />  
+<img src="https://latex.codecogs.com/svg.latex?\phi=cos^{-1}\frac{\left&space;\|&space;\vec{g}&space;\right&space;\|\left&space;\|&space;\vec{v}&space;\right&space;\|}{\vec{g}\cdot\vec{v}}" />  
+
+Last, a methionine-aromatic pair is deemed interacting if any of <img src="https://latex.codecogs.com/svg.latex?\theta" /> or <img src="https://latex.codecogs.com/svg.latex?\phi" /> is less than or equal to some cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta" />, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta" /> holds.
 ## Running Met-aromatic jobs in the terminal
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
