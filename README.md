@@ -65,7 +65,7 @@ ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 TYR        122        MET        18         3.95401    60.14475   68.35187
 ===========================================================================
 ```
-`MET-THETA` and `MET-PHI` refer to <img src="https://latex.codecogs.com/svg.latex?\theta" /> and <img src="https://latex.codecogs.com/svg.latex?\phi" />, respectively. A cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta" /> is set to ensure that we are not including results where one (or both) lone pairs are pointing away from the aromatic pi system - a condition which doesn't qualify as a true aromatic interaction. The cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta" /> can be specified via the `--cutoff-angle` option:
+`MET-THETA` and `MET-PHI` refer to <img src="https://latex.codecogs.com/svg.latex?\theta" /> and <img src="https://latex.codecogs.com/svg.latex?\phi" />, respectively. In the above example, the default cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta" /> is used (109.5 <img src="https://latex.codecogs.com/svg.latex?\circ" />). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
 ```
 $ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.5 --cutoff-angle 60
 ```
