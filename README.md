@@ -55,9 +55,7 @@ PHE        54         MET        148        5.05181    105.07358  141.00282
 ===========================================================================
 ```
 Here we have an order VI interaction between TYR 122 and MET 18. We also have an order IV interaction between PHE 54 and MET 148.
-The `NORM` column specifies the distance between the MET residue and one of the midpoints between two carbon atoms in an aromatic
-ring. There are six TYR 122 aromatic carbon atom midpoints less than 4.9 Angstroms from MET 18 in the above result. This cutoff distance
-can be specified via the `--cutoff-distance` option:
+The `NORM` column specifies the distance between the MET residue and one of the midpoints between two carbon atoms in an aromatic ring, or <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" />. `MET-THETA` and `MET-PHI` refer to <img src="https://latex.codecogs.com/svg.latex?\theta" /> and <img src="https://latex.codecogs.com/svg.latex?\phi" />, respectively. There are six TYR 122 aromatic carbon atom midpoints less than 4.9 Angstroms from MET 18 in the above result. This cutoff distance <img src="https://latex.codecogs.com/svg.latex?c" /> can be specified via the `--cutoff-distance` option:
 ```
 $ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.0
 ```
