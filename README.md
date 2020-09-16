@@ -23,7 +23,8 @@ TYR: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
 TRP: CD2*|CE3*|CZ2*|CH2*|CZ3*|CE2*
 PHE: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
 ```
-For example, `CD1*` in `TYR` is the midpoint between the `CD1` and `CE1` carbon atoms. Next, the program finds the distances between all `SD` atoms and all the midpoints. The vector projecting from an `SD` atom to a midpoint has been granted the designation <img src="https://latex.codecogs.com/svg.latex?\vec{v}" />. Therefore, each methionine-aromatic pair consists of a total of six vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}" />.
+For example, `CD1*` in `TYR` is the midpoint between the `CD1` and `CE1` carbon atoms. Next, the program finds the distances between all `SD` atoms and all the midpoints. The vector projecting from an `SD` atom to a midpoint has been granted the designation <img src="https://latex.codecogs.com/svg.latex?\vec{v}" />. Therefore, each methionine-aromatic pair consists of a total of six vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}" />. In the above example, we could specify <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> as:  
+<img src="https://latex.codecogs.com/svg.latex?\vec{v}=<CD1_x*-SD_x,CD1_y*-SD_y,CD1_z*-SD_z>" />
 ### The distance condition
 Next, the program isolates the dataset only to those pairs where <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> is less than or equal to some cutoff distance <img src="https://latex.codecogs.com/svg.latex?c" />, that is, <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v_n}&space;\right&space;\|\leq&space;c" />. For the `CD1*` example above, we have:  
 <img src="https://latex.codecogs.com/svg.latex?\|\vec{v}\|=\sqrt{(CD1_x*-SD_x)^2&plus;(CD1_y*-SD_y)^2&plus;(CD1_z*-SD_z)^2}&space;\leq&space;c" />.  
