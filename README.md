@@ -48,7 +48,11 @@ Any methionine-aromatic pairs meeting the distance condition are subjected to th
 
 Last, a methionine-aromatic pair is deemed interacting if any of <img src="https://latex.codecogs.com/svg.latex?\theta"> or <img src="https://latex.codecogs.com/svg.latex?\phi" /> is less than or equal to some cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta">, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta"> holds.
 ### Summary
-The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues. 
+The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues. A representative figure is shown below:
+<p align="center">
+  <img src=https://github.com/dsw7/MetAromatic/blob/master/docs/met18_tyr122.png>
+</p>
+
 ## Running Met-aromatic jobs in the terminal
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
@@ -112,7 +116,7 @@ $ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.5 --cutoff-angl
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:  
 <p align="center">
-  <img src=https://github.com/dsw7/MetAromatic/blob/master/docs/tyr-bridge.png>
+  <img src=https://github.com/dsw7/MetAromatic/blob/master/docs/tyr_bridge.png>
 </p>  
 
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `single-bridging-interaction-query` argument. For example, to search for bridging interactions with a 7.0 <img src="https://latex.codecogs.com/svg.latex?\AA" /> <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" /> cutoff in 6LU7:
