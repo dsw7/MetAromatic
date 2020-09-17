@@ -43,10 +43,10 @@ To apply the distance condition, the program simply banks those methionine-aroma
 ### The angular condition
 Any methionine-aromatic pairs meeting the distance condition are subjected to the angular condition. The angular condition can be loosely interpreted as _"find all the methionine-aromatic pairs where the methionine lone pairs are pointing into or near the region(s) of highest electron density on a corresponding aromatic moiety_." To apply the angular condition, two new vectors are introducted: vector <img src="https://latex.codecogs.com/svg.latex?\vec{a}" /> and vector <img src="https://latex.codecogs.com/svg.latex?\vec{g}" />, which describe the orientation of the `SD` lone pairs in three dimensional space. To find the lone pairs, the program considers the `SD` atom in a methionine atom to be the center of a regular tetrahedron with vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors <img src="https://latex.codecogs.com/svg.latex?\vec{a}"> and <img src="https://latex.codecogs.com/svg.latex?\vec{g}">. Next, the program obtains the angles between the lone pairs and <img src="https://latex.codecogs.com/svg.latex?\vec{v}">:  
 <p align="center">
-  <img src="https://latex.codecogs.com/svg.latex?\theta=cos^{-1}\frac{\left&space;\|&space;\vec{a}&space;\right&space;\|\left&space;\|&space;\vec{v}&space;\right&space;\|}{\vec{a}\cdot\vec{v}}">
+  <img width="155" height="50" src="https://latex.codecogs.com/svg.latex?\theta=cos^{-1}\frac{\left&space;\|&space;\vec{a}&space;\right&space;\|\left&space;\|&space;\vec{v}&space;\right&space;\|}{\vec{a}\cdot\vec{v}}">
 </p>
 <p align="center">
-  <img src="https://latex.codecogs.com/svg.latex?\phi=cos^{-1}\frac{\left&space;\|&space;\vec{g}&space;\right&space;\|\left&space;\|&space;\vec{v}&space;\right&space;\|}{\vec{g}\cdot\vec{v}}">  
+  <img width="165" height="50" src="https://latex.codecogs.com/svg.latex?\phi=cos^{-1}\frac{\left&space;\|&space;\vec{g}&space;\right&space;\|\left&space;\|&space;\vec{v}&space;\right&space;\|}{\vec{g}\cdot\vec{v}}">  
 </p>
 
 Last, a methionine-aromatic pair is deemed interacting if any of <img src="https://latex.codecogs.com/svg.latex?\theta" /> or <img src="https://latex.codecogs.com/svg.latex?\phi" /> is less than or equal to some cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta" />, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta" /> holds.
