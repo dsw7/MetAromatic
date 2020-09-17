@@ -114,7 +114,7 @@ Note that the Euclidean distances between TYR aromatic carbon atoms and MET rema
 ```
 $ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B
 ```
-In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:  
+In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):  
 <p align="center">
   <img width="399" height="300" src=https://github.com/dsw7/MetAromatic/blob/master/docs/tyr_bridge.png>
 </p>  
