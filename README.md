@@ -116,7 +116,7 @@ $ ./runner.py single-met-aromatic-query 1rcy --cutoff-distance 4.5 --cutoff-angl
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below:  
 <p align="center">
-  <img src=https://github.com/dsw7/MetAromatic/blob/master/docs/tyr_bridge.png>
+  <img width="399" height="300" src=https://github.com/dsw7/MetAromatic/blob/master/docs/tyr_bridge.png>
 </p>  
 
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `single-bridging-interaction-query` argument. For example, to search for bridging interactions with a 7.0 <img src="https://latex.codecogs.com/svg.latex?\AA" /> <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" /> cutoff in 6LU7:
