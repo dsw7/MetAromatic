@@ -26,17 +26,20 @@ TRP: CD2, CE3, CZ2, CH2, CZ3, CE2
 PHE: CD1, CE1, CZ, CG, CD2, CE2
 ```
 The above atoms are the aromatic carbon atoms in the aromatic residues tyrosine (`TYR`), tryptophan, (`TRP`) and phenylalanine (`PHE`).
-
+### The distance condition
+The program applies the distance condition to find methionine-aromatic pairs that are _physically near each other_. To do so, the program first finds the midpoints between all neighbouring aromatic carbon atoms in all of tyrosine, tryptophan and phenylalanine. These midpoints are denoted using a `*`: 
 ```
 TYR: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
 TRP: CD2*|CE3*|CZ2*|CH2*|CZ3*|CE2*
 PHE: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
 ```
-For example, `CD1*` in `TYR` is the midpoint between the `CD1` and `CE1` carbon atoms. Next, the program finds the distances between all `SD` atoms and all the midpoints. The vector projecting from an `SD` atom to a midpoint has been granted the designation <img src="https://latex.codecogs.com/svg.latex?\vec{v}" />. In the preceding example, we could specify <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> as <img src="https://latex.codecogs.com/svg.latex?\vec{v}=<CD1_x*-SD_x,CD1_y*-SD_y,CD1_z*-SD_z>" />. On the basis of this formalism, each methionine-aromatic pair consists of a total of six vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> owing to the fact there can exist a total of six midpoints between neighbouring atoms in a hexagonal arrangement of atoms.
-### The distance condition
-The program strips the dataset only to those pairs where <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> is less than or equal to some cutoff distance <img src="https://latex.codecogs.com/svg.latex?c" />, that is, <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v_n}&space;\right&space;\|\leq&space;c" />. For the `CD1*` example above, we have:  
-<img src="https://latex.codecogs.com/svg.latex?\|\vec{v}\|=\sqrt{(CD1_x*-SD_x)^2&plus;(CD1_y*-SD_y)^2&plus;(CD1_z*-SD_z)^2}&space;\leq&space;c" />.  
-This can be interpreted as _"find all methionines that are physically near the aromatic moieties in any of tyrosine, tryptophan and phenylalanine"_. The methionine-aromatic pairs containing vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> meeting the distance condition are then subjected to the angular condition.
+Next, the program finds all the vectors projecting from all methionine `SD` atoms to all the midpoints `*`. As an example, a substructure consisting of one methionine and two phenylalanines would have 12 possible such vectors, depicted here as <img src="https://latex.codecogs.com/svg.latex?\vec{v}">, owing to the fact there can exist a total of six midpoints between neighbouring atoms in a hexagonal arrangement of atoms and there are two such arrangements for two phenylalanine residues.
+
+To apply the distance condition, the program simply banks those methionine-aromatic pairs where one or more vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}"> are less than or equal to some cutoff <img src="https://latex.codecogs.com/svg.latex?c">. As a motivating example, `CD1*` in `TYR` is the midpoint between the `CD1` and `CE1` carbon atoms. A `CD1* / SD` on an aromatic / methionine pair would meet the distance condition if the following held:
+<p align="center">
+  <img width="600" height="100" src="https://latex.codecogs.com/svg.latex?\|\vec{v}\|=\sqrt{(CD1_x*-SD_x)^2&plus;(CD1_y*-SD_y)^2&plus;(CD1_z*-SD_z)^2}&space;\leq&space;c">
+</p>
+
 ### The angular condition
 Two new vectors are introduced for the remaining methionine-aromatic residue pairs. Vector <img src="https://latex.codecogs.com/svg.latex?\vec{a}" /> and vector <img src="https://latex.codecogs.com/svg.latex?\vec{g}" />, which describe the orientation of the `SD` lone pairs in three dimensional space. The position of the lone pairs is interpolated by considering the `SD` atom the center of a regular tetrahedron with vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors <img src="https://latex.codecogs.com/svg.latex?\vec{a}" /> and <img src="https://latex.codecogs.com/svg.latex?\vec{g}" />. Next, the program obtains the angles between the lone pairs and <img src="https://latex.codecogs.com/svg.latex?\vec{v}" />:  
 
