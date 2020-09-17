@@ -50,7 +50,7 @@ Last, a methionine-aromatic pair is deemed interacting if any of <img src="https
 ### Summary
 The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues. A representative figure is shown below:
 <p align="center">
-  <img width="500" height="500" src=https://github.com/dsw7/MetAromatic/blob/master/docs/met18_tyr122.png>
+  <img width="336" height="300" src=https://github.com/dsw7/MetAromatic/blob/master/docs/met18_tyr122.png>
 </p>
 
 ## Running Met-aromatic jobs in the terminal
