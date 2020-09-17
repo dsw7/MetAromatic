@@ -26,7 +26,7 @@ TRP: CD2, CE3, CZ2, CH2, CZ3, CE2
 PHE: CD1, CE1, CZ, CG, CD2, CE2
 ```
 The above atoms are the aromatic carbon atoms in the aromatic residues tyrosine (`TYR`), tryptophan, (`TRP`) and phenylalanine (`PHE`).
-### The distance condition
+### Step 2: The distance condition
 The program applies the distance condition to find methionine-aromatic pairs that are _physically near each other_. To do so, the program first finds the midpoints between all neighbouring aromatic carbon atoms in all of tyrosine, tryptophan and phenylalanine. These midpoints are denoted using a `*`: 
 ```
 TYR: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
@@ -40,18 +40,18 @@ To apply the distance condition, the program simply banks those methionine-aroma
   <img width="600" height="100" src="https://latex.codecogs.com/svg.latex?\|\vec{v}\|=\sqrt{(CD1_x*-SD_x)^2&plus;(CD1_y*-SD_y)^2&plus;(CD1_z*-SD_z)^2}&space;\leq&space;c">
 </p>
 
-### The angular condition
+### Step 3: The angular condition
 Any methionine-aromatic pairs meeting the distance condition are subjected to the angular condition. The angular condition can be loosely interpreted as _"find all the methionine-aromatic pairs where the methionine lone pairs are pointing into or near the region(s) of highest electron density on a corresponding aromatic moiety_." To apply the angular condition, two new vectors are introducted: vector <img src="https://latex.codecogs.com/svg.latex?\vec{a}" /> and vector <img src="https://latex.codecogs.com/svg.latex?\vec{g}" />, which describe the orientation of the `SD` lone pairs in three dimensional space. To find the lone pairs, the program considers the `SD` atom in a methionine atom to be the center of a regular tetrahedron with vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors <img src="https://latex.codecogs.com/svg.latex?\vec{a}"> and <img src="https://latex.codecogs.com/svg.latex?\vec{g}">. Next, the program obtains the angles between the lone pairs and <img src="https://latex.codecogs.com/svg.latex?\vec{v}">:  
 <p align="center">
-  <img width="155" height="50" src="https://latex.codecogs.com/svg.latex?\theta=cos^{-1}\frac{\left&space;\|&space;\vec{a}&space;\right&space;\|\left&space;\|&space;\vec{v}&space;\right&space;\|}{\vec{a}\cdot\vec{v}}">
+  <img width="160" height="50" src="https://latex.codecogs.com/svg.latex?\theta=cos^{-1}\frac{\left&space;\|&space;\vec{a}&space;\right&space;\|\left&space;\|&space;\vec{v}&space;\right&space;\|}{\vec{a}\cdot\vec{v}}">
 </p>
 <p align="center">
   <img width="165" height="50" src="https://latex.codecogs.com/svg.latex?\phi=cos^{-1}\frac{\left&space;\|&space;\vec{g}&space;\right&space;\|\left&space;\|&space;\vec{v}&space;\right&space;\|}{\vec{g}\cdot\vec{v}}">  
 </p>
 
-Last, a methionine-aromatic pair is deemed interacting if any of <img src="https://latex.codecogs.com/svg.latex?\theta" /> or <img src="https://latex.codecogs.com/svg.latex?\phi" /> is less than or equal to some cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta" />, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta" /> holds.
-
-
+Last, a methionine-aromatic pair is deemed interacting if any of <img src="https://latex.codecogs.com/svg.latex?\theta"> or <img src="https://latex.codecogs.com/svg.latex?\phi" /> is less than or equal to some cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta">, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta"> holds.
+### Summary
+The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues. 
 ## Running Met-aromatic jobs in the terminal
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
