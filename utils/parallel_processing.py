@@ -130,12 +130,15 @@ class RunBatchQueries(Logger):
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
+                execution_time = round(time() - start_time, 3)
+
                 self.logger.info('Batch job complete!')
                 self.logger.info('Results loaded into database: %s', self.parameters['database'])
                 self.logger.info('Results loaded into collection: %s', self.parameters['collection'])
                 self.logger.info('Batch job statistics loaded into collection: %s', name_collection_info)
+                self.logger.info('Batch job execution time: %f s', execution_time)
 
-                self.batch_job_metadata['batch_job_execution_time'] = time() - start_time
+                self.batch_job_metadata['batch_job_execution_time'] = execution_time
                 self.batch_job_metadata['number_of_entries'] = self.number_pdb_codes
 
                 collection_info.insert(self.batch_job_metadata)
