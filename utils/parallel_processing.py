@@ -102,21 +102,13 @@ class RunBatchQueries(Logger):
                 self.logger.info('Processed %s. Count: %i', code, self.count)
                 collection_results.insert(results)
 
-    def database_collection_exists(self):
-        retval = True
-        if self.parameters['database'] in self.client.list_database_names():
-            if not self.parameters['collection'] in self.client[self.parameters['database']].list_collection_names():
-                retval = False
-        else:
-            retval = False
-        return retval
-
     def deploy_jobs(self):
-        if self.database_collection_exists():
-            err_str = f'Database/collection pair {self.parameters["database"]}.{self.parameters["collection"]} exists!'
-            self.logger.error(err_str)
-            print(err_str, file=sys.stderr)
-            sys.exit(EXIT_FAILURE)
+        if self.parameters['database'] in self.client.list_database_names():
+            if self.parameters['collection'] in self.client[self.parameters['database']].list_collection_names():
+                error_msg = f'Database/collection pair {self.parameters["database"]}.{self.parameters["collection"]} exists!'
+                self.logger.error(error_msg)
+                print(error_msg, file=sys.stderr)
+                sys.exit(EXIT_FAILURE)
 
         name_collection_info = f"{self.parameters['collection']}_info"
         collection_info = self.client[self.parameters['database']][name_collection_info]
