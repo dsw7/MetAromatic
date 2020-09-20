@@ -7,7 +7,6 @@ from datetime import datetime
 from concurrent import futures
 from tempfile import gettempdir
 from pymongo import MongoClient
-from numpy import array_split
 from .met_aromatic import MetAromatic
 from .consts import (
     EXIT_FAILURE,
@@ -52,12 +51,20 @@ class RunBatchQueries(Logger):
         self.logger = self.get_log_handle()
 
         # click does existence check - no need for try / except
-        self.pdb_codes = []
+        self.logger.info('Imported pdb codes from file %s', self.parameters['path_batch_file'])
+        pdb_codes = []
         with open(self.parameters['path_batch_file']) as batch_file:
             for line in batch_file:
-                self.pdb_codes.extend(
+                pdb_codes.extend(
                     [row for row in split(r'(;|,|\s)\s*', line) if len(row) == LEN_PDB_CODE]
                 )
+
+        self.number_pdb_codes = len(pdb_codes)
+
+        self.logger.info('Splitting list of pdb codes into %i chunks', self.parameters['threads'])
+        self.chunked_pdb_codes = [
+            pdb_codes[i::self.parameters['threads']] for i in range(self.parameters['threads'])
+        ]
 
         self.client = MongoClient(DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT)
         self.count = 0
@@ -111,8 +118,6 @@ class RunBatchQueries(Logger):
             print(err_str, file=sys.stderr)
             sys.exit(EXIT_FAILURE)
 
-        chunked_pdb_codes = array_split(self.pdb_codes, self.parameters['threads'])
-
         name_collection_info = f"{self.parameters['collection']}_info"
         collection_info = self.client[self.parameters['database']][name_collection_info]
 
@@ -121,7 +126,7 @@ class RunBatchQueries(Logger):
         with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
             start_time = time()
             workers = [
-                executor.submit(self.worker, chunk) for chunk in chunked_pdb_codes
+                executor.submit(self.worker, chunk) for chunk in self.chunked_pdb_codes
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
@@ -131,7 +136,7 @@ class RunBatchQueries(Logger):
                 self.logger.info('Batch job statistics loaded into collection: %s', name_collection_info)
 
                 self.batch_job_metadata['batch_job_execution_time'] = time() - start_time
-                self.batch_job_metadata['number_of_entries'] = len(self.pdb_codes)
+                self.batch_job_metadata['number_of_entries'] = self.number_pdb_codes
 
                 collection_info.insert(self.batch_job_metadata)
 
