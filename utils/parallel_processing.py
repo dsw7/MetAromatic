@@ -82,7 +82,7 @@ class RunBatchQueries(Logger):
             'data_acquisition_date': datetime.now()
         }
 
-    def worker(self, list_codes):
+    def worker_met_aromatic(self, list_codes):
         collection_results = self.client[self.parameters['database']][self.parameters['collection']]
 
         for code in list_codes:
@@ -126,7 +126,7 @@ class RunBatchQueries(Logger):
         with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
             start_time = time()
             workers = [
-                executor.submit(self.worker, chunk) for chunk in self.chunked_pdb_codes
+                executor.submit(self.worker_met_aromatic, chunk) for chunk in self.chunked_pdb_codes
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
