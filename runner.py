@@ -72,7 +72,8 @@ def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain
 @option('--threads', default=5, type=int, metavar='<number-threads>')
 @option('--database', default='default_ma', metavar='<database-name>')
 @option('--collection', default='default_ma', metavar='<collection-name>')
-def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, threads, database, collection):
+@option('--stream/--no-stream', default=False, help='Log to stdout instead of file')
+def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, threads, database, collection, stream):
     from utils.parallel_processing import RunBatchQueries
     parameters = {
         'path_batch_file': path_batch_file,
@@ -82,9 +83,10 @@ def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, 
         'model': model,
         'threads': threads,
         'database': database,
-        'collection': collection
+        'collection': collection,
+        'stream': stream
     }
-    RunBatchQueries(parameters).deploy_jobs()
+    sys.exit(RunBatchQueries(parameters).deploy_jobs())
 
 @main.command()
 @option('--verbose', '-v', is_flag=True)

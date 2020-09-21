@@ -16,8 +16,7 @@ from .consts import (
     DEFAULT_MONGO_HOST,
     DEFAULT_MONGO_PORT,
     DEFAULT_LOGFILE_NAME,
-    LOG_LEVEL,
-    LOG_TO_FILE
+    LOG_LEVEL
 )
 
 
@@ -54,12 +53,12 @@ class RunBatchQueries(Logger):
     def __init__(self, parameters):
         super().__init__()
 
-        if LOG_TO_FILE:
-            self.logger = self.handle_log_to_file()
-        else:
-            self.logger = self.handle_log_to_stream()
-
         self.parameters = parameters
+
+        if self.parameters['stream']:
+            self.logger = self.handle_log_to_stream()
+        else:
+            self.logger = self.handle_log_to_file()
 
         # click does existence check - no need for try / except
         self.logger.info('Imported pdb codes from file %s', self.parameters['path_batch_file'])
