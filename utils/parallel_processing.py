@@ -2,6 +2,7 @@ from re import split
 from time import time
 from datetime import datetime
 from concurrent import futures
+from signal import signal, SIGINT
 from pymongo import MongoClient
 from .met_aromatic import MetAromatic
 from .logger import Logger
@@ -58,9 +59,21 @@ class RunBatchQueries(Logger):
             'data_acquisition_date': datetime.now()
         }
 
-    def worker_met_aromatic(self, list_codes):
-        collection_results = self.client[self.parameters['database']][self.parameters['collection']]
-        for code in list_codes:
+        self.bool_disable_workers = False
+        signal(SIGINT, self.disable_all_workers)
+
+    def disable_all_workers(self, ipc_signal, frame):
+        self.bool_disable_workers = True
+        self.logger.info('Detected SIGINT!')
+        self.logger.info('Attempting to stop all workers!')
+
+    def worker_met_aromatic(self, chunked_list_pdb_codes):
+        collection = self.client[self.parameters['database']][self.parameters['collection']]
+
+        for code in chunked_list_pdb_codes:
+            if self.bool_disable_workers:
+                self.logger.info('Received interrupt signal - stopping worker thread...')
+                break
             try:
                 results = MetAromatic(
                     code=code,
@@ -75,7 +88,7 @@ class RunBatchQueries(Logger):
             else:
                 self.count += 1
                 self.logger.info('Processed %s. Count: %i', code, self.count)
-                collection_results.insert(results)
+                collection.insert(results)
 
     def deploy_jobs(self):
         if self.parameters['database'] in self.client.list_database_names():
