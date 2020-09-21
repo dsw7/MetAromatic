@@ -25,6 +25,7 @@ LOG_LEVEL = 20
 # INFO     20
 # DEBUG    10
 # NOTSET    0
+LOG_TO_FILE = False
 
 #### other
 LEN_PDB_CODE = 4

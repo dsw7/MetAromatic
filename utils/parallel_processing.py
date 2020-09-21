@@ -10,12 +10,14 @@ from pymongo import MongoClient
 from .met_aromatic import MetAromatic
 from .consts import (
     EXIT_FAILURE,
+    EXIT_SUCCESS,
     MAXIMUM_WORKERS,
     LEN_PDB_CODE,
     DEFAULT_MONGO_HOST,
     DEFAULT_MONGO_PORT,
     DEFAULT_LOGFILE_NAME,
-    LOG_LEVEL
+    LOG_LEVEL,
+    LOG_TO_FILE
 )
 
 
@@ -26,25 +28,23 @@ class Logger:
             datefmt='%d-%b-%y:%H:%M:%S',
         )
 
-    def get_log_handle_default_file(self):
+    def handle_log_to_file(self):
         filepath = path.join(gettempdir(), DEFAULT_LOGFILE_NAME)
-        print(f'Batch job progress logged to: {filepath}')
+        print(f'Batch job progress is being logged to: {filepath}')
 
         handler = logging.FileHandler(filepath, 'w')
         handler.setFormatter(self.formatter)
 
-        logger = logging.getLogger()
+        logger = logging.getLogger('file')
         logger.setLevel(LOG_LEVEL)
         logger.addHandler(handler)
         return logger
 
-    def get_log_handle_custom_file(self, filepath):
-        print(f'Batch job progress logged to: {filepath}')
-
-        handler = logging.FileHandler(filepath, 'w')
+    def handle_log_to_stream(self):
+        handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(self.formatter)
 
-        logger = logging.getLogger()
+        logger = logging.getLogger('stream')
         logger.setLevel(LOG_LEVEL)
         logger.addHandler(handler)
         return logger
@@ -53,7 +53,11 @@ class Logger:
 class RunBatchQueries(Logger):
     def __init__(self, parameters):
         super().__init__()
-        self.logger = self.get_log_handle_default_file()
+
+        if LOG_TO_FILE:
+            self.logger = self.handle_log_to_file()
+        else:
+            self.logger = self.handle_log_to_stream()
 
         self.parameters = parameters
 
@@ -111,12 +115,12 @@ class RunBatchQueries(Logger):
     def deploy_jobs(self):
         if self.parameters['database'] in self.client.list_database_names():
             if self.parameters['collection'] in self.client[self.parameters['database']].list_collection_names():
-                error_msg = f'Database/collection pair {self.parameters["database"]}.{self.parameters["collection"]} exists!'
-                self.logger.error(error_msg)
-                print(error_msg, file=sys.stderr)
-                sys.exit(EXIT_FAILURE)
-
-        print('Starting batch job!')
+                self.logger.error(
+                    'Database/collection pair %s.%s exists!',
+                    self.parameters['database'],
+                    self.parameters['collection']
+                )
+                return EXIT_FAILURE
 
         name_collection_info = f"{self.parameters['collection']}_info"
         collection_info = self.client[self.parameters['database']][name_collection_info]
@@ -143,4 +147,4 @@ class RunBatchQueries(Logger):
 
                 collection_info.insert(self.batch_job_metadata)
 
-        print('Batch job complete!')
+        return EXIT_SUCCESS
