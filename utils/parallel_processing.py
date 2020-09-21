@@ -19,28 +19,6 @@ from .consts import (
 )
 
 
-#class Logger:
-#    def __init__(self, filename=None):
-#        if not filename:
-#            filename = DEFAULT_LOGFILE_NAME
-#
-#        self.filepath = path.join(gettempdir(), filename)
-#        print(f'Batch job progress logged to: {self.filepath}')
-#
-#    def get_log_handle(self):
-#        formatter = logging.Formatter(
-#            '%(levelname)s:%(asctime)s: %(message)s',
-#            datefmt='%d-%b-%y:%H:%M:%S',
-#        )
-#        handler = logging.FileHandler(self.filepath, 'w')
-#        handler.setFormatter(formatter)
-#
-#        logger = logging.getLogger()
-#        logger.setLevel(LOG_LEVEL)
-#        logger.addHandler(handler)
-#        return logger
-
-
 class Logger:
     def __init__(self):
         self.formatter = logging.Formatter(
