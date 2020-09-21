@@ -17,6 +17,7 @@ class Logger:
 
     def handle_log_to_file(self):
         filepath = path.join(gettempdir(), DEFAULT_LOGFILE_NAME)
+
         print(f'Batch job progress is being logged to: {filepath}')
 
         handler = logging.FileHandler(filepath, 'w')
