@@ -19,20 +19,51 @@ from .consts import (
 )
 
 
+#class Logger:
+#    def __init__(self, filename=None):
+#        if not filename:
+#            filename = DEFAULT_LOGFILE_NAME
+#
+#        self.filepath = path.join(gettempdir(), filename)
+#        print(f'Batch job progress logged to: {self.filepath}')
+#
+#    def get_log_handle(self):
+#        formatter = logging.Formatter(
+#            '%(levelname)s:%(asctime)s: %(message)s',
+#            datefmt='%d-%b-%y:%H:%M:%S',
+#        )
+#        handler = logging.FileHandler(self.filepath, 'w')
+#        handler.setFormatter(formatter)
+#
+#        logger = logging.getLogger()
+#        logger.setLevel(LOG_LEVEL)
+#        logger.addHandler(handler)
+#        return logger
+
+
 class Logger:
-    def __init__(self, filename=None):
-        if not filename:
-            filename = DEFAULT_LOGFILE_NAME
-
-        self.filepath = path.join(gettempdir(), filename)
-        print(f'Batch job progress logged to: {self.filepath}')
-
-    def get_log_handle(self):
+    def __init__(self):
         self.formatter = logging.Formatter(
             '%(levelname)s:%(asctime)s: %(message)s',
             datefmt='%d-%b-%y:%H:%M:%S',
         )
-        handler = logging.FileHandler(self.filepath, 'w')
+
+    def get_log_handle_default_file(self):
+        filepath = path.join(gettempdir(), DEFAULT_LOGFILE_NAME)
+        print(f'Batch job progress logged to: {filepath}')
+
+        handler = logging.FileHandler(filepath, 'w')
+        handler.setFormatter(self.formatter)
+
+        logger = logging.getLogger()
+        logger.setLevel(LOG_LEVEL)
+        logger.addHandler(handler)
+        return logger
+
+    def get_log_handle_custom_file(self, filepath):
+        print(f'Batch job progress logged to: {filepath}')
+
+        handler = logging.FileHandler(filepath, 'w')
         handler.setFormatter(self.formatter)
 
         logger = logging.getLogger()
@@ -43,12 +74,10 @@ class Logger:
 
 class RunBatchQueries(Logger):
     def __init__(self, parameters):
-        self.parameters = parameters
-
-        print('Starting batch job...')
-
         super().__init__()
-        self.logger = self.get_log_handle()
+        self.logger = self.get_log_handle_default_file()
+
+        self.parameters = parameters
 
         # click does existence check - no need for try / except
         self.logger.info('Imported pdb codes from file %s', self.parameters['path_batch_file'])
@@ -84,7 +113,6 @@ class RunBatchQueries(Logger):
 
     def worker_met_aromatic(self, list_codes):
         collection_results = self.client[self.parameters['database']][self.parameters['collection']]
-
         for code in list_codes:
             try:
                 results = MetAromatic(
@@ -109,6 +137,8 @@ class RunBatchQueries(Logger):
                 self.logger.error(error_msg)
                 print(error_msg, file=sys.stderr)
                 sys.exit(EXIT_FAILURE)
+
+        print('Starting batch job!')
 
         name_collection_info = f"{self.parameters['collection']}_info"
         collection_info = self.client[self.parameters['database']][name_collection_info]
