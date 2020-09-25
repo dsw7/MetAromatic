@@ -27,8 +27,8 @@ TEST_CODES = {
 class TestMetAromaticAlgorithmAgainst483Data:
     def setup_class(self):
         self.default_parameters = {
-            'distance': 4.9,
-            'angle': 109.5,
+            'cutoff_distance': 4.9,
+            'cutoff_angle': 109.5,
             'chain': 'A',
             'model': 'cp',
         }
@@ -51,12 +51,8 @@ class TestMetAromaticAlgorithmAgainst483Data:
 
         try:
             test_data = MetAromatic(
-                code=code,
-                cutoff_angle=self.default_parameters['angle'],
-                cutoff_distance=self.default_parameters['distance'],
-                chain=self.default_parameters['chain'],
-                model=self.default_parameters['model']
-            ).get_met_aromatic_interactions()['results']
+                **self.default_parameters
+            ).get_met_aromatic_interactions(code=code)['results']
 
         except IndexError:
             skip('Skipping list index out of range error. Occurs because of missing data.')
