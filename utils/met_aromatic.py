@@ -17,16 +17,15 @@ from .consts import (
 
 
 class MetAromatic:
-    def __init__(self, code, cutoff_distance, cutoff_angle, chain, model):
-        self.code = code
+    def __init__(self, cutoff_distance, cutoff_angle, chain, model):
         self.cutoff_distance = cutoff_distance
         self.cutoff_angle = cutoff_angle
         self.chain = chain
         self.model = model
 
-    def get_met_aromatic_interactions(self):
+    def get_met_aromatic_interactions(self, code):
         results = {
-            '_id': self.code,
+            '_id': code,
             'exit_code': EXIT_SUCCESS,
             'exit_status': None,
             'results': None
@@ -42,7 +41,7 @@ class MetAromatic:
             results['exit_code'] = EXIT_FAILURE
             return results
 
-        file_from_pdb = filegetter.PDBFileGetter(self.code)
+        file_from_pdb = filegetter.PDBFileGetter(code)
 
         filepath = file_from_pdb.fetch_entry_from_pdb()
         if not filepath:
@@ -101,8 +100,8 @@ class MetAromatic:
 
         return results
 
-    def get_bridging_interactions(self, number_vertices=3):
-        results = self.get_met_aromatic_interactions()
+    def get_bridging_interactions(self, code, number_vertices=3):
+        results = self.get_met_aromatic_interactions(code)
 
         if results['exit_code'] == EXIT_FAILURE:  # failed in upstream call
             return results
