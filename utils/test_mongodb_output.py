@@ -71,8 +71,8 @@ VALID_RESULTS_1RCY = [{
 class TestMongoDBOutput:
     def setup_class(self):
         self.default_parameters = {
-            'distance': 4.9,
-            'angle': 109.5,
+            'cutoff_distance': 4.9,
+            'cutoff_angle': 109.5,
             'chain': 'A',
             'model': 'cp',
         }
@@ -96,12 +96,11 @@ class TestMongoDBOutput:
     )
     def test_mongodb_output_invalid_results(self, code, cutoff_distance, cutoff_angle, error):
         assert MetAromatic(
-            code=code,
             cutoff_angle=cutoff_angle,
             cutoff_distance=cutoff_distance,
             chain=self.default_parameters['chain'],
             model=self.default_parameters['model']
-        ).get_met_aromatic_interactions()['exit_code'] == error
+        ).get_met_aromatic_interactions(code=code)['exit_code'] == error
 
     @mark.parametrize(
         'code, cutoff_distance, cutoff_angle',
@@ -115,24 +114,19 @@ class TestMongoDBOutput:
     )
     def test_mongodb_output_invalid_results_exception_boolean(self, code, cutoff_distance, cutoff_angle):
         assert MetAromatic(
-            code=code,
             cutoff_angle=cutoff_angle,
             cutoff_distance=cutoff_distance,
             chain=self.default_parameters['chain'],
             model=self.default_parameters['model']
-        ).get_met_aromatic_interactions().get('exit_status')
+        ).get_met_aromatic_interactions(code=code).get('exit_status')
 
     def test_mongodb_output_valid_results(self):
         sum_met_theta_control = sum([i['met_theta_angle'] for i in VALID_RESULTS_1RCY])
         sum_met_phi_control = sum([i['met_phi_angle'] for i in VALID_RESULTS_1RCY])
 
         test_results = MetAromatic(
-            code='1rcy',
-            cutoff_angle=self.default_parameters['angle'],
-            cutoff_distance=self.default_parameters['distance'],
-            chain=self.default_parameters['chain'],
-            model=self.default_parameters['model']
-        ).get_met_aromatic_interactions()['results']
+            **self.default_parameters
+        ).get_met_aromatic_interactions(code='1rcy')['results']
 
         sum_met_theta_test = sum([i['met_theta_angle'] for i in test_results])
         sum_met_phi_test = sum([i['met_phi_angle'] for i in test_results])
