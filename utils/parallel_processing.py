@@ -16,11 +16,15 @@ from .consts import (
 )
 
 
-class RunBatchQueries(Logger):
+class RunBatchQueries(Logger, MetAromatic):
     def __init__(self, parameters):
-        super().__init__()
-
         self.parameters = parameters
+
+        Logger.__init__(self)
+        MetAromatic.__init__(
+            self, self.parameters['cutoff_distance'], self.parameters['cutoff_angle'],
+            self.parameters['chain'], self.parameters['model']
+        )
 
         if self.parameters['stream']:
             self.logger = self.handle_log_to_stream()
@@ -75,13 +79,7 @@ class RunBatchQueries(Logger):
                 self.logger.info('Received interrupt signal - stopping worker thread...')
                 break
             try:
-                results = MetAromatic(
-                    code=code,
-                    cutoff_distance=self.parameters['cutoff_distance'],
-                    cutoff_angle=self.parameters['cutoff_angle'],
-                    chain=self.parameters['chain'],
-                    model=self.parameters['model']
-                ).get_met_aromatic_interactions()
+                results = self.get_met_aromatic_interactions(code)
             except Exception:  # catch remaining unhandled exceptions
                 self.count += 1
                 self.logger.exception('Could not process code: %s. Count: %i', code, self.count)

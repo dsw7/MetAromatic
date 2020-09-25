@@ -39,13 +39,14 @@ def get_control_bridge_test_ids(file, size=100):
 
 class TestBridges:
     def setup_class(self):
+        self.network_size = 4
         self.default_bridge_testing_parameters = {
-            'distance': 6.0,
-            'angle': 360.0,
+            'cutoff_distance': 6.0,
+            'cutoff_angle': 360.0,
             'chain': 'A',
-            'model': 'cp',
-            'network_size': 4
+            'model': 'cp'
         }
+        self.ma = MetAromatic(**self.default_bridge_testing_parameters)
 
     @mark.parametrize(
         'bridges',
@@ -54,14 +55,9 @@ class TestBridges:
     )
     def test_bridge_collector(self, bridges):
         try:
-            bridging_interactions = MetAromatic(
-                code=bridges.get('pdb_code'),
-                cutoff_angle=self.default_bridge_testing_parameters['angle'],
-                cutoff_distance=self.default_bridge_testing_parameters['distance'],
-                model=self.default_bridge_testing_parameters['model'],
-                chain=self.default_bridge_testing_parameters['chain']
-            ).get_bridging_interactions(
-                number_vertices=self.default_bridge_testing_parameters['network_size']
+            bridging_interactions = self.ma.get_bridging_interactions(
+                number_vertices=self.network_size,
+                code=bridges.get('pdb_code')
             )
         except IndexError:
             skip('Skipping list index out of range error. Occurs because of missing data.')
@@ -87,11 +83,10 @@ class TestBridges:
     )
     def test_no_bridges_response(self, code, cutoff_distance, cutoff_angle, error):
         assert MetAromatic(
-            code=code,
             cutoff_angle=cutoff_angle,
             cutoff_distance=cutoff_distance,
             model=self.default_bridge_testing_parameters['model'],
             chain=self.default_bridge_testing_parameters['chain']
         ).get_bridging_interactions(
-            number_vertices=self.default_bridge_testing_parameters['network_size']
+            code=code, number_vertices=self.network_size
         )['exit_code'] == error
