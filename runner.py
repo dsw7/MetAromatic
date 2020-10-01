@@ -32,7 +32,7 @@ def test(code, cutoff_distance, cutoff_angle, chain, model):
         'chain': chain,
         'model': model
     }
-    MetAromaticTUI(parameters).event_loop()
+    sys.exit(MetAromaticTUI(parameters).event_loop())
 
 @main.command()
 @argument('code')
