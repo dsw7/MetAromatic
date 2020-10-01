@@ -1,9 +1,10 @@
 import curses
-from .consts import EXIT_SUCCESS
+from .consts import (
+    EXIT_SUCCESS,
+    HEADER_TEXT,
+    FOOTER_TEXT
+)
 from .met_aromatic import MetAromatic
-
-HEADER_TEXT = '--- CONTROL PANEL ---'
-FOOTER_TEXT = "Press 'q' to exit | Use KEY_UP and KEY_DOWN to scroll through parameters"
 
 
 class MetAromaticTUI:
@@ -31,8 +32,8 @@ class MetAromaticTUI:
         self.stdscr.refresh()
 
         self.show_header()
-        self.show_input_window()
-        self.show_output_window()
+        self.show_parameters_window()
+        self.show_results_window()
         self.show_footer()
 
         self.position = 1
@@ -52,7 +53,7 @@ class MetAromaticTUI:
         self.window_header.addstr(1, midline, HEADER_TEXT)
         self.window_header.refresh()
 
-    def show_input_window(self):
+    def show_parameters_window(self):
         position = self.window_header.getbegyx()[0] + self.window_header.getmaxyx()[0]
         self.window_input = curses.newwin(7, 0, position, 0)
         self.window_input.border(0)
@@ -71,7 +72,7 @@ class MetAromaticTUI:
 
         self.window_input.refresh()
 
-    def show_output_window(self):
+    def show_results_window(self):
         position = self.window_input.getbegyx()[0] + self.window_input.getmaxyx()[0]
         self.window_output = curses.newwin(len(self.results) + 2, 0, position, 0)
         self.window_output.border(0)
@@ -87,8 +88,8 @@ class MetAromaticTUI:
         self.position += increment
         if self.position <= 1:
             self.position = 1
-        elif self.position > len(self.parameters):
-            self.position = len(self.parameters)
+        elif self.position > len(self.results):
+            self.position = len(self.results)
 
     def event_loop(self):
         key_input = None
