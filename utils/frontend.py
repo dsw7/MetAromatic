@@ -50,7 +50,7 @@ class MetAromaticTUI:
         midline = int((stdscr_width // 2) - (len(HEADER_TEXT) // 2) - len(HEADER_TEXT) % 2)
         self.window_header = curses.newwin(3, 0, 0, 0)
         self.window_header.border(0)
-        self.window_header.addstr(1, midline, HEADER_TEXT)
+        self.window_header.addstr(1, midline, HEADER_TEXT, curses.A_BOLD)
         self.window_header.refresh()
 
     def show_parameters_window(self):

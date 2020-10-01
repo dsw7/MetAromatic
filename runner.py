@@ -17,13 +17,13 @@ from click import (
 def main():
     pass
 
-@main.command()
+@main.command(help='Display results in a curses terminal user interface.')
 @argument('code')
 @option('--cutoff-distance', default='4.9', metavar='<distance-in-angstroms>')
 @option('--cutoff-angle', default='109.5', metavar='<angle-in-degrees>')
 @option('--chain', default='A', metavar='<chain>')
 @option('--model', default='cp', metavar='<model>')
-def test(code, cutoff_distance, cutoff_angle, chain, model):
+def interface(code, cutoff_distance, cutoff_angle, chain, model):
     from utils.frontend import MetAromaticTUI
     parameters = {
         'code': code,

@@ -31,4 +31,4 @@ LEN_PDB_CODE = 4
 
 #### terminal UI header
 HEADER_TEXT = '*** MET-AROMATIC RESULTS ***'
-FOOTER_TEXT = "Press 'q' to exit | Use KEY_UP and KEY_DOWN to scroll through parameters"
+FOOTER_TEXT = "Press 'q' to exit | Use KEY_UP and KEY_DOWN to scroll through results"
