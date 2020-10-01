@@ -19,14 +19,20 @@ def main():
 
 @main.command()
 @argument('code')
-@option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
-@option('--cutoff-angle', default=109.5, type=float, metavar='<angle-in-degrees>')
+@option('--cutoff-distance', default='4.9', metavar='<distance-in-angstroms>')
+@option('--cutoff-angle', default='109.5', metavar='<angle-in-degrees>')
 @option('--chain', default='A', metavar='<chain>')
 @option('--model', default='cp', metavar='<model>')
 def test(code, cutoff_distance, cutoff_angle, chain, model):
-    #from utils.met_aromatic import MetAromatic
     from utils.frontend import MetAromaticTUI
-    MetAromaticTUI().event_loop()
+    parameters = {
+        'code': code,
+        'cutoff_distance': cutoff_distance,
+        'cutoff_angle': cutoff_angle,
+        'chain': chain,
+        'model': model
+    }
+    MetAromaticTUI(parameters).event_loop()
 
 @main.command()
 @argument('code')

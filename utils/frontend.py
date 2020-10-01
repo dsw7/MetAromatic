@@ -7,14 +7,8 @@ FOOTER_TEXT = "Press 'q' to exit | Use KEY_UP and KEY_DOWN to scroll through par
 
 
 class MetAromaticTUI:
-    def __init__(self):
-        self.input_parameters = {
-            'code': '1rcy',
-            'cutoff_distance': '4.9',
-            'cutoff_angle': '109.5',
-            'chain': 'A',
-            'model': 'cp'
-        }
+    def __init__(self, parameters):
+        self.input_parameters = parameters
 
         self.stdscr = curses.initscr()
         curses.curs_set(0)
@@ -63,7 +57,7 @@ class MetAromaticTUI:
         self.window_input.addstr(3, 35, self.input_parameters['cutoff_angle'])
         self.window_input.addstr(4, 35, self.input_parameters['chain'])
         self.window_input.addstr(5, 35, self.input_parameters['model'])
-        
+
         self.window_input.refresh()
 
     def show_output_window(self):
