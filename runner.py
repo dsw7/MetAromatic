@@ -25,8 +25,8 @@ def main():
 @option('--model', default='cp', metavar='<model>')
 def test(code, cutoff_distance, cutoff_angle, chain, model):
     #from utils.met_aromatic import MetAromatic
-    from utils.frontend import ControlPanel
-    ControlPanel().event_loop()
+    from utils.frontend import MetAromaticTUI
+    MetAromaticTUI().event_loop()
 
 @main.command()
 @argument('code')
