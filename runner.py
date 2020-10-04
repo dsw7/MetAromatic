@@ -17,7 +17,7 @@ from click import (
 def main():
     pass
 
-@main.command(help='Display results in a curses terminal user interface.')
+@main.command(help='Run single Met-aromatic query in a curses interface.')
 @argument('code')
 @option('--cutoff-distance', default='4.9', metavar='<distance-in-angstroms>')
 @option('--cutoff-angle', default='109.5', metavar='<angle-in-degrees>')
@@ -34,7 +34,7 @@ def interface(code, cutoff_distance, cutoff_angle, chain, model):
     }
     sys.exit(MetAromaticTUI(parameters).event_loop())
 
-@main.command()
+@main.command(help='Run a Met-aromatic query on a single PDB entry.')
 @argument('code')
 @option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
 @option('--cutoff-angle', default=109.5, type=float, metavar='<angle-in-degrees>')
@@ -56,7 +56,7 @@ def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model)
         secho(f"Exited with code: {results['exit_code']}", fg='red')
     sys.exit(results['exit_code'])
 
-@main.command()
+@main.command(help='Run a bridging interaction query on a single PDB entry.')
 @argument('code')
 @option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
 @option('--cutoff-angle', default=109.5, type=float, metavar='<angle-in-degrees>')
@@ -78,7 +78,7 @@ def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain
         secho(f"Exited with code: {results['exit_code']}", fg='red')
     sys.exit(results['exit_code'])
 
-@main.command()
+@main.command(help='Run a Met-aromatic query batch job.')
 @argument('path_batch_file', type=Path('rb'))
 @option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
 @option('--cutoff-angle', default=109.5, type=float, metavar='<angle-in-degrees>')
@@ -103,7 +103,7 @@ def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, 
     }
     sys.exit(RunBatchQueries(parameters).deploy_jobs())
 
-@main.command()
+@main.command(help='Run internal unit tests.')
 @option('--verbose', '-v', is_flag=True)
 @option('--exit-on-failure', '-x', is_flag=True)
 @option('--test-expression', '-k', default=None)
@@ -120,7 +120,7 @@ def run_tests(verbose, exit_on_failure, test_expression):
         command.append('-k' + test_expression)
     sys.exit(test_main(command))
 
-@main.command()
+@main.command(help='Run internal unit tests with coverage.')
 @option('--verbose', '-v', is_flag=True)
 @option('--exit-on-failure', '-x', is_flag=True)
 @option('--test-expression', '-k', default=None)
