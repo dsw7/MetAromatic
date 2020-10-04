@@ -2,7 +2,8 @@ import curses
 from .consts import (
     EXIT_SUCCESS,
     HEADER_TEXT,
-    FOOTER_TEXT
+    FOOTER_TEXT,
+    FORMATTED_HEADER
 )
 from .met_aromatic import MetAromatic
 
@@ -74,7 +75,8 @@ class MetAromaticTUI:
 
     def show_results_window(self):
         position = self.window_input.getbegyx()[0] + self.window_input.getmaxyx()[0]
-        self.window_output = curses.newwin(len(self.results) + 2, 0, position, 0)
+        self.window_output = curses.newwin(len(self.results) + 3, 0, position, 0)
+        self.window_output.addstr(1, 2, FORMATTED_HEADER, curses.A_BOLD + curses.A_UNDERLINE)
         self.window_output.border(0)
 
     def show_footer(self):
@@ -86,10 +88,10 @@ class MetAromaticTUI:
 
     def navigate(self, increment):
         self.position += increment
-        if self.position <= 1:
-            self.position = 1
-        elif self.position > len(self.results):
-            self.position = len(self.results)
+        if self.position <= 2:
+            self.position = 2
+        elif self.position > len(self.results) + 1:
+            self.position = len(self.results) + 1
 
     def event_loop(self):
         key_input = None
@@ -100,7 +102,7 @@ class MetAromaticTUI:
             elif key_input == curses.KEY_UP:
                 self.navigate(-1)
 
-            for index, line in enumerate(self.results, 1):
+            for index, line in enumerate(self.results, 2):
                 if index == self.position:
                     mode = curses.A_REVERSE
                 else:
