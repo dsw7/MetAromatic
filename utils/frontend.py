@@ -22,6 +22,8 @@ class MetAromaticTUI:
         )
 
         self.results = results['results']
+        self.exit_code = results['exit_code']
+        self.exit_status = results['exit_status']
 
         self.stdscr = curses.initscr()
         curses.curs_set(0)
@@ -32,11 +34,6 @@ class MetAromaticTUI:
         self.stdscr.clear()
         self.stdscr.refresh()
 
-        self.show_header()
-        self.show_parameters_window()
-        self.show_results_window()
-        self.show_footer()
-
         self.position = 1
 
     def __del__(self):
@@ -45,6 +42,9 @@ class MetAromaticTUI:
         curses.nocbreak()
         curses.echo()
         curses.endwin()
+
+        if self.exit_code != EXIT_SUCCESS:
+            print(self.exit_status)
 
     def show_header(self):
         _, stdscr_width = self.stdscr.getmaxyx()
@@ -94,6 +94,14 @@ class MetAromaticTUI:
             self.position = len(self.results) + 1
 
     def event_loop(self):
+        if self.exit_code != EXIT_SUCCESS:
+            return self.exit_code
+
+        self.show_header()
+        self.show_parameters_window()
+        self.show_results_window()
+        self.show_footer()
+
         key_input = None
 
         while key_input != ord('q'):
@@ -114,4 +122,4 @@ class MetAromaticTUI:
             self.window_output.refresh()
             key_input = self.stdscr.getch()
 
-        return EXIT_SUCCESS
+        return self.exit_code
