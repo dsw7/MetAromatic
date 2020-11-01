@@ -29,7 +29,7 @@ LOG_LEVEL = 20
 #### other
 LEN_PDB_CODE = 4
 
-#### terminal UI headers and footers 
+#### terminal UI headers and footers
 HEADER_TEXT = '*** MET-AROMATIC RESULTS ***'
 FOOTER_TEXT = "Press 'q' to exit | Use KEY_UP and KEY_DOWN to scroll through results"
 HEADER_RESULTS = [
