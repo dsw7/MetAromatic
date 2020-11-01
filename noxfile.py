@@ -18,10 +18,12 @@ nox.options.envdir = path.join(gettempdir(), '.nox')
 
 @nox.session(python=PYTHON_INTERP_VERSION)
 def lint(session):
+    command = f'pylint {PATH_TO_PROJECT} --output-format=colorized --exit-zero'
     session.install(*ALL_PROJECT_DEPENDENCIES)
-    session.run('pylint', PATH_TO_PROJECT, '--output-format=colorized')
+    session.run(*command.split())
 
 @nox.session(python=PYTHON_INTERP_VERSION)
 def tests(session):
+    command = f'pytest -vs {PATH_TO_PROJECT}'
     session.install(*ALL_PROJECT_DEPENDENCIES)
-    session.run('pytest', '-vs', PATH_TO_PROJECT)
+    session.run(*command.split())
