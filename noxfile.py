@@ -14,8 +14,8 @@ ALL_PROJECT_DEPENDENCIES = [
     'nox==2020.8.22'
 ]
 
-nox.options.report = path.join(gettempdir(), 'noxreport')
-nox.options.envdir = path.join(gettempdir(), '.nox')
+nox.options.report = path.join(gettempdir(), 'noxreport_met_aromatic')
+nox.options.envdir = path.join(gettempdir(), '.nox_met_aromatic')
 
 @nox.session(python=PYTHON_INTERP_VERSION)
 def lint(session):
