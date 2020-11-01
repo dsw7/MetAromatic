@@ -26,12 +26,6 @@ def lint(session):
     session.run(*command.split(), *msg_template)
 
 @nox.session(python=PYTHON_INTERP_VERSION)
-def run_pytests(session):
-    command = f'pytest -vs {PATH_TO_PROJECT}'
-    session.install(*ALL_PROJECT_DEPENDENCIES)
-    session.run(*command.split())
-
-@nox.session(python=PYTHON_INTERP_VERSION)
 def run_pytests_with_coverage(session):
     command = 'pytest -vs {} '.format(PATH_TO_PROJECT)
     command += '--cov={} '.format(PATH_TO_PROJECT)
