@@ -125,7 +125,7 @@ def run_tests(verbose, exit_on_failure, test_expression):
 @option('--verbose', '-v', is_flag=True)
 @option('--exit-on-failure', '-x', is_flag=True)
 @option('--test-expression', '-k', default=None)
-@option('--path-to-html', default=path.join(gettempdir(), 'htmlcov'))
+@option('--path-to-html', default=path.join(gettempdir(), 'htmlcov'), metavar='/path/to/htmlcov/')
 def run_tests_with_coverage(verbose, exit_on_failure, test_expression, path_to_html):
     from pytest import main as test_main
     root = path.dirname(path.abspath(__file__))
@@ -139,7 +139,7 @@ def run_tests_with_coverage(verbose, exit_on_failure, test_expression, path_to_h
     if test_expression:
         command.append('-k' + test_expression)
     command.append(f'--cov={root}')
-    command.append(f'--cov-report=html:{path.join(root, "htmlcov")}')
+    command.append(f'--cov-report=html:{path_to_html}')
     command.append(f'--cov-config={path.join(root, ".coveragerc")}')
     sys.exit(test_main(command))
 
