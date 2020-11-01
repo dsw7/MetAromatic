@@ -167,7 +167,7 @@ Coverage tests can be ran as follows:
 ```
 $ ./runner.py run-tests-with-coverage
 ```
-This will create an `htmlcov/` directory under `/tmp`. The coverage report can be viewed by opening `/tmp/htmlcov/index.html` in a browser. A custom path can be specified with the `--path-to-html` option. The testing and linting process for this project can also be automated using `nox`, that is, by running:
+This will create an `htmlcov` directory under `/tmp`. The coverage report can be viewed by opening `/tmp/htmlcov/index.html` in a browser. A custom path can be specified with the `--path-to-html` option. The testing and linting process for this project can also be automated using `nox`, that is, by running:
 ```
 $ nox
 ```
@@ -175,4 +175,4 @@ Or
 ```
 $ python3 -m nox
 ```
-The project's `noxfile` will create a `nox` `envdir` under `/tmp` named `.nox_met_aromatic`. The `noxfile` will lint the project and run tests with coverage. The `.nox_met_aromatic` directory will contain the environments for the corresponding `nox` sessions, an `htmlcov` directory containing the coverage report, and the `nox` report, `nox_report_met_aromatic`.
+The project's `noxfile` will create a `nox` `envdir` under `/tmp` named `.nox_met_aromatic`. The `noxfile` will lint the project and run tests with coverage. The `.nox_met_aromatic` directory will contain the environments for the corresponding `nox` sessions, an `htmlcov` directory containing the coverage report, and the `nox` report, `nox_report_met_aromatic` after the run has completed.
