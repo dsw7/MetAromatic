@@ -24,8 +24,19 @@ def lint(session):
     session.install(*ALL_PROJECT_DEPENDENCIES)
     session.run(*command.split(), *msg_template)
 
+"""
 @nox.session(python=PYTHON_INTERP_VERSION)
 def tests(session):
     command = f'pytest -vs {PATH_TO_PROJECT}'
+    session.install(*ALL_PROJECT_DEPENDENCIES)
+    session.run(*command.split())
+"""
+
+@nox.session(python=PYTHON_INTERP_VERSION)
+def tests(session):
+    command = f'pytest -vs {PATH_TO_PROJECT} '
+    command += f'--cov={PATH_TO_PROJECT} '
+    command += f'--cov-report=html:{} '.format(path.join(nox.options.envdir, 'htmlcov'))
+    command += f'--cov-config={} '.format(path.join(PATH_TO_PROJECT, '.coveragerc'))
     session.install(*ALL_PROJECT_DEPENDENCIES)
     session.run(*command.split())
