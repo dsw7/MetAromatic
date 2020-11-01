@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 from os import path
+from tempfile import gettempdir
 from click import (
     group,
     argument,
@@ -124,11 +125,12 @@ def run_tests(verbose, exit_on_failure, test_expression):
 @option('--verbose', '-v', is_flag=True)
 @option('--exit-on-failure', '-x', is_flag=True)
 @option('--test-expression', '-k', default=None)
-def run_tests_with_coverage(verbose, exit_on_failure, test_expression):
+@option('--path-to-html', default=path.join(gettempdir(), 'htmlcov'))
+def run_tests_with_coverage(verbose, exit_on_failure, test_expression, path_to_html):
     from pytest import main as test_main
     root = path.dirname(path.abspath(__file__))
     command = []
-    command.append(path.dirname(root))
+    command.append(root)
     command.append('-s')
     if verbose:
         command.append('-v')
