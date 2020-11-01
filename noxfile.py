@@ -6,6 +6,7 @@ PATH_TO_PROJECT = path.dirname(__file__)
 PYTHON_INTERP_VERSION = '3.6.10'
 ALL_PROJECT_DEPENDENCIES = [
     'pytest==5.2.1',
+    'pytest-cov==2.8.1',
     'networkx==2.3',
     'numpy==1.19.0',
     'pymongo==3.9.0',
@@ -14,8 +15,8 @@ ALL_PROJECT_DEPENDENCIES = [
     'nox==2020.8.22'
 ]
 
-nox.options.report = path.join(gettempdir(), 'noxreport_met_aromatic')
 nox.options.envdir = path.join(gettempdir(), '.nox_met_aromatic')
+nox.options.report = path.join(nox.options.envdir, 'nox_report_met_aromatic')
 
 @nox.session(python=PYTHON_INTERP_VERSION)
 def lint(session):
@@ -24,19 +25,17 @@ def lint(session):
     session.install(*ALL_PROJECT_DEPENDENCIES)
     session.run(*command.split(), *msg_template)
 
-"""
 @nox.session(python=PYTHON_INTERP_VERSION)
-def tests(session):
+def run_pytests(session):
     command = f'pytest -vs {PATH_TO_PROJECT}'
     session.install(*ALL_PROJECT_DEPENDENCIES)
     session.run(*command.split())
-"""
 
 @nox.session(python=PYTHON_INTERP_VERSION)
-def tests(session):
-    command = f'pytest -vs {PATH_TO_PROJECT} '
-    command += f'--cov={PATH_TO_PROJECT} '
-    command += f'--cov-report=html:{} '.format(path.join(nox.options.envdir, 'htmlcov'))
-    command += f'--cov-config={} '.format(path.join(PATH_TO_PROJECT, '.coveragerc'))
+def run_pytests_with_coverage(session):
+    command = 'pytest -vs {} '.format(PATH_TO_PROJECT)
+    command += '--cov={} '.format(PATH_TO_PROJECT)
+    command += '--cov-report=html:{} '.format(path.join(nox.options.envdir, 'htmlcov'))
+    command += '--cov-config={} '.format(path.join(PATH_TO_PROJECT, '.coveragerc'))
     session.install(*ALL_PROJECT_DEPENDENCIES)
     session.run(*command.split())
