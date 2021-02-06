@@ -17,10 +17,16 @@ def lint(session):
     session.run(*command.split(), *msg_template)
 
 @nox.session(python=PYTHON_INTERP_VERSION)
-def run_tests(session):
+def run_tests_with_coverage(session):
     command = 'python3 -m pytest -vs {} '.format(PATH_TO_PROJECT)
     command += '--cov={} '.format(PATH_TO_PROJECT)
     command += '--cov-report=html:{} '.format(path.join(nox.options.envdir, 'htmlcov'))
     command += '--cov-config={} '.format(path.join(PATH_TO_PROJECT, '.coveragerc'))
+    session.install('-r', PATH_REQUIREMENTS)
+    session.run(*command.split())
+
+@nox.session(python=PYTHON_INTERP_VERSION)
+def run_tests(session):
+    command = 'python3 -m pytest -vs {} '.format(PATH_TO_PROJECT)
     session.install('-r', PATH_REQUIREMENTS)
     session.run(*command.split())
