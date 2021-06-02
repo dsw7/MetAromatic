@@ -16,7 +16,6 @@ from click import (
     Path
 )
 
-
 @group()
 def main():
     pass

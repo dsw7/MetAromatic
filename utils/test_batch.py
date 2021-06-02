@@ -7,6 +7,7 @@ from .consts import (
 )
 
 class TestBatchJob:
+
     def setup_class(self):
         project_root = path.dirname(path.dirname(path.abspath(__file__)))
         path_runner = path.join(project_root, 'runner.py')
@@ -18,13 +19,14 @@ class TestBatchJob:
         self.client = MongoClient(host='localhost', port=27017)
         self.cursor = self.client[self.database_name][self.collection_name]
 
-        cmd = (
+        command = (
             f'{path_runner} run-batch-job {path_test_data} '
             f'--threads {self.threads} '
             f'--database {self.database_name} '
             f'--collection {self.collection_name}'
         )
-        call(cmd.split(), stdout=DEVNULL, stderr=DEVNULL)
+
+        call(command.split(), stdout=DEVNULL, stderr=DEVNULL)
 
     def test_correct_count(self):
         assert len(list(self.cursor.find())) == self.num_coronavirus_entries
