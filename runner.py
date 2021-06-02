@@ -13,12 +13,15 @@ from click import (
     echo,
     secho,
     option,
-    Path
+    Path,
+    pass_context,
+    pass_obj
 )
 
 @group()
-def main():
-    pass
+@pass_context
+def main(context):
+    context.obj = {}
 
 @main.command(help='Run single Met-aromatic query in a curses interface.')
 @argument('code')
@@ -26,7 +29,8 @@ def main():
 @option('--cutoff-angle', default='109.5', metavar='<angle-in-degrees>')
 @option('--chain', default='A', metavar='<chain>')
 @option('--model', default='cp', metavar='<model>')
-def interface(code, cutoff_distance, cutoff_angle, chain, model):
+@pass_obj
+def interface(obj, code, cutoff_distance, cutoff_angle, chain, model):
     from utils.frontend import MetAromaticTUI
     parameters = {
         'code': code,
