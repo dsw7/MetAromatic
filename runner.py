@@ -49,16 +49,12 @@ def interface(obj, code):
 
 @main.command(help='Run a Met-aromatic query on a single PDB entry.')
 @argument('code')
-@option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
-@option('--cutoff-angle', default=109.5, type=float, metavar='<angle-in-degrees>')
-@option('--chain', default='A', metavar='<chain>')
-@option('--model', default='cp', metavar='<model>')
-def pair(code, cutoff_distance, cutoff_angle, chain, model):
+@pass_obj
+def pair(obj, code):
     from utils.met_aromatic import MetAromatic
+
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
-    results = MetAromatic(
-        cutoff_distance=cutoff_distance, cutoff_angle=cutoff_angle, chain=chain, model=model
-    ).get_met_aromatic_interactions(code)
+    results = MetAromatic(**obj).get_met_aromatic_interactions(code)
 
     if results['exit_code'] == 0:
         echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*header_success))
@@ -67,20 +63,17 @@ def pair(code, cutoff_distance, cutoff_angle, chain, model):
     else:
         secho(results['exit_status'], fg='red')
         secho(f"Exited with code: {results['exit_code']}", fg='red')
+
     sys.exit(results['exit_code'])
 
 @main.command(help='Run a bridging interaction query on a single PDB entry.')
 @argument('code')
-@option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
-@option('--cutoff-angle', default=109.5, type=float, metavar='<angle-in-degrees>')
-@option('--chain', default='A', metavar='<chain>')
-@option('--model', default='cp', metavar='<model>')
 @option('--vertices', default=3, type=int, metavar='<vertices>')
-def bridge(code, cutoff_distance, cutoff_angle, chain, model, vertices):
+@pass_obj
+def bridge(obj, code, vertices):
     from utils.met_aromatic import MetAromatic
-    results = MetAromatic(
-        cutoff_distance=cutoff_distance, cutoff_angle=cutoff_angle, chain=chain, model=model
-    ).get_bridging_interactions(
+
+    results = MetAromatic(**obj).get_bridging_interactions(
         number_vertices=vertices, code=code
     )
 
@@ -89,32 +82,32 @@ def bridge(code, cutoff_distance, cutoff_angle, chain, model, vertices):
     else:
         secho(results['exit_status'], fg='red')
         secho(f"Exited with code: {results['exit_code']}", fg='red')
+
     sys.exit(results['exit_code'])
 
 @main.command(help='Run a Met-aromatic query batch job.')
 @argument('path_batch_file', type=Path('rb'))
-@option('--cutoff-distance', default=4.9, type=float, metavar='<distance-in-angstroms>')
-@option('--cutoff-angle', default=109.5, type=float, metavar='<angle-in-degrees>')
-@option('--chain', default='A', metavar='<chain>')
-@option('--model', default='cp', metavar='<model>')
 @option('--threads', default=5, type=int, metavar='<number-threads>')
 @option('--database', default='default_ma', metavar='<database-name>')
 @option('--collection', default='default_ma', metavar='<collection-name>')
 @option('--stream/--no-stream', default=False, help='Log to stdout instead of file')
-def batch(path_batch_file, cutoff_distance, cutoff_angle, chain, model, threads, database, collection, stream):
+@pass_obj
+def batch(obj, path_batch_file, threads, database, collection, stream):
     from utils.parallel_processing import RunBatchQueries
-    parameters = {
+
+    options = {
         'path_batch_file': path_batch_file,
-        'cutoff_distance': cutoff_distance,
-        'cutoff_angle': cutoff_angle,
-        'chain': chain,
-        'model': model,
         'threads': threads,
         'database': database,
         'collection': collection,
         'stream': stream
     }
-    sys.exit(RunBatchQueries(parameters).deploy_jobs())
+
+    all_options = {
+        **options,
+        **obj
+    }
+    sys.exit(RunBatchQueries(all_options).deploy_jobs())
 
 if __name__ == '__main__':
     main()
