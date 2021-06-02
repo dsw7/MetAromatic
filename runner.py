@@ -44,7 +44,7 @@ def interface(code, cutoff_distance, cutoff_angle, chain, model):
 @option('--cutoff-angle', default=109.5, type=float, metavar='<angle-in-degrees>')
 @option('--chain', default='A', metavar='<chain>')
 @option('--model', default='cp', metavar='<model>')
-def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model):
+def pair(code, cutoff_distance, cutoff_angle, chain, model):
     from utils.met_aromatic import MetAromatic
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     results = MetAromatic(
@@ -67,7 +67,7 @@ def single_met_aromatic_query(code, cutoff_distance, cutoff_angle, chain, model)
 @option('--chain', default='A', metavar='<chain>')
 @option('--model', default='cp', metavar='<model>')
 @option('--vertices', default=3, type=int, metavar='<vertices>')
-def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain, model, vertices):
+def bridge(code, cutoff_distance, cutoff_angle, chain, model, vertices):
     from utils.met_aromatic import MetAromatic
     results = MetAromatic(
         cutoff_distance=cutoff_distance, cutoff_angle=cutoff_angle, chain=chain, model=model
@@ -92,7 +92,7 @@ def single_bridging_interaction_query(code, cutoff_distance, cutoff_angle, chain
 @option('--database', default='default_ma', metavar='<database-name>')
 @option('--collection', default='default_ma', metavar='<collection-name>')
 @option('--stream/--no-stream', default=False, help='Log to stdout instead of file')
-def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, threads, database, collection, stream):
+def batch(path_batch_file, cutoff_distance, cutoff_angle, chain, model, threads, database, collection, stream):
     from utils.parallel_processing import RunBatchQueries
     parameters = {
         'path_batch_file': path_batch_file,
