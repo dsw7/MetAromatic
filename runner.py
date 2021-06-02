@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+
+# All Met-aromatic/pytest code is imported lazily within
+# each click subcommand for significant performance improvements.
+# Therefore disable C0415:
+
+# pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
+
 import sys
 from click import (
     group,
@@ -9,8 +16,6 @@ from click import (
     Path
 )
 
-# all Met-aromatic/pytest code is imported lazily within
-# each click subcommand for significant performance improvements
 
 @group()
 def main():
