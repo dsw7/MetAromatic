@@ -21,7 +21,7 @@ class TestCommandLineInterface:
 
     def test_bridging_interaction_working_query(self):
         assert call(
-            f'{self.path_runner} single-bridging-interaction-query 1rcy'.split(),
+            f'{self.path_runner} bridge 1rcy'.split(),
             stdout=DEVNULL
         ) == EXIT_SUCCESS
 
@@ -59,7 +59,7 @@ class TestCommandLineInterface:
         pwd = getcwd()
         chdir(path.dirname(path.dirname(self.path_runner)))
         retval = call(
-            f'MetAromatic/runner.py single-bridging-interaction-query 6lu7'.split(),
+            f'MetAromatic/runner.py bridge 6lu7'.split(),
             stdout=DEVNULL
         )
         chdir(pwd)
@@ -69,7 +69,7 @@ class TestCommandLineInterface:
         pwd = getcwd()
         chdir(path.join(path.dirname(self.path_runner), 'utils/'))
         retval = call(
-            f'../runner.py single-bridging-interaction-query 6lu7'.split(),
+            f'../runner.py bridge 6lu7'.split(),
             stdout=DEVNULL
         )
         chdir(pwd)
@@ -79,7 +79,7 @@ class TestCommandLineInterface:
         pwd = getcwd()
         chdir(path.join(path.dirname(self.path_runner), 'utils/primitives'))
         retval = call(
-            f'../../runner.py single-bridging-interaction-query 6lu7'.split(),
+            f'../../runner.py bridge 6lu7'.split(),
             stdout=DEVNULL
         )
         chdir(pwd)
@@ -87,13 +87,13 @@ class TestCommandLineInterface:
 
     def test_bridging_interaction_working_query_vertices_3(self):
         assert call(
-            f'{self.path_runner} single-bridging-interaction-query 1rcy --vertices 3'.split(),
+            f'{self.path_runner} bridge 1rcy --vertices 3'.split(),
             stdout=DEVNULL
         ) == EXIT_SUCCESS
 
     def test_bridging_interaction_working_query_vertices_2(self):
         assert call(
-            f'{self.path_runner} single-bridging-interaction-query 1rcy --vertices 2'.split(),
+            f'{self.path_runner} bridge 1rcy --vertices 2'.split(),
             stdout=DEVNULL
         ) == EXIT_FAILURE
 
@@ -149,7 +149,7 @@ class TestCommandLineInterface:
         'subquery',
         [
             'pair ',
-            'pair 1rcy single-bridging-interaction-query 1rcy',
+            'pair 1rcy bridge 1rcy',
             'pair 1rcy --cutoff-distance foobar',
             'pair 1rcy --cutoff-angle foobar',
             'pair 1rcy --vertices foo',
