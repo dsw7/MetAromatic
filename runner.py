@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import sys
-from os import path
-from tempfile import gettempdir
 from click import (
     group,
     argument,
@@ -103,45 +101,6 @@ def run_batch_job(path_batch_file, cutoff_distance, cutoff_angle, chain, model, 
         'stream': stream
     }
     sys.exit(RunBatchQueries(parameters).deploy_jobs())
-
-@main.command(help='Run internal unit tests.')
-@option('--verbose', '-v', is_flag=True)
-@option('--exit-on-failure', '-x', is_flag=True)
-@option('--test-expression', '-k', default=None)
-def run_tests(verbose, exit_on_failure, test_expression):
-    from pytest import main as test_main
-    command = []
-    command.append(path.dirname(path.abspath(__file__)))
-    command.append('-s')
-    if verbose:
-        command.append('-v')
-    if exit_on_failure:
-        command.append('-x')
-    if test_expression:
-        command.append('-k' + test_expression)
-    sys.exit(test_main(command))
-
-@main.command(help='Run internal unit tests with coverage.')
-@option('--verbose', '-v', is_flag=True)
-@option('--exit-on-failure', '-x', is_flag=True)
-@option('--test-expression', '-k', default=None)
-@option('--path-to-html', default=path.join(gettempdir(), 'htmlcov'), metavar='/path/to/htmlcov/')
-def run_tests_with_coverage(verbose, exit_on_failure, test_expression, path_to_html):
-    from pytest import main as test_main
-    root = path.dirname(path.abspath(__file__))
-    command = []
-    command.append(root)
-    command.append('-s')
-    if verbose:
-        command.append('-v')
-    if exit_on_failure:
-        command.append('-x')
-    if test_expression:
-        command.append('-k' + test_expression)
-    command.append(f'--cov={root}')
-    command.append(f'--cov-report=html:{path_to_html}')
-    command.append(f'--cov-config={path.join(root, ".coveragerc")}')
-    sys.exit(test_main(command))
 
 if __name__ == '__main__':
     main()
