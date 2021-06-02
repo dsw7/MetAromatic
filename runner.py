@@ -7,6 +7,8 @@
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
 
 import sys
+from configparser import ConfigParser
+from os import path
 from click import (
     group,
     argument,
@@ -21,7 +23,21 @@ from click import (
 @group()
 @pass_context
 def main(context):
-    context.obj = {}
+    path_ini = path.join(path.dirname(__file__), 'met_aromatic.ini')
+
+    if not path.exists(path_ini):
+        secho('Could not find initialization file: {}'.format(path_ini), fg='red')
+        sys.exit()
+
+    parser = ConfigParser()
+    parser.read(path_ini)
+
+    context.obj = {
+        'cutoff_distance': parser['root-configs'].getfloat('cutoff-distance'),
+        'cutoff_angle': parser['root-configs'].getfloat('cutoff-angle'),
+        'chain': parser['root-configs']['chain'],
+        'model': parser['root-configs']['model']
+    }
 
 @main.command(help='Run single Met-aromatic query in a curses interface.')
 @argument('code')
