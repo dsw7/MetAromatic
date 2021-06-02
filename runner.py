@@ -41,21 +41,11 @@ def main(context):
 
 @main.command(help='Run single Met-aromatic query in a curses interface.')
 @argument('code')
-@option('--cutoff-distance', default='4.9', metavar='<distance-in-angstroms>')
-@option('--cutoff-angle', default='109.5', metavar='<angle-in-degrees>')
-@option('--chain', default='A', metavar='<chain>')
-@option('--model', default='cp', metavar='<model>')
 @pass_obj
-def interface(obj, code, cutoff_distance, cutoff_angle, chain, model):
+def interface(obj, code):
     from utils.frontend import MetAromaticTUI
-    parameters = {
-        'code': code,
-        'cutoff_distance': cutoff_distance,
-        'cutoff_angle': cutoff_angle,
-        'chain': chain,
-        'model': model
-    }
-    sys.exit(MetAromaticTUI(parameters).event_loop())
+    obj['code'] = code
+    sys.exit(MetAromaticTUI(obj).event_loop())
 
 @main.command(help='Run a Met-aromatic query on a single PDB entry.')
 @argument('code')
