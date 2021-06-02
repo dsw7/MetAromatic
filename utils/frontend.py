@@ -9,6 +9,7 @@ from .met_aromatic import MetAromatic
 
 
 class MetAromaticTUI:
+
     def __init__(self, parameters):
         self.parameters = parameters
 
