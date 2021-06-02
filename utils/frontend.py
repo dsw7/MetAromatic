@@ -13,13 +13,16 @@ class MetAromaticTUI:
         self.parameters = parameters
 
         results = MetAromatic(
-            float(self.parameters['cutoff_distance']),
-            float(self.parameters['cutoff_angle']),
+            self.parameters['cutoff_distance'],
+            self.parameters['cutoff_angle'],
             self.parameters['chain'],
             self.parameters['model']
         ).get_met_aromatic_interactions(
             self.parameters['code']
         )
+
+        self.parameters['cutoff_distance'] = str(self.parameters['cutoff_distance'])
+        self.parameters['cutoff_angle'] = str(self.parameters['cutoff_angle'])
 
         self.results = results['results']
         self.exit_code = results['exit_code']
