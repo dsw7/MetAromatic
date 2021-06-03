@@ -1,4 +1,5 @@
 import logging
+import sys
 from re import split
 from os import path
 from tempfile import gettempdir
@@ -34,18 +35,18 @@ logging.basicConfig(
 
 class RunBatchQueries(MetAromatic):
 
-    def __init__(self, parameters: dict) -> None:
-        self.parameters = parameters
+    def __init__(self, cli_args: dict) -> None:
+        self.cli_args = cli_args
 
         MetAromatic.__init__(
             self,
-            self.parameters['cutoff_distance'],
-            self.parameters['cutoff_angle'],
-            self.parameters['chain'],
-            self.parameters['model']
+            self.cli_args['cutoff_distance'],
+            self.cli_args['cutoff_angle'],
+            self.cli_args['chain'],
+            self.cli_args['model']
         )
 
-        if self.parameters['threads'] > MAXIMUM_WORKERS:
+        if self.cli_args['threads'] > MAXIMUM_WORKERS:
             logging.warning('Number of selected workers exceeds maximum number of workers.')
             logging.warning('The thread pool will use a maximum of %i workers.', MAXIMUM_WORKERS)
 
@@ -56,17 +57,25 @@ class RunBatchQueries(MetAromatic):
         self.bool_disable_workers = None
 
         self.batch_job_metadata = {
-            'num_workers': self.parameters['threads'],
-            'cutoff_distance': self.parameters['cutoff_distance'],
-            'cutoff_angle': self.parameters['cutoff_angle'],
-            'chain': self.parameters['chain'],
-            'model': self.parameters['model'],
+            'num_workers': self.cli_args['threads'],
+            'cutoff_distance': self.cli_args['cutoff_distance'],
+            'cutoff_angle': self.cli_args['cutoff_angle'],
+            'chain': self.cli_args['chain'],
+            'model': self.cli_args['model'],
             'data_acquisition_date': datetime.now()
         }
 
+        self._ensure_collection_does_not_exist()
         self._register_ipc_signals()
         self._read_batch_file()
         self._generate_chunks()
+
+    def _ensure_collection_does_not_exist(self) -> None:
+        collections = self.client[self.cli_args['database']].list_collection_names()
+
+        if self.cli_args['collection'] in collections:
+            logging.error('Collection %s exists!', self.cli_args['collection'])
+            sys.exit(EXIT_FAILURE)
 
     def _disable_all_workers(self, ipc_signal, frame) -> None:
         logging.info('Detected SIGINT!')
@@ -82,22 +91,22 @@ class RunBatchQueries(MetAromatic):
 
     def _read_batch_file(self) -> None:
         # Click does existence check - no need for try / except
-        logging.info('Imported pdb codes from file %s', self.parameters['path_batch_file'])
+        logging.info('Imported pdb codes from file %s', self.cli_args['path_batch_file'])
 
-        with open(self.parameters['path_batch_file']) as batch_file:
+        with open(self.cli_args['path_batch_file']) as batch_file:
             for line in batch_file:
                 self.pdb_codes.extend(
                     [row for row in split(r'(;|,|\s)\s*', line) if len(row) == LEN_PDB_CODE]
                 )
 
     def _generate_chunks(self) -> None:
-        logging.info('Splitting list of pdb codes into %i chunks', self.parameters['threads'])
+        logging.info('Splitting list of pdb codes into %i chunks', self.cli_args['threads'])
         self.chunked_pdb_codes = [
-            self.pdb_codes[i::self.parameters['threads']] for i in range(self.parameters['threads'])
+            self.pdb_codes[i::self.cli_args['threads']] for i in range(self.cli_args['threads'])
         ]
 
     def worker_met_aromatic(self, chunk: list) -> None:
-        collection = self.client[self.parameters['database']][self.parameters['collection']]
+        collection = self.client[self.cli_args['database']][self.cli_args['collection']]
 
         for code in chunk:
 
@@ -116,17 +125,10 @@ class RunBatchQueries(MetAromatic):
                 collection.insert(results)
 
     def deploy_jobs(self):
-        if self.parameters['database'] in self.client.list_database_names():
-            if self.parameters['collection'] in self.client[self.parameters['database']].list_collection_names():
-                logging.error(
-                    'Database/collection pair %s.%s exists!', self.parameters['database'], self.parameters['collection']
-                )
-                return EXIT_FAILURE
+        name_collection_info = f"{self.cli_args['collection']}_info"
+        collection_info = self.client[self.cli_args['database']][name_collection_info]
 
-        name_collection_info = f"{self.parameters['collection']}_info"
-        collection_info = self.client[self.parameters['database']][name_collection_info]
-
-        logging.info('Deploying %i workers!', self.parameters['threads'])
+        logging.info('Deploying %i workers!', self.cli_args['threads'])
 
         with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
             start_time = time()
@@ -138,8 +140,8 @@ class RunBatchQueries(MetAromatic):
                 execution_time = round(time() - start_time, 3)
 
                 logging.info('Batch job complete!')
-                logging.info('Results loaded into database: %s', self.parameters['database'])
-                logging.info('Results loaded into collection: %s', self.parameters['collection'])
+                logging.info('Results loaded into database: %s', self.cli_args['database'])
+                logging.info('Results loaded into collection: %s', self.cli_args['collection'])
                 logging.info('Batch job statistics loaded into collection: %s', name_collection_info)
                 logging.info('Batch job execution time: %f s', execution_time)
 
