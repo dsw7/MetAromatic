@@ -93,37 +93,24 @@ class MetAromatic:
 
         return True
 
-    def get_phe_coordinates(self) -> bool:
+    def get_phe_coordinates(self) -> None:
         self.transport['phe_coordinates'] = preprocessing.get_relevant_phe_coordinates(
             self.transport['first_model'], self.chain
         )
 
-        if not self.transport['phe_coordinates']:
-            self.results['exit_status'] = "No PHE residues"
-            self.results['exit_code'] = EXIT_FAILURE
-            return False
-
-        return True
-
-    def get_tyr_coordinates(self) -> bool:
+    def get_tyr_coordinates(self) -> None:
         self.transport['tyr_coordinates'] = preprocessing.get_relevant_tyr_coordinates(
             self.transport['first_model'], self.chain
         )
 
-        if not self.transport['tyr_coordinates']:
-            self.results['exit_status'] = "No TYR residues"
-            self.results['exit_code'] = EXIT_FAILURE
-            return False
-
-        return True
-
-    def get_trp_coordinates(self) -> bool:
+    def get_trp_coordinates(self) -> None:
         self.transport['trp_coordinates'] = preprocessing.get_relevant_trp_coordinates(
             self.transport['first_model'], self.chain
         )
 
-        if not self.transport['trp_coordinates']:
-            self.results['exit_status'] = "No TRP residues"
+    def check_if_not_coordinates(self) -> bool:
+        if not any([self.transport['phe_coordinates'], self.transport['tyr_coordinates'], self.transport['phe_coordinates']]):
+            self.results['exit_status'] = "No PHE/TYR/TRP residues"
             self.results['exit_code'] = EXIT_FAILURE
             return False
 
@@ -196,13 +183,11 @@ class MetAromatic:
         if not self.get_met_coordinates():
             return self.results
 
-        if not self.get_phe_coordinates():
-            return self.results
+        self.get_phe_coordinates()
+        self.get_tyr_coordinates()
+        self.get_trp_coordinates()
 
-        if not self.get_tyr_coordinates():
-            return self.results
-
-        if not self.get_trp_coordinates():
+        if not self.check_if_not_coordinates():
             return self.results
 
         if not self.get_met_lone_pairs():
