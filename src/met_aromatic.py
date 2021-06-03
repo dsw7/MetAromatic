@@ -17,88 +17,203 @@ from .primitives.consts import (
 
 
 class MetAromatic:
+
     def __init__(self, cutoff_distance, cutoff_angle, chain, model):
         self.cutoff_distance = cutoff_distance
         self.cutoff_angle = cutoff_angle
         self.chain = chain
         self.model = model
 
+        self.results = None
+        self.transport = {
+            'raw_data': None,
+            'first_model': None,
+            'met_coordinates': None,
+            'phe_coordinates': None,
+            'tyr_coordinates': None,
+            'trp_coordinates': None,
+            'met_lone_pairs': None,
+            'phe_midpoints': None,
+            'tyr_midpoints': None,
+            'trp_midpoints': None,
+            'interactions': None
+        }
+
+    def check_invalid_cutoff_distance(self) -> bool:
+        if self.cutoff_distance <= MINIMUM_CUTOFF_DIST:
+            self.results['exit_status'] = "Invalid cutoff distance"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+        return True
+
+    def check_invalid_cutoff_angle(self) -> bool:
+        if (self.cutoff_angle < MINIMUM_CUTOFF_ANGLE) or (self.cutoff_angle > MAXIMUM_CUTOFF_ANGLE):
+            self.results['exit_status'] = "Invalid cutoff angle"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+        return True
+
+    def fetch_pdb_file(self) -> bool:
+        file_from_pdb = filegetter.PDBFileGetter(self.results['_id'])
+
+        filepath = file_from_pdb.fetch_entry_from_pdb()
+        if not filepath:
+            self.results['exit_status'] = "Invalid PDB file"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+
+        self.transport['raw_data'] = preprocessing.get_raw_data_from_file(filepath)
+
+        if not file_from_pdb.remove_entry():
+            self.results['exit_status'] = "Could not remove PDB file"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+
+        return True
+
+    def get_first_model(self) -> bool:
+        self.transport['first_model'] = preprocessing.get_first_model_from_raw_data(self.transport['raw_data'])
+
+        if not self.transport['first_model']:
+            self.results['exit_status'] = "No first model data"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+
+        return True
+
+    def get_met_coordinates(self) -> bool:
+        self.transport['met_coordinates'] = preprocessing.get_relevant_met_coordinates(
+            self.transport['first_model'], self.chain
+        )
+
+        if not self.transport['met_coordinates']:
+            self.results['exit_status'] = "No MET residues"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+
+        return True
+
+    def get_phe_coordinates(self) -> bool:
+        self.transport['phe_coordinates'] = preprocessing.get_relevant_phe_coordinates(
+            self.transport['first_model'], self.chain
+        )
+
+        if not self.transport['phe_coordinates']:
+            self.results['exit_status'] = "No PHE residues"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+
+        return True
+
+    def get_tyr_coordinates(self) -> bool:
+        self.transport['tyr_coordinates'] = preprocessing.get_relevant_tyr_coordinates(
+            self.transport['first_model'], self.chain
+        )
+
+        if not self.transport['tyr_coordinates']:
+            self.results['exit_status'] = "No TYR residues"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+
+        return True
+
+    def get_trp_coordinates(self) -> bool:
+        self.transport['trp_coordinates'] = preprocessing.get_relevant_trp_coordinates(
+            self.transport['first_model'], self.chain
+        )
+
+        if not self.transport['trp_coordinates']:
+            self.results['exit_status'] = "No TRP residues"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+
+        return True
+
+    def get_met_lone_pairs(self) -> bool:
+        self.transport['met_lone_pairs'] = get_lone_pairs.get_lone_pairs(
+            self.transport['met_coordinates'], self.model
+        )
+
+        if not self.transport['met_lone_pairs']:
+            self.results['exit_status'] = "Invalid model"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+
+        return True
+
+    def get_midpoints(self) -> None:
+        self.transport['phe_midpoints'] = get_aromatic_midpoints.get_phe_midpoints(
+            self.transport['phe_coordinates']
+        )
+
+        self.transport['tyr_midpoints'] = get_aromatic_midpoints.get_tyr_midpoints(
+            self.transport['tyr_coordinates']
+        )
+
+        self.transport['trp_midpoints'] = get_aromatic_midpoints.get_trp_midpoints(
+            self.transport['trp_coordinates']
+        )
+
+    def get_interactions(self) -> bool:
+
+        self.transport['interactions'] = distance_angular.apply_distance_angular_condition(
+            self.transport['phe_midpoints'] + self.transport['tyr_midpoints'] + self.transport['trp_midpoints'],
+            self.transport['met_lone_pairs'],
+            self.cutoff_distance,
+            self.cutoff_angle
+        )
+
+        if not self.transport['interactions']:
+            self.results['exit_status'] = "No interactions"
+            self.results['exit_code'] = EXIT_FAILURE
+            return False
+
+        self.results['exit_status'] = "Success"
+        self.results['results'] = self.transport['interactions']
+        return True
+
     def get_met_aromatic_interactions(self, code):
-        results = {
+
+        self.results = {
             '_id': code,
             'exit_code': EXIT_SUCCESS,
             'exit_status': None,
             'results': None
         }
 
-        if self.cutoff_distance <= MINIMUM_CUTOFF_DIST:
-            results['exit_status'] = "Invalid cutoff distance"
-            results['exit_code'] = EXIT_FAILURE
-            return results
+        if not self.check_invalid_cutoff_distance():
+            return self.results
 
-        if not MAXIMUM_CUTOFF_ANGLE >= self.cutoff_angle >= MINIMUM_CUTOFF_ANGLE:
-            results['exit_status'] = "Invalid cutoff angle"
-            results['exit_code'] = EXIT_FAILURE
-            return results
+        if not self.check_invalid_cutoff_angle():
+            return self.results
 
-        file_from_pdb = filegetter.PDBFileGetter(code)
+        if not self.fetch_pdb_file():
+            return self.results
 
-        filepath = file_from_pdb.fetch_entry_from_pdb()
-        if not filepath:
-            results['exit_status'] = "Invalid PDB file"
-            results['exit_code'] = EXIT_FAILURE
-            return results
+        if not self.get_first_model():
+            return self.results
 
-        raw_data = preprocessing.get_raw_data_from_file(filepath)
+        if not self.get_met_coordinates():
+            return self.results
 
-        if not file_from_pdb.remove_entry():
-            results['exit_status'] = "Could not remove PDB file"
-            results['exit_code'] = EXIT_FAILURE
-            return results
+        if not self.get_phe_coordinates():
+            return self.results
 
-        first_model = preprocessing.get_first_model_from_raw_data(raw_data)
+        if not self.get_tyr_coordinates():
+            return self.results
 
-        met_coordinates = preprocessing.get_relevant_met_coordinates(first_model, self.chain)
+        if not self.get_trp_coordinates():
+            return self.results
 
-        if not met_coordinates:
-            results['exit_status'] = "No MET residues"
-            results['exit_code'] = EXIT_FAILURE
-            return results
+        if not self.get_met_lone_pairs():
+            return self.results
 
-        phe_coordinates = preprocessing.get_relevant_phe_coordinates(first_model, self.chain)
-        tyr_coordinates = preprocessing.get_relevant_tyr_coordinates(first_model, self.chain)
-        trp_coordinates = preprocessing.get_relevant_trp_coordinates(first_model, self.chain)
-        if not any((phe_coordinates, tyr_coordinates, trp_coordinates)):
-            results['exit_status'] = "No PHE/TYR/TRP residues"
-            results['exit_code'] = EXIT_FAILURE
-            return results
+        self.get_midpoints()
 
-        met_lone_pairs = get_lone_pairs.get_lone_pairs(met_coordinates, self.model)
-        if not met_lone_pairs:
-            results['exit_status'] = "Invalid model"
-            results['exit_code'] = EXIT_FAILURE
-            return results
+        if not self.get_interactions():
+            return self.results
 
-        phe_midpoints = get_aromatic_midpoints.get_phe_midpoints(phe_coordinates)
-        tyr_midpoints = get_aromatic_midpoints.get_tyr_midpoints(tyr_coordinates)
-        trp_midpoints = get_aromatic_midpoints.get_trp_midpoints(trp_coordinates)
-
-        interactions = distance_angular.apply_distance_angular_condition(
-            phe_midpoints + tyr_midpoints + trp_midpoints,
-            met_lone_pairs,
-            self.cutoff_distance,
-            self.cutoff_angle
-        )
-
-        if not interactions:
-            results['exit_status'] = "No interactions"
-            results['exit_code'] = EXIT_FAILURE
-            return results
-
-        results['exit_status'] = "Success"
-        results['results'] = interactions
-
-        return results
+        return self.results
 
     def get_bridging_interactions(self, code, number_vertices=3):
         results = self.get_met_aromatic_interactions(code)
