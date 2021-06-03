@@ -93,7 +93,6 @@ def bridge(obj, code, vertices):
 @pass_obj
 def batch(obj, path_batch_file, threads, database, collection):
     from utils.parallel_processing import RunBatchQueries
-
     options = {
         'path_batch_file': path_batch_file,
         'threads': threads,
@@ -105,7 +104,7 @@ def batch(obj, path_batch_file, threads, database, collection):
         **options,
         **obj
     }
-    sys.exit(RunBatchQueries(all_options).deploy_jobs())
+    RunBatchQueries(all_options).deploy_jobs()
 
 if __name__ == '__main__':
     main()

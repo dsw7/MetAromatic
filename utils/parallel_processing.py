@@ -9,6 +9,7 @@ from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient
 from .met_aromatic import MetAromatic
+
 from .consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
@@ -102,6 +103,7 @@ class RunBatchQueries(MetAromatic):
 
     def _generate_chunks(self) -> None:
         logging.info('Splitting list of pdb codes into %i chunks', self.cli_args['threads'])
+
         self.chunked_pdb_codes = [
             self.pdb_codes[i::self.cli_args['threads']] for i in range(self.cli_args['threads'])
         ]
@@ -123,11 +125,11 @@ class RunBatchQueries(MetAromatic):
                 logging.info('Processed %s. Count: %i', code, self.count)
                 self.collection_handle.insert(results)
 
-    def deploy_jobs(self):
-        name_collection_info = f"{self.cli_args['collection']}_info"
-        collection_info = self.client[self.cli_args['database']][name_collection_info]
-
+    def deploy_jobs(self) -> int:
         logging.info('Deploying %i workers!', self.cli_args['threads'])
+
+        name_collection_info = '{}_info'.format(self.cli_args['collection'])
+        collection_info = self.client[self.cli_args['database']][name_collection_info]
 
         with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
             start_time = time()
