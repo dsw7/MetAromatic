@@ -90,17 +90,15 @@ def bridge(obj, code, vertices):
 @option('--threads', default=5, type=int, metavar='<number-threads>')
 @option('--database', default='default_ma', metavar='<database-name>')
 @option('--collection', default='default_ma', metavar='<collection-name>')
-@option('--stream/--no-stream', default=False, help='Log to stdout instead of file')
 @pass_obj
-def batch(obj, path_batch_file, threads, database, collection, stream):
+def batch(obj, path_batch_file, threads, database, collection):
     from utils.parallel_processing import RunBatchQueries
 
     options = {
         'path_batch_file': path_batch_file,
         'threads': threads,
         'database': database,
-        'collection': collection,
-        'stream': stream
+        'collection': collection
     }
 
     all_options = {
