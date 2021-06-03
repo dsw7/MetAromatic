@@ -201,7 +201,7 @@ class MetAromatic:
         return self.results
 
 
-class GetBridgingInteraction(MetAromatic):
+class GetBridgingInteractions(MetAromatic):
 
     def __init__(self, cutoff_distance: float, cutoff_angle: float, chain: str, model: str) -> None:
         MetAromatic.__init__(self, cutoff_distance, cutoff_angle, chain, model)
@@ -230,7 +230,6 @@ class GetBridgingInteraction(MetAromatic):
 
     def get_joined_pairs(self) -> bool:
         for result in self.results['results']:
-
             pair = (
                 '{}{}'.format(result['aromatic_residue'], result['aromatic_position']),
                 'MET{}'.format(result['methionine_position'])
@@ -248,13 +247,15 @@ class GetBridgingInteraction(MetAromatic):
 
     def get_bridges(self) -> bool:
 
+        self.results['results'] = []
+
         for bridge in self.bridges:
             if len(bridge) == self.vertices:
                 self.results['results'].append(bridge)
 
         # Note that inverse bridges (MET-ARO-MET) not removed!
 
-        if not self.results['bridges']:
+        if not self.results['results']:
             return False
 
         return True

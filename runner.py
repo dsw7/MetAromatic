@@ -88,10 +88,10 @@ def pair(obj, code, cutoff_distance, cutoff_angle, chain, model):
 @option('--vertices', default=3, type=int, metavar='<vertices>')
 @pass_obj
 def bridge(obj, code, vertices):
-    from src.met_aromatic import MetAromatic
+    from src.met_aromatic import GetBridgingInteractions
 
-    results = MetAromatic(**obj).get_bridging_interactions(
-        number_vertices=vertices, code=code
+    results = GetBridgingInteractions(**obj).get_bridging_interactions(
+        vertices=vertices, code=code
     )
 
     if results['exit_code'] == 0:

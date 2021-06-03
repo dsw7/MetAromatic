@@ -1,7 +1,7 @@
 from json import loads
 from os import path
 from pytest import mark, skip, exit
-from .met_aromatic import MetAromatic
+from .met_aromatic import GetBridgingInteractions
 from .primitives.consts import EXIT_FAILURE
 
 CONTROL_BRIDGE_DATA = path.join(
@@ -46,7 +46,7 @@ class TestBridges:
             'chain': 'A',
             'model': 'cp'
         }
-        self.ma = MetAromatic(**self.default_bridge_testing_parameters)
+        self.ma = GetBridgingInteractions(**self.default_bridge_testing_parameters)
 
     @mark.parametrize(
         'bridges',
@@ -56,7 +56,7 @@ class TestBridges:
     def test_bridge_collector(self, bridges):
         try:
             bridging_interactions = self.ma.get_bridging_interactions(
-                number_vertices=self.network_size,
+                vertices=self.network_size,
                 code=bridges.get('pdb_code')
             )
         except IndexError:
@@ -82,11 +82,11 @@ class TestBridges:
         ]
     )
     def test_no_bridges_response(self, code, cutoff_distance, cutoff_angle, error):
-        assert MetAromatic(
+        assert GetBridgingInteractions(
             cutoff_angle=cutoff_angle,
             cutoff_distance=cutoff_distance,
             model=self.default_bridge_testing_parameters['model'],
             chain=self.default_bridge_testing_parameters['chain']
         ).get_bridging_interactions(
-            code=code, number_vertices=self.network_size
+            code=code, vertices=self.network_size
         )['exit_code'] == error
