@@ -1,7 +1,7 @@
 from os import path, chdir, getcwd
 from subprocess import call, DEVNULL
 from pytest import mark
-from .consts import (
+from .primitives.consts import (
     EXIT_SUCCESS,
     EXIT_FAILURE,
     EXIT_GENERAL_PROGRAM_FAILURES

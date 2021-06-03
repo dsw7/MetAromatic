@@ -1,7 +1,7 @@
 from os import path
 from subprocess import call, DEVNULL
 from pymongo import MongoClient
-from .consts import (
+from .primitives.consts import (
     EXIT_SUCCESS,
     EXIT_FAILURE
 )

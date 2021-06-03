@@ -6,7 +6,7 @@ from .primitives import (
     get_lone_pairs,
     distance_angular
 )
-from .consts import (
+from .primitives.consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
     MINIMUM_VERTICES,
