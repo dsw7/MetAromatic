@@ -33,23 +33,19 @@ logging.basicConfig(
 )
 
 class RunBatchQueries(MetAromatic):
-    def __init__(self, parameters):
+
+    def __init__(self, parameters: dict) -> None:
         self.parameters = parameters
 
         MetAromatic.__init__(
-            self, self.parameters['cutoff_distance'], self.parameters['cutoff_angle'],
-            self.parameters['chain'], self.parameters['model']
+            self,
+            self.parameters['cutoff_distance'],
+            self.parameters['cutoff_angle'],
+            self.parameters['chain'],
+            self.parameters['model']
         )
 
-        # click does existence check - no need for try / except
-        logging.info('Imported pdb codes from file %s', self.parameters['path_batch_file'])
-        pdb_codes = []
-        with open(self.parameters['path_batch_file']) as batch_file:
-            for line in batch_file:
-                pdb_codes.extend(
-                    [row for row in split(r'(;|,|\s)\s*', line) if len(row) == LEN_PDB_CODE]
-                )
-
+        pdb_codes = self._read_batch_file()
         self.number_pdb_codes = len(pdb_codes)
 
         logging.info('Splitting list of pdb codes into %i chunks', self.parameters['threads'])
@@ -75,6 +71,18 @@ class RunBatchQueries(MetAromatic):
 
         self.bool_disable_workers = False
         signal(SIGINT, self.disable_all_workers)
+
+    def _read_batch_file(self) -> list:
+        # Click does existence check - no need for try / except
+        logging.info('Imported pdb codes from file %s', self.parameters['path_batch_file'])
+
+        pdb_codes = []
+        with open(self.parameters['path_batch_file']) as batch_file:
+            for line in batch_file:
+                pdb_codes.extend(
+                    [row for row in split(r'(;|,|\s)\s*', line) if len(row) == LEN_PDB_CODE]
+                )
+        return pdb_codes
 
     def disable_all_workers(self, ipc_signal, frame):
         self.bool_disable_workers = True
