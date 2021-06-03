@@ -54,6 +54,7 @@ class RunBatchQueries(MetAromatic):
         self.chunked_pdb_codes = []
         self.count = 0
         self.client = MongoClient(DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT)
+        self.collection_handle = self.client[self.cli_args['database']][self.cli_args['collection']]
         self.bool_disable_workers = None
 
         self.batch_job_metadata = {
@@ -106,10 +107,8 @@ class RunBatchQueries(MetAromatic):
         ]
 
     def worker_met_aromatic(self, chunk: list) -> None:
-        collection = self.client[self.cli_args['database']][self.cli_args['collection']]
 
         for code in chunk:
-
             if self.bool_disable_workers:
                 logging.info('Received interrupt signal - stopping worker thread...')
                 break
@@ -122,7 +121,7 @@ class RunBatchQueries(MetAromatic):
             else:
                 self.count += 1
                 logging.info('Processed %s. Count: %i', code, self.count)
-                collection.insert(results)
+                self.collection_handle.insert(results)
 
     def deploy_jobs(self):
         name_collection_info = f"{self.cli_args['collection']}_info"
@@ -132,6 +131,7 @@ class RunBatchQueries(MetAromatic):
 
         with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
             start_time = time()
+
             workers = [
                 executor.submit(self.worker_met_aromatic, chunk) for chunk in self.chunked_pdb_codes
             ]
@@ -147,7 +147,6 @@ class RunBatchQueries(MetAromatic):
 
                 self.batch_job_metadata['batch_job_execution_time'] = execution_time
                 self.batch_job_metadata['number_of_entries'] = len(self.pdb_codes)
-
                 collection_info.insert(self.batch_job_metadata)
 
         return EXIT_SUCCESS
