@@ -43,7 +43,7 @@ def main(context):
 @argument('code')
 @pass_obj
 def interface(obj, code):
-    from utils.frontend import MetAromaticTUI
+    from src.frontend import MetAromaticTUI
     obj['code'] = code
     sys.exit(MetAromaticTUI(obj).event_loop())
 
@@ -51,7 +51,7 @@ def interface(obj, code):
 @argument('code')
 @pass_obj
 def pair(obj, code):
-    from utils.met_aromatic import MetAromatic
+    from src.met_aromatic import MetAromatic
 
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     results = MetAromatic(**obj).get_met_aromatic_interactions(code)
@@ -71,7 +71,7 @@ def pair(obj, code):
 @option('--vertices', default=3, type=int, metavar='<vertices>')
 @pass_obj
 def bridge(obj, code, vertices):
-    from utils.met_aromatic import MetAromatic
+    from src.met_aromatic import MetAromatic
 
     results = MetAromatic(**obj).get_bridging_interactions(
         number_vertices=vertices, code=code
@@ -92,7 +92,7 @@ def bridge(obj, code, vertices):
 @option('--collection', default='default_ma', metavar='<collection-name>')
 @pass_obj
 def batch(obj, path_batch_file, threads, database, collection):
-    from utils.parallel_processing import RunBatchQueries
+    from src.parallel_processing import RunBatchQueries
     options = {
         'path_batch_file': path_batch_file,
         'threads': threads,
