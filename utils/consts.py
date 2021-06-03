@@ -17,6 +17,8 @@ DEFAULT_MONGO_HOST = 'localhost'
 DEFAULT_MONGO_PORT = 27017
 
 #### logging stuff
+ISO_8601_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+LOGRECORD_FORMAT = '%(asctime)s %(levelname)s [%(funcName)s] %(message)s'
 DEFAULT_LOGFILE_NAME = 'met_aromatic.log'
 LOG_LEVEL = 20
 # CRITICAL 50

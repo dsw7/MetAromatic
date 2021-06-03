@@ -1,11 +1,13 @@
+import logging
 from re import split
+from os import path
+from tempfile import gettempdir
 from time import time
 from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient
 from .met_aromatic import MetAromatic
-from .logger import Logger
 from .consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
@@ -13,26 +15,34 @@ from .consts import (
     LEN_PDB_CODE,
     DEFAULT_MONGO_HOST,
     DEFAULT_MONGO_PORT,
+    DEFAULT_LOGFILE_NAME,
+    ISO_8601_DATE_FORMAT,
+    LOGRECORD_FORMAT
 )
 
+LOG_HANDLERS = [
+    logging.FileHandler(path.join(gettempdir(), DEFAULT_LOGFILE_NAME)),
+    logging.StreamHandler()
+]
 
-class RunBatchQueries(Logger, MetAromatic):
+logging.basicConfig(
+    level=logging.DEBUG,
+    format=LOGRECORD_FORMAT,
+    datefmt=ISO_8601_DATE_FORMAT,
+    handlers=LOG_HANDLERS
+)
+
+class RunBatchQueries(MetAromatic):
     def __init__(self, parameters):
         self.parameters = parameters
 
-        Logger.__init__(self)
         MetAromatic.__init__(
             self, self.parameters['cutoff_distance'], self.parameters['cutoff_angle'],
             self.parameters['chain'], self.parameters['model']
         )
 
-        if self.parameters['stream']:
-            self.logger = self.handle_log_to_stream()
-        else:
-            self.logger = self.handle_log_to_file()
-
         # click does existence check - no need for try / except
-        self.logger.info('Imported pdb codes from file %s', self.parameters['path_batch_file'])
+        logging.info('Imported pdb codes from file %s', self.parameters['path_batch_file'])
         pdb_codes = []
         with open(self.parameters['path_batch_file']) as batch_file:
             for line in batch_file:
@@ -42,7 +52,7 @@ class RunBatchQueries(Logger, MetAromatic):
 
         self.number_pdb_codes = len(pdb_codes)
 
-        self.logger.info('Splitting list of pdb codes into %i chunks', self.parameters['threads'])
+        logging.info('Splitting list of pdb codes into %i chunks', self.parameters['threads'])
         self.chunked_pdb_codes = [
             pdb_codes[i::self.parameters['threads']] for i in range(self.parameters['threads'])
         ]
@@ -51,8 +61,8 @@ class RunBatchQueries(Logger, MetAromatic):
         self.count = 0
 
         if self.parameters['threads'] > MAXIMUM_WORKERS:
-            self.logger.warning('Number of selected workers exceeds maximum number of workers.')
-            self.logger.warning('The thread pool will use a maximum of %i workers.', MAXIMUM_WORKERS)
+            logging.warning('Number of selected workers exceeds maximum number of workers.')
+            logging.warning('The thread pool will use a maximum of %i workers.', MAXIMUM_WORKERS)
 
         self.batch_job_metadata = {
             'num_workers': self.parameters['threads'],
@@ -68,30 +78,30 @@ class RunBatchQueries(Logger, MetAromatic):
 
     def disable_all_workers(self, ipc_signal, frame):
         self.bool_disable_workers = True
-        self.logger.info('Detected SIGINT!')
-        self.logger.info('Attempting to stop all workers!')
+        logging.info('Detected SIGINT!')
+        logging.info('Attempting to stop all workers!')
 
     def worker_met_aromatic(self, chunked_list_pdb_codes):
         collection = self.client[self.parameters['database']][self.parameters['collection']]
 
         for code in chunked_list_pdb_codes:
             if self.bool_disable_workers:
-                self.logger.info('Received interrupt signal - stopping worker thread...')
+                logging.info('Received interrupt signal - stopping worker thread...')
                 break
             try:
                 results = self.get_met_aromatic_interactions(code)
             except Exception:  # catch remaining unhandled exceptions
                 self.count += 1
-                self.logger.exception('Could not process code: %s. Count: %i', code, self.count)
+                logging.exception('Could not process code: %s. Count: %i', code, self.count)
             else:
                 self.count += 1
-                self.logger.info('Processed %s. Count: %i', code, self.count)
+                logging.info('Processed %s. Count: %i', code, self.count)
                 collection.insert(results)
 
     def deploy_jobs(self):
         if self.parameters['database'] in self.client.list_database_names():
             if self.parameters['collection'] in self.client[self.parameters['database']].list_collection_names():
-                self.logger.error(
+                logging.error(
                     'Database/collection pair %s.%s exists!',
                     self.parameters['database'],
                     self.parameters['collection']
@@ -101,7 +111,7 @@ class RunBatchQueries(Logger, MetAromatic):
         name_collection_info = f"{self.parameters['collection']}_info"
         collection_info = self.client[self.parameters['database']][name_collection_info]
 
-        self.logger.info('Deploying %i workers!', self.parameters['threads'])
+        logging.info('Deploying %i workers!', self.parameters['threads'])
 
         with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
             start_time = time()
@@ -112,11 +122,11 @@ class RunBatchQueries(Logger, MetAromatic):
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
                 execution_time = round(time() - start_time, 3)
 
-                self.logger.info('Batch job complete!')
-                self.logger.info('Results loaded into database: %s', self.parameters['database'])
-                self.logger.info('Results loaded into collection: %s', self.parameters['collection'])
-                self.logger.info('Batch job statistics loaded into collection: %s', name_collection_info)
-                self.logger.info('Batch job execution time: %f s', execution_time)
+                logging.info('Batch job complete!')
+                logging.info('Results loaded into database: %s', self.parameters['database'])
+                logging.info('Results loaded into collection: %s', self.parameters['collection'])
+                logging.info('Batch job statistics loaded into collection: %s', name_collection_info)
+                logging.info('Batch job execution time: %f s', execution_time)
 
                 self.batch_job_metadata['batch_job_execution_time'] = execution_time
                 self.batch_job_metadata['number_of_entries'] = self.number_pdb_codes
