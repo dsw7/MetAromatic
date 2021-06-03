@@ -18,7 +18,7 @@ from .primitives.consts import (
 
 class MetAromatic:
 
-    def __init__(self, cutoff_distance, cutoff_angle, chain, model):
+    def __init__(self, cutoff_distance: float, cutoff_angle: float, chain: str, model: str) -> None:
         self.cutoff_distance = cutoff_distance
         self.cutoff_angle = cutoff_angle
         self.chain = chain
@@ -159,7 +159,7 @@ class MetAromatic:
         self.results['results'] = self.transport['interactions']
         return True
 
-    def get_met_aromatic_interactions(self, code):
+    def get_met_aromatic_interactions(self, code: str) -> dict:
 
         self.results = {
             '_id': code,
@@ -200,31 +200,81 @@ class MetAromatic:
 
         return self.results
 
-    def get_bridging_interactions(self, code, number_vertices=3):
-        results = self.get_met_aromatic_interactions(code)
 
-        if results['exit_code'] == EXIT_FAILURE:  # failed in upstream call
-            return results
+class GetBridgingInteraction(MetAromatic):
 
-        if number_vertices < MINIMUM_VERTICES:
-            results['exit_code'] = EXIT_FAILURE
-            results['exit_status'] = "Vertices must be > 2"
-            return results
+    def __init__(self, cutoff_distance: float, cutoff_angle: float, chain: str, model: str) -> None:
+        MetAromatic.__init__(self, cutoff_distance, cutoff_angle, chain, model)
 
-        joined_pairs = set()
-        for result in results['results']:
-            joined_pairs.add(
-                (
-                    result['aromatic_residue'] + str(result['aromatic_position']),
-                    'MET' + str(result['methionine_position'])
-                )
+        self.results = None
+        self.vertices = None
+        self.code = None
+        self.joined_pairs = set()
+        self.bridges = None
+
+    def check_minimum_vertices(self) -> bool:
+        if self.vertices < MINIMUM_VERTICES:
+            self.results['exit_code'] = EXIT_FAILURE
+            self.results['exit_status'] = "Vertices must be > 2"
+            return False
+
+        return True
+
+    def run_met_aromatic(self) -> bool:
+        self.results = self.get_met_aromatic_interactions(self.code)
+
+        if self.results['exit_code'] == EXIT_FAILURE:
+            return False
+
+        return True
+
+    def get_joined_pairs(self) -> bool:
+        for result in self.results['results']:
+
+            pair = (
+                '{}{}'.format(result['aromatic_residue'], result['aromatic_position']),
+                'MET{}'.format(result['methionine_position'])
             )
+            self.joined_pairs.add(pair)
 
+    def compute_connected_components(self) -> bool:
         graph = Graph()
-        graph.add_edges_from(joined_pairs)
-        bridges = list(connected_components(graph))
+        graph.add_edges_from(self.joined_pairs)
+        self.bridges = list(connected_components(graph))
 
-        results['results'] = [
-            bridge for bridge in bridges if len(bridge) == number_vertices
-        ]  # note that inverse bridges (MET-ARO-MET) not removed!
-        return results
+        if not self.bridges:
+            return False
+        return True
+
+    def get_bridges(self) -> bool:
+
+        for bridge in self.bridges:
+            if len(bridge) == self.vertices:
+                self.results['results'].append(bridge)
+
+        # Note that inverse bridges (MET-ARO-MET) not removed!
+
+        if not self.results['bridges']:
+            return False
+
+        return True
+
+    def get_bridging_interactions(self, code: str, vertices: int) -> dict:
+        self.code = code
+        self.vertices = vertices
+
+        if not self.check_minimum_vertices():
+            return self.results
+
+        if not self.run_met_aromatic():
+            return self.results
+
+        self.get_joined_pairs()
+
+        if not self.compute_connected_components():
+            return self.results
+
+        if not self.get_bridges():
+            return self.results
+
+        return self.results
