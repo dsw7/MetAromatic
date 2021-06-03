@@ -34,18 +34,10 @@ logging.basicConfig(
     handlers=LOG_HANDLERS
 )
 
-class RunBatchQueries(MetAromatic):
+class RunBatchQueries:
 
     def __init__(self, cli_args: dict) -> None:
         self.cli_args = cli_args
-
-        MetAromatic.__init__(
-            self,
-            self.cli_args['cutoff_distance'],
-            self.cli_args['cutoff_angle'],
-            self.cli_args['chain'],
-            self.cli_args['model']
-        )
 
         if self.cli_args['threads'] > MAXIMUM_WORKERS:
             logging.warning('Number of selected workers exceeds maximum number of workers.')
@@ -110,13 +102,20 @@ class RunBatchQueries(MetAromatic):
 
     def worker_met_aromatic(self, chunk: list) -> None:
 
+        handle_ma = MetAromatic(
+            self.cli_args['cutoff_distance'],
+            self.cli_args['cutoff_angle'],
+            self.cli_args['chain'],
+            self.cli_args['model']
+        )
+
         for code in chunk:
             if self.bool_disable_workers:
                 logging.info('Received interrupt signal - stopping worker thread...')
                 break
 
             try:
-                results = self.get_met_aromatic_interactions(code)
+                results = handle_ma.get_met_aromatic_interactions(code)
             except Exception:  # catch remaining unhandled exceptions
                 self.count += 1
                 logging.exception('Could not process code: %s. Count: %i', code, self.count)
