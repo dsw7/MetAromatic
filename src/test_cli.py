@@ -99,7 +99,7 @@ class TestCommandLineInterface:
 
     def test_invalid_cutoff_distance(self):
         assert call(
-            f'{self.path_runner} pair 1rcy --cutoff-distance 0.00'.split(),
+            f'{self.path_runner} pair 1rcy --cutoff-distance -1.00'.split(),
             stdout=DEVNULL
         ) == EXIT_FAILURE
 

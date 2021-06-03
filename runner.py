@@ -49,8 +49,25 @@ def interface(obj, code):
 
 @main.command(help='Run a Met-aromatic query on a single PDB entry.')
 @argument('code')
+@option('--cutoff-distance', type=float, default=None, help='Override cutoff distance defined in *.ini file.', metavar='<Angstroms>')
+@option('--cutoff-angle', type=float, default=None, help='Override cutoff angle defined in *.ini file.', metavar='<degrees>')
+@option('--chain', default=None, help='Override chain defined in *.ini file.', metavar='<[A-Z]>')
+@option('--model', default=None, help='Override lone pair interpolation model defined in *.ini file.', metavar='<cp|rm>')
 @pass_obj
-def pair(obj, code):
+def pair(obj, code, cutoff_distance, cutoff_angle, chain, model):
+
+    if cutoff_distance:
+        obj['cutoff_distance'] = cutoff_distance
+
+    if cutoff_angle:
+        obj['cutoff_angle'] = cutoff_angle
+
+    if chain:
+        obj['chain'] = chain
+
+    if model:
+        obj['model'] = model
+
     from src.met_aromatic import MetAromatic
 
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
