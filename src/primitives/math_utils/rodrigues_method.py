@@ -1,15 +1,21 @@
-from numpy import sin, cos, pi
-from numpy import linalg
-from numpy import matmul
-from numpy import array
-from numpy import eye
+# pylint: disable=C0103 # Disable "Argument name "u" doesn't conform to snake_case naming style"
 
+from numpy import (
+    sin,
+    cos,
+    pi,
+    linalg,
+    matmul,
+    array,
+    eye,
+    ndarray
+)
 
 SCAL1 = sin(pi / 2)
 SCAL2 = 1 - cos(pi / 2)
 
-
 class RodriguesMethod:
+
     """
     Here I use Rodrigues' rotation formula for completing the vertices
     of a regular tetrahedron. To start, we know two vertices of a tetrahedron,
@@ -22,17 +28,18 @@ class RodriguesMethod:
     remaining coordinates C, D. We have our tetrahedron with vertices A, B,
     C, D and the origin O.
     """
-    def __init__(self, vertex_a, origin, vertex_b):
+
+    def __init__(self, vertex_a: ndarray, origin: ndarray, vertex_b: ndarray) -> None:
         # map to origin
-        vec_u = vertex_a - origin
-        vec_v = vertex_b - origin
+        u = vertex_a - origin
+        v = vertex_b - origin
 
         # flip direction
-        self.vec_u = -1 * vec_u
-        self.vec_v = -1 * vec_v
+        self.u = -1 * u
+        self.v = -1 * v
 
         # we then find the vector about which we rotate
-        r = 0.5 * (self.vec_u + self.vec_v)
+        r = 0.5 * (self.u + self.v)
 
         # then find unit vector of r
         r_hat = r / linalg.norm(r)
@@ -50,11 +57,11 @@ class RodriguesMethod:
         )
 
         # then construct Rodrigues rotation array
-        self.rodrigues = array(eye(3)) + (SCAL1 * W) + (SCAL2 * matmul(W, W))
+        self.rodrigues_rotation_matrix = array(eye(3)) + (SCAL1 * W) + (SCAL2 * matmul(W, W))
 
     # note that I flipped these methods to match previous algorithm
-    def get_vector_g(self):
-        return matmul(self.rodrigues, self.vec_u).tolist()
+    def get_vector_g(self) -> list:
+        return matmul(self.rodrigues_rotation_matrix, self.u).tolist()
 
-    def get_vector_a(self):
-        return matmul(self.rodrigues, self.vec_v).tolist()
+    def get_vector_a(self) -> list:
+        return matmul(self.rodrigues_rotation_matrix, self.v).tolist()
