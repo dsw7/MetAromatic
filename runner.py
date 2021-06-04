@@ -19,6 +19,7 @@ from click import (
     pass_context,
     pass_obj
 )
+from src.primitives.consts import EXIT_FAILURE
 
 @group()
 @pass_context
@@ -27,7 +28,7 @@ def main(context):
 
     if not path.exists(path_ini):
         secho('Could not find initialization file: {}'.format(path_ini), fg='red')
-        sys.exit()
+        sys.exit(EXIT_FAILURE)
 
     parser = ConfigParser()
     parser.read(path_ini)
@@ -88,8 +89,11 @@ def pair(obj, code, cutoff_distance, cutoff_angle, chain, model):
 @option('--vertices', default=3, type=int, metavar='<vertices>')
 @pass_obj
 def bridge(obj, code, vertices):
-    from src.met_aromatic import GetBridgingInteractions
+    if vertices < 3:
+        secho('Vertices must be > 2', fg='red')
+        sys.exit(EXIT_FAILURE)
 
+    from src.met_aromatic import GetBridgingInteractions
     results = GetBridgingInteractions(**obj).get_bridging_interactions(
         vertices=vertices, code=code
     )
