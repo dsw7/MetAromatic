@@ -1,4 +1,5 @@
 from click.testing import CliRunner
+from pytest import mark
 from runner import cli
 from utils.primitives.consts import (
     EXIT_SUCCESS,
@@ -33,43 +34,32 @@ class TestRunner:
         result = self.runner.invoke(cli, ['pair', '1rcy', '--cutoff-distance', 'foo'])
         assert result.exit_code == EXIT_GENERAL_PROGRAM_FAILURES
 
-
-"""
     def test_invalid_cutoff_angle(self):
-        assert call(
-            f'{self.path_runner} pair 1rcy --cutoff-angle 361.00'.split(),
-            stdout=DEVNULL
-        ) == EXIT_FAILURE
+        result = self.runner.invoke(cli, ['pair', '1rcy', '--cutoff-angle', '361.00'])
+        assert result.exit_code == EXIT_FAILURE
 
     def test_invalid_code(self):
-        assert call(
-            f'{self.path_runner} pair foobar'.split(),
-            stdout=DEVNULL
-        ) == EXIT_FAILURE
+        result = self.runner.invoke(cli, ['pair', 'foobar'])
+        assert result.exit_code == EXIT_FAILURE
 
     def test_no_met_coordinates(self):
-        assert call(
-            f'{self.path_runner} pair 3nir'.split(),
-            stdout=DEVNULL
-        ) == EXIT_FAILURE
+        result = self.runner.invoke(cli, ['pair', '3nir'])
+        assert result.exit_code == EXIT_FAILURE
+        assert result.output == 'No MET residues\nExited with code: 1\n'
 
     def test_invalid_model(self):
-        assert call(
-            f'{self.path_runner} pair 1rcy --model foobarbaz'.split(),
-            stdout=DEVNULL
-        ) == EXIT_FAILURE
+        result = self.runner.invoke(cli, ['pair', '1rcy', '--model', 'foobar'])
+        assert result.exit_code == EXIT_FAILURE
+        assert result.output == 'Invalid model\nExited with code: 1\n'
 
     def test_no_results(self):
-        assert call(
-            f'{self.path_runner} pair 1a5r'.split(),
-            stdout=DEVNULL
-        ) == EXIT_FAILURE
+        result = self.runner.invoke(cli, ['pair', '1a5r'])
+        assert result.exit_code == EXIT_FAILURE
+        assert result.output == 'No interactions\nExited with code: 1\n'
 
     def test_bad_query_type(self):
-        assert call(
-            f'{self.path_runner} pair 1rcy --query foobarbaz'.split(),
-            stderr=DEVNULL
-        ) == EXIT_GENERAL_PROGRAM_FAILURES
+        result = self.runner.invoke(cli, ['pair', '1rcy', '--query', 'foobar'])
+        assert result.exit_code == EXIT_GENERAL_PROGRAM_FAILURES
 
     @mark.parametrize(
         'subquery',
@@ -83,8 +73,5 @@ class TestRunner:
         ]
     )
     def test_general_argparse_failures(self, subquery):
-        assert call(
-            f'{self.path_runner} {subquery}'.split(),
-            stderr=DEVNULL
-        ) == EXIT_GENERAL_PROGRAM_FAILURES
-"""
+        result = self.runner.invoke(cli, subquery.split())
+        assert result.exit_code == EXIT_GENERAL_PROGRAM_FAILURES
