@@ -40,13 +40,12 @@ def get_control_bridge_test_ids(file, size=100):
 class TestBridges:
     def setup_class(self):
         self.network_size = 4
-        self.default_bridge_testing_parameters = {
+        self.params = {
             'cutoff_distance': 6.0,
             'cutoff_angle': 360.0,
             'chain': 'A',
             'model': 'cp'
         }
-        self.ma = GetBridgingInteractions(**self.default_bridge_testing_parameters)
 
     @mark.parametrize(
         'bridges',
@@ -55,9 +54,8 @@ class TestBridges:
     )
     def test_bridge_collector(self, bridges):
         try:
-            bridging_interactions = self.ma.get_bridging_interactions(
-                vertices=self.network_size,
-                code=bridges.get('pdb_code')
+            bridging_interactions = GetBridgingInteractions(**self.params).get_bridging_interactions(
+                vertices=self.network_size, code=bridges.get('pdb_code')
             )
         except IndexError:
             skip('Skipping list index out of range error. Occurs because of missing data.')
@@ -85,8 +83,8 @@ class TestBridges:
         assert GetBridgingInteractions(
             cutoff_angle=cutoff_angle,
             cutoff_distance=cutoff_distance,
-            model=self.default_bridge_testing_parameters['model'],
-            chain=self.default_bridge_testing_parameters['chain']
+            model=self.params['model'],
+            chain=self.params['chain']
         ).get_bridging_interactions(
             code=code, vertices=self.network_size
         )['exit_code'] == error
