@@ -8,9 +8,9 @@ from .primitives.consts import (
 from .met_aromatic import MetAromatic
 
 
-class MetAromaticTUI:
+class MetAromaticCurses:
 
-    def __init__(self, parameters):
+    def __init__(self, parameters: dict) -> None:
         self.parameters = parameters
 
         results = MetAromatic(
@@ -40,7 +40,7 @@ class MetAromaticTUI:
 
         self.position = 1
 
-    def __del__(self):
+    def __del__(self) -> None:
         # can also use curses.wrapper but I prefer OO approach
         self.stdscr.keypad(False)
         curses.nocbreak()
@@ -50,7 +50,7 @@ class MetAromaticTUI:
         if self.exit_code != EXIT_SUCCESS:
             print(self.exit_status)
 
-    def show_header(self):
+    def show_header(self) -> None:
         _, stdscr_width = self.stdscr.getmaxyx()
         midline = int((stdscr_width // 2) - (len(HEADER_TEXT) // 2) - len(HEADER_TEXT) % 2)
         self.window_header = curses.newwin(3, 0, 0, 0)
@@ -58,7 +58,7 @@ class MetAromaticTUI:
         self.window_header.addstr(1, midline, HEADER_TEXT, curses.A_BOLD)
         self.window_header.refresh()
 
-    def show_parameters_window(self):
+    def show_parameters_window(self) -> None:
         position = self.window_header.getbegyx()[0] + self.window_header.getmaxyx()[0]
         self.window_input = curses.newwin(7, 0, position, 0)
         self.window_input.border(0)
@@ -77,27 +77,28 @@ class MetAromaticTUI:
 
         self.window_input.refresh()
 
-    def show_results_window(self):
+    def show_results_window(self) -> None:
         position = self.window_input.getbegyx()[0] + self.window_input.getmaxyx()[0]
         self.window_output = curses.newwin(len(self.results) + 3, 0, position, 0)
         self.window_output.addstr(1, 2, FORMATTED_HEADER, curses.A_BOLD + curses.A_UNDERLINE)
         self.window_output.border(0)
 
-    def show_footer(self):
+    def show_footer(self) -> None:
         stdscr_height, _ = self.stdscr.getmaxyx()
         self.window_footer = curses.newwin(1, 0, stdscr_height - 1, 0)
         self.window_footer.addstr(0, 1, FOOTER_TEXT)
         self.window_footer.bkgd(curses.A_REVERSE)
         self.window_footer.refresh()
 
-    def navigate(self, increment):
+    def navigate(self, increment: int) -> None:
         self.position += increment
+
         if self.position <= 2:
             self.position = 2
         elif self.position > len(self.results) + 1:
             self.position = len(self.results) + 1
 
-    def event_loop(self):
+    def event_loop(self) -> int:
         if self.exit_code != EXIT_SUCCESS:
             return self.exit_code
 
@@ -109,6 +110,7 @@ class MetAromaticTUI:
         key_input = None
 
         while key_input != ord('q'):
+
             if key_input == curses.KEY_DOWN:
                 self.navigate(1)
             elif key_input == curses.KEY_UP:

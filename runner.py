@@ -47,10 +47,10 @@ def main(context):
 @argument('code')
 @pass_obj
 def interface(obj, code):
-    from src.frontend import MetAromaticTUI
+    from src.met_aromatic_curses import MetAromaticCurses
 
     obj['code'] = code
-    sys.exit(MetAromaticTUI(obj).event_loop())
+    sys.exit(MetAromaticCurses(obj).event_loop())
 
 @main.command(help='Run a Met-aromatic query on a single PDB entry.')
 @argument('code')
