@@ -87,7 +87,7 @@ class TestRunner:
         assert result.exit_code == EXIT_GENERAL_PROGRAM_FAILURES
 
 
-class TestCommandLineInterface:
+class TestRunFromDifferentDirectories:
 
     def setup_class(self):
         root = path.dirname(path.abspath(__file__))
@@ -96,59 +96,41 @@ class TestCommandLineInterface:
     def test_aromatic_interaction_run_from_parent_directory(self):
         pwd = getcwd()
         chdir(path.dirname(path.dirname(self.path_runner)))
-        retval = call(
-            f'MetAromatic/runner.py pair 1rcy'.split(),
-            stdout=DEVNULL
-        )
+        retval = call('MetAromatic/runner.py pair 1rcy'.split(), stdout=DEVNULL)
         chdir(pwd)
         assert retval == EXIT_SUCCESS
 
     def test_aromatic_interaction_run_from_child_directory(self):
         pwd = getcwd()
         chdir(path.join(path.dirname(self.path_runner), 'utils/'))
-        retval = call(
-            f'../runner.py pair 1rcy'.split(),
-            stdout=DEVNULL
-        )
+        retval = call('../runner.py pair 1rcy'.split(), stdout=DEVNULL)
         chdir(pwd)
         assert retval == EXIT_SUCCESS
 
     def test_aromatic_interaction_run_from_child_child_directory(self):
         pwd = getcwd()
         chdir(path.join(path.dirname(self.path_runner), 'utils/primitives'))
-        retval = call(
-            f'../../runner.py pair 1rcy'.split(),
-            stdout=DEVNULL
-        )
+        retval = call('../../runner.py pair 1rcy'.split(), stdout=DEVNULL)
         chdir(pwd)
         assert retval == EXIT_SUCCESS
 
     def test_bridging_interaction_run_from_parent_directory(self):
         pwd = getcwd()
         chdir(path.dirname(path.dirname(self.path_runner)))
-        retval = call(
-            f'MetAromatic/runner.py bridge 6lu7'.split(),
-            stdout=DEVNULL
-        )
+        retval = call('MetAromatic/runner.py bridge 6lu7'.split(), stdout=DEVNULL)
         chdir(pwd)
         assert retval == EXIT_SUCCESS
 
     def test_bridging_interaction_run_from_child_directory(self):
         pwd = getcwd()
         chdir(path.join(path.dirname(self.path_runner), 'utils/'))
-        retval = call(
-            f'../runner.py bridge 6lu7'.split(),
-            stdout=DEVNULL
-        )
+        retval = call('../runner.py bridge 6lu7'.split(), stdout=DEVNULL)
         chdir(pwd)
         assert retval == EXIT_SUCCESS
 
     def test_bridging_interaction_run_from_child_child_directory(self):
         pwd = getcwd()
         chdir(path.join(path.dirname(self.path_runner), 'utils/primitives'))
-        retval = call(
-            f'../../runner.py bridge 6lu7'.split(),
-            stdout=DEVNULL
-        )
+        retval = call('../../runner.py bridge 6lu7'.split(), stdout=DEVNULL)
         chdir(pwd)
         assert retval == EXIT_SUCCESS
