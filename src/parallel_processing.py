@@ -34,7 +34,7 @@ logging.basicConfig(
     handlers=LOG_HANDLERS
 )
 
-class RunBatchQueries:
+class ParallelProcessing:
 
     def __init__(self, cli_args: dict) -> None:
         self.cli_args = cli_args

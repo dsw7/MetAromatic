@@ -41,7 +41,8 @@ def get_control_bridge_test_ids(file, size=100):
     return outgoing
 
 
-class TestBridges:
+class TestGetBridgingInteractions:
+
     def setup_class(self):
         self.network_size = 4
         self.params = {

@@ -6,7 +6,7 @@ from .primitives.consts import (
     EXIT_FAILURE
 )
 
-class TestBatchJob:
+class TestParallelProcessing:
 
     def setup_class(self):
         project_root = path.dirname(path.dirname(path.abspath(__file__)))

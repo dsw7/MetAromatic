@@ -24,7 +24,8 @@ TEST_CODES = {
 }
 
 
-class TestMetAromaticAlgorithmAgainst483Data:
+class TestMetAromatic:
+
     def setup_class(self):
         self.default_parameters = {
             'cutoff_distance': 4.9,
