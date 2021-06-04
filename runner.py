@@ -27,7 +27,7 @@ from src.primitives.consts import (
 @group()
 @pass_context
 def main(context):
-    path_ini = path.join(path.dirname(__file__), 'met_aromatic.ini')
+    path_ini = path.join(path.dirname(__file__), 'runner.ini')
 
     if not path.exists(path_ini):
         secho('Could not find initialization file: {}'.format(path_ini), fg='red')

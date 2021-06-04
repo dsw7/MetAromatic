@@ -1,7 +1,11 @@
 from json import loads
 from os import path
-from pytest import mark, skip, exit
-from .met_aromatic import GetBridgingInteractions
+from pytest import (
+    mark,
+    skip,
+    exit
+)
+from .get_bridging_interactions import GetBridgingInteractions
 from .primitives.consts import EXIT_FAILURE
 
 CONTROL_BRIDGE_DATA = path.join(
