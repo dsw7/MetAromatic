@@ -48,6 +48,7 @@ def main(context):
 @pass_obj
 def interface(obj, code):
     from src.frontend import MetAromaticTUI
+
     obj['code'] = code
     sys.exit(MetAromaticTUI(obj).event_loop())
 
@@ -92,11 +93,12 @@ def pair(obj, code, cutoff_distance, cutoff_angle, chain, model):
 @option('--vertices', default=3, type=int, metavar='<vertices>')
 @pass_obj
 def bridge(obj, code, vertices):
-    if vertices < 3:
-        secho('Vertices must be > 2', fg='red')
+    if vertices < MINIMUM_VERTICES:
+        secho('Vertices must be >= {}'.format(MINIMUM_VERTICES), fg='red')
         sys.exit(EXIT_FAILURE)
 
-    from src.met_aromatic import GetBridgingInteractions
+    from src.get_bridging_interactions import GetBridgingInteractions
+
     results = GetBridgingInteractions(**obj).get_bridging_interactions(
         vertices=vertices, code=code
     )
