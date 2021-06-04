@@ -109,7 +109,7 @@ class MetAromatic:
         )
 
     def check_if_not_coordinates(self) -> bool:
-        if not any([self.transport['phe_coordinates'], self.transport['tyr_coordinates'], self.transport['phe_coordinates']]):
+        if not any([self.transport['phe_coordinates'], self.transport['tyr_coordinates'], self.transport['trp_coordinates']]):
             self.results['exit_status'] = "No PHE/TYR/TRP residues"
             self.results['exit_code'] = EXIT_FAILURE
             return False
