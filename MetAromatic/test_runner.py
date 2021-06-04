@@ -2,7 +2,8 @@ from click.testing import CliRunner
 from runner import cli
 from utils.primitives.consts import (
     EXIT_SUCCESS,
-    EXIT_FAILURE
+    EXIT_FAILURE,
+    EXIT_GENERAL_PROGRAM_FAILURES
 )
 
 
@@ -23,20 +24,17 @@ class TestRunner:
         assert result.exit_code == EXIT_FAILURE
         assert result.output == 'Vertices must be >= 3\n'
 
-"""
-
     def test_invalid_cutoff_distance(self):
-        assert call(
-            f'{self.path_runner} pair 1rcy --cutoff-distance -1.00'.split(),
-            stdout=DEVNULL
-        ) == EXIT_FAILURE
+        result = self.runner.invoke(cli, ['pair', '1rcy', '--cutoff-distance', '-1.00'])
+        assert result.exit_code == EXIT_FAILURE
+        assert result.output == 'Invalid cutoff distance\nExited with code: 1\n'
 
     def test_invalid_cutoff_distance_stringified(self):
-        assert call(
-            f'{self.path_runner} pair 1rcy --cutoff-distance foo'.split(),
-            stderr=DEVNULL
-        ) == EXIT_GENERAL_PROGRAM_FAILURES
+        result = self.runner.invoke(cli, ['pair', '1rcy', '--cutoff-distance', 'foo'])
+        assert result.exit_code == EXIT_GENERAL_PROGRAM_FAILURES
 
+
+"""
     def test_invalid_cutoff_angle(self):
         assert call(
             f'{self.path_runner} pair 1rcy --cutoff-angle 361.00'.split(),
