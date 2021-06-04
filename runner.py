@@ -118,7 +118,7 @@ def bridge(obj, code, vertices):
 @option('--collection', default='default_ma', metavar='<collection-name>')
 @pass_obj
 def batch(obj, path_batch_file, threads, database, collection):
-    from src.parallel_processing import RunBatchQueries
+    from src.parallel_processing import ParallelProcessing
     options = {
         'path_batch_file': path_batch_file,
         'threads': threads,
@@ -130,7 +130,7 @@ def batch(obj, path_batch_file, threads, database, collection):
         **options,
         **obj
     }
-    RunBatchQueries(all_options).deploy_jobs()
+    ParallelProcessing(all_options).deploy_jobs()
 
 if __name__ == '__main__':
     main()
