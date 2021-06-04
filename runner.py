@@ -19,7 +19,10 @@ from click import (
     pass_context,
     pass_obj
 )
-from src.primitives.consts import EXIT_FAILURE
+from src.primitives.consts import (
+    EXIT_FAILURE,
+    MINIMUM_VERTICES
+)
 
 @group()
 @pass_context

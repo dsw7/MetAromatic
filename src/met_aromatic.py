@@ -9,7 +9,6 @@ from .primitives import (
 from .primitives.consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
-    MINIMUM_VERTICES,
     MINIMUM_CUTOFF_DIST,
     MINIMUM_CUTOFF_ANGLE,
     MAXIMUM_CUTOFF_ANGLE
@@ -201,10 +200,15 @@ class MetAromatic:
         return self.results
 
 
-class GetBridgingInteractions(MetAromatic):
+class GetBridgingInteractions:
 
     def __init__(self, cutoff_distance: float, cutoff_angle: float, chain: str, model: str) -> None:
-        MetAromatic.__init__(self, cutoff_distance, cutoff_angle, chain, model)
+        self.arguments = {
+            'cutoff_distance': cutoff_distance,
+            'cutoff_angle': cutoff_angle,
+            'chain': chain,
+            'model': model
+        }
 
         self.results = None
         self.vertices = None
@@ -212,16 +216,10 @@ class GetBridgingInteractions(MetAromatic):
         self.joined_pairs = set()
         self.bridges = None
 
-    def check_minimum_vertices(self) -> bool:
-        if self.vertices < MINIMUM_VERTICES:
-            self.results['exit_code'] = EXIT_FAILURE
-            self.results['exit_status'] = "Vertices must be > 2"
-            return False
-
-        return True
-
     def run_met_aromatic(self) -> bool:
-        self.results = self.get_met_aromatic_interactions(self.code)
+        self.results = MetAromatic(
+            **self.arguments
+        ).get_met_aromatic_interactions(self.code)
 
         if self.results['exit_code'] == EXIT_FAILURE:
             return False
@@ -263,9 +261,6 @@ class GetBridgingInteractions(MetAromatic):
     def get_bridging_interactions(self, code: str, vertices: int) -> dict:
         self.code = code
         self.vertices = vertices
-
-        if not self.check_minimum_vertices():
-            return self.results
 
         if not self.run_met_aromatic():
             return self.results
