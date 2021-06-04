@@ -94,6 +94,7 @@ class TestRunFromDifferentDirectories:
         self.path_runner = path.join(root, 'runner.py')
 
     def test_aromatic_interaction_run_from_parent_directory(self):
+        # XXX amazing place for a __enter__ / __exit__ context
         pwd = getcwd()
         chdir(path.dirname(path.dirname(self.path_runner)))
         retval = call('MetAromatic/runner.py pair 1rcy'.split(), stdout=DEVNULL)
