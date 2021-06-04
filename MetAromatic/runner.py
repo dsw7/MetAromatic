@@ -19,7 +19,7 @@ from click import (
     pass_context,
     pass_obj
 )
-from src.primitives.consts import (
+from utils.primitives.consts import (
     EXIT_FAILURE,
     MINIMUM_VERTICES
 )
@@ -47,7 +47,7 @@ def main(context):
 @argument('code')
 @pass_obj
 def interface(obj, code):
-    from src.met_aromatic_curses import MetAromaticCurses
+    from utils.met_aromatic_curses import MetAromaticCurses
 
     obj['code'] = code
     sys.exit(MetAromaticCurses(obj).event_loop())
@@ -73,7 +73,7 @@ def pair(obj, code, cutoff_distance, cutoff_angle, chain, model):
     if model:
         obj['model'] = model
 
-    from src.met_aromatic import MetAromatic
+    from utils.met_aromatic import MetAromatic
 
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     results = MetAromatic(**obj).get_met_aromatic_interactions(code)
@@ -97,7 +97,7 @@ def bridge(obj, code, vertices):
         secho('Vertices must be >= {}'.format(MINIMUM_VERTICES), fg='red')
         sys.exit(EXIT_FAILURE)
 
-    from src.get_bridging_interactions import GetBridgingInteractions
+    from utils.get_bridging_interactions import GetBridgingInteractions
 
     results = GetBridgingInteractions(**obj).get_bridging_interactions(
         vertices=vertices, code=code
@@ -118,7 +118,7 @@ def bridge(obj, code, vertices):
 @option('--collection', default='default_ma', metavar='<collection-name>')
 @pass_obj
 def batch(obj, path_batch_file, threads, database, collection):
-    from src.parallel_processing import ParallelProcessing
+    from utils.parallel_processing import ParallelProcessing
     options = {
         'path_batch_file': path_batch_file,
         'threads': threads,

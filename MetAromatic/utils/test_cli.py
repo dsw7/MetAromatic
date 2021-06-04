@@ -37,7 +37,7 @@ class TestCommandLineInterface:
 
     def test_aromatic_interaction_run_from_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'src/'))
+        chdir(path.join(path.dirname(self.path_runner), 'utils/'))
         retval = call(
             f'../runner.py pair 1rcy'.split(),
             stdout=DEVNULL
@@ -47,7 +47,7 @@ class TestCommandLineInterface:
 
     def test_aromatic_interaction_run_from_child_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'src/primitives'))
+        chdir(path.join(path.dirname(self.path_runner), 'utils/primitives'))
         retval = call(
             f'../../runner.py pair 1rcy'.split(),
             stdout=DEVNULL
@@ -67,7 +67,7 @@ class TestCommandLineInterface:
 
     def test_bridging_interaction_run_from_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'src/'))
+        chdir(path.join(path.dirname(self.path_runner), 'utils/'))
         retval = call(
             f'../runner.py bridge 6lu7'.split(),
             stdout=DEVNULL
@@ -77,7 +77,7 @@ class TestCommandLineInterface:
 
     def test_bridging_interaction_run_from_child_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'src/primitives'))
+        chdir(path.join(path.dirname(self.path_runner), 'utils/primitives'))
         retval = call(
             f'../../runner.py bridge 6lu7'.split(),
             stdout=DEVNULL
