@@ -26,7 +26,7 @@ from utils.primitives.consts import (
 
 @group()
 @pass_context
-def main(context):
+def cli(context):
     path_ini = path.join(path.dirname(__file__), 'runner.ini')
 
     if not path.exists(path_ini):
@@ -43,7 +43,7 @@ def main(context):
         'model': parser['root-configs']['model']
     }
 
-@main.command(help='Run single Met-aromatic query in a curses interface.')
+@cli.command(help='Run single Met-aromatic query in a curses interface.')
 @argument('code')
 @pass_obj
 def interface(obj, code):
@@ -52,7 +52,7 @@ def interface(obj, code):
     obj['code'] = code
     sys.exit(MetAromaticCurses(obj).event_loop())
 
-@main.command(help='Run a Met-aromatic query on a single PDB entry.')
+@cli.command(help='Run a Met-aromatic query on a single PDB entry.')
 @argument('code')
 @option('--cutoff-distance', type=float, default=None, help='Override cutoff distance defined in *.ini file.', metavar='<Angstroms>')
 @option('--cutoff-angle', type=float, default=None, help='Override cutoff angle defined in *.ini file.', metavar='<degrees>')
@@ -88,7 +88,7 @@ def pair(obj, code, cutoff_distance, cutoff_angle, chain, model):
 
     sys.exit(results['exit_code'])
 
-@main.command(help='Run a bridging interaction query on a single PDB entry.')
+@cli.command(help='Run a bridging interaction query on a single PDB entry.')
 @argument('code')
 @option('--vertices', default=3, type=int, metavar='<vertices>')
 @pass_obj
@@ -111,7 +111,7 @@ def bridge(obj, code, vertices):
 
     sys.exit(results['exit_code'])
 
-@main.command(help='Run a Met-aromatic query batch job.')
+@cli.command(help='Run a Met-aromatic query batch job.')
 @argument('path_batch_file', type=Path('rb'))
 @option('--threads', default=5, type=int, metavar='<number-threads>')
 @option('--database', default='default_ma', metavar='<database-name>')
@@ -133,4 +133,4 @@ def batch(obj, path_batch_file, threads, database, collection):
     ParallelProcessing(all_options).deploy_jobs()
 
 if __name__ == '__main__':
-    main()
+    cli()
