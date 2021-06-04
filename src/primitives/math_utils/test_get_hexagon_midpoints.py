@@ -18,7 +18,7 @@ HEXAGON_MIDPOINTS = {
     (0.866, 0.0, 0.0)
 }
 
-def test_get_hexagon_midpoints():
+def test_get_hexagon_midpoints() -> None:
     coordinates = [list(i) for i in zip(*HEXAGON_COORDINATES)]
     assert {
         tuple(i) for i in zip(*get_hexagon_midpoints(*coordinates))

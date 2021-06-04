@@ -1,22 +1,22 @@
-#### exit codes
+#### Exit codes
 EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
 EXIT_GENERAL_PROGRAM_FAILURES = 2
 
-#### general met aromatic algorithm parameters
+#### General met aromatic algorithm parameters
 MINIMUM_CUTOFF_DIST = 0.00
 MINIMUM_CUTOFF_ANGLE = 0.00
 MAXIMUM_CUTOFF_ANGLE = 360.00
 MINIMUM_VERTICES = 3
 
-#### threading
+#### Threading
 MAXIMUM_WORKERS = 15
 
-#### database stuff
+#### Database stuff
 DEFAULT_MONGO_HOST = 'localhost'
 DEFAULT_MONGO_PORT = 27017
 
-#### logging stuff
+#### Logging stuff
 ISO_8601_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 LOGRECORD_FORMAT = '%(asctime)s %(levelname)s [%(funcName)s] %(message)s'
 DEFAULT_LOGFILE_NAME = 'met_aromatic.log'
@@ -28,10 +28,10 @@ LOG_LEVEL = 20
 # DEBUG    10
 # NOTSET    0
 
-#### other
+#### Other
 LEN_PDB_CODE = 4
 
-#### terminal UI headers and footers
+#### Terminal UI headers and footers
 HEADER_TEXT = '*** MET-AROMATIC RESULTS ***'
 FOOTER_TEXT = "Press 'q' to exit | Use KEY_UP and KEY_DOWN to scroll through results"
 HEADER_RESULTS = [
