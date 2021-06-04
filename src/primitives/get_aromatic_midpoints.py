@@ -19,19 +19,27 @@ DICT_ATOMS_TRP = {
     'CH2': 'D', 'CZ2': 'E', 'CE2': 'F'
 }
 
-def get_aromatic_midpoints(aromatics, keys):
-    aromatics = [list(group) for _, group in groupby(aromatics, lambda entry: entry[5])]
+def get_aromatic_midpoints(aromatics: list, keys: dict) -> list:
+    aromatics = [
+        list(group) for _, group in groupby(aromatics, lambda entry: entry[5])
+    ]
 
     midpoints = []
-    for grouped in deepcopy(aromatics):  # fix for self.phenylalanines A, B, C bug
-        for row in grouped:  # map unique values to atomic label keys
+
+    # Fix for self.phenylalanines A, B, C bug
+    for grouped in deepcopy(aromatics):
+
+        # Map unique values to atomic label keys
+        for row in grouped:
             row[2] = keys.get(row[2])
 
-        # sort based on these values which are just A, B, C, D, E, F
+        # Sort based on these values which are just A, B, C, D, E, F
         ordered = sorted(grouped, key=itemgetter(2))
+
         x_coord = [float(i[6]) for i in ordered]
         y_coord = [float(i[7]) for i in ordered]
         z_coord = [float(i[8]) for i in ordered]
+
         x_mid, y_mid, z_mid = get_hexagon_midpoints.get_hexagon_midpoints(x_coord, y_coord, z_coord)
 
         for a, b, c in zip(x_mid, y_mid, z_mid):
@@ -39,11 +47,11 @@ def get_aromatic_midpoints(aromatics, keys):
 
     return midpoints
 
-def get_phe_midpoints(phenylalanine_coords):
+def get_phe_midpoints(phenylalanine_coords: list) -> list:
     return get_aromatic_midpoints(phenylalanine_coords, DICT_ATOMS_PHE)
 
-def get_tyr_midpoints(tyrosine_coords):
+def get_tyr_midpoints(tyrosine_coords: list) -> list:
     return get_aromatic_midpoints(tyrosine_coords, DICT_ATOMS_TYR)
 
-def get_trp_midpoints(tryptophan_coords):
+def get_trp_midpoints(tryptophan_coords: list) -> list:
     return get_aromatic_midpoints(tryptophan_coords, DICT_ATOMS_TRP)
