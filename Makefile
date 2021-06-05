@@ -1,11 +1,19 @@
-.PHONY = help requirements
+####################################
+#                                  #
+#  MET-AROMATIC OFFICIAL MAKEFILE  #
+#                                  #
+####################################
+
+.PHONY = help requirements lint test test-coverage
 
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
-##################################
-# MET-AROMATIC OFFICIAL MAKEFILE #
-##################################
+************************************
+*                                  *
+*  MET-AROMATIC OFFICIAL MAKEFILE  *
+*                                  *
+************************************
 
  To display all targets:
     > make help
@@ -13,10 +21,17 @@ define HELP_LIST_TARGETS
     > make requirements
  To lint the project
     > make lint
+ To test the project
+    > make test
+ To test the project with coverage
+    > make test-coverage
 
 endef
 
 export HELP_LIST_TARGETS
+
+PROJECT_ROOT = $(PWD)/MetAromatic
+DUMP_COVERAGE = /tmp/htmlcov
 
 help:
 	@echo "$$HELP_LIST_TARGETS"
@@ -26,8 +41,21 @@ requirements:
 	@pipreqs --force
 
 lint:
-	@echo "Linting the project using PyLint static analysis tool"
-	@pylint $(PWD)/MetAromatic \
+	@echo "Linting the project using pylint static analysis tool"
+	@pylint $(PROJECT_ROOT) \
 	--output-format=colorized \
 	--exit-zero \
 	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
+
+test:
+	@echo "Running pytest over project"
+	@pytest -vs $(PROJECT_ROOT)
+
+# Might deprecate this - not used often enough
+test-coverage:
+	@echo "Running pytest over project with coverage report"
+	@pytest -vs $(PROJECT_ROOT) \
+	--cov=$(PROJECT_ROOT) \
+	--cov-report=html:$(DUMP_COVERAGE) \
+	--cov-config=$(PROJECT_ROOT)/coverage.rc
+	@echo "Coverage report will be dumped to: $(DUMP_COVERAGE)"
