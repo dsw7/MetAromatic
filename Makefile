@@ -49,7 +49,6 @@ lint:
 	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
 
 test:
-	@echo "Running pytest over project"
 	@pytest -vs $(PROJECT_DIRECTORY)
 
 # Might deprecate this - not used often enough

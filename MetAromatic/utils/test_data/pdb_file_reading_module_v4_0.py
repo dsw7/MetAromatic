@@ -122,8 +122,8 @@ for code in codelist[1:]:
             elif ist[0] == 'ENDMDL':
                 break
         os.remove(path[0])
-        
-        
+
+
         # 2019 patch - Selection of only A chain
         coord_intermediate = []
         for c in coord:
@@ -132,8 +132,8 @@ for code in codelist[1:]:
             else:
                 pass
         coord = coord_intermediate
-        
-        
+
+
         # Primary sorting
         listoflists = [listP, listM, listF, listY, listW] = ([], [], [], [], [])
         for j in range(0, len(listoflists)):
@@ -182,8 +182,8 @@ for code in codelist[1:]:
             for i in range(0, len(f[j])):
                 for k in range(0, len(f[j][i])):
                     listoflists[j].append(f[j][i][k])
-        
-        
+
+
         # Computation of aromatic midpoints
         lmid = [midF, midY, midW] = ([], [], [])
         dlist = [[listF, tok], [listY, tok], [listW, tok2]]
@@ -202,7 +202,7 @@ for code in codelist[1:]:
                 lmid[p].append(u)
 
 
-        # Interaction-specific distance based exclusion          
+        # Interaction-specific distance based exclusion
         listint=[PF_interaction,PY_interaction,PW_interaction,
                  MF_interaction,MY_interaction,MW_interaction]=[],[],[],[],[],[]
         listmid=[[midF,'PHE',listP],[midY,'TYR',listP],
@@ -219,7 +219,7 @@ for code in codelist[1:]:
                                     listmid[j][1], listmid[j][0][k1][k2],
                                     np.linalg.norm(vec2 - vec1)])
 
-        
+
         # Algorithm PA-1-483
         for a1 in range(0, 3):
             for a2 in range(0, len(listint[a1])):
@@ -227,7 +227,7 @@ for code in codelist[1:]:
                 for e1 in range(0, 4):
                     s = listint[a1][a2][0][e1][6] - listint[a1][a2][0][1][6]
                     tvec.append([(listint[a1][a2][0][e1])[:6], s])
-        
+
                 tvec2 = []  # Vector normal to CB-C-N plane (hydrogen vector)
                 for e2 in range(0, 4):
                     if tvec[e2][0][2] == 'N' or tvec[e2][0][2] == 'C' \
@@ -236,13 +236,13 @@ for code in codelist[1:]:
                 crossvec1 = tvec2[1][1] - tvec2[0][1]
                 crossvec2 = tvec2[2][1] - tvec2[0][1]
                 hydrogen_vector = unitvec(np.cross(crossvec2, crossvec1))
-        
+
                 vec1 = unitvec(listint[a1][a2][3][2] - listint[a1][a2][0][1][6])
                 vec2 = hydrogen_vector
                 theta = vecangle(vec1, vec2)
                 listint[a1][a2] = listint[a1][a2] + [[theta]]
 
-          
+
         # Algorithm MA-2-483
         for a1 in range(3, 6):
             for a2 in range(0, len(listint[a1])):
@@ -250,7 +250,7 @@ for code in codelist[1:]:
                 for e1 in range(0, 3):
                     s2 = listint[a1][a2][0][e1][6] - listint[a1][a2][0][1][6]
                     t2vec.append([(listint[a1][a2][0][e1])[:6], s2])
-        
+
                 t2vec2 = []  # CG, CE unit vectors
                 for e2 in range(0, 3):
                     if t2vec[e2][0][2] == 'CG' or t2vec[e2][0][2] == 'CE':
@@ -262,7 +262,7 @@ for code in codelist[1:]:
                                  + t2vec2[1][1]))]
                 lp = [comp_elements[0] + comp_elements[2], comp_elements[1]
                       + comp_elements[2]]  # Lone pair vectors
-        
+
                 vec1 = unitvec(listint[a1][a2][3][2] - listint[a1][a2][0][1][6])
                 vec2 = lp[0]  # Alpha lone pair
                 a_theta = vecangle(vec1, vec2)
@@ -270,8 +270,8 @@ for code in codelist[1:]:
                 vec2 = lp[1]  # Gamma lone pair
                 g_theta = vecangle(vec1, vec2)
                 listint[a1][a2] = listint[a1][a2] + [[a_theta, g_theta]]
-              
-            
+
+
         # Information bank
         reflistint = []
         for j1 in range(0, 6):
@@ -281,8 +281,8 @@ for code in codelist[1:]:
                                   + [listint[j1][j2][3][0]]
                                   + listint[j1][j2][3][1], listint[j1][j2][4],
                                   listint[j1][j2][5]])
-        
-        
+
+
         # 2019 porting....
         reflistint = [line for line in reflistint if line[0][2] == 'MET']
         reflistint = [i[0] + i[1] + [i[2]] + i[3] for i in reflistint]
@@ -312,10 +312,9 @@ for code in codelist[1:]:
             with open('483OutputA3-3-M-Benchmark.csv', 'a') as f:
                 df.to_csv(f, header=False)
 
-            
+
     except Exception as exception:
         print(exception)
         if os.path.exists(path[0]):
             os.remove(path[0])
         pass
-
