@@ -4,42 +4,46 @@
 #                                  #
 ####################################
 
-.PHONY = help requirements lint test test-coverage
+.PHONY = help requirements get-deps lint test test-coverage
 
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
-************************************
-*                                  *
-*  MET-AROMATIC OFFICIAL MAKEFILE  *
-*                                  *
-************************************
 
- To display all targets:
-    > make help
- To generate a requirements.txt file
-    > make requirements
- To lint the project
-    > make lint
- To test the project
-    > make test
- To test the project with coverage
-    > make test-coverage
-
+To display all targets:
+    $$ make help
+To generate a requirements.txt file:
+    $$ make requirements
+To setup all project dependencies:
+    $$ make get-deps
+To lint the project:
+    $$ make lint
+To test the project:
+    $$ make test
+To test the project with coverage:
+    $$ make test-coverage
 endef
 
 export HELP_LIST_TARGETS
 
+LIGHT_PURPLE = "\033[4;1;35m"
+NO_COLOR = "\033[0m"
 ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
+REQUIREMENTS_TXT = $(PROJECT_DIRECTORY)/requirements.txt
 DUMP_COVERAGE = /tmp/htmlcov
 
 help:
+	@echo -e $(LIGHT_PURPLE)MET-AROMATIC OFFICIAL MAKEFILE$(NO_COLOR)
 	@echo "$$HELP_LIST_TARGETS"
 
 requirements:
-	@echo "Generating requirements.txt"
-	@pipreqs --force
+	@echo "Generating $(REQUIREMENTS_TXT)"
+	@pipreqs --force --savepath $(REQUIREMENTS_TXT) $(PROJECT_DIRECTORY)
+
+get-deps: requirements
+	@echo "Installing all project dependencies using $(REQUIREMENTS_TXT)"
+	@pip install --requirement $(REQUIREMENTS_TXT)
 
 lint:
 	@echo "Linting the project using pylint static analysis tool"
