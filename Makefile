@@ -30,7 +30,8 @@ endef
 
 export HELP_LIST_TARGETS
 
-PROJECT_ROOT = $(PWD)/MetAromatic
+ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
 DUMP_COVERAGE = /tmp/htmlcov
 
 help:
@@ -42,20 +43,20 @@ requirements:
 
 lint:
 	@echo "Linting the project using pylint static analysis tool"
-	@pylint $(PROJECT_ROOT) \
+	@pylint $(PROJECT_DIRECTORY) \
 	--output-format=colorized \
 	--exit-zero \
 	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
 
 test:
 	@echo "Running pytest over project"
-	@pytest -vs $(PROJECT_ROOT)
+	@pytest -vs $(PROJECT_DIRECTORY)
 
 # Might deprecate this - not used often enough
 test-coverage:
 	@echo "Running pytest over project with coverage report"
-	@pytest -vs $(PROJECT_ROOT) \
-	--cov=$(PROJECT_ROOT) \
+	@pytest -vs $(PROJECT_DIRECTORY) \
+	--cov=$(PROJECT_DIRECTORY) \
 	--cov-report=html:$(DUMP_COVERAGE) \
-	--cov-config=$(PROJECT_ROOT)/coverage.rc
+	--cov-config=$(PROJECT_DIRECTORY)/coverage.rc
 	@echo "Coverage report will be dumped to: $(DUMP_COVERAGE)"
