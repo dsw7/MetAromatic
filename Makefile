@@ -30,7 +30,7 @@ LIGHT_PURPLE = "\033[4;1;35m"
 NO_COLOR = "\033[0m"
 ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
-REQUIREMENTS_TXT = $(PROJECT_DIRECTORY)/requirements.txt
+REQUIREMENTS_TXT = $(ROOT_DIRECTORY)/requirements.txt
 DUMP_COVERAGE = /tmp/htmlcov
 
 help:
