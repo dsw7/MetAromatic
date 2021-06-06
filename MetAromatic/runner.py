@@ -84,7 +84,7 @@ def pair(obj, code, cutoff_distance, cutoff_angle, chain, model):
             echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
     else:
         secho(results['exit_status'], fg='red')
-        secho(f"Exited with code: {results['exit_code']}", fg='red')
+        secho('Exited with code: {}'.format(results['exit_code']), fg='red')
 
     sys.exit(results['exit_code'])
 
@@ -107,7 +107,7 @@ def bridge(obj, code, vertices):
         echo(results['results'])
     else:
         secho(results['exit_status'], fg='red')
-        secho(f"Exited with code: {results['exit_code']}", fg='red')
+        secho('Exited with code: {}'.format(results['exit_code']), fg='red')
 
     sys.exit(results['exit_code'])
 
