@@ -4,7 +4,7 @@
 #                                  #
 ####################################
 
-.PHONY = help requirements get-deps lint test test-coverage
+.PHONY = help check-pipreqs requirements get-deps lint test test-coverage
 
 .DEFAULT_GOAL = help
 
@@ -52,7 +52,13 @@ help:
 	$(call RENDER_TITLE,MET-AROMATIC OFFICIAL MAKEFILE)
 	@echo "$$HELP_LIST_TARGETS"
 
-requirements:
+check-pipreqs:
+	$(call RENDER_PREAMBLE,Checking if pipreqs is installed)
+	@$(PYTHON_INTERP) -m pip list | grep --word-regexp pipreqs || \
+	(echo "Library 'pipreqs' is not installed. Installing pipreqs" && \
+	$(PYTHON_INTERP) -m pip install pipreqs)
+
+requirements: check-pipreqs
 	$(call RENDER_PREAMBLE,Generating requirements.txt file)
 	@pipreqs --force \
 	--savepath $(REQUIREMENTS_TXT) \
@@ -63,16 +69,11 @@ get-deps: requirements
 	$(call RENDER_PREAMBLE,Installing all project dependencies)
 	@$(PYTHON_INTERP) -m pip install --requirement $(REQUIREMENTS_TXT)
 
-lint:
-	$(call RENDER_PREAMBLE,Linting the project using pylint static analysis tool)
-	@$(PYTHON_INTERP) -m pylint $(PROJECT_DIRECTORY) \
-	--output-format=colorized \
-	--exit-zero \
-	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
-
 test:
 	$(call RENDER_PREAMBLE,Running pytest over project)
 	@$(PYTHON_INTERP) -m pytest -vs $(PROJECT_DIRECTORY)
+
+full: get-deps test
 
 # Might deprecate this - not used often enough
 test-coverage:
@@ -83,4 +84,9 @@ test-coverage:
 	--cov-config=$(PROJECT_DIRECTORY)/coverage.rc
 	@echo "Coverage report will be dumped to: $(DUMP_COVERAGE)"
 
-full: get-deps test
+lint:
+	$(call RENDER_PREAMBLE,Linting the project using pylint static analysis tool)
+	@$(PYTHON_INTERP) -m pylint $(PROJECT_DIRECTORY) \
+	--output-format=colorized \
+	--exit-zero \
+	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
