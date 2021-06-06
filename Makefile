@@ -4,7 +4,7 @@
 #                                  #
 ####################################
 
-.PHONY = help check-pipreqs requirements get-deps lint test test-coverage
+.PHONY = help check-pipreqs requirements install lint test test-coverage
 
 .DEFAULT_GOAL = help
 
@@ -30,17 +30,18 @@ To generate a requirements.txt file:
     $$ make requirements
     > Trajectory: check-pipreqs -> requirements
 To setup all project dependencies:
-    $$ make get-deps
-    > Trajectory: requirements -> get-deps
+    $$ make install
+    > Trajectory: requirements -> install
 To test the project:
     $$ make test
 To perform an end-to-end test:
     $$ make full
-    > Trajectory: get-deps -> test -> full
+    > Trajectory: install -> test -> full
 To test the project with coverage:
     $$ make test-coverage
 To lint the project:
     $$ make lint
+
 endef
 
 export HELP_LIST_TARGETS
@@ -68,7 +69,7 @@ requirements: check-pipreqs
 	--ignore $(PROJECT_DIRECTORY)/utils/test_data/ \
 	$(PROJECT_DIRECTORY)
 
-get-deps: requirements
+install: requirements
 	$(call RENDER_PREAMBLE,Installing all project dependencies)
 	@$(PYTHON_INTERP) -m pip install --requirement $(REQUIREMENTS_TXT)
 
@@ -76,7 +77,7 @@ test:
 	$(call RENDER_PREAMBLE,Running pytest over project)
 	@$(PYTHON_INTERP) -m pytest -vs $(PROJECT_DIRECTORY)
 
-full: get-deps test
+full: install test
 
 # Might deprecate this - not used often enough
 test-coverage:
