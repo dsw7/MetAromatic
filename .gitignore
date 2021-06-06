@@ -32,3 +32,6 @@ ENV/
 # PDB files
 *ent.gz
 *ent
+
+# Requirements
+*.requirements.txt
