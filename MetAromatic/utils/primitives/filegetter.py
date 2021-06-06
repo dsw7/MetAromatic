@@ -8,8 +8,8 @@ from tempfile import gettempdir
 class PDBFileGetter:
     def __init__(self, code):
         self.code = code.lower()
-        tar = f'pdb{self.code}.ent.gz'
-        self.url = f'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{self.code[1:3]}/{tar}'
+        tar = 'pdb{}.ent.gz'.format(self.code)
+        self.url = 'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{}/{}'.format(self.code[1:3], tar)
         self.res_tar = path.join(gettempdir(), tar)
         self.res_untar = self.res_tar.strip('.gz')
 
