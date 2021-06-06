@@ -63,7 +63,7 @@ check-pipreqs:
 
 requirements: check-pipreqs
 	$(call RENDER_PREAMBLE,Generating requirements.txt file)
-	@pipreqs --force \
+	@$(PYTHON_INTERP) -m pipreqs.pipreqs --force \
 	--savepath $(REQUIREMENTS_TXT) \
 	--ignore $(PROJECT_DIRECTORY)/utils/test_data/ \
 	$(PROJECT_DIRECTORY)
