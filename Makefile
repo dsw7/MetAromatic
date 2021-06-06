@@ -24,20 +24,23 @@ define HELP_LIST_TARGETS
 
 To display all targets:
     $$ make help
+To check whether pipreqs is installed
+    $$ make check-pipreqs
 To generate a requirements.txt file:
     $$ make requirements
+    > Trajectory: check-pipreqs -> requirements
 To setup all project dependencies:
     $$ make get-deps
     > Trajectory: requirements -> get-deps
-To lint the project:
-    $$ make lint
 To test the project:
     $$ make test
-To test the project with coverage:
-    $$ make test-coverage
 To perform an end-to-end test:
     $$ make full
-    > Trajectory: get-deps -> test
+    > Trajectory: get-deps -> test -> full
+To test the project with coverage:
+    $$ make test-coverage
+To lint the project:
+    $$ make lint
 endef
 
 export HELP_LIST_TARGETS
