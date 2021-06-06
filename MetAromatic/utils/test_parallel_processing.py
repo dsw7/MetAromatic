@@ -19,13 +19,10 @@ class TestParallelProcessing:
         self.client = MongoClient(host='localhost', port=27017)
         self.cursor = self.client[self.database_name][self.collection_name]
 
-        command = (
-            f'{path_runner} batch {path_test_data} '
-            f'--threads {self.threads} '
-            f'--database {self.database_name} '
-            f'--collection {self.collection_name}'
-        )
-
+        command = '{} batch {} '.format(path_runner, path_test_data)
+        command += '--threads {} '.format(self.threads)
+        command += '--database {} '.format(self.database_name)
+        command += '--collection {}'.format(self.collection_name)
         call(command.split(), stdout=DEVNULL, stderr=DEVNULL)
 
     def test_correct_count(self):
