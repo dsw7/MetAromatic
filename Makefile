@@ -42,6 +42,7 @@ endef
 
 export HELP_LIST_TARGETS
 
+PYTHON_INTERP = /usr/bin/python3
 ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
 REQUIREMENTS_TXT = $(ROOT_DIRECTORY)/requirements.txt
@@ -60,23 +61,23 @@ requirements:
 
 get-deps: requirements
 	$(call RENDER_PREAMBLE,Installing all project dependencies)
-	@pip install --requirement $(REQUIREMENTS_TXT)
+	@$(PYTHON_INTERP) -m pip install --requirement $(REQUIREMENTS_TXT)
 
 lint:
 	$(call RENDER_PREAMBLE,Linting the project using pylint static analysis tool)
-	@pylint $(PROJECT_DIRECTORY) \
+	@$(PYTHON_INTERP) -m pylint $(PROJECT_DIRECTORY) \
 	--output-format=colorized \
 	--exit-zero \
 	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
 
 test:
 	$(call RENDER_PREAMBLE,Running pytest over project)
-	@pytest -vs $(PROJECT_DIRECTORY)
+	@$(PYTHON_INTERP) -m pytest -vs $(PROJECT_DIRECTORY)
 
 # Might deprecate this - not used often enough
 test-coverage:
 	$(call RENDER_PREAMBLE,Running pytest over project with coverage report)
-	@pytest -vs $(PROJECT_DIRECTORY) \
+	@$(PYTHON_INTERP) -m pytest -vs $(PROJECT_DIRECTORY) \
 	--cov=$(PROJECT_DIRECTORY) \
 	--cov-report=html:$(DUMP_COVERAGE) \
 	--cov-config=$(PROJECT_DIRECTORY)/coverage.rc
