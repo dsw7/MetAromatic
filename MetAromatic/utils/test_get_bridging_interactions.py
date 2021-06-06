@@ -18,7 +18,7 @@ def get_control_bridges(file, size=100):
         with open(file, 'r') as jsonfile:
             data = [loads(line) for line in jsonfile]
     except FileNotFoundError:
-        exit(f'File {file} is missing.')
+        exit('File {} is missing.'.format(file))
 
     outgoing = []
     for datum in data[0:size]:
@@ -33,7 +33,7 @@ def get_control_bridge_test_ids(file, size=100):
         with open(file, 'r') as jsonfile:
             data = [loads(line) for line in jsonfile]
     except FileNotFoundError:
-        exit(f'File {file} is missing.')
+        exit('File {} is missing.'.format(file))
 
     outgoing = []
     for datum in data[0:size]:
