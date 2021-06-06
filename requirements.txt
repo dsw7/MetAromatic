@@ -1,5 +1,5 @@
 click==7.1.2
-networkx==2.5
-pytest==0.0.0
-numpy==1.20.0
 pymongo==3.11.3
+pytest==0.0.0
+networkx==2.5
+numpy==1.20.0
