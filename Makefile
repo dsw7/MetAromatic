@@ -85,7 +85,7 @@ test-coverage:
 	@$(PYTHON_INTERP) -m pytest -vs $(PROJECT_DIRECTORY) \
 	--cov=$(PROJECT_DIRECTORY) \
 	--cov-report=html:$(DUMP_COVERAGE) \
-	--cov-config=$(PROJECT_DIRECTORY)/coverage.rc
+	--cov-config=$(PROJECT_DIRECTORY)/.coveragerc
 	@echo "Coverage report will be dumped to: $(DUMP_COVERAGE)"
 
 lint:
