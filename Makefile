@@ -4,7 +4,7 @@
 #                                  #
 ####################################
 
-.PHONY = help check-pipreqs requirements install test full lint
+.PHONY = help check-pipreqs requirements install uninstall test full lint
 
 .DEFAULT_GOAL = help
 
@@ -32,6 +32,9 @@ To generate a requirements.txt file:
 To setup all project dependencies:
     $$ make install
     > Trajectory: requirements -> install
+To uninstall all project dependencies:
+    $$ make uninstall
+    > Trajectory: requirements -> uninstall
 To test the project:
     $$ make test
 To perform an end-to-end test:
@@ -57,7 +60,7 @@ check-pipreqs:
 	$(call RENDER_PREAMBLE,Checking if pipreqs is installed)
 	@$(PYTHON_INTERP) -m pip list | grep --word-regexp pipreqs || \
 	(echo "Library 'pipreqs' is not installed. Installing pipreqs" && \
-	$(PYTHON_INTERP) -m pip install pipreqs)
+	$(PYTHON_INTERP) -m pip install --user pipreqs)
 
 requirements: check-pipreqs
 	$(call RENDER_PREAMBLE,Generating requirements.txt file)
@@ -68,7 +71,11 @@ requirements: check-pipreqs
 
 install: requirements
 	$(call RENDER_PREAMBLE,Installing all project dependencies)
-	@$(PYTHON_INTERP) -m pip install --requirement $(REQUIREMENTS_TXT)
+	@$(PYTHON_INTERP) -m pip install --user --requirement $(REQUIREMENTS_TXT)
+
+uninstall: requirements
+	$(call RENDER_PREAMBLE,Uninstalling all project dependencies)
+	@$(PYTHON_INTERP) -m pip uninstall --yes --requirement $(REQUIREMENTS_TXT)
 
 test:
 	$(call RENDER_PREAMBLE,Running pytest over project)
