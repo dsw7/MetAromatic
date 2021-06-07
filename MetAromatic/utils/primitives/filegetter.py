@@ -6,17 +6,19 @@ from tempfile import gettempdir
 
 
 class PDBFileGetter:
-    def __init__(self, code):
+
+    def __init__(self, code: str) -> None:
         self.code = code.lower()
-        tar = 'pdb{}.ent.gz'.format(self.code)
-        self.url = 'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{}/{}'.format(self.code[1:3], tar)
-        self.res_tar = path.join(gettempdir(), tar)
+        ent_gz = 'pdb{}.ent.gz'.format(self.code)
+
+        self.ftp_url = 'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{}/{}'.format(self.code[1:3], ent_gz)
+        self.res_tar = path.join(gettempdir(), ent_gz)
         self.res_untar = self.res_tar.strip('.gz')
 
-    def fetch_entry_from_pdb(self):
+    def fetch_entry_from_pdb(self) -> str:
         try:
             urlcleanup()
-            urlretrieve(self.url, self.res_tar)
+            urlretrieve(self.ftp_url, self.res_tar)
         except URLError:
             return None
 
@@ -27,10 +29,10 @@ class PDBFileGetter:
         remove(self.res_tar)
         return self.res_untar
 
-    def remove_entry(self):
-        retbool = True
+    def remove_entry(self) -> bool:
         try:
             remove(self.res_untar)
         except FileNotFoundError:
-            retbool = False
-        return retbool
+            return False
+
+        return True
