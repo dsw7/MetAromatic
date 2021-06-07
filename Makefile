@@ -4,7 +4,7 @@
 #                                  #
 ####################################
 
-.PHONY = help check-pipreqs requirements install lint test test-coverage
+.PHONY = help check-pipreqs requirements install test full lint
 
 .DEFAULT_GOAL = help
 
@@ -37,8 +37,6 @@ To test the project:
 To perform an end-to-end test:
     $$ make full
     > Trajectory: install -> test -> full
-To test the project with coverage:
-    $$ make test-coverage
 To lint the project:
     $$ make lint
 
@@ -50,7 +48,6 @@ PYTHON_INTERP = /usr/bin/python3
 ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
 REQUIREMENTS_TXT = $(ROOT_DIRECTORY)/requirements.txt
-DUMP_COVERAGE = /tmp/htmlcov
 
 help:
 	$(call RENDER_TITLE,MET-AROMATIC OFFICIAL MAKEFILE)
@@ -78,15 +75,6 @@ test:
 	@$(PYTHON_INTERP) -m pytest -vs $(PROJECT_DIRECTORY)
 
 full: install test
-
-# Might deprecate this - not used often enough
-test-coverage:
-	$(call RENDER_PREAMBLE,Running pytest over project with coverage report)
-	@$(PYTHON_INTERP) -m pytest -vs $(PROJECT_DIRECTORY) \
-	--cov=$(PROJECT_DIRECTORY) \
-	--cov-report=html:$(DUMP_COVERAGE) \
-	--cov-config=$(PROJECT_DIRECTORY)/.coveragerc
-	@echo "Coverage report will be dumped to: $(DUMP_COVERAGE)"
 
 lint:
 	$(call RENDER_PREAMBLE,Linting the project using pylint static analysis tool)
