@@ -4,7 +4,7 @@
 #                                  #
 ####################################
 
-.PHONY = help check-pipreqs requirements install uninstall test full lint
+.PHONY = help check-pipreqs requirements install uninstall test full lint dockertest
 
 .DEFAULT_GOAL = help
 
@@ -42,6 +42,8 @@ To perform an end-to-end test:
     > Trajectory: install -> test -> full
 To lint the project:
     $$ make lint
+To run tests with Docker
+    $$ make dockertest
 
 endef
 
@@ -51,6 +53,7 @@ PYTHON_INTERP = /usr/bin/python3
 ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
 REQUIREMENTS_TXT = $(ROOT_DIRECTORY)/requirements.txt
+DOCKER_IMAGE_NAME = ma
 
 help:
 	$(call RENDER_TITLE,MET-AROMATIC OFFICIAL MAKEFILE)
@@ -72,6 +75,7 @@ requirements: check-pipreqs
 install: requirements
 	$(call RENDER_PREAMBLE,Installing all project dependencies)
 	@$(PYTHON_INTERP) -m pip install --user --requirement $(REQUIREMENTS_TXT)
+	$(call RENDER_PREAMBLE,Making runner executable)
 	chmod +x $(PROJECT_DIRECTORY)/runner.py
 
 uninstall: requirements
@@ -90,3 +94,7 @@ lint:
 	--output-format=colorized \
 	--exit-zero \
 	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
+
+dockertest:
+	$(call RENDER_PREAMBLE,Building docker image $(DOCKER_IMAGE_NAME))
+	@docker build --tag $(DOCKER_IMAGE_NAME) --file $(ROOT_DIRECTORY)/Dockerfile
