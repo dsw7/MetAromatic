@@ -72,6 +72,7 @@ requirements: check-pipreqs
 install: requirements
 	$(call RENDER_PREAMBLE,Installing all project dependencies)
 	@$(PYTHON_INTERP) -m pip install --user --requirement $(REQUIREMENTS_TXT)
+	chmod +x $(PROJECT_DIRECTORY)/MetAromatic/runner.py
 
 uninstall: requirements
 	$(call RENDER_PREAMBLE,Uninstalling all project dependencies)
