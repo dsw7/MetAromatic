@@ -53,7 +53,7 @@ PYTHON_INTERP = /usr/bin/python3
 ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
 REQUIREMENTS_TXT = $(ROOT_DIRECTORY)/requirements.txt
-DOCKER_IMAGE_NAME = ma
+DOCKER_TAG = ma
 
 help:
 	$(call RENDER_TITLE,MET-AROMATIC OFFICIAL MAKEFILE)
@@ -96,5 +96,7 @@ lint:
 	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
 
 dockertest:
-	$(call RENDER_PREAMBLE,Building docker image $(DOCKER_IMAGE_NAME))
-	docker build --tag $(DOCKER_IMAGE_NAME) $(ROOT_DIRECTORY)/
+	$(call RENDER_PREAMBLE,Building docker image $(DOCKER_TAG))
+	@docker build --tag $(DOCKER_TAG) $(ROOT_DIRECTORY)/
+	$(call RENDER_PREAMBLE,Running tests in docker container)
+	@docker run --interactive --tty --rm $(DOCKER_TAG)
