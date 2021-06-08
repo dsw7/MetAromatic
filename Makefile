@@ -97,4 +97,4 @@ lint:
 
 dockertest:
 	$(call RENDER_PREAMBLE,Building docker image $(DOCKER_IMAGE_NAME))
-	@docker build --tag $(DOCKER_IMAGE_NAME) $(ROOT_DIRECTORY)/
+	docker build --tag $(DOCKER_IMAGE_NAME) $(ROOT_DIRECTORY)/
