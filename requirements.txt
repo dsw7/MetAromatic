@@ -1,5 +1,5 @@
-click==8.0.1
-networkx==2.5.1
-numpy==1.20.3
 pymongo==3.11.4
+numpy==1.20.3
+networkx==2.5.1
 pytest==6.2.4
+click==8.0.1
