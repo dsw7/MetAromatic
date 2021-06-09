@@ -15,6 +15,7 @@ from .primitives.consts import (
 
 HOST_MONGODB = 'localhost'
 PORT_MONGODB = 27017
+TIMEOUT_MONGODB_MSEC = 1000
 
 def mongod_does_not_exist() -> bool:
     try:
@@ -24,18 +25,20 @@ def mongod_does_not_exist() -> bool:
 
     if exit_code != EXIT_SUCCESS:
         return True
-    print('Exists')
     return False
 
 def mongod_service_not_running() -> bool:
-    client = MongoClient(host=HOST_MONGODB, port=PORT_MONGODB, serverSelectionTimeoutMs=1000)
+    client = MongoClient(
+        host=HOST_MONGODB,
+        port=PORT_MONGODB,
+        serverSelectionTimeoutMs=TIMEOUT_MONGODB_MSEC
+    )
 
     try:
         # The ismaster command is cheap and does not require auth
         client.admin.command('ismaster')
     except errors.ServerSelectionTimeoutError:
         return True
-    print('Alive')
     return False
 
 
