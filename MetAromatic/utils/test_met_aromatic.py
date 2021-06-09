@@ -18,7 +18,12 @@ from .test_data.control_data import (
 )
 
 def mongod_does_not_exist() -> bool:
-    if call('mongod --version'.split(), stdout=DEVNULL) != EXIT_SUCCESS:
+    try:
+        exit_code = call('mongod --version'.split(), stdout=DEVNULL)
+    except FileNotFoundError:
+        return True
+
+    if exit_code != EXIT_SUCCESS:
         return True
     return False
 
