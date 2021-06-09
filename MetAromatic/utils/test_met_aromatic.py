@@ -1,14 +1,26 @@
 from os import path
+from subprocess import (
+    call,
+    DEVNULL
+)
 from pytest import (
     mark,
     skip
 )
 from .met_aromatic import MetAromatic
-from .primitives.consts import EXIT_FAILURE
+from .primitives.consts import (
+    EXIT_FAILURE,
+    EXIT_SUCCESS
+)
 from .test_data.control_data import (
     TEST_PDB_CODES,
     VALID_RESULTS_1RCY
 )
+
+def mongod_does_not_exist() -> bool:
+    if call('mongod --version'.split(), stdout=DEVNULL) != EXIT_SUCCESS:
+        return True
+    return False
 
 
 class TestMetAromatic:
@@ -57,6 +69,10 @@ class TestMetAromatic:
         assert abs(sum_phi_control - sum_phi_test) < 0.01
 
 
+@mark.skipif(
+    mongod_does_not_exist(),
+    reason='MongoDB mongod service not found on machine'
+)
 class TestMongoDBOutput:
 
     def setup_class(self):
