@@ -24,6 +24,7 @@ def mongod_does_not_exist() -> bool:
 
     if exit_code != EXIT_SUCCESS:
         return True
+    print('Exists')
     return False
 
 def mongod_service_not_running() -> bool:
@@ -34,15 +35,12 @@ def mongod_service_not_running() -> bool:
         client.admin.command('ismaster')
     except errors.ServerSelectionTimeoutError:
         return True
+    print('Alive')
     return False
 
 
 @mark.skipif(
-    mongod_does_not_exist(),
-    reason='MongoDB mongod service not found on machine'
-)
-@mark.skipif(
-    mongod_service_not_running(),
+    any([mongod_service_not_running(), mongod_does_not_exist()]),
     reason='Could not connect to MongoDB mongo instance!'
 )
 class TestParallelProcessing:
