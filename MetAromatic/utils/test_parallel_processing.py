@@ -1,11 +1,50 @@
 from os import path
-from subprocess import call, DEVNULL
-from pymongo import MongoClient
+from subprocess import (
+    call,
+    DEVNULL
+)
+from pytest import mark
+from pymongo import (
+    MongoClient,
+    errors
+)
 from .primitives.consts import (
     EXIT_SUCCESS,
     EXIT_FAILURE
 )
 
+HOST_MONGODB = 'localhost'
+PORT_MONGODB = 27017
+
+def mongod_does_not_exist() -> bool:
+    try:
+        exit_code = call('mongod --version'.split(), stdout=DEVNULL)
+    except FileNotFoundError:
+        return True
+
+    if exit_code != EXIT_SUCCESS:
+        return True
+    return False
+
+def mongod_service_not_running() -> bool:
+    client = MongoClient(host=HOST_MONGODB, port=PORT_MONGODB, serverSelectionTimeoutMs=1000)
+
+    try:
+        # The ismaster command is cheap and does not require auth
+        client.admin.command('ismaster')
+    except errors.ServerSelectionTimeoutError:
+        return True
+    return False
+
+
+@mark.skipif(
+    mongod_does_not_exist(),
+    reason='MongoDB mongod service not found on machine'
+)
+@mark.skipif(
+    mongod_service_not_running(),
+    reason='Could not connect to MongoDB mongo instance!'
+)
 class TestParallelProcessing:
 
     def setup_class(self):
@@ -16,7 +55,7 @@ class TestParallelProcessing:
         self.num_coronavirus_entries = 9
         self.database_name = 'database_coronavirus'
         self.collection_name = 'collection_coronavirus'
-        self.client = MongoClient(host='localhost', port=27017)
+        self.client = MongoClient(host=HOST_MONGODB, port=PORT_MONGODB)
         self.cursor = self.client[self.database_name][self.collection_name]
 
         command = '{} batch {} '.format(path_runner, path_test_data)
