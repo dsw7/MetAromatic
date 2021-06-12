@@ -1,11 +1,11 @@
 # Met-aromatic
-Code for the following publications:  
-* Weber, D. S.; Warren, J. J. The Interaction between Methionine and Two Aromatic Amino Acids Is an Abundant and Multifunctional Motif in Proteins. _Arch. Biochem. Biophys._ **2019**, _672_, 108053.  
-* Weber, D. S.; Warren, J. J. A Survey of Methionine-Aromatic Interaction Geometries in the Oxidoreductase Class of Enzymes: What Could Met-Aromatic Interactions be Doing Near Metal Sites? _J. Inorg. Biochem._ **2018**, _186_, 34-41.  
+Code for the following publications:
+* Weber, D. S.; Warren, J. J. The Interaction between Methionine and Two Aromatic Amino Acids Is an Abundant and Multifunctional Motif in Proteins. _Arch. Biochem. Biophys._ **2019**, _672_, 108053.
+* Weber, D. S.; Warren, J. J. A Survey of Methionine-Aromatic Interaction Geometries in the Oxidoreductase Class of Enzymes: What Could Met-Aromatic Interactions be Doing Near Metal Sites? _J. Inorg. Biochem._ **2018**, _186_, 34-41.
 ## Updates
 I am porting this code to C++ for increased performance. See [MetAromaticCPP](https://github.com/dsw7/MetAromaticCPP).
 ## Synopsis
-This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB entries or large scale multithreaded batch jobs consisting of hundreds of thousands of queries. 
+This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB entries or large scale multithreaded batch jobs consisting of hundreds of thousands of queries.
 ## How it works
 <!---
 Use svg for rendering and HTML for the embed code!
@@ -16,18 +16,18 @@ Files in the PDB are organized using the SMCRA hierarchy: _Structure_, _Model_, 
 1         2  3   4   5   6     7         8      9       10   11              12
 ATOM      5  CB  THR A   5     -13.081   2.366  23.788  1.00 37.95           C
 ```
-Each line in a file corresponds to a single atom. In the above example, we have a carbon atom that is labelled `CB` (column 3) on a threonine residue (`THR`, column 4) located on the `A` chain (column 5). Columns 7-9 specify the _x_, _y_, _z_ coordinates of the carbon atom.  
+Each line in a file corresponds to a single atom. In the above example, we have a carbon atom that is labelled `CB` (column 3) on a threonine residue (`THR`, column 4) located on the `A` chain (column 5). Columns 7-9 specify the _x_, _y_, _z_ coordinates of the carbon atom.
 
 The Met-aromatic program starts by downloading a `*.pdb` file from the PDB over FTP. The file is then stripped down to the subset of coordinates corresponding to a chain `[A-Z]` of choosing. Most PDB entries consist of `A` and `B` chains. The program then strips the dataset down to the residues tyrosine (`TYR`), tryptophan (`TRP`), phenylalanine (`PHE`), and methionine (`MET`). In the last step of preprocessing, the program further strips the dataset down to any of the following atoms:
 ```
-MET: CE, SD, CG  
+MET: CE, SD, CG
 TYR: CD1, CE1, CZ, CG, CD2, CE2
 TRP: CD2, CE3, CZ2, CH2, CZ3, CE2
 PHE: CD1, CE1, CZ, CG, CD2, CE2
 ```
 The above atoms are the aromatic carbon atoms in the aromatic residues tyrosine (`TYR`), tryptophan, (`TRP`) and phenylalanine (`PHE`).
 ### Step 2: The distance condition
-The program applies the distance condition to find methionine-aromatic pairs that are _physically near each other_. To do so, the program first finds the midpoints between all neighbouring aromatic carbon atoms in all of tyrosine, tryptophan and phenylalanine. These midpoints are denoted using a `*`: 
+The program applies the distance condition to find methionine-aromatic pairs that are _physically near each other_. To do so, the program first finds the midpoints between all neighbouring aromatic carbon atoms in all of tyrosine, tryptophan and phenylalanine. These midpoints are denoted using a `*`:
 ```
 TYR: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
 TRP: CD2*|CE3*|CZ2*|CH2*|CZ3*|CE2*
@@ -41,7 +41,7 @@ To apply the distance condition, the program simply banks those methionine-aroma
 </p>
 
 ### Step 3: The angular condition
-Any methionine-aromatic pairs meeting the distance condition are subjected to the angular condition. The angular condition can be loosely interpreted as _"find all the methionine-aromatic pairs where the methionine lone pairs are pointing into or near the region(s) of highest electron density on a corresponding aromatic moiety_." To apply the angular condition, two new vectors are introducted: vector <img src="https://latex.codecogs.com/svg.latex?\vec{a}" /> and vector <img src="https://latex.codecogs.com/svg.latex?\vec{g}" />, which describe the orientation of the `SD` lone pairs in three dimensional space. To find the lone pairs, the program considers the `SD` atom in a methionine atom to be the center of a regular tetrahedron with vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors <img src="https://latex.codecogs.com/svg.latex?\vec{a}"> and <img src="https://latex.codecogs.com/svg.latex?\vec{g}">. Next, the program obtains the angles between the lone pairs and <img src="https://latex.codecogs.com/svg.latex?\vec{v}">:  
+Any methionine-aromatic pairs meeting the distance condition are subjected to the angular condition. The angular condition can be loosely interpreted as _"find all the methionine-aromatic pairs where the methionine lone pairs are pointing into or near the region(s) of highest electron density on a corresponding aromatic moiety_." To apply the angular condition, two new vectors are introducted: vector <img src="https://latex.codecogs.com/svg.latex?\vec{a}" /> and vector <img src="https://latex.codecogs.com/svg.latex?\vec{g}" />, which describe the orientation of the `SD` lone pairs in three dimensional space. To find the lone pairs, the program considers the `SD` atom in a methionine atom to be the center of a regular tetrahedron with vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors <img src="https://latex.codecogs.com/svg.latex?\vec{a}"> and <img src="https://latex.codecogs.com/svg.latex?\vec{g}">. Next, the program obtains the angles between the lone pairs and <img src="https://latex.codecogs.com/svg.latex?\vec{v}">:
 <p align="center">
   <img src="https://latex.codecogs.com/svg.latex?\theta,&space;\phi&space;=&space;cos^{-1}\left&space;(\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}}&space;\right&space;),&space;cos^{-1}\left&space;(\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}}&space;\right&space;)" title="\theta, \phi = cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right ), cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right )" />
 </p>
@@ -127,10 +127,10 @@ Note that the Euclidean distances between TYR aromatic carbon atoms and MET rema
 ```
 $ ./MetAromatic/runner.py pair 1rcy --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B
 ```
-In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):  
+In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 <p align="center">
   <img width="399" height="300" src=https://github.com/dsw7/MetAromatic/blob/master/docs/tyr_phe_bridge_6c8a.png>
-</p>  
+</p>
 
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `bridge` argument. For example, to search for bridging interactions with a 7.0 <img src="https://latex.codecogs.com/svg.latex?\AA" /> <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" /> cutoff in 6LU7:
 ```
@@ -174,18 +174,5 @@ The MongoDB dump database is specified using the `--database` option. The collec
 ## Tests and automation
 This project is well tested. Tests can be ran as follows:
 ```
-$ ./MetAromatic/runner.py run-tests
+$ make test
 ```
-Coverage tests can be ran as follows:
-```
-$ ./MetAromatic/runner.py run-tests-with-coverage
-```
-This will create an `htmlcov` directory under `/tmp`. The coverage report can be viewed by opening `/tmp/htmlcov/index.html` in a browser. A custom path can be specified with the `--path-to-html` option. The testing and linting process for this project can also be automated using `nox`, that is, by running:
-```
-$ nox
-```
-Or
-```
-$ python3 -m nox
-```
-The project's `noxfile` will create a `nox` `envdir` under `/tmp` named `.nox_met_aromatic`. The `noxfile` will lint the project and run tests with coverage. The `.nox_met_aromatic` directory will contain the environments for the corresponding `nox` sessions, an `htmlcov` directory containing the coverage report, and the `nox` report, `nox_report_met_aromatic` after the run has completed.
