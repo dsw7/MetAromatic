@@ -53,6 +53,19 @@ The end result is a dataset consisting of methionine-aromatic pairs whereby one 
   <img width="336" height="300" src=https://github.com/dsw7/MetAromatic/blob/master/docs/met18_tyr122.png>
 </p>
 
+## Installation
+Start by fetching the repository:
+```bash
+$ git clone https://github.com/dsw7/MetAromatic.git
+```
+Change directories into the project and run:
+```bash
+$ make install # only sets up project
+```
+Or:
+```
+$ make full    # sets up project AND runs unit tests
+```
 ## Running Met-aromatic jobs in the terminal
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
