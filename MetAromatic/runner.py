@@ -59,19 +59,19 @@ def interface(obj, code):
 @option('--chain', default=None, help='Override chain defined in *.ini file.', metavar='<[A-Z]>')
 @option('--model', default=None, help='Override lone pair interpolation model defined in *.ini file.', metavar='<cp|rm>')
 @pass_obj
-def pair(obj, code, cutoff_distance, cutoff_angle, chain, model):
+def pair(obj, code, **options):
 
-    if cutoff_distance:
-        obj['cutoff_distance'] = cutoff_distance
+    if options['cutoff_distance']:
+        obj['cutoff_distance'] = options['cutoff_distance']
 
-    if cutoff_angle:
-        obj['cutoff_angle'] = cutoff_angle
+    if options['cutoff_angle']:
+        obj['cutoff_angle'] = options['cutoff_angle']
 
-    if chain:
-        obj['chain'] = chain
+    if options['chain']:
+        obj['chain'] = options['chain']
 
-    if model:
-        obj['model'] = model
+    if options['model']:
+        obj['model'] = options['model']
 
     from utils.met_aromatic import MetAromatic
 
@@ -82,6 +82,7 @@ def pair(obj, code, cutoff_distance, cutoff_angle, chain, model):
         echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*header_success))
         for line in results['results']:
             echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
+
     else:
         secho(results['exit_status'], fg='red')
         secho('Exited with code: {}'.format(results['exit_code']), fg='red')
