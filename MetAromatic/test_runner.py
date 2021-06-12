@@ -23,52 +23,79 @@ class TestRunner:
         self.runner = CliRunner()
 
     def test_pair_working_query(self):
-        result = self.runner.invoke(cli, ['pair', '1rcy'])
+        command = 'pair 1rcy'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_SUCCESS
 
     def test_bridge_working_query_vertices_3(self):
-        result = self.runner.invoke(cli, ['bridge', '1rcy', '--vertices', '3'])
+        command = 'bridge 1rcy --vertices 3'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_SUCCESS
 
     def test_bridge_working_query_vertices_2(self):
-        result = self.runner.invoke(cli, ['bridge', '1rcy', '--vertices', '2'])
+        command = 'bridge 1rcy --vertices 2'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_FAILURE
         assert result.output == 'Vertices must be >= 3\n'
 
+    def test_bridge_with_cutoff_distance(self):
+        command = '--cutoff-distance 7.0 bridge 6lu7'
+        result = self.runner.invoke(cli, command.split())
+        assert result.exit_code == EXIT_SUCCESS
+
+    def test_bridge_with_cutoff_angle(self):
+        command = '--cutoff-angle 75 bridge 6lu7'
+        result = self.runner.invoke(cli, command.split())
+        assert result.exit_code == EXIT_SUCCESS
+
     def test_invalid_cutoff_distance(self):
-        result = self.runner.invoke(cli, ['pair', '1rcy', '--cutoff-distance', '-1.00'])
+        command = '--cutoff-distance -1.00 pair 1rcy'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_FAILURE
         assert result.output == 'Invalid cutoff distance\nExited with code: 1\n'
 
     def test_invalid_cutoff_distance_stringified(self):
-        result = self.runner.invoke(cli, ['pair', '1rcy', '--cutoff-distance', 'foo'])
+        command = '--cutoff-distance foo pair 1rcy'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_GENERAL_PROGRAM_FAILURES
 
     def test_invalid_cutoff_angle(self):
-        result = self.runner.invoke(cli, ['pair', '1rcy', '--cutoff-angle', '361.00'])
+        command = '--cutoff-angle 361.00 pair 1rcy'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_FAILURE
 
     def test_invalid_code(self):
-        result = self.runner.invoke(cli, ['pair', 'foobar'])
+        command = 'pair foobar'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_FAILURE
 
     def test_no_met_coordinates(self):
-        result = self.runner.invoke(cli, ['pair', '3nir'])
+        command = 'pair 3nir'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_FAILURE
         assert result.output == 'No MET residues\nExited with code: 1\n'
 
-    def test_invalid_model(self):
-        result = self.runner.invoke(cli, ['pair', '1rcy', '--model', 'foobar'])
+    def test_invalid_model_pair(self):
+        command = '--model foobar pair 1rcy'
+        result = self.runner.invoke(cli, command.split())
+        assert result.exit_code == EXIT_FAILURE
+        assert result.output == 'Invalid model\nExited with code: 1\n'
+
+    def test_invalid_model_bridge(self):
+        command = '--model foobar bridge 6lu7'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_FAILURE
         assert result.output == 'Invalid model\nExited with code: 1\n'
 
     def test_no_results(self):
-        result = self.runner.invoke(cli, ['pair', '1a5r'])
+        command = 'pair 1a5r'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_FAILURE
         assert result.output == 'No interactions\nExited with code: 1\n'
 
     def test_bad_query_type(self):
-        result = self.runner.invoke(cli, ['pair', '1rcy', '--query', 'foobar'])
+        command = '--query foobar pair 1rcy'
+        result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EXIT_GENERAL_PROGRAM_FAILURES
 
     @mark.parametrize(
