@@ -56,20 +56,20 @@ The end result is a dataset consisting of methionine-aromatic pairs whereby one 
 ## Installation
 Start by fetching the repository:
 ```bash
-$ git clone https://github.com/dsw7/MetAromatic.git
+git clone https://github.com/dsw7/MetAromatic.git
 ```
 Change directories into the project and run:
 ```bash
-$ make install # only sets up project
+make install # only sets up project
 ```
 Or:
 ```bash
-$ make full    # sets up project AND runs unit tests
+make full    # sets up project AND runs unit tests
 ```
 ## Running Met-aromatic jobs in the terminal
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
-$ ./MetAromatic/runner.py pair 1rcy
+./MetAromatic/runner.py pair 1rcy
 ```
 Here, the `pair` argument specifies that we want to run a single aromatic interaction calculation. The query will yield the following results:
 ```
@@ -89,7 +89,7 @@ PHE        54         MET        148        5.05181    105.07358  141.00282
 ```
 Above we have an order VI interaction between TYR 122 and MET 18, that is, all six vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the actual distance (in <img src="https://latex.codecogs.com/svg.latex?\AA" />) between the MET residue and one of the midpoints between two carbon atoms in an aromatic ring, or <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" />. The default cutoff <img src="https://latex.codecogs.com/svg.latex?c" /> was applied in the above example, at 4.9 <img src="https://latex.codecogs.com/svg.latex?\AA" />. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
 ```
-$ ./MetAromatic/runner.py --cutoff-distance 4.0 pair 1rcy
+./MetAromatic/runner.py --cutoff-distance 4.0 pair 1rcy
 ```
 Reducing the cutoff distance yields an order I interaction between TYR 122 and MET 18.
 ```
