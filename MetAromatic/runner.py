@@ -91,17 +91,34 @@ def pair(obj, code, **options):
 
 @cli.command(help='Run a bridging interaction query on a single PDB entry.')
 @argument('code')
+@option('--cutoff-distance', type=float, default=None, help='Override cutoff distance defined in *.ini file.', metavar='<Angstroms>')
+@option('--cutoff-angle', type=float, default=None, help='Override cutoff angle defined in *.ini file.', metavar='<degrees>')
+@option('--chain', default=None, help='Override chain defined in *.ini file.', metavar='<[A-Z]>')
+@option('--model', default=None, help='Override lone pair interpolation model defined in *.ini file.', metavar='<cp|rm>')
 @option('--vertices', default=3, type=int, metavar='<vertices>')
 @pass_obj
-def bridge(obj, code, vertices):
-    if vertices < MINIMUM_VERTICES:
+def bridge(obj, code, **options):
+
+    if options['cutoff_distance']:
+        obj['cutoff_distance'] = options['cutoff_distance']
+
+    if options['cutoff_angle']:
+        obj['cutoff_angle'] = options['cutoff_angle']
+
+    if options['chain']:
+        obj['chain'] = options['chain']
+
+    if options['model']:
+        obj['model'] = options['model']
+
+    if options['vertices'] < MINIMUM_VERTICES:
         secho('Vertices must be >= {}'.format(MINIMUM_VERTICES), fg='red')
         sys.exit(EXIT_FAILURE)
 
     from utils.get_bridging_interactions import GetBridgingInteractions
 
     results = GetBridgingInteractions(**obj).get_bridging_interactions(
-        vertices=vertices, code=code
+        vertices=options['vertices'], code=code
     )
 
     if results['exit_code'] == 0:
