@@ -7,6 +7,6 @@ RUN apt-get update && \
     python3 \
     python3-pip
 
-CMD git clone --single-branch --branch working https://github.com/dsw7/MetAromatic.git && \
+CMD git clone --single-branch --branch master https://github.com/dsw7/MetAromatic.git && \
     cd MetAromatic && \
     make full
