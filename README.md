@@ -100,7 +100,7 @@ TYR        122        MET        18         3.95401    60.14475   68.35187
 ```
 `MET-THETA` and `MET-PHI` refer to <img src="https://latex.codecogs.com/svg.latex?\theta" /> and <img src="https://latex.codecogs.com/svg.latex?\phi" />, respectively. In the above example, the default cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta" /> is used (<img src="https://latex.codecogs.com/svg.latex?109.5^\circ" />). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
 ```
-$ ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
+./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
 The `--cutoff-angle` option ensures that **at least one of** <img src="https://latex.codecogs.com/svg.latex?\theta" /> or <img src="https://latex.codecogs.com/svg.latex?\phi" /> angles fall below the cutoff <img src="https://latex.codecogs.com/svg.latex?\delta" />. This is seen in the below order II interaction:
 ```
@@ -112,7 +112,7 @@ TYR        122        MET        18         4.38983    53.39991   95.48742
 ```
 The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in https://github.com/dsw7/DSW-Thesis). There exists another model, `rm` or Rodrigues Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
 ```
-$ ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
+./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
 ```
 Which yields similar results:
 ```
@@ -125,7 +125,7 @@ TYR        122        MET        18         4.38983    52.50492   91.84111
 ```
 Note that the Euclidean distances between TYR aromatic carbon atoms and MET remain unchanged. By default, this program searches for "A" delimited chains. Some researchers may, however, be interested in searching for aromatic interactions in a different chain within a multichain protein. The `--chain` option can be used to specify the chain:
 ```
-$ ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B pair 1rcy
+./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B pair 1rcy
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 <p align="center">
@@ -134,7 +134,7 @@ In this case, no results are returned because the PDB entry 1rcy does not contai
 
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `bridge` argument. For example, to search for bridging interactions with a 7.0 <img src="https://latex.codecogs.com/svg.latex?\AA" /> <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" /> cutoff in 6LU7:
 ```
-$ ./MetAromatic/runner.py --cutoff-distance 7.0 bridge 6lu7
+./MetAromatic/runner.py --cutoff-distance 7.0 bridge 6lu7
 ```
 Which will return a list as follows:
 ```
@@ -144,7 +144,7 @@ TRP207     TRP218     MET276
 ```
 Where each row corresponds to a bridge. This program treats bridging interactions as networks with a defined set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The `--vertices` option can be passed to search for n-bridges:
 ```
-$ ./MetAromatic/runner.py --cutoff-distance 6.0 bridge 6lu7 --vertices 4
+./MetAromatic/runner.py --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
 ## Batch jobs
 This software is normally used for large scale Protein Data Bank mining efforts. To run a batch job, first supply a batch. A batch
@@ -155,7 +155,7 @@ can be a regular text file consisting of delimited PDB codes:
 ```
 The results of the batch job are stored in a MongoDB database (https://www.mongodb.com/). The command follows:
 ```
-$ ./MetAromatic/runner.py batch /path/to/pdb_codes.txt --threads 3 --database small_batch --collection example
+./MetAromatic/runner.py batch /path/to/pdb_codes.txt --threads 3 --database small_batch --collection example
 ```
 The MongoDB dump database is specified using the `--database` option. The collection is specified with the `--collection` option. The `--threads` option specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and a machine that is running no other processes. By default, mining jobs are run on `localhost` and on port `27017`. However, results can be routed to other servers by specifying hosts and/or ports using the `--host` and `--port` parameters. A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary collection will house all the batch job parameters and other statistics and the collection name will be suffixed with `_info`. An example `*_info` collection for the above example follows:
 ```
@@ -174,5 +174,5 @@ The MongoDB dump database is specified using the `--database` option. The collec
 ## Tests and automation
 This project is well tested. Tests can be ran as follows:
 ```
-$ make test
+make test
 ```
