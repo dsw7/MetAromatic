@@ -108,7 +108,7 @@ TYR        122        MET        18         4.05137    47.19765   85.15065
 TYR        122        MET        18         4.38983    53.39991   95.48742
 ===========================================================================
 ```
-The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in https://github.com/dsw7/DSW-Thesis). There exists another model, `rm` or Rodrigues Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
+The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in my master's thesis: [Applications of numerical linear algebra to protein structural analysis: the case of methionine-aromatic motifs](https://summit.sfu.ca/item/18741)). There exists another model, `rm` or Rodrigues Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
 ```
