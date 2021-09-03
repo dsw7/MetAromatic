@@ -9,8 +9,7 @@ from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient
 from .met_aromatic import MetAromatic
-
-from .primitives.consts import (
+from primitives.consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
     MAXIMUM_WORKERS,
