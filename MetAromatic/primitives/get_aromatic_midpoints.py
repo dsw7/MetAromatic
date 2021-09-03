@@ -2,7 +2,7 @@ from itertools import groupby
 from copy import deepcopy
 from operator import itemgetter
 from numpy import array
-from .math_utils import get_hexagon_midpoints
+from algebra import get_hexagon_midpoints
 
 DICT_ATOMS_PHE = {
     'CG': 'A', 'CD2': 'B', 'CE2': 'C',

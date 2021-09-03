@@ -1,5 +1,5 @@
 import curses
-from .primitives.consts import (
+from primitives.consts import (
     EXIT_SUCCESS,
     HEADER_TEXT,
     FOOTER_TEXT,

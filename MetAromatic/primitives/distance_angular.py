@@ -1,5 +1,5 @@
 from numpy.linalg import norm
-from .math_utils.cross_product_method import vector_angle
+from algebra.cross_product_method import vector_angle
 
 ROUND_TO_NUMBER = 3
 

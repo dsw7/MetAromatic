@@ -3,7 +3,7 @@ from networkx import (
     connected_components
 )
 from .met_aromatic import MetAromatic
-from .primitives.consts import EXIT_FAILURE
+from primitives.consts import EXIT_FAILURE
 
 
 class GetBridgingInteractions:
