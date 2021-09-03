@@ -1,4 +1,5 @@
 from json import loads
+from typing import Optional
 from os import path
 from pytest import (
     mark,
@@ -12,8 +13,15 @@ CONTROL_BRIDGE_DATA = path.join(
     path.dirname(path.dirname(path.abspath(__file__))),
     'data/test_n_3_bridges_no_ang_limit_6_angstroms.json'
 )
+NETWORK_SIZE = 4
+TEST_PARAMETERS = {
+    'cutoff_distance': 6.0,
+    'cutoff_angle': 360.0,
+    'chain': 'A',
+    'model': 'cp'
+}
 
-def get_control_bridges(file, size=100):
+def get_control_bridges(file: str, size: Optional[int] = 100) -> list:
     try:
         with open(file, 'r') as jsonfile:
             data = [loads(line) for line in jsonfile]
@@ -28,7 +36,7 @@ def get_control_bridges(file, size=100):
         })
     return outgoing
 
-def get_control_bridge_test_ids(file, size=100):
+def get_control_bridge_test_ids(file: str, size: Optional[int] = 100) -> list:
     try:
         with open(file, 'r') as jsonfile:
             data = [loads(line) for line in jsonfile]
@@ -40,56 +48,44 @@ def get_control_bridge_test_ids(file, size=100):
         outgoing.append(datum.get('code').lower())
     return outgoing
 
+@mark.parametrize(
+    'bridges',
+    get_control_bridges(CONTROL_BRIDGE_DATA),
+    ids=get_control_bridge_test_ids(CONTROL_BRIDGE_DATA)
+)
+def test_bridge_collector(bridges: list) -> None:
+    try:
+        bridging_interactions = GetBridgingInteractions(**TEST_PARAMETERS).get_bridging_interactions(
+            vertices=NETWORK_SIZE, code=bridges.get('pdb_code')
+        )
+    except IndexError:
+        skip('Skipping list index out of range error. Occurs because of missing data.')
+    else:
+        assert set(bridges.get('bridge')) in bridging_interactions['results']
 
-class TestGetBridgingInteractions:
-
-    def setup_class(self):
-        self.network_size = 4
-        self.params = {
-            'cutoff_distance': 6.0,
-            'cutoff_angle': 360.0,
-            'chain': 'A',
-            'model': 'cp'
-        }
-
-    @mark.parametrize(
-        'bridges',
-        get_control_bridges(CONTROL_BRIDGE_DATA),
-        ids=get_control_bridge_test_ids(CONTROL_BRIDGE_DATA)
-    )
-    def test_bridge_collector(self, bridges):
-        try:
-            bridging_interactions = GetBridgingInteractions(**self.params).get_bridging_interactions(
-                vertices=self.network_size, code=bridges.get('pdb_code')
-            )
-        except IndexError:
-            skip('Skipping list index out of range error. Occurs because of missing data.')
-        else:
-            assert set(bridges.get('bridge')) in bridging_interactions['results']
-
-    @mark.parametrize(
-        'code, cutoff_distance, cutoff_angle, error',
-        [
-            ('1rcy', 0.00, 109.5, EXIT_FAILURE),
-            ('1rcy', 4.95, 720.0, EXIT_FAILURE),
-            ('2rcy', 4.95, 109.5, EXIT_FAILURE),
-            ('3nir', 4.95, 109.5, EXIT_FAILURE),
-            ('abcd', 4.95, 109.5, EXIT_FAILURE)
-        ],
-        ids=[
-            "Testing InvalidCutoffsError",
-            "Testing InvalidCutoffsError",
-            "Testing NoMetCoordinatesError",
-            "Testing NoMetCoordinatesError",
-            "Testing InvalidPDBFileError"
-        ]
-    )
-    def test_no_bridges_response(self, code, cutoff_distance, cutoff_angle, error):
-        assert GetBridgingInteractions(
-            cutoff_angle=cutoff_angle,
-            cutoff_distance=cutoff_distance,
-            model=self.params['model'],
-            chain=self.params['chain']
-        ).get_bridging_interactions(
-            code=code, vertices=self.network_size
-        )['exit_code'] == error
+@mark.parametrize(
+    'code, cutoff_distance, cutoff_angle, error',
+    [
+        ('1rcy', 0.00, 109.5, EXIT_FAILURE),
+        ('1rcy', 4.95, 720.0, EXIT_FAILURE),
+        ('2rcy', 4.95, 109.5, EXIT_FAILURE),
+        ('3nir', 4.95, 109.5, EXIT_FAILURE),
+        ('abcd', 4.95, 109.5, EXIT_FAILURE)
+    ],
+    ids=[
+        "Testing InvalidCutoffsError",
+        "Testing InvalidCutoffsError",
+        "Testing NoMetCoordinatesError",
+        "Testing NoMetCoordinatesError",
+        "Testing InvalidPDBFileError"
+    ]
+)
+def test_no_bridges_response(code: str, cutoff_distance: float, cutoff_angle: float, error: int) -> None:
+    assert GetBridgingInteractions(
+        cutoff_angle=cutoff_angle,
+        cutoff_distance=cutoff_distance,
+        model=TEST_PARAMETERS['model'],
+        chain=TEST_PARAMETERS['chain']
+    ).get_bridging_interactions(
+        code=code, vertices=NETWORK_SIZE
+    )['exit_code'] == error
