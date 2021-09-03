@@ -5,8 +5,8 @@ from pytest import (
     skip,
     exit
 )
-from .bridge import GetBridgingInteractions
 from primitives.consts import EXIT_FAILURE
+from .bridge import GetBridgingInteractions
 
 CONTROL_BRIDGE_DATA = path.join(
     path.dirname(path.dirname(path.abspath(__file__))),

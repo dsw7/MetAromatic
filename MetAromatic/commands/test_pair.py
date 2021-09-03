@@ -1,14 +1,15 @@
 from os import path
 from pytest import (
     mark,
-    skip
+    skip,
+    fail
 )
-from .pair import MetAromatic
 from primitives.consts import EXIT_FAILURE
 from data.control_data import (
     TEST_PDB_CODES,
     VALID_RESULTS_1RCY
 )
+from .pair import MetAromatic
 
 
 class TestMetAromatic:
