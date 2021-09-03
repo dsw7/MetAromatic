@@ -21,11 +21,11 @@ class TestMetAromatic:
             'model': 'cp',
         }
 
-        root = path.dirname(path.abspath(__file__))
-        path_to_file = path.join(root, 'test_data/test_483OutputA3-3-M-Benchmark.csv')
+        root = path.dirname(path.dirname(path.abspath(__file__)))
+        path_to_file = path.join(root, 'data/test_483OutputA3-3-M-Benchmark.csv')
 
-        if not path.exists(path_test_data):
-            fail('Path {} does not exist'.format(path_test_data))
+        if not path.exists(path_to_file):
+            fail('Path {} does not exist'.format(path_to_file))
 
         self.control_data = []
         for line in open(path_to_file):

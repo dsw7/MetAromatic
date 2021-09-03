@@ -93,6 +93,7 @@ lint:
 	@$(PYTHON_INTERP) -m pylint $(PROJECT_DIRECTORY) \
 	--output-format=colorized \
 	--exit-zero \
+	--rcfile=$(ROOT_DIRECTORY)/.pylintrc \
 	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
 
 dockertest:
