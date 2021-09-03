@@ -5,4 +5,5 @@ disable=
     C0114,  # missing method docstring
     C0115,  # missing class docstring
     C0116,  # missing function docstring
-    W0201   # defined outside __init__ (setup and teardown in tests)
+    W0201,  # defined outside __init__ (setup and teardown in tests)
+    C0103   # snake case
