@@ -11,6 +11,7 @@ from data.control_data import (
 )
 from .pair import MetAromatic
 
+# XXX do these tests really need to be in their own classes?
 
 class TestMetAromatic:
 
