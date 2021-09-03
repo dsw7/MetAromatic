@@ -3,12 +3,15 @@ from subprocess import (
     call,
     DEVNULL
 )
-from pytest import mark
+from pytest import (
+    mark,
+    fail
+)
 from pymongo import (
     MongoClient,
     errors
 )
-from .primitives.consts import (
+from primitives.consts import (
     EXIT_SUCCESS,
     EXIT_FAILURE
 )
@@ -51,7 +54,11 @@ class TestParallelProcessing:
     def setup_class(self):
         project_root = path.dirname(path.dirname(path.abspath(__file__)))
         path_runner = path.join(project_root, 'runner.py')
-        path_test_data = path.join(project_root, 'utils/test_data/coronavirus_test_entries.txt')
+        path_test_data = path.join(project_root, 'data/coronavirus_test_entries.txt')
+
+        if not path.exists(path_test_data):
+            fail('Path {} does not exist'.format(path_test_data))
+
         self.threads = 3
         self.num_coronavirus_entries = 9
         self.database_name = 'database_coronavirus'
@@ -64,6 +71,9 @@ class TestParallelProcessing:
         command += '--database {} '.format(self.database_name)
         command += '--collection {}'.format(self.collection_name)
         call(command.split(), stdout=DEVNULL, stderr=DEVNULL)
+
+    def teardown_class(self):
+        self.client.drop_database(self.database_name)
 
     def test_correct_count(self):
         assert len(list(self.cursor.find())) == self.num_coronavirus_entries
@@ -118,6 +128,3 @@ class TestParallelProcessing:
         assert list(
             info_collection.find()
         )[0]['number_of_entries'] == self.num_coronavirus_entries
-
-    def teardown_class(self):
-        self.client.drop_database(self.database_name)

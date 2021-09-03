@@ -5,12 +5,12 @@ from pytest import (
     skip,
     exit
 )
-from .get_bridging_interactions import GetBridgingInteractions
-from .primitives.consts import EXIT_FAILURE
+from .bridge import GetBridgingInteractions
+from primitives.consts import EXIT_FAILURE
 
 CONTROL_BRIDGE_DATA = path.join(
-    path.dirname(path.abspath(__file__)),
-    './test_data/test_n_3_bridges_no_ang_limit_6_angstroms.json'
+    path.dirname(path.dirname(path.abspath(__file__))),
+    'data/test_n_3_bridges_no_ang_limit_6_angstroms.json'
 )
 
 def get_control_bridges(file, size=100):

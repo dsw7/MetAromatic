@@ -10,7 +10,7 @@ from subprocess import (
 from click.testing import CliRunner
 from pytest import mark
 from runner import cli
-from utils.primitives.consts import (
+from primitives.consts import (
     EXIT_SUCCESS,
     EXIT_FAILURE,
     EXIT_GENERAL_PROGRAM_FAILURES

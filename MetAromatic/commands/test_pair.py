@@ -3,9 +3,9 @@ from pytest import (
     mark,
     skip
 )
-from .met_aromatic import MetAromatic
-from .primitives.consts import EXIT_FAILURE
-from .test_data.control_data import (
+from .pair import MetAromatic
+from primitives.consts import EXIT_FAILURE
+from data.control_data import (
     TEST_PDB_CODES,
     VALID_RESULTS_1RCY
 )
@@ -23,6 +23,10 @@ class TestMetAromatic:
 
         root = path.dirname(path.abspath(__file__))
         path_to_file = path.join(root, 'test_data/test_483OutputA3-3-M-Benchmark.csv')
+
+        if not path.exists(path_test_data):
+            fail('Path {} does not exist'.format(path_test_data))
+
         self.control_data = []
         for line in open(path_to_file):
             self.control_data.append(line.strip('\n').split(','))
