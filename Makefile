@@ -94,6 +94,7 @@ lint:
 	--output-format=colorized \
 	--exit-zero \
 	--rcfile=$(ROOT_DIRECTORY)/.pylintrc \
+	--ignore=pdb_file_reading_module_v4_0.py \
 	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
 
 dockertest:
