@@ -131,60 +131,57 @@ class TestMongoDBOutput:
         assert sum_met_phi_control == sum_met_phi_test
 
 
-class TestErrors:
+TEST_PARAMETERS = {
+    'distance': 4.9,
+    'angle': 109.5,
+    'chain': 'A',
+    'model': 'cp',
+}
 
-    def setup_class(self):
-        self.default_parameters = {
-            'distance': 4.9,
-            'angle': 109.5,
-            'chain': 'A',
-            'model': 'cp',
-        }
+def test_invalid_distance_error() -> None:
+    assert MetAromatic(
+        cutoff_angle=TEST_PARAMETERS['angle'],
+        cutoff_distance=0.00,
+        model=TEST_PARAMETERS['model'],
+        chain=TEST_PARAMETERS['chain']
+    ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
 
-    def test_invalid_distance_error(self):
-        assert MetAromatic(
-            cutoff_angle=self.default_parameters['angle'],
-            cutoff_distance=0.00,
-            model=self.default_parameters['model'],
-            chain=self.default_parameters['chain']
-        ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
+def test_invalid_angle_error() -> None:
+    assert MetAromatic(
+        cutoff_angle=-720.00,
+        cutoff_distance=TEST_PARAMETERS['distance'],
+        model=TEST_PARAMETERS['model'],
+        chain=TEST_PARAMETERS['chain']
+    ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
 
-    def test_invalid_angle_error(self):
-        assert MetAromatic(
-            cutoff_angle=-720.00,
-            cutoff_distance=self.default_parameters['distance'],
-            model=self.default_parameters['model'],
-            chain=self.default_parameters['chain']
-        ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
+def test_invalid_pdb_code_error() -> None:
+    assert MetAromatic(
+        cutoff_angle=TEST_PARAMETERS['angle'],
+        cutoff_distance=TEST_PARAMETERS['distance'],
+        model=TEST_PARAMETERS['model'],
+        chain=TEST_PARAMETERS['chain']
+    ).get_met_aromatic_interactions(code='foo')['exit_code'] == EXIT_FAILURE
 
-    def test_invalid_pdb_code_error(self):
-        assert MetAromatic(
-            cutoff_angle=self.default_parameters['angle'],
-            cutoff_distance=self.default_parameters['distance'],
-            model=self.default_parameters['model'],
-            chain=self.default_parameters['chain']
-        ).get_met_aromatic_interactions(code='foo')['exit_code'] == EXIT_FAILURE
+def test_no_met_coordinates_error() -> None:
+    assert MetAromatic(
+        cutoff_angle=TEST_PARAMETERS['angle'],
+        cutoff_distance=TEST_PARAMETERS['distance'],
+        model=TEST_PARAMETERS['model'],
+        chain=TEST_PARAMETERS['chain']
+    ).get_met_aromatic_interactions(code='3nir')['exit_code'] == EXIT_FAILURE
 
-    def test_no_met_coordinates_error(self):
-        assert MetAromatic(
-            cutoff_angle=self.default_parameters['angle'],
-            cutoff_distance=self.default_parameters['distance'],
-            model=self.default_parameters['model'],
-            chain=self.default_parameters['chain']
-        ).get_met_aromatic_interactions(code='3nir')['exit_code'] == EXIT_FAILURE
+def test_invalid_model_error() -> None:
+    assert MetAromatic(
+        cutoff_angle=TEST_PARAMETERS['angle'],
+        cutoff_distance=TEST_PARAMETERS['distance'],
+        model='foobarbaz',
+        chain=TEST_PARAMETERS['chain']
+    ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
 
-    def test_invalid_model_error(self):
-        assert MetAromatic(
-            cutoff_angle=self.default_parameters['angle'],
-            cutoff_distance=self.default_parameters['distance'],
-            model='foobarbaz',
-            chain=self.default_parameters['chain']
-        ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
-
-    def test_no_results_error(self):
-        assert MetAromatic(
-            cutoff_angle=self.default_parameters['angle'],
-            cutoff_distance=self.default_parameters['distance'],
-            model=self.default_parameters['model'],
-            chain=self.default_parameters['chain']
-        ).get_met_aromatic_interactions(code='1a5r')['exit_code'] == EXIT_FAILURE
+def test_no_results_error() -> None:
+    assert MetAromatic(
+        cutoff_angle=TEST_PARAMETERS['angle'],
+        cutoff_distance=TEST_PARAMETERS['distance'],
+        model=TEST_PARAMETERS['model'],
+        chain=TEST_PARAMETERS['chain']
+    ).get_met_aromatic_interactions(code='1a5r')['exit_code'] == EXIT_FAILURE
