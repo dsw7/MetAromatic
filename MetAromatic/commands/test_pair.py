@@ -11,7 +11,12 @@ from data.control_data import (
 )
 from .pair import MetAromatic
 
-# XXX do these tests really need to be in their own classes?
+TEST_PARAMETERS = {
+    'distance': 4.9,
+    'angle': 109.5,
+    'chain': 'A',
+    'model': 'cp',
+}
 
 class TestMetAromatic:
 
@@ -63,80 +68,62 @@ class TestMetAromatic:
         assert abs(sum_phi_control - sum_phi_test) < 0.01
 
 
-class TestMongoDBOutput:
+@mark.parametrize(
+    'code, cutoff_distance, cutoff_angle, error',
+    [
+        ('1rcy', 0.00, 109.5, EXIT_FAILURE),
+        ('1rcy', 4.95, 720.0, EXIT_FAILURE),
+        ('2rcy', 4.95, 109.5, EXIT_FAILURE),
+        ('3nir', 4.95, 109.5, EXIT_FAILURE),
+        ('abcd', 4.95, 109.5, EXIT_FAILURE)
+    ],
+    ids=[
+        "Testing InvalidCutoffsError - 1",
+        "Testing InvalidCutoffsError - 2",
+        "Testing NoMetCoordinatesError - 1",
+        "Testing NoMetCoordinatesError - 2",
+        "Testing InvalidPDBFileError"
+    ]
+)
+def test_mongodb_output_invalid_results(code: str, cutoff_distance: float, cutoff_angle: float, error: int) -> None:
+    assert MetAromatic(
+        cutoff_angle=cutoff_angle,
+        cutoff_distance=cutoff_distance,
+        chain=TEST_PARAMETERS['chain'],
+        model=TEST_PARAMETERS['model']
+    ).get_met_aromatic_interactions(code=code)['exit_code'] == error
 
-    def setup_class(self):
-        self.default_parameters = {
-            'cutoff_distance': 4.9,
-            'cutoff_angle': 109.5,
-            'chain': 'A',
-            'model': 'cp',
-        }
+@mark.parametrize(
+    'code, cutoff_distance, cutoff_angle',
+    [
+        ('1rcy', 0.00, 109.5),
+        ('1rcy', 4.95, 720.0),
+        ('2rcy', 4.95, 109.5),
+        ('3nir', 4.95, 109.5),
+        ('abcd', 4.95, 109.5)
+    ]
+)
+def test_mongodb_output_invalid_results_exception_boolean(code: str, cutoff_distance: float, cutoff_angle: float) -> None:
+    assert MetAromatic(
+        cutoff_angle=cutoff_angle,
+        cutoff_distance=cutoff_distance,
+        chain=TEST_PARAMETERS['chain'],
+        model=TEST_PARAMETERS['model']
+    ).get_met_aromatic_interactions(code=code).get('exit_status')
 
-    @mark.parametrize(
-        'code, cutoff_distance, cutoff_angle, error',
-        [
-            ('1rcy', 0.00, 109.5, EXIT_FAILURE),
-            ('1rcy', 4.95, 720.0, EXIT_FAILURE),
-            ('2rcy', 4.95, 109.5, EXIT_FAILURE),
-            ('3nir', 4.95, 109.5, EXIT_FAILURE),
-            ('abcd', 4.95, 109.5, EXIT_FAILURE)
-        ],
-        ids=[
-            "Testing InvalidCutoffsError - 1",
-            "Testing InvalidCutoffsError - 2",
-            "Testing NoMetCoordinatesError - 1",
-            "Testing NoMetCoordinatesError - 2",
-            "Testing InvalidPDBFileError"
-        ]
-    )
-    def test_mongodb_output_invalid_results(self, code, cutoff_distance, cutoff_angle, error):
-        assert MetAromatic(
-            cutoff_angle=cutoff_angle,
-            cutoff_distance=cutoff_distance,
-            chain=self.default_parameters['chain'],
-            model=self.default_parameters['model']
-        ).get_met_aromatic_interactions(code=code)['exit_code'] == error
+def test_mongodb_output_valid_results() -> None:
+    sum_met_theta_control = sum([i['met_theta_angle'] for i in VALID_RESULTS_1RCY])
+    sum_met_phi_control = sum([i['met_phi_angle'] for i in VALID_RESULTS_1RCY])
 
-    @mark.parametrize(
-        'code, cutoff_distance, cutoff_angle',
-        [
-            ('1rcy', 0.00, 109.5),
-            ('1rcy', 4.95, 720.0),
-            ('2rcy', 4.95, 109.5),
-            ('3nir', 4.95, 109.5),
-            ('abcd', 4.95, 109.5)
-        ]
-    )
-    def test_mongodb_output_invalid_results_exception_boolean(self, code, cutoff_distance, cutoff_angle):
-        assert MetAromatic(
-            cutoff_angle=cutoff_angle,
-            cutoff_distance=cutoff_distance,
-            chain=self.default_parameters['chain'],
-            model=self.default_parameters['model']
-        ).get_met_aromatic_interactions(code=code).get('exit_status')
+    test_results = MetAromatic(
+        **TEST_PARAMETERS
+    ).get_met_aromatic_interactions(code='1rcy')['results']
 
-    def test_mongodb_output_valid_results(self):
-        sum_met_theta_control = sum([i['met_theta_angle'] for i in VALID_RESULTS_1RCY])
-        sum_met_phi_control = sum([i['met_phi_angle'] for i in VALID_RESULTS_1RCY])
+    sum_met_theta_test = sum([i['met_theta_angle'] for i in test_results])
+    sum_met_phi_test = sum([i['met_phi_angle'] for i in test_results])
 
-        test_results = MetAromatic(
-            **self.default_parameters
-        ).get_met_aromatic_interactions(code='1rcy')['results']
-
-        sum_met_theta_test = sum([i['met_theta_angle'] for i in test_results])
-        sum_met_phi_test = sum([i['met_phi_angle'] for i in test_results])
-
-        assert sum_met_theta_control == sum_met_theta_test
-        assert sum_met_phi_control == sum_met_phi_test
-
-
-TEST_PARAMETERS = {
-    'distance': 4.9,
-    'angle': 109.5,
-    'chain': 'A',
-    'model': 'cp',
-}
+    assert sum_met_theta_control == sum_met_theta_test
+    assert sum_met_phi_control == sum_met_phi_test
 
 def test_invalid_distance_error() -> None:
     assert MetAromatic(
