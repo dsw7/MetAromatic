@@ -12,61 +12,51 @@ from data.control_data import (
 from .pair import MetAromatic
 
 TEST_PARAMETERS = {
-    'distance': 4.9,
-    'angle': 109.5,
+    'cutoff_distance': 4.9,
+    'cutoff_angle': 109.5,
     'chain': 'A',
-    'model': 'cp',
+    'model': 'cp'
 }
 
-class TestMetAromatic:
+ROOT = path.dirname(path.dirname(path.abspath(__file__)))
+PATH_BENCHMARK_DATA = path.join(ROOT, 'data/test_483OutputA3-3-M-Benchmark.csv')
 
-    def setup_class(self):
-        self.default_parameters = {
-            'cutoff_distance': 4.9,
-            'cutoff_angle': 109.5,
-            'chain': 'A',
-            'model': 'cp',
-        }
+BENCHMARK_DATA = []
+try:
+    with open(PATH_BENCHMARK_DATA) as f:
+        for line in f.readlines():
+            BENCHMARK_DATA.append(line.strip('\n').split(','))
+except FileNotFoundError as exception:
+    fail(exception.__str__())
 
-        root = path.dirname(path.dirname(path.abspath(__file__)))
-        path_to_file = path.join(root, 'data/test_483OutputA3-3-M-Benchmark.csv')
+@mark.parametrize(
+    "code",
+    TEST_PDB_CODES
+)
+def test_metaromatic_algorithm_against_483_data(code: str) -> None:
+    control = []
+    for row in BENCHMARK_DATA:
+        if row[7] == code:
+            control.append(row)
 
-        if not path.exists(path_to_file):
-            fail('Path {} does not exist'.format(path_to_file))
+    try:
+        test_data = MetAromatic(
+            **TEST_PARAMETERS
+        ).get_met_aromatic_interactions(code=code)['results']
 
-        self.control_data = []
-        for line in open(path_to_file):
-            self.control_data.append(line.strip('\n').split(','))
+    except IndexError:
+        skip('Skipping list index out of range error. Occurs because of missing data.')
 
-    @mark.parametrize(
-        "code",
-        TEST_PDB_CODES
-    )
-    def test_metaromatic_algorithm_against_483_data(self, code):
-        control = []
-        for row in self.control_data:
-            if row[7] == code:
-                control.append(row)
+    sum_norms_control = sum([float(i[6]) for i in control])
+    sum_theta_control = sum([float(i[5]) for i in control])
+    sum_phi_control = sum([float(i[4]) for i in control])
+    sum_norms_test = sum([float(i['norm']) for i in test_data])
+    sum_theta_test = sum([float(i['met_theta_angle']) for i in test_data])
+    sum_phi_test = sum([float(i['met_phi_angle']) for i in test_data])
 
-        try:
-            test_data = MetAromatic(
-                **self.default_parameters
-            ).get_met_aromatic_interactions(code=code)['results']
-
-        except IndexError:
-            skip('Skipping list index out of range error. Occurs because of missing data.')
-
-        sum_norms_control = sum([float(i[6]) for i in control])
-        sum_theta_control = sum([float(i[5]) for i in control])
-        sum_phi_control = sum([float(i[4]) for i in control])
-        sum_norms_test = sum([float(i['norm']) for i in test_data])
-        sum_theta_test = sum([float(i['met_theta_angle']) for i in test_data])
-        sum_phi_test = sum([float(i['met_phi_angle']) for i in test_data])
-
-        assert abs(sum_norms_control - sum_norms_test) < 0.01
-        assert abs(sum_theta_control - sum_theta_test) < 0.01
-        assert abs(sum_phi_control - sum_phi_test) < 0.01
-
+    assert abs(sum_norms_control - sum_norms_test) < 0.01
+    assert abs(sum_theta_control - sum_theta_test) < 0.01
+    assert abs(sum_phi_control - sum_phi_test) < 0.01
 
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle, error',
@@ -127,7 +117,7 @@ def test_mongodb_output_valid_results() -> None:
 
 def test_invalid_distance_error() -> None:
     assert MetAromatic(
-        cutoff_angle=TEST_PARAMETERS['angle'],
+        cutoff_angle=TEST_PARAMETERS['cutoff_angle'],
         cutoff_distance=0.00,
         model=TEST_PARAMETERS['model'],
         chain=TEST_PARAMETERS['chain']
@@ -136,39 +126,30 @@ def test_invalid_distance_error() -> None:
 def test_invalid_angle_error() -> None:
     assert MetAromatic(
         cutoff_angle=-720.00,
-        cutoff_distance=TEST_PARAMETERS['distance'],
+        cutoff_distance=TEST_PARAMETERS['cutoff_distance'],
         model=TEST_PARAMETERS['model'],
         chain=TEST_PARAMETERS['chain']
     ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
 
 def test_invalid_pdb_code_error() -> None:
     assert MetAromatic(
-        cutoff_angle=TEST_PARAMETERS['angle'],
-        cutoff_distance=TEST_PARAMETERS['distance'],
-        model=TEST_PARAMETERS['model'],
-        chain=TEST_PARAMETERS['chain']
+        **TEST_PARAMETERS
     ).get_met_aromatic_interactions(code='foo')['exit_code'] == EXIT_FAILURE
 
 def test_no_met_coordinates_error() -> None:
     assert MetAromatic(
-        cutoff_angle=TEST_PARAMETERS['angle'],
-        cutoff_distance=TEST_PARAMETERS['distance'],
-        model=TEST_PARAMETERS['model'],
-        chain=TEST_PARAMETERS['chain']
+        **TEST_PARAMETERS
     ).get_met_aromatic_interactions(code='3nir')['exit_code'] == EXIT_FAILURE
 
 def test_invalid_model_error() -> None:
     assert MetAromatic(
-        cutoff_angle=TEST_PARAMETERS['angle'],
-        cutoff_distance=TEST_PARAMETERS['distance'],
+        cutoff_angle=TEST_PARAMETERS['cutoff_angle'],
+        cutoff_distance=TEST_PARAMETERS['cutoff_distance'],
         model='foobarbaz',
         chain=TEST_PARAMETERS['chain']
     ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
 
 def test_no_results_error() -> None:
     assert MetAromatic(
-        cutoff_angle=TEST_PARAMETERS['angle'],
-        cutoff_distance=TEST_PARAMETERS['distance'],
-        model=TEST_PARAMETERS['model'],
-        chain=TEST_PARAMETERS['chain']
+        **TEST_PARAMETERS
     ).get_met_aromatic_interactions(code='1a5r')['exit_code'] == EXIT_FAILURE
