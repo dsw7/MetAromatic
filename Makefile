@@ -4,7 +4,7 @@
 #                                  #
 ####################################
 
-.PHONY = help check-pipreqs requirements install uninstall test full dist lint dockertest
+.PHONY = help check-pipreqs requirements install uninstall test full wheel lint dockertest
 
 .DEFAULT_GOAL = help
 
@@ -41,7 +41,7 @@ To perform an end-to-end test:
     $$ make full
     > Trajectory: install -> test -> full
 To generate Python wheel file for pip installs:
-    $$ make dist
+    $$ make wheel
 To lint the project:
     $$ make lint
 To run tests with Docker
@@ -90,7 +90,7 @@ test:
 
 full: install test
 
-dist:
+wheel:
 	$(call RENDER_PREAMBLE,Removing existing build files if they exist)
 	rm -rfv $(ROOT_DIRECTORY)/{dist,build,*.egg-info}
 	$(call RENDER_PREAMBLE,Generating *.whl file for project)
