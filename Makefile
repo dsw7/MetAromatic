@@ -93,6 +93,8 @@ full: install test
 wheel:
 	$(call RENDER_PREAMBLE,Generating *.whl file for project)
 	@$(PYTHON_INTERP) $(ROOT_DIRECTORY)/setup.py bdist_wheel
+	$(call RENDER_PREAMBLE,Project can now be pip installed as follows:)
+	$(call RENDER_PREAMBLE,$(PYTHON_INTERP) -m pip install --user $(ROOT_DIRECTORY)/build/*.whl)
 
 lint:
 	$(call RENDER_PREAMBLE,Linting the project using pylint static analysis tool)
