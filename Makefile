@@ -92,7 +92,7 @@ full: install test
 
 dist:
 	$(call RENDER_PREAMBLE,Generating *.whl file for project)
-	@$(PYTHON_INTERP) $(PROJECT_DIRECTORY)/setup.py bdist_wheel
+	@$(PYTHON_INTERP) $(ROOT_DIRECTORY)/setup.py bdist_wheel
 
 lint:
 	$(call RENDER_PREAMBLE,Linting the project using pylint static analysis tool)
