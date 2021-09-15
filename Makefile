@@ -91,8 +91,6 @@ test:
 full: install test
 
 wheel:
-	$(call RENDER_PREAMBLE,Removing existing build files if they exist)
-	rm -rfv $(ROOT_DIRECTORY)/{dist,build,*.egg-info}
 	$(call RENDER_PREAMBLE,Generating *.whl file for project)
 	@$(PYTHON_INTERP) $(ROOT_DIRECTORY)/setup.py bdist_wheel
 
