@@ -4,7 +4,7 @@ from setuptools import (
 )
 
 setup(
-    name = 'met-aromatic',
+    name = 'metaromatic',
     version='1.0',
     packages=find_packages()
 )
