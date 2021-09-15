@@ -5,7 +5,7 @@ from primitives.consts import (
     FOOTER_TEXT,
     FORMATTED_HEADER
 )
-from .met_aromatic import MetAromatic
+from .pair import MetAromatic
 
 
 class MetAromaticCurses:
