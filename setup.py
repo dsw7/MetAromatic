@@ -6,7 +6,7 @@ from setuptools import (
 setup(
     name = 'MetAromatic',
     version='1.0',
-    packages=find_packages('commands'),
+    packages=find_packages(),
     install_requires=[
         'pymongo',
         'networkx',
