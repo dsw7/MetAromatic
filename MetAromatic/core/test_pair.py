@@ -5,7 +5,7 @@ from pytest import (
     fail
 )
 from .helpers.consts import EXIT_FAILURE
-from .helpers.control_data import (
+from .helpers.data_test_pair import (
     TEST_PDB_CODES,
     VALID_RESULTS_1RCY
 )
@@ -19,7 +19,7 @@ TEST_PARAMETERS = {
 }
 
 ROOT = path.dirname(path.abspath(__file__))
-PATH_BENCHMARK_DATA = path.join(ROOT, 'helpers/test_483OutputA3-3-M-Benchmark.csv')
+PATH_BENCHMARK_DATA = path.join(ROOT, 'helpers', 'data_483_output_a3_3_m.csv')
 
 BENCHMARK_DATA = []
 try:

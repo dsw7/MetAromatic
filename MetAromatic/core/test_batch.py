@@ -54,7 +54,7 @@ class TestParallelProcessing:
     def setup_class(self):
         project_root = path.dirname(path.abspath(__file__))
         path_runner = path.join(path.dirname(project_root), 'runner.py')
-        path_test_data = path.join(project_root, 'helpers/coronavirus_test_entries.txt')
+        path_test_data = path.join(project_root, 'helpers', 'data_coronavirus_entries.txt')
 
         if not path.exists(path_test_data):
             fail('Path {} does not exist'.format(path_test_data))
