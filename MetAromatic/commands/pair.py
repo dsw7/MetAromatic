@@ -1,11 +1,11 @@
-from primitives import (
+from .primitives import (
     filegetter,
     preprocessing,
     get_aromatic_midpoints,
     get_lone_pairs,
     distance_angular
 )
-from primitives.consts import (
+from .primitives.consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
     MINIMUM_CUTOFF_DIST,

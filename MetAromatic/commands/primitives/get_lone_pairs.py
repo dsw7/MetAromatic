@@ -2,8 +2,8 @@ from typing import Union
 from itertools import groupby
 from operator import itemgetter
 from numpy import array
-from algebra.rodrigues_method import RodriguesMethod
-from algebra.cross_product_method import CrossProductMethod
+from ..algebra.rodrigues_method import RodriguesMethod
+from ..algebra.cross_product_method import CrossProductMethod
 
 def get_lone_pairs(met_coordinates: list, model: str) -> Union[list, bool]:
     lone_pairs = []

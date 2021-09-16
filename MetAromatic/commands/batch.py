@@ -8,7 +8,7 @@ from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient
-from primitives.consts import (
+from .primitives.consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
     MAXIMUM_WORKERS,
@@ -19,7 +19,7 @@ from primitives.consts import (
     ISO_8601_DATE_FORMAT,
     LOGRECORD_FORMAT
 )
-from pair import MetAromatic
+from .pair import MetAromatic
 
 LOG_HANDLERS = [
     logging.FileHandler(path.join(gettempdir(), DEFAULT_LOGFILE_NAME)),
