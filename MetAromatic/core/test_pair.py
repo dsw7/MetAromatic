@@ -4,8 +4,8 @@ from pytest import (
     skip,
     fail
 )
-from primitives.consts import EXIT_FAILURE
-from data.control_data import (
+from .helpers.consts import EXIT_FAILURE
+from .helpers.control_data import (
     TEST_PDB_CODES,
     VALID_RESULTS_1RCY
 )
@@ -18,8 +18,8 @@ TEST_PARAMETERS = {
     'model': 'cp'
 }
 
-ROOT = path.dirname(path.dirname(path.abspath(__file__)))
-PATH_BENCHMARK_DATA = path.join(ROOT, 'data/test_483OutputA3-3-M-Benchmark.csv')
+ROOT = path.dirname(path.abspath(__file__))
+PATH_BENCHMARK_DATA = path.join(ROOT, 'helpers/test_483OutputA3-3-M-Benchmark.csv')
 
 BENCHMARK_DATA = []
 try:

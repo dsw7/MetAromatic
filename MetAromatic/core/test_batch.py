@@ -11,7 +11,7 @@ from pymongo import (
     MongoClient,
     errors
 )
-from primitives.consts import (
+from .helpers.consts import (
     EXIT_SUCCESS,
     EXIT_FAILURE
 )
@@ -52,9 +52,9 @@ def mongod_service_not_running() -> bool:
 class TestParallelProcessing:
 
     def setup_class(self):
-        project_root = path.dirname(path.dirname(path.abspath(__file__)))
-        path_runner = path.join(project_root, 'runner.py')
-        path_test_data = path.join(project_root, 'data/coronavirus_test_entries.txt')
+        project_root = path.dirname(path.abspath(__file__))
+        path_runner = path.join(path.dirname(project_root), 'runner.py')
+        path_test_data = path.join(project_root, 'helpers/coronavirus_test_entries.txt')
 
         if not path.exists(path_test_data):
             fail('Path {} does not exist'.format(path_test_data))

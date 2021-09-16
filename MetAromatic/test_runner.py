@@ -10,7 +10,7 @@ from subprocess import (
 from click.testing import CliRunner
 from pytest import mark
 from runner import cli
-from primitives.consts import (
+from core.helpers.consts import (
     EXIT_SUCCESS,
     EXIT_FAILURE,
     EXIT_GENERAL_PROGRAM_FAILURES
@@ -140,7 +140,7 @@ class TestRunFromDifferentDirectories:
 
     def test_aromatic_interaction_run_from_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'commands/'))
+        chdir(path.join(path.dirname(self.path_runner), 'core/'))
         retval = call('../runner.py pair 1rcy'.split(), stdout=DEVNULL)
         chdir(pwd)
         assert retval == EXIT_SUCCESS
@@ -154,7 +154,7 @@ class TestRunFromDifferentDirectories:
 
     def test_bridging_interaction_run_from_child_directory(self):
         pwd = getcwd()
-        chdir(path.join(path.dirname(self.path_runner), 'commands/'))
+        chdir(path.join(path.dirname(self.path_runner), 'core/'))
         retval = call('../runner.py bridge 6lu7'.split(), stdout=DEVNULL)
         chdir(pwd)
         assert retval == EXIT_SUCCESS
