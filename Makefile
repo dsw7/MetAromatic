@@ -4,7 +4,7 @@
 #                                  #
 ####################################
 
-.PHONY = help check-pipreqs requirements setup teardown test full wheel lint dockertest
+.PHONY = help check-pipreqs requirements setup teardown test full wheel install clean uninstall lint dockertest
 
 .DEFAULT_GOAL = help
 
@@ -42,6 +42,12 @@ To perform an end-to-end test:
     > Trajectory: setup -> test -> full
 To generate Python wheel file for pip installs:
     $$ make wheel
+To install into site-packages from wheel:
+    $$ make install
+To remove build, dist and other setuo.py directories:
+    $$ make clean
+To uninstall site-packages distribution:
+    $$ make uninstall
 To lint the project:
     $$ make lint
 To run tests with Docker
