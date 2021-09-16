@@ -1,6 +1,4 @@
 """
-dsw7@sfu.ca
-
 Old, poorly written code from when I was younger and more inexperienced.
 I have ported this code in 2019 to generate a benchmark dataset that I will
 run tests against. I prettified this code a bit to enhance readability.

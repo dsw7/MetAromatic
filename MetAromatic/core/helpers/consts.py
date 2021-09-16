@@ -20,13 +20,6 @@ DEFAULT_MONGO_PORT = 27017
 ISO_8601_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 LOGRECORD_FORMAT = '%(asctime)s %(levelname)s [%(funcName)s] %(message)s'
 DEFAULT_LOGFILE_NAME = 'met_aromatic.log'
-LOG_LEVEL = 20
-# CRITICAL 50
-# ERROR    40
-# WARNING  30
-# INFO     20
-# DEBUG    10
-# NOTSET    0
 
 #### Other
 LEN_PDB_CODE = 4
