@@ -105,7 +105,7 @@ install: wheel
 	$(call RENDER_PREAMBLE,Project will be installed under:)
 	@$(PYTHON_INTERP) -m site --user-site
 	$(call RENDER_PREAMBLE,Installing project...)
-	@$(PYTHON_INTERP) -m pip install --user --force-reinstall --progress-bar=ascii dist/*whl
+	@$(PYTHON_INTERP) -m pip install --user --force-reinstall dist/*whl
 	$(call RENDER_PREAMBLE,List tree...)
 	@tree --dirsfirst -I *pyc\|__pycache__ $(shell $(PYTHON_INTERP) -m site --user-site)/$(PROJECT_NAME)
 
