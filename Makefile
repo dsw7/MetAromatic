@@ -28,18 +28,14 @@ To check whether pipreqs is installed
     $$ make check-pipreqs
 To generate a requirements.txt file:
     $$ make requirements
-    > Trajectory: check-pipreqs -> requirements
 To setup all project dependencies:
     $$ make setup
-    > Trajectory: requirements -> setup
 To uninstall all project dependencies:
     $$ make teardown
-    > Trajectory: requirements -> uninstall
 To test the project:
     $$ make test
 To perform an end-to-end test:
     $$ make full
-    > Trajectory: setup -> test -> full
 To generate Python wheel file for pip installs:
     $$ make wheel
 To install into site-packages from wheel:
