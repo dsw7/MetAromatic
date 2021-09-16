@@ -104,17 +104,15 @@ install: wheel
 	@$(PYTHON_INTERP) -m site --user-site
 	$(call RENDER_PREAMBLE,Installing project...)
 	@$(PYTHON_INTERP) -m pip install --user --force-reinstall --progress-bar=pretty dist/*whl
-	$(call RENDER_PREAMBLE,Check that installation is listed...)
-	@$(PYTHON_INTERP) -m pip list | grep $(PROJECT_NAME)
 	$(call RENDER_PREAMBLE,List tree...)
 	@tree --dirsfirst -I *pyc\|__pycache__ $(shell $(PYTHON_INTERP) -m site --user-site)/$(PROJECT_NAME)
 
 clean:
-	$(call RENDER_PREAMBLE,Removing scrap...)
+	$(call RENDER_PREAMBLE,Removing scrap)
 	@rm -rfv build/ dist/ *.egg-info/
 
 uninstall:
-	@echo \> Uninstalling project...
+	$(call RENDER_PREAMBLE,Uninstalling project)
 	@$(PYTHON_INTERP) -m pip uninstall -y $(PROJECT_NAME)
 
 # -- Other helpers --
