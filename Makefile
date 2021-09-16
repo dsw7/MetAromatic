@@ -52,6 +52,7 @@ endef
 export HELP_LIST_TARGETS
 
 PYTHON_INTERP = /usr/bin/env python3
+PROJECT_NAME = metaromatic
 ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
 REQUIREMENTS_TXT = $(ROOT_DIRECTORY)/requirements.txt
