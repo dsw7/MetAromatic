@@ -107,7 +107,7 @@ install: wheel
 	$(call RENDER_PREAMBLE,Check that installation is listed...)
 	@$(PYTHON_INTERP) -m pip list | grep $(PROJECT_NAME)
 	$(call RENDER_PREAMBLE,List tree...)
-	@tree -I *pyc\|__pycache__ $(shell $(PYTHON_INTERP) -m site --user-site)/$(PROJECT_NAME)
+	@tree --dirsfirst -I *pyc\|__pycache__ $(shell $(PYTHON_INTERP) -m site --user-site)/$(PROJECT_NAME)
 
 clean:
 	$(call RENDER_PREAMBLE,Removing scrap...)
