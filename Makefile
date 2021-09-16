@@ -97,7 +97,7 @@ full: setup test
 
 wheel:
 	$(call RENDER_PREAMBLE,Generating *.whl file for project)
-	@$(PYTHON_INTERP) $(ROOT_DIRECTORY)/setup.py bdist_wheel
+	@$(PYTHON_INTERP) $(ROOT_DIRECTORY)/setup.py clean --all bdist_wheel
 
 install: wheel
 	$(call RENDER_PREAMBLE,Project will be installed under:)
