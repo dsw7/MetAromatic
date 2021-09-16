@@ -21,6 +21,8 @@ ANGSTROMS = 4.9
 ANGLE = 109.5
 COUNTER = 0
 CHAIN = 'A'
+INFILE = 'randomized_pdb_codes.csv'
+OUTFILE = 'data_483OutputA3-3-M-Benchmark.csv'
 
 lista = ['PRO', 'MET', 'PHE', 'TYR', 'TRP']
 
@@ -96,7 +98,7 @@ def vecangle(vec1, vec2):
 # main
 # ------------------------------------------------------
 codelist = []
-with open('randomized_pdb_codes.csv') as inputfile:
+with open(INFILE) as inputfile:
     for line in inputfile:
         codelist.append(line.strip())
 
@@ -307,7 +309,7 @@ for code in codelist[1:]:
             df = df.sort_values(by='NORM')
             df = df.reset_index(drop=True)
             df = df.reindex(sorted(df.columns), axis=1)
-            with open('483OutputA3-3-M-Benchmark.csv', 'a') as f:
+            with open(OUTFILE, 'a') as f:
                 df.to_csv(f, header=False)
 
 
