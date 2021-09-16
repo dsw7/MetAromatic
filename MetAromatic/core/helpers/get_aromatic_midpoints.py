@@ -2,7 +2,7 @@ from itertools import groupby
 from copy import deepcopy
 from operator import itemgetter
 from numpy import array
-from ..algebra import get_hexagon_midpoints
+from .get_hexagon_midpoints import get_hexagon_midpoints
 
 DICT_ATOMS_PHE = {
     'CG': 'A', 'CD2': 'B', 'CE2': 'C',
@@ -40,7 +40,7 @@ def get_aromatic_midpoints(aromatics: list, keys: dict) -> list:
         y_coord = [float(i[7]) for i in ordered]
         z_coord = [float(i[8]) for i in ordered]
 
-        x_mid, y_mid, z_mid = get_hexagon_midpoints.get_hexagon_midpoints(x_coord, y_coord, z_coord)
+        x_mid, y_mid, z_mid = get_hexagon_midpoints(x_coord, y_coord, z_coord)
 
         for a, b, c in zip(x_mid, y_mid, z_mid):
             midpoints.append([ordered[0][5], ordered[0][3], array([a, b, c])])

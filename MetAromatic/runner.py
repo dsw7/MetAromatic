@@ -19,7 +19,7 @@ from click import (
     pass_context,
     pass_obj
 )
-from core.primitives.consts import (
+from core.helpers.consts import (
     EXIT_FAILURE,
     MINIMUM_VERTICES
 )

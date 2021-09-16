@@ -8,7 +8,7 @@ from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient
-from .primitives.consts import (
+from .helpers.consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
     MAXIMUM_WORKERS,

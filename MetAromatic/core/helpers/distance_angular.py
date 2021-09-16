@@ -1,5 +1,5 @@
 from numpy.linalg import norm
-from ..algebra.cross_product_method import vector_angle
+from .cross_product_method import vector_angle
 
 ROUND_TO_NUMBER = 3
 
@@ -32,4 +32,5 @@ def apply_distance_angular_condition(midpoints: list, lone_pairs: list, cutoff_d
                     pass
             else:
                 pass
+
     return met_aromatic_interactions

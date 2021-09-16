@@ -2,7 +2,7 @@ from networkx import (
     Graph,
     connected_components
 )
-from .primitives.consts import EXIT_FAILURE
+from .helpers.consts import EXIT_FAILURE
 from .pair import MetAromatic
 
 
