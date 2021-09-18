@@ -187,7 +187,7 @@ The MongoDB dump database is specified using the `--database` option. The collec
 }
 ```
 ## Tests and automation
-### Testing command line program
+### Testing the command line program
 To test the command line program, simply run the following target:
 ```
 make test
