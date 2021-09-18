@@ -7,7 +7,10 @@ from time import time
 from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
-from pymongo import MongoClient
+from pymongo import (
+    MongoClient,
+    errors
+)
 from .helpers.consts import (
     EXIT_FAILURE,
     EXIT_SUCCESS,
@@ -15,6 +18,7 @@ from .helpers.consts import (
     LEN_PDB_CODE,
     DEFAULT_MONGO_HOST,
     DEFAULT_MONGO_PORT,
+    SERVER_TIMEOUT_MSEC,
     DEFAULT_LOGFILE_NAME,
     ISO_8601_DATE_FORMAT,
     LOGRECORD_FORMAT
@@ -38,6 +42,8 @@ class ParallelProcessing:
     def __init__(self, cli_args: dict) -> None:
         self.cli_args = cli_args
 
+        self.client = self._get_mongo_client()
+
         if self.cli_args['threads'] > MAXIMUM_WORKERS:
             logging.warning('Number of selected workers exceeds maximum number of workers.')
             logging.warning('The thread pool will use a maximum of %i workers.', MAXIMUM_WORKERS)
@@ -45,7 +51,6 @@ class ParallelProcessing:
         self.pdb_codes = []
         self.chunked_pdb_codes = []
         self.count = 0
-        self.client = MongoClient(DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT)
         self.collection_handle = self.client[self.cli_args['database']][self.cli_args['collection']]
         self.bool_disable_workers = None
 
@@ -62,6 +67,19 @@ class ParallelProcessing:
         self._register_ipc_signals()
         self._read_batch_file()
         self._generate_chunks()
+
+    def _get_mongo_client(self) -> MongoClient:
+        logging.info('Handshaking with MongoDB')
+
+        try:
+            client = MongoClient(DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT, serverSelectionTimeoutMS=SERVER_TIMEOUT_MSEC)
+            client.server_info()
+        except errors.ServerSelectionTimeoutError:
+            logging.error('Could not connect to MongoDB on host %s and port %i', DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT)
+            logging.error('Either MongoDB is not installed or the socket address is invalid')
+            sys.exit(EXIT_FAILURE)
+
+        return client
 
     def _ensure_collection_does_not_exist(self) -> None:
         collections = self.client[self.cli_args['database']].list_collection_names()

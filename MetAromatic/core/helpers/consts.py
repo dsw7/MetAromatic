@@ -15,6 +15,7 @@ MAXIMUM_WORKERS = 15
 #### Database stuff
 DEFAULT_MONGO_HOST = 'localhost'
 DEFAULT_MONGO_PORT = 27017
+SERVER_TIMEOUT_MSEC = 1000
 
 #### Logging stuff
 ISO_8601_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
