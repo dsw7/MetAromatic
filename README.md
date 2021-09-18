@@ -13,7 +13,7 @@ Code for the following publications:
   - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
   - [Finding "bridging interactions"](#finding-bridging-interactions)
   - [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
-- [Installing a package using `pip`](#setup)
+- [Installing this package from source](#installing-this-package-from-source)
 - [Tests and automation](#tests-and-automation)
   - [Testing the command line program](#testing-the-command-line-program)
   - [Testing the package installation](#testing-the-package-installation)
@@ -221,7 +221,12 @@ The runner will fail with the following log:
 1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Either MongoDB is not installed or the socket address is invalid
 ```
 If a `mongod` instance is not listening on the specified TCP port.
-## Installating a package using `pip`
+## Installing this package from source
+One may be interested in extending the Met-aromatic project into a customized workflow. To do so, this project
+can be built and installed from source by running the target:
+```
+make install
+```
 ## Tests and automation
 ### Testing the command line program
 To test the command line program, simply run the following target:
