@@ -250,6 +250,24 @@ def main() -> None:
 if __name__ == '__main__':
     main()
 ```
+### Example: programmatically obtaining bridging interactions
+```python
+from MetAromatic.core.bridge import GetBridgingInteractions
+
+def main() -> None:
+    arguments = {
+        'cutoff_distance': 6.0,
+        'cutoff_angle': 360.00,
+        'chain': 'A',
+        'model': 'cp'
+    }
+
+    results = GetBridgingInteractions(**arguments).get_bridging_interactions('7mdh', 4)
+    print(results)
+
+if __name__ == '__main__':
+    main()
+```
 ## Tests and automation
 ### Testing the command line program
 To test the command line program, simply run the following target:
