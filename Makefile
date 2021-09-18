@@ -25,8 +25,7 @@ endef
 
 define HELP_LIST_TARGETS
 
-To display all targets:
-    $$ make help
+Command line program:
 To generate a requirements.txt file:
     $$ make requirements
 To setup all project dependencies:
@@ -37,6 +36,8 @@ To test the project:
     $$ make test
 To perform an end-to-end test:
     $$ make full
+
+Wheel installation:
 To generate Python wheel file for pip installs:
     $$ make wheel
 To install into site-packages from wheel:
@@ -45,6 +46,10 @@ To remove build, dist and other setuo.py directories:
     $$ make clean
 To uninstall site-packages distribution:
     $$ make uninstall
+
+Other:
+To display all targets:
+    $$ make help
 To lint the project:
     $$ make lint
 To run tests with Docker
