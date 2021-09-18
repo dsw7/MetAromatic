@@ -13,6 +13,7 @@ Code for the following publications:
   - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
   - [Finding "bridging interactions"](#finding-bridging-interactions)
   - [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
+- [Installing a package using `pip`](#setup)
 - [Tests and automation](#tests-and-automation)
   - [Testing the command line program](#testing-the-command-line-program)
   - [Testing the package installation](#testing-the-package-installation)
@@ -220,6 +221,7 @@ The runner will fail with the following log:
 1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Either MongoDB is not installed or the socket address is invalid
 ```
 If a `mongod` instance is not listening on the specified TCP port.
+## Installating a package using `pip`
 ## Tests and automation
 ### Testing the command line program
 To test the command line program, simply run the following target:
