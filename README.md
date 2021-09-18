@@ -12,7 +12,7 @@ Code for the following publications:
 - [Setup](#setup)
   - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
   - [Finding "bridging interactions"](#finding-bridging-interactions)
-  - [Batch jobs](#batch-jobs)
+  - [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
 - [Tests and automation](#tests-and-automation)
   - [Testing the command line program](#testing-the-command-line-program)
   - [Testing the package installation](#testing-the-package-installation)
@@ -161,29 +161,56 @@ Where each row corresponds to a bridge. This program treats bridging interaction
 ```
 ./MetAromatic/runner.py --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
-### Batch jobs
-This software is normally used for large scale Protein Data Bank mining efforts. To run a batch job, first supply a batch. A batch
-can be a regular text file consisting of delimited PDB codes:
+### Batch jobs and MongoDB integration
+This software is normally used for large scale Protein Data Bank mining efforts and stores the results in a MongoDB database (https://www.mongodb.com/).
+To start a batch job, ensure that the host is running a valid MongoDB installation then supply a batch file. A batch file can be a regular text file
+consisting of delimited PDB codes:
 ```
 1BPY, 1CWE, 1DZI, 1EAK, 1EB1, 1GU4, 1GU5, 1GXC, 1GY3, 1H6F,
 1JYR, 1M4H, 1MCD, 1N0X, 1NU8, 1O6P, 1OKV, 2A2X, 1WB0
 ```
-The results of the batch job are stored in a MongoDB database (https://www.mongodb.com/). The command follows:
+The command follows:
 ```
-./MetAromatic/runner.py batch /path/to/pdb_codes.txt --threads 3 --database small_batch --collection example
+./MetAromatic/runner.py batch </path/batch/file> --threads <num-threads> --database <db> --collection <collection>
 ```
-The MongoDB dump database is specified using the `--database` option. The collection is specified with the `--collection` option. The `--threads` option specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and a machine that is running no other processes. By default, mining jobs are run on `localhost` and on port `27017`. However, results can be routed to other servers by specifying hosts and/or ports using the `--host` and `--port` parameters. A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary collection will house all the batch job parameters and other statistics and the collection name will be suffixed with `_info`. An example `*_info` collection for the above example follows:
+The MongoDB dump database is specified using the `--database` option. The collection is specified with the `--collection` option. The `--threads`
+option specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.
+By default, mining jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
+```
+1970-01-01T00:00:00 INFO [ _get_mongo_client ] Handshaking with MongoDB
+1970-01-01T00:00:00 INFO [ _register_ipc_signals ] Registering SIGINT to thread terminator
+1970-01-01T00:00:00 INFO [ _read_batch_file ] Imported pdb codes from file core/helpers/data_coronavirus_entries.txt
+1970-01-01T00:00:00 INFO [ _generate_chunks ] Splitting list of pdb codes into 5 chunks
+1970-01-01T00:00:00 INFO [ deploy_jobs ] Deploying 5 workers!
+1970-01-01T00:00:00 INFO [ worker_met_aromatic ] Processed 1xak. Count: 1
+1970-01-01T00:00:00 INFO [ worker_met_aromatic ] Processed 1uw7. Count: 2
+1970-01-01T00:00:00 INFO [ worker_met_aromatic ] Processed 2ca1. Count: 3
+1970-01-01T00:00:00 INFO [ worker_met_aromatic ] Processed 1qz8. Count: 4
+1970-01-01T00:00:01 INFO [ worker_met_aromatic ] Processed 2fxp. Count: 5
+1970-01-01T00:00:01 INFO [ worker_met_aromatic ] Processed 2fyg. Count: 6
+1970-01-01T00:00:01 INFO [ worker_met_aromatic ] Processed 2cme. Count: 7
+1970-01-01T00:00:01 INFO [ worker_met_aromatic ] Processed 6mwm. Count: 8
+1970-01-01T00:00:02 INFO [ worker_met_aromatic ] Processed spam. Count: 9
+1970-01-01T00:00:02 INFO [ deploy_jobs ] Batch job complete!
+1970-01-01T00:00:02 INFO [ deploy_jobs ] Results loaded into database: default_ma
+1970-01-01T00:00:02 INFO [ deploy_jobs ] Results loaded into collection: default_ma
+1970-01-01T00:00:02 INFO [ deploy_jobs ] Batch job statistics loaded into collection: default_ma_info
+1970-01-01T00:00:02 INFO [ deploy_jobs ] Batch job execution time: 2.077000 s
+```
+A batch job will generate a collection secondary to the collection
+specified by `--collection`. This secondary collection will house all the batch job parameters and other statistics and the collection name will be
+suffixed with `_info`. An example `*_info` collection for the above example follows:
 ```
 {
-        "_id" : ObjectId("5e6b2e1326dea0202cec2963"),
-        "num_threads" : 3,
-        "cutoff_distance" : 6,
+            "_id" : ObjectId("6145d54c6f016f61e0afcaa5"),
+        "num_workers" : 5,
+        "cutoff_distance" : 4.9,
         "cutoff_angle" : 109.5,
         "chain" : "A",
         "model" : "cp",
-        "batch_job_execution_time" : 4.938377618789673,
-        "data_acquisition_date" : ISODate("2020-03-12T23:54:11.719Z"),
-        "number_of_entries" : 19
+        "data_acquisition_date" : ISODate("2021-09-18T05:02:18.289Z"),
+        "batch_job_execution_time" : 2.077,
+        "number_of_entries" : 9
 }
 ```
 ## Tests and automation
