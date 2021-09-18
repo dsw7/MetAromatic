@@ -177,8 +177,8 @@ The MongoDB dump database is specified using the `--database` option. The collec
 option specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.
 By default, mining jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
 ```
-1970-01-01T00:00:00 INFO [ \_get_mongo_client ] Handshaking with MongoDB
-1970-01-01T00:00:00 INFO [ \_register_ipc_signals ] Registering SIGINT to thread terminator
+1970-01-01T00:00:00 INFO [ _get_mongo_client ] Handshaking with MongoDB
+1970-01-01T00:00:00 INFO [ _register_ipc_signals ] Registering SIGINT to thread terminator
 1970-01-01T00:00:00 INFO [ _read_batch_file ] Imported pdb codes from file core/helpers/data_coronavirus_entries.txt
 1970-01-01T00:00:00 INFO [ _generate_chunks ] Splitting list of pdb codes into 5 chunks
 1970-01-01T00:00:00 INFO [ deploy_jobs ] Deploying 5 workers!
@@ -197,9 +197,9 @@ By default, mining jobs are run on `localhost` and on port `27017`. A "healthy" 
 1970-01-01T00:00:02 INFO [ deploy_jobs ] Batch job statistics loaded into collection: default_ma_info
 1970-01-01T00:00:02 INFO [ deploy_jobs ] Batch job execution time: 2.077000 s
 ```
-A batch job will generate a collection secondary to the collection
-specified by `--collection`. This secondary collection will house all the batch job parameters and other statistics and the collection name will be
-suffixed with `_info`. An example `*_info` collection for the above example follows:
+A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary
+collection will house all the batch job parameters and other statistics and the collection name will be
+suffixed with `_info`. For example, the above scenario would generate the `default_ma_info` collection:
 ```
 {
         "_id" : ObjectId("6145d54c6f016f61e0afcaa5"),
@@ -208,11 +208,18 @@ suffixed with `_info`. An example `*_info` collection for the above example foll
         "cutoff_angle" : 109.5,
         "chain" : "A",
         "model" : "cp",
-        "data_acquisition_date" : ISODate("1970-01-01T00:00:02.000Z"),
+        "data_acquisition_date" : ISODate("1970-01-01T00:00:02.077Z"),
         "batch_job_execution_time" : 2.077,
         "number_of_entries" : 9
 }
 ```
+The runner will fail with the following log:
+```
+1970-01-01T00:00:00 INFO [ _get_mongo_client ] Handshaking with MongoDB
+1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Could not connect to MongoDB on host localhost and port 27017
+1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Either MongoDB is not installed or the socket address is invalid
+```
+If a `mongod` instance is not listening on the specified TCP port.
 ## Tests and automation
 ### Testing the command line program
 To test the command line program, simply run the following target:
