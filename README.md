@@ -227,6 +227,29 @@ can be built and installed from source by running the target:
 ```
 make install
 ```
+To remove the resulting `build`, `dist` and `egg-info` artifacts, simply run:
+```
+make clean
+```
+Now `MetAromatic.core` can be imported.
+### Example: programmatically obtaining Met-aromatic pairs
+```python
+from MetAromatic.core.pair import MetAromatic
+
+def main() -> None:
+    arguments = {
+        'cutoff_distance': 4.9,
+        'cutoff_angle': 109.5,
+        'chain': 'A',
+        'model': 'cp'
+    }
+
+    results = MetAromatic(**arguments).get_met_aromatic_interactions('1rcy')
+    print(results)
+
+if __name__ == '__main__':
+    main()
+```
 ## Tests and automation
 ### Testing the command line program
 To test the command line program, simply run the following target:
