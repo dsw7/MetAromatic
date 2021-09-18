@@ -40,8 +40,7 @@ class TestParallelProcessing:
         command += '--database {} '.format(self.database_name)
         command += '--collection {}'.format(self.collection_name)
 
-        #if call(command.split(), stdout=DEVNULL, stderr=DEVNULL) != EXIT_SUCCESS:
-        if call(command.split()) != EXIT_SUCCESS:
+        if call(command.split(), stdout=DEVNULL, stderr=DEVNULL) != EXIT_SUCCESS:
             skip('Cannot proceed with test. Could not connect to a mongod instance')
 
         self.num_coronavirus_entries = 9
