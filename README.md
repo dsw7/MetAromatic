@@ -10,8 +10,9 @@ Code for the following publications:
   - [Step 3: The angular condition](#step-3-the-angular-condition)
   - [Summary](#summary)
 - [Setup](#setup)
-## Synopsis
   - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
+
+## Synopsis
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB entries or large scale multithreaded batch jobs consisting of hundreds of thousands of queries.
 ## How it works
 <!---
