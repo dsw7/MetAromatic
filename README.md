@@ -11,6 +11,7 @@ Code for the following publications:
   - [Summary](#summary)
 - [Setup](#setup)
 ## Synopsis
+  - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB entries or large scale multithreaded batch jobs consisting of hundreds of thousands of queries.
 ## How it works
 <!---
@@ -72,7 +73,7 @@ Or:
 ```bash
 make full    # sets up project AND runs unit tests
 ```
-### Running Met-aromatic jobs in the terminal
+### Finding Met-aromatic pairs
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
 ./MetAromatic/runner.py pair 1rcy
@@ -133,7 +134,9 @@ Note that the Euclidean distances between TYR aromatic carbon atoms and MET rema
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B pair 1rcy
 ```
-In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain. But what about bridging interactions? Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
+In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain.
+### Finding "bridging interactions"
+Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 <p align="center">
   <img width="399" height="300" src=https://github.com/dsw7/MetAromatic/blob/master/docs/tyr_phe_bridge_6c8a.png>
 </p>
