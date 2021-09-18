@@ -19,7 +19,7 @@ SERVER_TIMEOUT_MSEC = 1000
 
 #### Logging stuff
 ISO_8601_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
-LOGRECORD_FORMAT = '%(asctime)s %(levelname)s [%(funcName)s] %(message)s'
+LOGRECORD_FORMAT = '%(asctime)s %(levelname)s [ %(funcName)s ] %(message)s'
 DEFAULT_LOGFILE_NAME = 'met_aromatic.log'
 
 #### Other
