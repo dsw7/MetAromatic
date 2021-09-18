@@ -6,7 +6,7 @@
 
 .PHONY = help \
          requirements setup teardown test full \
-		 wheel install clean uninstall test-pkg test-wheel \
+		 wheel install clean uninstall test-wheel full-wheel \
 		 lint dockertest
 
 .DEFAULT_GOAL = help
@@ -46,6 +46,10 @@ To remove build, dist and other setuo.py directories:
     $$ make clean
 To uninstall site-packages distribution:
     $$ make uninstall
+To run a packaging test
+    $$ make test-wheel
+To run an end-to-end packaging test
+    $$ make full-wheel
 
 Other:
 To display all targets:
@@ -126,11 +130,11 @@ uninstall:
 	$(call RENDER_PREAMBLE,Uninstalling project)
 	@$(PYTHON_INTERP) -m pip uninstall -y $(PROJECT_NAME)
 
-test-pkg:
+test-wheel:
 	$(call RENDER_PREAMBLE,Testing wheel installation)
 	@cd MetAromatic/; $(PYTHON_INTERP) -m pytest -vs -m 'test_packaging' $(PROJECT_DIRECTORY); cd ..
 
-test-wheel: install test-pkg clean uninstall
+full-wheel: install test-wheel clean uninstall
 
 # ----------------------------------
 # Other helpers
