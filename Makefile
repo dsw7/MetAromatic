@@ -4,7 +4,10 @@
 #                                  #
 ####################################
 
-.PHONY = help requirements setup teardown test full wheel install clean uninstall lint dockertest
+.PHONY = help \
+         requirements setup teardown test full \
+		 wheel install clean uninstall test-pkg test-wheel \
+		 lint dockertest
 
 .DEFAULT_GOAL = help
 
