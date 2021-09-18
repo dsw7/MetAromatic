@@ -118,6 +118,9 @@ test-pkg:
 	$(call RENDER_PREAMBLE,Testing wheel installation)
 	@cd MetAromatic/; $(PYTHON_INTERP) -m pytest -vs -m 'test_packaging' $(PROJECT_DIRECTORY); cd ..
 
+test-wheel: install test-pkg clean uninstall
+	$(call RENDER_PREAMBLE,Testing end-to-end wheel installation)
+
 # -- Other helpers --
 
 lint:
