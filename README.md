@@ -11,6 +11,11 @@ Code for the following publications:
   - [Summary](#summary)
 - [Setup](#setup)
   - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
+  - [Finding "bridging interactions"](#finding-bridging-interactions)
+  - [Batch jobs](#batch-jobs)
+- [Tests and automation](#tests-and-automation)
+  - [Testing the command line program](#testing-the-command-line-program)
+  - [Testing the package installation](#testing-the-package-installation)
 
 ## Synopsis
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB entries or large scale multithreaded batch jobs consisting of hundreds of thousands of queries.
@@ -66,13 +71,13 @@ Start by fetching the repository:
 ```bash
 git clone https://github.com/dsw7/MetAromatic.git
 ```
-Change directories into the project and run:
+Change directories into the project and run the following `make` target:
 ```bash
-make install # only sets up project
+make setup   # Only sets up project
 ```
 Or:
 ```bash
-make full    # sets up project AND runs unit tests
+make full    # Sets up project AND runs unit tests
 ```
 ### Finding Met-aromatic pairs
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
@@ -182,7 +187,17 @@ The MongoDB dump database is specified using the `--database` option. The collec
 }
 ```
 ## Tests and automation
-This project is well tested. Tests can be ran as follows:
+### Testing command line program
+To test the command line program, simply run the following target:
 ```
 make test
+```
+### Testing the package installation
+To test a package that was set up via `pip`, run:
+```
+make test-wheel
+```
+This assumes that the package was already set up by running:
+```
+make install
 ```
