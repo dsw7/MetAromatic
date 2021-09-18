@@ -114,6 +114,10 @@ uninstall:
 	$(call RENDER_PREAMBLE,Uninstalling project)
 	@$(PYTHON_INTERP) -m pip uninstall -y $(PROJECT_NAME)
 
+test-pkg:
+	$(call RENDER_PREAMBLE,Testing wheel installation)
+	@cd MetAromatic/; $(PYTHON_INTERP) -m pytest -vs -m 'test_packaging' $(PROJECT_DIRECTORY); cd ..
+
 # -- Other helpers --
 
 lint:
