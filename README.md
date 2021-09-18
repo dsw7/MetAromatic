@@ -177,8 +177,8 @@ The MongoDB dump database is specified using the `--database` option. The collec
 option specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.
 By default, mining jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
 ```
-1970-01-01T00:00:00 INFO [ _get_mongo_client ] Handshaking with MongoDB
-1970-01-01T00:00:00 INFO [ _register_ipc_signals ] Registering SIGINT to thread terminator
+1970-01-01T00:00:00 INFO [ \_get_mongo_client ] Handshaking with MongoDB
+1970-01-01T00:00:00 INFO [ \_register_ipc_signals ] Registering SIGINT to thread terminator
 1970-01-01T00:00:00 INFO [ _read_batch_file ] Imported pdb codes from file core/helpers/data_coronavirus_entries.txt
 1970-01-01T00:00:00 INFO [ _generate_chunks ] Splitting list of pdb codes into 5 chunks
 1970-01-01T00:00:00 INFO [ deploy_jobs ] Deploying 5 workers!
@@ -202,13 +202,13 @@ specified by `--collection`. This secondary collection will house all the batch 
 suffixed with `_info`. An example `*_info` collection for the above example follows:
 ```
 {
-            "_id" : ObjectId("6145d54c6f016f61e0afcaa5"),
+        "_id" : ObjectId("6145d54c6f016f61e0afcaa5"),
         "num_workers" : 5,
         "cutoff_distance" : 4.9,
         "cutoff_angle" : 109.5,
         "chain" : "A",
         "model" : "cp",
-        "data_acquisition_date" : ISODate("2021-09-18T05:02:18.289Z"),
+        "data_acquisition_date" : ISODate("1970-01-01T00:00:02.000Z"),
         "batch_job_execution_time" : 2.077,
         "number_of_entries" : 9
 }
