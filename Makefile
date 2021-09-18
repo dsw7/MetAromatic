@@ -62,7 +62,9 @@ help:
 	$(call RENDER_TITLE,* MET-AROMATIC OFFICIAL MAKEFILE *)
 	@echo "$$HELP_LIST_TARGETS"
 
-# -- Simple install - run via CLI --
+# ----------------------------------
+# Simple install for running program via CLI
+# ----------------------------------
 
 requirements:
 	$(call RENDER_PREAMBLE,Checking if pipreqs is installed)
@@ -92,7 +94,9 @@ test:
 
 full: setup test
 
-# -- Wheel install - for importing Met-aromatic scripts --
+# ----------------------------------
+# Wheel install for importing Met-aromatic scripts
+# ----------------------------------
 
 wheel:
 	$(call RENDER_PREAMBLE,Generating *.whl file for project)
@@ -119,9 +123,10 @@ test-pkg:
 	@cd MetAromatic/; $(PYTHON_INTERP) -m pytest -vs -m 'test_packaging' $(PROJECT_DIRECTORY); cd ..
 
 test-wheel: install test-pkg clean uninstall
-	$(call RENDER_PREAMBLE,Testing end-to-end wheel installation)
 
-# -- Other helpers --
+# ----------------------------------
+# Other helpers
+# ----------------------------------
 
 lint:
 	$(call RENDER_PREAMBLE,Linting the project using pylint static analysis tool)
