@@ -14,6 +14,8 @@ Code for the following publications:
   - [Finding "bridging interactions"](#finding-bridging-interactions)
   - [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
 - [Installing this package from source](#installing-this-package-from-source)
+  - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
+  - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
 - [Tests and automation](#tests-and-automation)
   - [Testing the command line program](#testing-the-command-line-program)
   - [Testing the package installation](#testing-the-package-installation)
