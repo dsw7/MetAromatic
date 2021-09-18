@@ -4,7 +4,7 @@
 #                                  #
 ####################################
 
-.PHONY = help check-pipreqs requirements setup teardown test full wheel install clean uninstall lint dockertest
+.PHONY = help requirements setup teardown test full wheel install clean uninstall lint dockertest
 
 .DEFAULT_GOAL = help
 
@@ -24,8 +24,6 @@ define HELP_LIST_TARGETS
 
 To display all targets:
     $$ make help
-To check whether pipreqs is installed
-    $$ make check-pipreqs
 To generate a requirements.txt file:
     $$ make requirements
 To setup all project dependencies:
@@ -61,18 +59,17 @@ REQUIREMENTS_TXT = $(ROOT_DIRECTORY)/requirements.txt
 DOCKER_TAG = ma
 
 help:
-	$(call RENDER_TITLE,MET-AROMATIC OFFICIAL MAKEFILE)
+	$(call RENDER_TITLE,* MET-AROMATIC OFFICIAL MAKEFILE *)
 	@echo "$$HELP_LIST_TARGETS"
 
 # -- Simple install - run via CLI --
 
-check-pipreqs:
+requirements:
 	$(call RENDER_PREAMBLE,Checking if pipreqs is installed)
 	@$(PYTHON_INTERP) -m pip list | grep --word-regexp pipreqs || \
 	(echo "Library 'pipreqs' is not installed. Installing pipreqs" && \
 	$(PYTHON_INTERP) -m pip install --user pipreqs)
 
-requirements: check-pipreqs
 	$(call RENDER_PREAMBLE,Generating requirements.txt file)
 	@$(PYTHON_INTERP) -m pipreqs.pipreqs --force \
 	--savepath $(REQUIREMENTS_TXT) \
