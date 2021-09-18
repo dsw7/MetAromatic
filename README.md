@@ -63,7 +63,7 @@ Last, a methionine-aromatic pair is deemed interacting if any of <img src="https
 ### Summary
 The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues. A representative figure is shown below:
 <p align="center">
-  <img width="336" height="300" src=https://github.com/dsw7/MetAromatic/blob/master/docs/met18_tyr122.png>
+  <img width="336" height="300" src=./pngs/pair-met18-tyr122.png>
 </p>
 
 ## Setup
@@ -144,7 +144,7 @@ In this case, no results are returned because the PDB entry 1rcy does not contai
 ### Finding "bridging interactions"
 Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 <p align="center">
-  <img width="399" height="300" src=https://github.com/dsw7/MetAromatic/blob/master/docs/tyr_phe_bridge_6c8a.png>
+  <img width="399" height="300" src=./pngs/bridge-tyr_phe_bridge_6c8a.png>
 </p>
 
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `bridge` argument. For example, to search for bridging interactions with a 7.0 <img src="https://latex.codecogs.com/svg.latex?\AA" /> <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" /> cutoff in 6LU7:
