@@ -5,8 +5,11 @@ Code for the following publications:
 ## Table of Contents
 - [Synopsis](#synopsis)
 - [How it works](#how-it-works)
-  - [Step 1 Data preprocessing)(#step-1-data-preprocessing)
-
+  - [Step 1: Data preprocessing](#step-1-data-preprocessing)
+  - [Step 2: The distance condition](#step-2-the-distance-condition)
+  - [Step 3: The angular condition](#step-3-the-angular-condition)
+  - [Summary](#summary)
+- [Setup](#setup)
 ## Synopsis
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB entries or large scale multithreaded batch jobs consisting of hundreds of thousands of queries.
 ## How it works
@@ -56,7 +59,7 @@ The end result is a dataset consisting of methionine-aromatic pairs whereby one 
   <img width="336" height="300" src=https://github.com/dsw7/MetAromatic/blob/master/docs/met18_tyr122.png>
 </p>
 
-## Installation
+## Setup
 Start by fetching the repository:
 ```bash
 git clone https://github.com/dsw7/MetAromatic.git
@@ -69,7 +72,7 @@ Or:
 ```bash
 make full    # sets up project AND runs unit tests
 ```
-## Running Met-aromatic jobs in the terminal
+### Running Met-aromatic jobs in the terminal
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
 ./MetAromatic/runner.py pair 1rcy
@@ -149,7 +152,7 @@ Where each row corresponds to a bridge. This program treats bridging interaction
 ```
 ./MetAromatic/runner.py --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
-## Batch jobs
+### Batch jobs
 This software is normally used for large scale Protein Data Bank mining efforts. To run a batch job, first supply a batch. A batch
 can be a regular text file consisting of delimited PDB codes:
 ```
