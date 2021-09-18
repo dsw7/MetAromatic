@@ -1,3 +1,4 @@
+from pytest import mark
 from .get_hexagon_midpoints import get_hexagon_midpoints
 
 HEXAGON_COORDINATES = [
@@ -18,6 +19,7 @@ HEXAGON_MIDPOINTS = {
     (0.866, 0.0, 0.0)
 }
 
+@mark.test_command_line_interface
 def test_get_hexagon_midpoints() -> None:
     coordinates = [list(i) for i in zip(*HEXAGON_COORDINATES)]
     assert {

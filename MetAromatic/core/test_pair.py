@@ -29,6 +29,7 @@ try:
 except FileNotFoundError as exception:
     fail(exception.__str__())
 
+@mark.test_command_line_interface
 @mark.parametrize(
     "code",
     TEST_PDB_CODES
@@ -58,6 +59,7 @@ def test_metaromatic_algorithm_against_483_data(code: str) -> None:
     assert abs(sum_theta_control - sum_theta_test) < 0.01
     assert abs(sum_phi_control - sum_phi_test) < 0.01
 
+@mark.test_command_line_interface
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle, error',
     [
@@ -83,6 +85,7 @@ def test_mongodb_output_invalid_results(code: str, cutoff_distance: float, cutof
         model=TEST_PARAMETERS['model']
     ).get_met_aromatic_interactions(code=code)['exit_code'] == error
 
+@mark.test_command_line_interface
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle',
     [
@@ -101,6 +104,7 @@ def test_mongodb_output_invalid_results_exception_boolean(code: str, cutoff_dist
         model=TEST_PARAMETERS['model']
     ).get_met_aromatic_interactions(code=code).get('exit_status')
 
+@mark.test_command_line_interface
 def test_mongodb_output_valid_results() -> None:
     sum_met_theta_control = sum([i['met_theta_angle'] for i in VALID_RESULTS_1RCY])
     sum_met_phi_control = sum([i['met_phi_angle'] for i in VALID_RESULTS_1RCY])
@@ -115,6 +119,7 @@ def test_mongodb_output_valid_results() -> None:
     assert sum_met_theta_control == sum_met_theta_test
     assert sum_met_phi_control == sum_met_phi_test
 
+@mark.test_command_line_interface
 def test_invalid_distance_error() -> None:
     assert MetAromatic(
         cutoff_angle=TEST_PARAMETERS['cutoff_angle'],
@@ -123,6 +128,7 @@ def test_invalid_distance_error() -> None:
         chain=TEST_PARAMETERS['chain']
     ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
 
+@mark.test_command_line_interface
 def test_invalid_angle_error() -> None:
     assert MetAromatic(
         cutoff_angle=-720.00,
@@ -131,16 +137,19 @@ def test_invalid_angle_error() -> None:
         chain=TEST_PARAMETERS['chain']
     ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
 
+@mark.test_command_line_interface
 def test_invalid_pdb_code_error() -> None:
     assert MetAromatic(
         **TEST_PARAMETERS
     ).get_met_aromatic_interactions(code='foo')['exit_code'] == EXIT_FAILURE
 
+@mark.test_command_line_interface
 def test_no_met_coordinates_error() -> None:
     assert MetAromatic(
         **TEST_PARAMETERS
     ).get_met_aromatic_interactions(code='3nir')['exit_code'] == EXIT_FAILURE
 
+@mark.test_command_line_interface
 def test_invalid_model_error() -> None:
     assert MetAromatic(
         cutoff_angle=TEST_PARAMETERS['cutoff_angle'],
@@ -149,6 +158,7 @@ def test_invalid_model_error() -> None:
         chain=TEST_PARAMETERS['chain']
     ).get_met_aromatic_interactions(code='1rcy')['exit_code'] == EXIT_FAILURE
 
+@mark.test_command_line_interface
 def test_no_results_error() -> None:
     assert MetAromatic(
         **TEST_PARAMETERS

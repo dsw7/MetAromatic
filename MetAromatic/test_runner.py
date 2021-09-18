@@ -17,6 +17,7 @@ from core.helpers.consts import (
 )
 
 
+@mark.test_command_line_interface
 class TestRunner:
 
     def setup_class(self):
@@ -124,6 +125,7 @@ class TestRunner:
         assert result.exit_code == EXIT_GENERAL_PROGRAM_FAILURES
 
 
+@mark.test_command_line_interface
 class TestRunFromDifferentDirectories:
 
     def setup_class(self):

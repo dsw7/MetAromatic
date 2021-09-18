@@ -1,5 +1,8 @@
- # pylint: disable=C0415   # Disable "Import outside toplevel"
+# pylint: disable=C0415   # Disable "Import outside toplevel"
 
+from pytest import mark
+
+@mark.test_packaging
 def test_import_pair() -> None:
     arguments = {
         'cutoff_distance': 4.9,
@@ -12,6 +15,7 @@ def test_import_pair() -> None:
     results = MetAromatic(**arguments).get_met_aromatic_interactions('1rcy')
     assert results['_id'] == '1rcy'
 
+@mark.test_packaging
 def test_import_bridge() -> None:
     arguments = {
         'cutoff_distance': 6.0,

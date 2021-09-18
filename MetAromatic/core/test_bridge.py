@@ -47,6 +47,7 @@ def get_control_bridge_test_ids(file: str, size: Optional[int] = 100) -> list:
         outgoing.append(datum.get('code').lower())
     return outgoing
 
+@mark.test_command_line_interface
 @mark.parametrize(
     'bridges',
     get_control_bridges(CONTROL_BRIDGE_DATA),
@@ -62,6 +63,7 @@ def test_bridge_collector(bridges: list) -> None:
     else:
         assert set(bridges.get('bridge')) in bridging_interactions['results']
 
+@mark.test_command_line_interface
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle, error',
     [

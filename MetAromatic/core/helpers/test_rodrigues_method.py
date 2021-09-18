@@ -1,5 +1,6 @@
 # pylint: disable=W0201  # Disable "Attribute defined outside __init__"
 
+from pytest import mark
 from numpy import (
     array,
     around,
@@ -7,6 +8,7 @@ from numpy import (
 )
 from .rodrigues_method import RodriguesMethod
 
+@mark.test_command_line_interface
 class TestRodriguesMethod:
 
     def setup_class(self) -> None:

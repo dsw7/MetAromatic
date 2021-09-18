@@ -45,6 +45,7 @@ def mongod_service_not_running() -> bool:
     return False
 
 
+@mark.test_command_line_interface
 @mark.skipif(
     any([mongod_service_not_running(), mongod_does_not_exist()]),
     reason='Could not connect to MongoDB mongo instance!'
