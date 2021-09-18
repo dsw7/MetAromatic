@@ -70,10 +70,6 @@ PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
 REQUIREMENTS_TXT = $(ROOT_DIRECTORY)/requirements.txt
 DOCKER_TAG = ma
 
-help:
-	$(call RENDER_TITLE,* MET-AROMATIC OFFICIAL MAKEFILE *)
-	@echo "$$HELP_LIST_TARGETS"
-
 # ----------------------------------
 # Simple install for running program via CLI
 # ----------------------------------
@@ -102,7 +98,7 @@ teardown: requirements
 
 test:
 	$(call RENDER_PREAMBLE,Running pytest over project)
-	@$(PYTHON_INTERP) -m pytest -vs $(PROJECT_DIRECTORY)
+	@$(PYTHON_INTERP) -m pytest -vs -m 'test_command_line_interface' $(PROJECT_DIRECTORY)
 
 full: setup test
 
@@ -139,6 +135,10 @@ full-wheel: install test-wheel clean uninstall
 # ----------------------------------
 # Other helpers
 # ----------------------------------
+
+help:
+	$(call RENDER_TITLE,* MET-AROMATIC OFFICIAL MAKEFILE *)
+	@echo "$$HELP_LIST_TARGETS"
 
 lint:
 	$(call RENDER_PREAMBLE,Linting the project using pylint static analysis tool)
