@@ -236,6 +236,7 @@ make clean
 Now `MetAromatic.core` can be imported.
 ### Example: programmatically obtaining Met-aromatic pairs
 ```python
+from json import dumps
 from MetAromatic.core.pair import MetAromatic
 
 def main() -> None:
@@ -247,7 +248,7 @@ def main() -> None:
     }
 
     results = MetAromatic(**arguments).get_met_aromatic_interactions('1rcy')
-    print(results)
+    print(dumps(results, indent=4))
 
 if __name__ == '__main__':
     main()
