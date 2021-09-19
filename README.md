@@ -16,6 +16,7 @@ Code for the following publications:
 - [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
   - [A brief overview](#a-brief-overview)
   - [Designing a distributed mining strategy](#designing-a-distributed-mining-strategy)
+    - [Step 1: Install MongoDB](#step-1-install-mongodb)
 - [Installing this package from source](#installing-this-package-from-source)
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
