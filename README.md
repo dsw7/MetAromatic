@@ -237,7 +237,8 @@ The runner will fail with the following log:
 If a `mongod` instance is not listening on the specified TCP port.
 ### Designing a distributed mining strategy
 A user may be tempted to mine data on a high performance machine and then route the results to a storage server. This
-software supports this. To implement this strategy, follow:
+software supports this. The steps in this section can be followed to implement such a strategy.
+**NOTE**: Users familiar with MongoDB setup and administration can safely skip steps 1-6.
 #### Step 1: Install MongoDB
 Start by installing MongoDB following: [Install MongoDB Community Edition on Linux](https://docs.mongodb.com/master/administration/install-on-linux/).
 #### Step 2: Enable port forwarding
