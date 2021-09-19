@@ -266,7 +266,32 @@ Open up the MongoDB configuration file `/etc/mongod.conf` and add the following 
 security:
   authorization: 'enabled'
 ```
-This step ensures that the MongoDB server is inaccessible without the login credentials `<new-username>` and `<new-password>`,
+This step ensures that the MongoDB server is inaccessible without the login credentials `<new-username>` and `<new-password>`.
+#### Step 5: Reset the bind IP
+Open up the MongoDB configuration file `/etc/mongod.conf` and edit the following lines to:
+```
+# network interfaces
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+```
+**WARNING**: It is strongly recommended to follow the security measures provided here, [Security Checklist](#https://docs.mongodb.com/manual/administration/security-checklist/),
+prior to implementing this step.
+#### Step 6: Restart the service
+Run:
+```
+sudo systemctl restart mongod
+```
+And attempt to log in as:
+```
+mongo --username "<new-username>" --password "<new-password>"
+```
+The storage server should now be ready to accept incoming connections from a machine hosting `runner.py`.
+#### Step 7: Run a mining job
+A mining job can now be run as:
+```
+./MetAromatic/runner.py batch /path/batch/file --username <new-username> --password <new-password> --host <host-or-ip-storage-server>
+```
 ## Installing this package from source
 One may be interested in extending the Met-aromatic project into a customized workflow. To do so, this project
 can be built and installed from source by running the target:
