@@ -105,20 +105,15 @@ def bridge(obj, code, vertices):
 @cli.command(help='Run a Met-aromatic query batch job.')
 @argument('path_batch_file', type=Path('rb'))
 @option('--threads', default=5, type=int, metavar='<number-threads>')
-@option('--database', default='default_ma', metavar='<database-name>')
-@option('--collection', default='default_ma', metavar='<collection-name>')
+@option('-d', '--database', default='default_ma', metavar='<database-name>')
+@option('-c', '--collection', default='default_ma', metavar='<collection-name>')
+@option('-h', '--host', default='localhost', metavar='<hostname>')
+@option('-p', '--port', type=int, default=27017, metavar='<tcp-port>')
 @pass_obj
-def batch(obj, path_batch_file, threads, database, collection):
+def batch(obj, **kwargs):
     from core.batch import ParallelProcessing
-    options = {
-        'path_batch_file': path_batch_file,
-        'threads': threads,
-        'database': database,
-        'collection': collection
-    }
-
     all_options = {
-        **options,
+        **kwargs,
         **obj
     }
     ParallelProcessing(all_options).deploy_jobs()
