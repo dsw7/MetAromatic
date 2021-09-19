@@ -4,6 +4,7 @@ from re import split
 from os import path
 from tempfile import gettempdir
 from time import time
+from json import dumps
 from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
@@ -39,6 +40,7 @@ class ParallelProcessing:
 
     def __init__(self, cli_args: dict) -> None:
         self.cli_args = cli_args
+        self._display_params()
 
         self.client = self._get_mongo_client(cli_args['host'], cli_args['port'])
 
@@ -65,6 +67,9 @@ class ParallelProcessing:
         self._register_ipc_signals()
         self._read_batch_file()
         self._generate_chunks()
+
+    def _display_params(self) -> None:
+        logging.info('Running batch job with parameters: %s', dumps(self.cli_args, indent=4))
 
     @staticmethod
     def _get_mongo_client(host: str, port: int) -> MongoClient:
