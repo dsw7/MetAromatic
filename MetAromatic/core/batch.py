@@ -16,8 +16,6 @@ from .helpers.consts import (
     EXIT_SUCCESS,
     MAXIMUM_WORKERS,
     LEN_PDB_CODE,
-    DEFAULT_MONGO_HOST,
-    DEFAULT_MONGO_PORT,
     SERVER_TIMEOUT_MSEC,
     DEFAULT_LOGFILE_NAME,
     ISO_8601_DATE_FORMAT,
@@ -42,7 +40,7 @@ class ParallelProcessing:
     def __init__(self, cli_args: dict) -> None:
         self.cli_args = cli_args
 
-        self.client = self._get_mongo_client()
+        self.client = self._get_mongo_client(cli_args['host'], cli_args['port'])
 
         if self.cli_args['threads'] > MAXIMUM_WORKERS:
             logging.warning('Number of selected workers exceeds maximum number of workers.')
@@ -68,14 +66,16 @@ class ParallelProcessing:
         self._read_batch_file()
         self._generate_chunks()
 
-    def _get_mongo_client(self) -> MongoClient:
-        logging.info('Handshaking with MongoDB')
+    @staticmethod
+    def _get_mongo_client(host: str, port: int) -> MongoClient:
+        uri = 'mongodb://{}:{}/'.format(host, port)
+        logging.info('Handshaking with MongoDB at %s', uri)
 
         try:
-            client = MongoClient(DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT, serverSelectionTimeoutMS=SERVER_TIMEOUT_MSEC)
+            client = MongoClient(uri, serverSelectionTimeoutMS=SERVER_TIMEOUT_MSEC)
             client.server_info()
         except errors.ServerSelectionTimeoutError:
-            logging.error('Could not connect to MongoDB on host %s and port %i', DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT)
+            logging.error('Could not connect to MongoDB on host %s and port %i', host, port)
             logging.error('Either MongoDB is not installed or the socket address is invalid')
             sys.exit(EXIT_FAILURE)
 
