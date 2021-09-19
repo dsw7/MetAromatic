@@ -17,6 +17,9 @@ Code for the following publications:
   - [A brief overview](#a-brief-overview)
   - [Designing a distributed mining strategy](#designing-a-distributed-mining-strategy)
     - [Step 1: Install MongoDB](#step-1-install-mongodb)
+    - [Step 2: Enable port forwarding](#step-2-enable-port-forwarding)
+    - [Step 3: Add a user](#step-3-add-a-user)
+    - [Step 4: Enable authentication](#step-4-enable-authentication)
 - [Installing this package from source](#installing-this-package-from-source)
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
@@ -257,7 +260,7 @@ Replace the `<new-username>` and `<new-password>` definitions with a unique user
 ```
 mongo < /path/to/add-user.js
 ```
-#### Enable authentication
+#### Step 4: Enable authentication
 Open up the MongoDB configuration file `/etc/mongod.conf` and add the following lines:
 ```
 security:
