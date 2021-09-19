@@ -10,9 +10,11 @@ Code for the following publications:
   - [Step 3: The angular condition](#step-3-the-angular-condition)
   - [Summary](#summary)
 - [Setup](#setup)
+- [Basic usage](#basic-usage)
   - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
   - [Finding "bridging interactions"](#finding-bridging-interactions)
-  - [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
+- [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
+  - [A brief overview](#a-brief-overview)
 - [Installing this package from source](#installing-this-package-from-source)
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
@@ -82,6 +84,7 @@ Or:
 ```bash
 make full    # Sets up project AND runs unit tests
 ```
+## Basic usage
 ### Finding Met-aromatic pairs
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
 ```
@@ -164,7 +167,7 @@ Where each row corresponds to a bridge. This program treats bridging interaction
 ```
 ./MetAromatic/runner.py --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
-### Batch jobs and MongoDB integration
+## Batch jobs and MongoDB integration
 This software is normally used for large scale Protein Data Bank mining efforts and stores the results in a MongoDB database (https://www.mongodb.com/).
 To start a batch job, ensure that the host is running a valid MongoDB installation then supply a batch file. A batch file can be a regular text file
 consisting of delimited PDB codes:
