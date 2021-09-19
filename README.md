@@ -279,7 +279,7 @@ net:
   port: 27017
   bindIp: 0.0.0.0
 ```
-**WARNING**: It is strongly recommended to follow the security measures provided here, [Security Checklist](#https://docs.mongodb.com/manual/administration/security-checklist/),
+**WARNING**: It is strongly recommended to follow the security measures provided here, [Security Checklist](https://docs.mongodb.com/manual/administration/security-checklist/),
 prior to implementing this step.
 #### Step 6: Restart the service
 Run:
