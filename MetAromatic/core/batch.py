@@ -41,7 +41,7 @@ class ParallelProcessing:
         self.cli_args = cli_args
         self._display_params()
 
-        self.client = self._get_mongo_client(cli_args['host'], cli_args['port'], cli_args['timeout'])
+        self.client = self._get_mongo_client()
 
         if self.cli_args['threads'] > MAXIMUM_WORKERS:
             logging.warning('Number of selected workers exceeds maximum number of workers.')
@@ -71,19 +71,28 @@ class ParallelProcessing:
     def _display_params(self) -> None:
         logging.info('Running batch job with parameters: %s', dumps(self.cli_args, indent=4))
 
-    @staticmethod
-    def _get_mongo_client(host: str, port: int, timeout: float) -> MongoClient:
-        uri = 'mongodb://{}:{}/'.format(host, port)
+    def _get_mongo_client(self) -> MongoClient:
+
+        if self.cli_args['username'] and self.cli_args['password']:
+            uri = 'mongodb://{}:{}@{}:{}/'.format(
+                self.cli_args['username'], self.cli_args['password'], self.cli_args['host'], self.cli_args['port']
+            )
+        else:
+            uri = 'mongodb://{}:{}/'.format(
+                self.cli_args['host'], self.cli_args['port']
+            )
 
         logging.info('Handshaking with MongoDB at %s', uri)
-        timeout_msec = int(timeout * 1000)
+        timeout_msec = int(self.cli_args['timeout'] * 1000)
 
         try:
             client = MongoClient(uri, serverSelectionTimeoutMS=timeout_msec)
             client.server_info()
         except errors.ServerSelectionTimeoutError:
-            logging.error('Could not connect to MongoDB on host %s and port %i', host, port)
-            logging.error('Either MongoDB is not installed or the socket address is invalid')
+            logging.error('Could not connect to MongoDB on host %s. Possible reasons:', self.cli_args['host'])
+            logging.error('1. The host "%s" is not running MongoDB', self.cli_args['host'])
+            logging.error('2. The host and/or port are invalid')
+            logging.error('3. The server is bound to localhost')
             sys.exit(EXIT_FAILURE)
 
         return client
