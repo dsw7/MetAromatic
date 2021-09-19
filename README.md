@@ -234,6 +234,36 @@ A user may be tempted to mine data on a high performance machine and then route 
 software supports this. To implement this strategy, follow:
 #### Step 1: Install MongoDB
 Start by installing MongoDB following: [Install MongoDB Community Edition on Linux](https://docs.mongodb.com/master/administration/install-on-linux/).
+#### Step 2: Enable port forwarding
+This step ensures that the high performance machine can connect to the storage server.
+#### Step 3: Add a user
+Log in to the storage server and then create a script `add-user.js` with the following contents:
+```javascript
+let username = "<new-username>";
+let password = "<new-password>";
+
+use admin;
+db.createUser({
+    user: username,
+    pwd: password,
+    roles: [
+        {role: "userAdminAnyDatabase", db: username},
+        {role: "readWriteAnyDatabase", db: username},
+        {role: "dbAdminAnyDatabase", db: username}
+    ]
+});
+```
+Replace the `<new-username>` and `<new-password>` definitions with a unique username and password, then run:
+```
+mongo < /path/to/add-user.js
+```
+#### Enable authentication
+Open up the MongoDB configuration file `/etc/mongod.conf` and add the following lines:
+```
+security:
+  authorization: 'enabled'
+```
+This step ensures that the MongoDB server is inaccessible without the login credentials `<new-username>` and `<new-password>`,
 ## Installing this package from source
 One may be interested in extending the Met-aromatic project into a customized workflow. To do so, this project
 can be built and installed from source by running the target:
