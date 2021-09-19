@@ -59,15 +59,6 @@ def cli(context, **options):
     if options['model']:
         context.obj['model'] = options['model']
 
-@cli.command(help='Run single Met-aromatic query in a curses interface.')
-@argument('code')
-@pass_obj
-def interface(obj, code):
-    from core.interface import MetAromaticCurses
-
-    obj['code'] = code
-    sys.exit(MetAromaticCurses(obj).event_loop())
-
 @cli.command(help='Run a Met-aromatic query on a single PDB entry.')
 @argument('code')
 @pass_obj
