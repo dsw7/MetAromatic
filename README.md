@@ -184,7 +184,7 @@ The MongoDB dump database is specified using the `--database` option. The collec
 option specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.
 By default, mining jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
 ```
-1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB
+1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB at mongodb://localhost:27017/
 1970-01-01T00:00:00 INFO  [ _register_ipc_signals ] Registering SIGINT to thread terminator
 1970-01-01T00:00:00 INFO  [ _read_batch_file ] Imported pdb codes from file core/helpers/data_coronavirus_entries.txt
 1970-01-01T00:00:00 INFO  [ _generate_chunks ] Splitting list of pdb codes into 5 chunks
