@@ -17,7 +17,6 @@ from .helpers.consts import (
     EXIT_SUCCESS,
     MAXIMUM_WORKERS,
     LEN_PDB_CODE,
-    SERVER_TIMEOUT_MSEC,
     DEFAULT_LOGFILE_NAME,
     ISO_8601_DATE_FORMAT,
     LOGRECORD_FORMAT
@@ -73,12 +72,14 @@ class ParallelProcessing:
         logging.info('Running batch job with parameters: %s', dumps(self.cli_args, indent=4))
 
     @staticmethod
-    def _get_mongo_client(host: str, port: int) -> MongoClient:
+    def _get_mongo_client(host: str, port: int, timeout: float) -> MongoClient:
         uri = 'mongodb://{}:{}/'.format(host, port)
+
         logging.info('Handshaking with MongoDB at %s', uri)
+        timeout_msec = int(timeout * 1000)
 
         try:
-            client = MongoClient(uri, serverSelectionTimeoutMS=SERVER_TIMEOUT_MSEC)
+            client = MongoClient(uri, serverSelectionTimeoutMS=timeout_msec)
             client.server_info()
         except errors.ServerSelectionTimeoutError:
             logging.error('Could not connect to MongoDB on host %s and port %i', host, port)

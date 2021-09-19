@@ -104,12 +104,13 @@ def bridge(obj, code, vertices):
 
 @cli.command(help='Run a Met-aromatic query batch job.')
 @argument('path_batch_file', type=Path('rb'))
-@option('--threads', default=5, type=int, metavar='<number-threads>', help='Specify number of workers to use')
-@option('-d', '--database', default='default_ma', metavar='<database-name>', help='Specify MongoDB database to use')
-@option('-c', '--collection', default='default_ma', metavar='<collection-name>', help='Specify MongoDB collection to use')
-@option('-h', '--host', default='localhost', metavar='<hostname>', help='Specify host name')
-@option('-p', '--port', type=int, default=27017, metavar='<tcp-port>', help='Specify MongoDB TCP connection port')
-@option('-x', '--overwrite', is_flag=True, default=False, help='Specify whether to overwrite collection specified with -c')
+@option('--threads', default=5, type=int, metavar='<number-threads>', help='Specify number of workers to use.')
+@option('--timeout', default=1.00, type=float, metavar='<timeout-in-seconds>', help='Specify MongoDB connection timeout in seconds.')
+@option('-d', '--database', default='default_ma', metavar='<database-name>', help='Specify MongoDB database to use.')
+@option('-c', '--collection', default='default_ma', metavar='<collection-name>', help='Specify MongoDB collection to use.')
+@option('-h', '--host', default='localhost', metavar='<hostname>', help='Specify host name.')
+@option('-p', '--port', type=int, default=27017, metavar='<tcp-port>', help='Specify MongoDB TCP connection port.')
+@option('-x', '--overwrite', is_flag=True, default=False, help='Specify whether to overwrite collection specified with -c.')
 @pass_obj
 def batch(obj, **kwargs):
     from core.batch import ParallelProcessing
