@@ -109,6 +109,7 @@ def bridge(obj, code, vertices):
 @option('-c', '--collection', default='default_ma', metavar='<collection-name>', help='Specify MongoDB collection to use')
 @option('-h', '--host', default='localhost', metavar='<hostname>', help='Specify host name')
 @option('-p', '--port', type=int, default=27017, metavar='<tcp-port>', help='Specify MongoDB TCP connection port')
+@option('-x', '--overwrite', is_flag=True, default=False, help='Specify whether to overwrite collection specified with -c')
 @pass_obj
 def batch(obj, **kwargs):
     from core.batch import ParallelProcessing
