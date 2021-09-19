@@ -185,7 +185,7 @@ The MongoDB dump database is specified using the `--database` option. The collec
 option specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.
 By default, mining jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
 ```
-1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB at mongodb://localhost:27017/
+1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB on host localhost
 1970-01-01T00:00:00 INFO  [ _register_ipc_signals ] Registering SIGINT to thread terminator
 1970-01-01T00:00:00 INFO  [ _read_batch_file ] Imported pdb codes from file core/helpers/data_coronavirus_entries.txt
 1970-01-01T00:00:00 INFO  [ _generate_chunks ] Splitting list of pdb codes into 5 chunks
@@ -223,12 +223,15 @@ suffixed with `_info`. For example, the above scenario would generate the `defau
 ```
 The runner will fail with the following log:
 ```
-1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB at mongodb://localhost:27017/
+1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB on host localhost
 1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Could not connect to MongoDB on host localhost and port 27017
 1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Either MongoDB is not installed or the socket address is invalid
 ```
 If a `mongod` instance is not listening on the specified TCP port.
 ### Designing a distributed mining strategy
+A user may be tempted to mine data on a high performance machine and then route the results to a storage server. This
+software supports this. To implement this strategy, follow:
+#### Step 1: Install MongoDB
 ## Installing this package from source
 One may be interested in extending the Met-aromatic project into a customized workflow. To do so, this project
 can be built and installed from source by running the target:
