@@ -63,6 +63,7 @@ class ParallelProcessing:
             'data_acquisition_date': datetime.now()
         }
 
+        self._drop_collection_if_overwrite_enabled()
         self._ensure_collection_does_not_exist()
         self._register_ipc_signals()
         self._read_batch_file()
@@ -85,6 +86,13 @@ class ParallelProcessing:
             sys.exit(EXIT_FAILURE)
 
         return client
+
+    def _drop_collection_if_overwrite_enabled(self) -> None:
+        if not self.cli_args['overwrite']:
+            return
+
+        logging.info('Will overwrite collection "%s" if exists', self.cli_args['collection'])
+        self.client[self.cli_args['database']].drop_collection(self.cli_args['collection'])
 
     def _ensure_collection_does_not_exist(self) -> None:
         collections = self.client[self.cli_args['database']].list_collection_names()
