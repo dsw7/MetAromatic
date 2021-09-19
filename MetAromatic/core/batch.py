@@ -41,7 +41,7 @@ class ParallelProcessing:
         self.cli_args = cli_args
         self._display_params()
 
-        self.client = self._get_mongo_client(cli_args['host'], cli_args['port'])
+        self.client = self._get_mongo_client(cli_args['host'], cli_args['port'], cli_args['timeout'])
 
         if self.cli_args['threads'] > MAXIMUM_WORKERS:
             logging.warning('Number of selected workers exceeds maximum number of workers.')
@@ -94,6 +94,10 @@ class ParallelProcessing:
 
         logging.info('Will overwrite collection "%s" if exists', self.cli_args['collection'])
         self.client[self.cli_args['database']].drop_collection(self.cli_args['collection'])
+
+        info_collection = '{}_info'.format(self.cli_args['collection'])
+        logging.info('Will overwrite collection "%s" if exists', info_collection)
+        self.client[self.cli_args['database']].drop_collection(info_collection)
 
     def _ensure_collection_does_not_exist(self) -> None:
         collections = self.client[self.cli_args['database']].list_collection_names()
