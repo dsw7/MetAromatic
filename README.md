@@ -15,6 +15,7 @@ Code for the following publications:
   - [Finding "bridging interactions"](#finding-bridging-interactions)
 - [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
   - [A brief overview](#a-brief-overview)
+  - [Designing a distributed mining strategy](#designing-a-distributed-mining-strategy)
 - [Installing this package from source](#installing-this-package-from-source)
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
@@ -227,6 +228,7 @@ The runner will fail with the following log:
 1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Either MongoDB is not installed or the socket address is invalid
 ```
 If a `mongod` instance is not listening on the specified TCP port.
+### Designing a distributed mining strategy
 ## Installing this package from source
 One may be interested in extending the Met-aromatic project into a customized workflow. To do so, this project
 can be built and installed from source by running the target:

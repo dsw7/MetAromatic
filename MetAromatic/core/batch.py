@@ -4,7 +4,6 @@ from re import split
 from os import path
 from tempfile import gettempdir
 from time import time
-from json import dumps
 from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
@@ -39,9 +38,9 @@ class ParallelProcessing:
 
     def __init__(self, cli_args: dict) -> None:
         self.cli_args = cli_args
-        self._display_params()
 
         self.client = self._get_mongo_client()
+        self._check_authentication()
 
         if self.cli_args['threads'] > MAXIMUM_WORKERS:
             logging.warning('Number of selected workers exceeds maximum number of workers.')
@@ -68,9 +67,6 @@ class ParallelProcessing:
         self._read_batch_file()
         self._generate_chunks()
 
-    def _display_params(self) -> None:
-        logging.info('Running batch job with parameters: %s', dumps(self.cli_args, indent=4))
-
     def _get_mongo_client(self) -> MongoClient:
 
         if self.cli_args['username'] and self.cli_args['password']:
@@ -82,7 +78,7 @@ class ParallelProcessing:
                 self.cli_args['host'], self.cli_args['port']
             )
 
-        logging.info('Handshaking with MongoDB at %s', uri)
+        logging.info('Handshaking with MongoDB on host %s', self.cli_args['host'])
         timeout_msec = int(self.cli_args['timeout'] * 1000)
 
         try:
@@ -94,8 +90,19 @@ class ParallelProcessing:
             logging.error('2. The host and/or port are invalid')
             logging.error('3. The server is bound to localhost')
             sys.exit(EXIT_FAILURE)
+        except errors.OperationFailure as exception:
+            logging.error(exception.details['errmsg'])
+            logging.error('Invalid username and password credentials provided!')
+            sys.exit(EXIT_FAILURE)
 
         return client
+
+    def _check_authentication(self) -> None:
+        try:
+            self.client.admin.command('usersInfo')
+        except errors.OperationFailure as exception:
+            logging.error('Server has enabled authentication and no credentials were provided')
+            sys.exit(EXIT_FAILURE)
 
     def _drop_collection_if_overwrite_enabled(self) -> None:
         if not self.cli_args['overwrite']:
