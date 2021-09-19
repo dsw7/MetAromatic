@@ -168,6 +168,7 @@ Where each row corresponds to a bridge. This program treats bridging interaction
 ./MetAromatic/runner.py --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
 ## Batch jobs and MongoDB integration
+### A brief overview
 This software is normally used for large scale Protein Data Bank mining efforts and stores the results in a MongoDB database (https://www.mongodb.com/).
 To start a batch job, ensure that the host is running a valid MongoDB installation then supply a batch file. A batch file can be a regular text file
 consisting of delimited PDB codes:
