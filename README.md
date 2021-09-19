@@ -184,25 +184,25 @@ The MongoDB dump database is specified using the `--database` option. The collec
 option specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.
 By default, mining jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
 ```
-1970-01-01T00:00:00 INFO [ _get_mongo_client ] Handshaking with MongoDB
-1970-01-01T00:00:00 INFO [ _register_ipc_signals ] Registering SIGINT to thread terminator
-1970-01-01T00:00:00 INFO [ _read_batch_file ] Imported pdb codes from file core/helpers/data_coronavirus_entries.txt
-1970-01-01T00:00:00 INFO [ _generate_chunks ] Splitting list of pdb codes into 5 chunks
-1970-01-01T00:00:00 INFO [ deploy_jobs ] Deploying 5 workers!
-1970-01-01T00:00:00 INFO [ worker_met_aromatic ] Processed 1xak. Count: 1
-1970-01-01T00:00:00 INFO [ worker_met_aromatic ] Processed 1uw7. Count: 2
-1970-01-01T00:00:00 INFO [ worker_met_aromatic ] Processed 2ca1. Count: 3
-1970-01-01T00:00:00 INFO [ worker_met_aromatic ] Processed 1qz8. Count: 4
-1970-01-01T00:00:01 INFO [ worker_met_aromatic ] Processed 2fxp. Count: 5
-1970-01-01T00:00:01 INFO [ worker_met_aromatic ] Processed 2fyg. Count: 6
-1970-01-01T00:00:01 INFO [ worker_met_aromatic ] Processed 2cme. Count: 7
-1970-01-01T00:00:01 INFO [ worker_met_aromatic ] Processed 6mwm. Count: 8
-1970-01-01T00:00:02 INFO [ worker_met_aromatic ] Processed spam. Count: 9
-1970-01-01T00:00:02 INFO [ deploy_jobs ] Batch job complete!
-1970-01-01T00:00:02 INFO [ deploy_jobs ] Results loaded into database: default_ma
-1970-01-01T00:00:02 INFO [ deploy_jobs ] Results loaded into collection: default_ma
-1970-01-01T00:00:02 INFO [ deploy_jobs ] Batch job statistics loaded into collection: default_ma_info
-1970-01-01T00:00:02 INFO [ deploy_jobs ] Batch job execution time: 2.077000 s
+1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB
+1970-01-01T00:00:00 INFO  [ _register_ipc_signals ] Registering SIGINT to thread terminator
+1970-01-01T00:00:00 INFO  [ _read_batch_file ] Imported pdb codes from file core/helpers/data_coronavirus_entries.txt
+1970-01-01T00:00:00 INFO  [ _generate_chunks ] Splitting list of pdb codes into 5 chunks
+1970-01-01T00:00:00 INFO  [ deploy_jobs ] Deploying 5 workers!
+1970-01-01T00:00:00 INFO  [ worker_met_aromatic ] Processed 1xak. Count: 1
+1970-01-01T00:00:00 INFO  [ worker_met_aromatic ] Processed 1uw7. Count: 2
+1970-01-01T00:00:00 INFO  [ worker_met_aromatic ] Processed 2ca1. Count: 3
+1970-01-01T00:00:00 INFO  [ worker_met_aromatic ] Processed 1qz8. Count: 4
+1970-01-01T00:00:01 INFO  [ worker_met_aromatic ] Processed 2fxp. Count: 5
+1970-01-01T00:00:01 INFO  [ worker_met_aromatic ] Processed 2fyg. Count: 6
+1970-01-01T00:00:01 INFO  [ worker_met_aromatic ] Processed 2cme. Count: 7
+1970-01-01T00:00:01 INFO  [ worker_met_aromatic ] Processed 6mwm. Count: 8
+1970-01-01T00:00:02 INFO  [ worker_met_aromatic ] Processed spam. Count: 9
+1970-01-01T00:00:02 INFO  [ deploy_jobs ] Batch job complete!
+1970-01-01T00:00:02 INFO  [ deploy_jobs ] Results loaded into database: default_ma
+1970-01-01T00:00:02 INFO  [ deploy_jobs ] Results loaded into collection: default_ma
+1970-01-01T00:00:02 INFO  [ deploy_jobs ] Batch job statistics loaded into collection: default_ma_info
+1970-01-01T00:00:02 INFO  [ deploy_jobs ] Batch job execution time: 2.077000 s
 ```
 A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary
 collection will house all the batch job parameters and other statistics and the collection name will be
@@ -222,7 +222,7 @@ suffixed with `_info`. For example, the above scenario would generate the `defau
 ```
 The runner will fail with the following log:
 ```
-1970-01-01T00:00:00 INFO [ _get_mongo_client ] Handshaking with MongoDB
+1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB at mongodb://localhost:27017/
 1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Could not connect to MongoDB on host localhost and port 27017
 1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Either MongoDB is not installed or the socket address is invalid
 ```
