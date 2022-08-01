@@ -114,7 +114,7 @@ PHE        54         MET        148        4.75563    93.28732   154.63001
 PHE        54         MET        148        5.05181    105.07358  141.00282
 ===========================================================================
 ```
-Above we have an order VI interaction between TYR 122 and MET 18, that is, all six vectors $\vec{v}$ projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the actual distance (in <img src="https://latex.codecogs.com/svg.latex?\AA">) between the MET residue and one of the midpoints between two carbon atoms in an aromatic ring, or <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|">. The default cutoff $c$ was applied in the above example, at 4.9 <img src="https://latex.codecogs.com/svg.latex?\AA">. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
+Above we have an order VI interaction between TYR 122 and MET 18, that is, all six vectors $\vec{v}$ projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the actual distance (in $\AA$) between the MET residue and one of the midpoints between two carbon atoms in an aromatic ring, or <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|">. The default cutoff $c$ was applied in the above example, at 4.9 $\AA$. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.0 pair 1rcy
 ```
@@ -161,7 +161,7 @@ Bridging interactions are interactions whereby two or more aromatic residues mee
   <img width="399" height="300" src=./pngs/bridge-tyr-phe-6c8a.png>
 </p>
 
-We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `bridge` argument. For example, to search for bridging interactions with a 7.0 <img src="https://latex.codecogs.com/svg.latex?\AA"> <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|"> cutoff in 6LU7:
+We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `bridge` argument. For example, to search for bridging interactions with a 7.0 $\AA$ <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|"> cutoff in 6LU7:
 ```
 ./MetAromatic/runner.py --cutoff-distance 7.0 bridge 6lu7
 ```
