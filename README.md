@@ -110,7 +110,10 @@ $$
 
 holds.
 ### Summary
-The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues. A representative figure is shown below:
+The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone
+pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues.
+A representative figure is shown below:
+
 <p align="center">
   <img width="336" height="300" src=./pngs/pair-met18-tyr122.png>
 </p>
@@ -130,11 +133,13 @@ make full    # Sets up project AND runs unit tests
 ```
 ## Basic usage
 ### Finding Met-aromatic pairs
-The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest query follows:
+The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest
+query follows:
 ```
 ./MetAromatic/runner.py pair 1rcy
 ```
-Here, the `pair` argument specifies that we want to run a single aromatic interaction calculation. The query will yield the following results:
+Here, the `pair` argument specifies that we want to run a single aromatic interaction calculation. The query
+will yield the following results:
 ```
 ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 ===========================================================================
@@ -150,7 +155,14 @@ PHE        54         MET        148        4.75563    93.28732   154.63001
 PHE        54         MET        148        5.05181    105.07358  141.00282
 ===========================================================================
 ```
-Above we have an order VI interaction between TYR 122 and MET 18, that is, all six vectors $\vec{v}$ projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the actual distance (in $\overset{\circ}{\mathrm {A}}$) between the MET residue and one of the midpoints between two carbon atoms in an aromatic ring, or <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|">. The default cutoff $c$ was applied in the above example, at 4.9 $\overset{\circ}{\mathrm {A}}$. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
+Above we have an order VI interaction between TYR 122 and MET 18, that is, all six vectors $\vec{v}$
+projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an
+order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the actual distance (in
+$\overset{\circ}{\mathrm {A}}$) between the MET residue and one of the midpoints between two carbon atoms in
+an aromatic ring, or <img
+src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|">. The default
+cutoff $c$ was applied in the above example, at 4.9 $\overset{\circ}{\mathrm {A}}$. The cutoff can be
+adjusted, however, using the `--cutoff-distance` option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.0 pair 1rcy
 ```
@@ -161,11 +173,14 @@ ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 TYR        122        MET        18         3.95401    60.14475   68.35187
 ===========================================================================
 ```
-`MET-THETA` and `MET-PHI` refer to $\theta$ and $\phi$, respectively. In the above example, the default cutoff angle $\delta$ is used (<img src="https://latex.codecogs.com/svg.latex?109.5^\circ">). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
+`MET-THETA` and `MET-PHI` refer to $\theta$ and $\phi$, respectively. In the above example, the default cutoff
+angle $\delta$ is used (<img src="https://latex.codecogs.com/svg.latex?109.5^\circ">). The cutoff angle can be
+adjusted by using the `--cutoff-angle` option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
-The `--cutoff-angle` option ensures that **at least one of** $\theta$ or $\phi$ angles fall below the cutoff $\delta$. This is seen in the below order II interaction:
+The `--cutoff-angle` option ensures that **at least one of** $\theta$ or $\phi$ angles fall below the cutoff
+$\delta$. This is seen in the below order II interaction:
 ```
 ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 ===========================================================================
@@ -173,7 +188,11 @@ TYR        122        MET        18         4.05137    47.19765   85.15065
 TYR        122        MET        18         4.38983    53.39991   95.48742
 ===========================================================================
 ```
-The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in my master's thesis: [Applications of numerical linear algebra to protein structural analysis: the case of methionine-aromatic motifs](https://summit.sfu.ca/item/18741)). There exists another model, `rm` or Rodrigues Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
+The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in my
+master's thesis: [Applications of numerical linear algebra to protein structural analysis: the case of
+methionine-aromatic motifs](https://summit.sfu.ca/item/18741)). There exists another model, `rm` or Rodrigues
+Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The
+model type can be passed as follows:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
 ```
@@ -186,7 +205,10 @@ TYR        122        MET        18         4.05137    45.0966    80.76811
 TYR        122        MET        18         4.38983    52.50492   91.84111
 ===========================================================================
 ```
-Note that the Euclidean distances between TYR aromatic carbon atoms and MET remain unchanged. By default, this program searches for "A" delimited chains. Some researchers may, however, be interested in searching for aromatic interactions in a different chain within a multichain protein. The `--chain` option can be used to specify the chain:
+Note that the Euclidean distances between TYR aromatic carbon atoms and MET remain unchanged. By default, this
+program searches for "A" delimited chains. Some researchers may, however, be interested in searching for
+aromatic interactions in a different chain within a multichain protein. The `--chain` option can be used to
+specify the chain:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B pair 1rcy
 ```
