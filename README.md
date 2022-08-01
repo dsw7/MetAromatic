@@ -94,17 +94,11 @@ vertices `CE` and `CG`. Solving for the position of the remaining two vertices y
 $\vec{g}$. Next, the program obtains the angles between the lone pairs and $\vec{v}$:
 
 $$
-\theta = cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right )
+\theta = cos^{-1}\left (\frac{\lVert \vec{a} \rVert \lVert \vec{v} \rVert}{\vec{a}\cdot\vec{v}} \right )
 $$
 
 $$
-\phi = cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right )
-$$
-
-$$
-\theta, \phi =
-cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right ),
-cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right )
+\phi = cos^{-1}\left (\frac{\lVert \vec{g} \rVert \lVert \vec{v} \rVert}{\vec{g}\cdot\vec{v}} \right )
 $$
 
 <p align="center">
