@@ -33,9 +33,10 @@ Code for the following publications:
   - [Testing the command line program](#testing-the-command-line-program)
   - [Testing the package installation](#testing-the-package-installation)
 
-## Synopsis This program returns a list of closely spaced methionine-aromatic residue pairs for structures in
-the [Protein Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB
-entries or large scale multithreaded batch jobs consisting of hundreds of thousands of queries.
+## Synopsis
+This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein
+Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB entries or large
+scale multithreaded batch jobs consisting of hundreds of thousands of queries.
 ## How it works
 ### Step 1: Data preprocessing
 Files in the PDB are organized using the SMCRA hierarchy: _Structure_, _Model_, _Chain_, _Residue_ and _Atom_.
