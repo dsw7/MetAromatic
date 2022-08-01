@@ -42,7 +42,7 @@ Files in the PDB are organized using the SMCRA hierarchy: _Structure_, _Model_, 
 1         2  3   4   5   6     7         8      9       10   11              12
 ATOM      5  CB  THR A   5     -13.081   2.366  23.788  1.00 37.95           C
 ```
-Each line in a file corresponds to a single atom. In the above example, we have a carbon atom that is labelled `CB` (column 3) on a threonine residue (`THR`, column 4) located on the `A` chain (column 5). Columns 7-9 specify the _x_, _y_, _z_ coordinates of the carbon atom.
+Each line in a file corresponds to a single atom. In the above example, we have a carbon atom that is labelled `CB` (column 3) on a threonine residue (`THR`, column 4) located on the `A` chain (column 5). Columns 7-9 specify the $x$, $y$, $z$ coordinates of the carbon atom.
 
 The Met-aromatic program starts by downloading a `*.pdb` file from the PDB over FTP. The file is then stripped down to the subset of coordinates corresponding to a chain `[A-Z]` of choosing. Most PDB entries consist of `A` and `B` chains. The program then strips the dataset down to the residues tyrosine (`TYR`), tryptophan (`TRP`), phenylalanine (`PHE`), and methionine (`MET`). In the last step of preprocessing, the program further strips the dataset down to any of the following atoms:
 ```
