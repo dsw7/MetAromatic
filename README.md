@@ -67,12 +67,12 @@ To apply the distance condition, the program simply banks those methionine-aroma
 </p>
 
 ### Step 3: The angular condition
-Any methionine-aromatic pairs meeting the distance condition are subjected to the angular condition. The angular condition can be loosely interpreted as _"find all the methionine-aromatic pairs where the methionine lone pairs are pointing into or near the region(s) of highest electron density on a corresponding aromatic moiety_." To apply the angular condition, two new vectors are introducted: vector <img src="https://latex.codecogs.com/svg.latex?\vec{a}" /> and vector <img src="https://latex.codecogs.com/svg.latex?\vec{g}" />, which describe the orientation of the `SD` lone pairs in three dimensional space. To find the lone pairs, the program considers the `SD` atom in a methionine atom to be the center of a regular tetrahedron with vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors <img src="https://latex.codecogs.com/svg.latex?\vec{a}"> and <img src="https://latex.codecogs.com/svg.latex?\vec{g}">. Next, the program obtains the angles between the lone pairs and $vec{v}$:
+Any methionine-aromatic pairs meeting the distance condition are subjected to the angular condition. The angular condition can be loosely interpreted as _"find all the methionine-aromatic pairs where the methionine lone pairs are pointing into or near the region(s) of highest electron density on a corresponding aromatic moiety_." To apply the angular condition, two new vectors are introducted: vector <img src="https://latex.codecogs.com/svg.latex?\vec{a}"> and vector <img src="https://latex.codecogs.com/svg.latex?\vec{g}">, which describe the orientation of the `SD` lone pairs in three dimensional space. To find the lone pairs, the program considers the `SD` atom in a methionine atom to be the center of a regular tetrahedron with vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors <img src="https://latex.codecogs.com/svg.latex?\vec{a}"> and <img src="https://latex.codecogs.com/svg.latex?\vec{g}">. Next, the program obtains the angles between the lone pairs and $vec{v}$:
 <p align="center">
-  <img src="https://latex.codecogs.com/svg.latex?\theta,&space;\phi&space;=&space;cos^{-1}\left&space;(\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}}&space;\right&space;),&space;cos^{-1}\left&space;(\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}}&space;\right&space;)" title="\theta, \phi = cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right ), cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right )" />
+  <img src="https://latex.codecogs.com/svg.latex?\theta,&space;\phi&space;=&space;cos^{-1}\left&space;(\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}}&space;\right&space;),&space;cos^{-1}\left&space;(\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}}&space;\right&space;)" title="\theta, \phi = cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right ), cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right )">
 </p>
 
-Last, a methionine-aromatic pair is deemed interacting if any of <img src="https://latex.codecogs.com/svg.latex?\theta"> or <img src="https://latex.codecogs.com/svg.latex?\phi" /> is less than or equal to some cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta">, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta"> holds.
+Last, a methionine-aromatic pair is deemed interacting if any of <img src="https://latex.codecogs.com/svg.latex?\theta"> or <img src="https://latex.codecogs.com/svg.latex?\phi"> is less than or equal to some cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta">, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta"> holds.
 ### Summary
 The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues. A representative figure is shown below:
 <p align="center">
@@ -114,7 +114,7 @@ PHE        54         MET        148        4.75563    93.28732   154.63001
 PHE        54         MET        148        5.05181    105.07358  141.00282
 ===========================================================================
 ```
-Above we have an order VI interaction between TYR 122 and MET 18, that is, all six vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}" /> projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the actual distance (in <img src="https://latex.codecogs.com/svg.latex?\AA" />) between the MET residue and one of the midpoints between two carbon atoms in an aromatic ring, or <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" />. The default cutoff <img src="https://latex.codecogs.com/svg.latex?c" /> was applied in the above example, at 4.9 <img src="https://latex.codecogs.com/svg.latex?\AA" />. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
+Above we have an order VI interaction between TYR 122 and MET 18, that is, all six vectors <img src="https://latex.codecogs.com/svg.latex?\vec{v}"> projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the actual distance (in <img src="https://latex.codecogs.com/svg.latex?\AA">) between the MET residue and one of the midpoints between two carbon atoms in an aromatic ring, or <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|">. The default cutoff <img src="https://latex.codecogs.com/svg.latex?c"> was applied in the above example, at 4.9 <img src="https://latex.codecogs.com/svg.latex?\AA">. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.0 pair 1rcy
 ```
@@ -125,11 +125,11 @@ ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 TYR        122        MET        18         3.95401    60.14475   68.35187
 ===========================================================================
 ```
-`MET-THETA` and `MET-PHI` refer to <img src="https://latex.codecogs.com/svg.latex?\theta" /> and <img src="https://latex.codecogs.com/svg.latex?\phi" />, respectively. In the above example, the default cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta" /> is used (<img src="https://latex.codecogs.com/svg.latex?109.5^\circ" />). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
+`MET-THETA` and `MET-PHI` refer to <img src="https://latex.codecogs.com/svg.latex?\theta"> and <img src="https://latex.codecogs.com/svg.latex?\phi">, respectively. In the above example, the default cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta"> is used (<img src="https://latex.codecogs.com/svg.latex?109.5^\circ">). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
-The `--cutoff-angle` option ensures that **at least one of** <img src="https://latex.codecogs.com/svg.latex?\theta" /> or <img src="https://latex.codecogs.com/svg.latex?\phi" /> angles fall below the cutoff <img src="https://latex.codecogs.com/svg.latex?\delta" />. This is seen in the below order II interaction:
+The `--cutoff-angle` option ensures that **at least one of** <img src="https://latex.codecogs.com/svg.latex?\theta"> or <img src="https://latex.codecogs.com/svg.latex?\phi"> angles fall below the cutoff <img src="https://latex.codecogs.com/svg.latex?\delta">. This is seen in the below order II interaction:
 ```
 ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 ===========================================================================
@@ -161,7 +161,7 @@ Bridging interactions are interactions whereby two or more aromatic residues mee
   <img width="399" height="300" src=./pngs/bridge-tyr-phe-6c8a.png>
 </p>
 
-We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `bridge` argument. For example, to search for bridging interactions with a 7.0 <img src="https://latex.codecogs.com/svg.latex?\AA" /> <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|" /> cutoff in 6LU7:
+We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `bridge` argument. For example, to search for bridging interactions with a 7.0 <img src="https://latex.codecogs.com/svg.latex?\AA"> <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|"> cutoff in 6LU7:
 ```
 ./MetAromatic/runner.py --cutoff-distance 7.0 bridge 6lu7
 ```
