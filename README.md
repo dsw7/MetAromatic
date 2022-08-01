@@ -81,7 +81,7 @@ vectors $\vec{v}$ are less than or equal to some cutoff $c$. As a motivating exa
 midpoint between the `CD1` and `CE1` carbon atoms. A `CD1* / SD` on an aromatic / methionine pair would meet
 the distance condition if the following held:
 
-$$ \|\vec{v}\|=\sqrt{(CD1_x * -SD_x)^2 + (CD1_y * -SD_y)^2 + (CD1_z * -SD_z)^2} \leq c $$
+$$ \lVert \vec{v} \rVert = \sqrt{(CD1_x * -SD_x)^2 + (CD1_y * -SD_y)^2 + (CD1_z * -SD_z)^2} \leq c $$
 
 <p align="center">
   <img width="500" height="35" src="https://latex.codecogs.com/svg.latex?\|\vec{v}\|=\sqrt{(CD1_x*-SD_x)^2&plus;(CD1_y*-SD_y)^2&plus;(CD1_z*-SD_z)^2}&space;\leq&space;c">
