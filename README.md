@@ -160,10 +160,8 @@ Above we have an order VI interaction between TYR 122 and MET 18, that is, all s
 projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an
 order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the actual distance (in
 $\overset{\circ}{\mathrm {A}}$) between the MET residue and one of the midpoints between two carbon atoms in
-an aromatic ring, or <img
-src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|">. The default
-cutoff $c$ was applied in the above example, at 4.9 $\overset{\circ}{\mathrm {A}}$. The cutoff can be
-adjusted, however, using the `--cutoff-distance` option:
+an aromatic ring, or $\lVert v \rVert$. The default cutoff $c$ was applied in the above example, at 4.9
+$\overset{\circ}{\mathrm {A}}$. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.0 pair 1rcy
 ```
@@ -175,8 +173,7 @@ TYR        122        MET        18         3.95401    60.14475   68.35187
 ===========================================================================
 ```
 `MET-THETA` and `MET-PHI` refer to $\theta$ and $\phi$, respectively. In the above example, the default cutoff
-angle $\delta$ is used (<img src="https://latex.codecogs.com/svg.latex?109.5^\circ">). The cutoff angle can be
-adjusted by using the `--cutoff-angle` option:
+angle $\delta$ is used ($109.5^\circ$). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
