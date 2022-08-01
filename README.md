@@ -239,9 +239,10 @@ set of vertices. For example, the above examples are 2-bridges with 3 vertices: 
 ```
 ## Batch jobs and MongoDB integration
 ### A brief overview
-This software is normally used for large scale Protein Data Bank mining efforts and stores the results in a MongoDB database (https://www.mongodb.com/).
-To start a batch job, ensure that the host is running a valid MongoDB installation then supply a batch file. A batch file can be a regular text file
-consisting of delimited PDB codes:
+This software is normally used for large scale Protein Data Bank mining efforts and stores the results in a
+MongoDB database (https://www.mongodb.com/).  To start a batch job, ensure that the host is running a valid
+MongoDB installation then supply a batch file. A batch file can be a regular text file consisting of delimited
+PDB codes:
 ```
 1BPY, 1CWE, 1DZI, 1EAK, 1EB1, 1GU4, 1GU5, 1GXC, 1GY3, 1H6F,
 1JYR, 1M4H, 1MCD, 1N0X, 1NU8, 1O6P, 1OKV, 2A2X, 1WB0
@@ -250,9 +251,10 @@ The command follows:
 ```
 ./MetAromatic/runner.py batch </path/batch/file> --threads <num-threads> --database <db> --collection <collection>
 ```
-The MongoDB dump database is specified using the `--database` option. The collection is specified with the `--collection` option. The `--threads`
-option specifies how many threads to use for processing the batch. The recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.
-By default, mining jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
+The MongoDB dump database is specified using the `--database` option. The collection is specified with the
+`--collection` option. The `--threads` option specifies how many threads to use for processing the batch. The
+recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.  By default, mining
+jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
 ```
 1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB on host localhost
 1970-01-01T00:00:00 INFO  [ _register_ipc_signals ] Registering SIGINT to thread terminator
@@ -298,11 +300,13 @@ The runner will fail with the following log:
 ```
 If a `mongod` instance is not listening on the specified TCP port.
 ### Designing a distributed mining strategy
-A user may be tempted to mine data on a high performance machine and then route the results to a storage server. This
-software supports this. The steps in this section can be followed to implement such a strategy.
-**NOTE**: Users familiar with MongoDB setup and administration can safely skip to [Step 7: Run a mining job](#step-7-run-a-mining-job).
+A user may be tempted to mine data on a high performance machine and then route the results to a storage
+server. This software supports this. The steps in this section can be followed to implement such a strategy.
+**NOTE**: Users familiar with MongoDB setup and administration can safely skip to [Step 7: Run a mining
+job](#step-7-run-a-mining-job).
 #### Step 1: Install MongoDB
-Start by installing MongoDB following: [Install MongoDB Community Edition on Linux](https://docs.mongodb.com/master/administration/install-on-linux/).
+Start by installing MongoDB following: [Install MongoDB Community Edition on
+Linux](https://docs.mongodb.com/master/administration/install-on-linux/).
 #### Step 2: Enable port forwarding
 This step ensures that the high performance machine can connect to the storage server.
 #### Step 3: Add a user
@@ -332,7 +336,8 @@ Open up the MongoDB configuration file `/etc/mongod.conf` and add the following 
 security:
   authorization: 'enabled'
 ```
-This step ensures that the MongoDB server is inaccessible without the login credentials `<new-username>` and `<new-password>`.
+This step ensures that the MongoDB server is inaccessible without the login credentials `<new-username>` and
+`<new-password>`.
 #### Step 5: Reset the bind IP
 Open up the MongoDB configuration file `/etc/mongod.conf` and edit the following lines to:
 ```
@@ -341,7 +346,8 @@ net:
   port: 27017
   bindIp: 0.0.0.0
 ```
-**WARNING**: It is strongly recommended to follow the security measures provided here, [Security Checklist](https://docs.mongodb.com/manual/administration/security-checklist/),
+**WARNING**: It is strongly recommended to follow the security measures provided here, [Security
+Checklist](https://docs.mongodb.com/manual/administration/security-checklist/),
 prior to implementing this step.
 #### Step 6: Restart the service
 Run:
