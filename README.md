@@ -101,11 +101,14 @@ $$
 \phi = cos^{-1}\left (\frac{\lVert \vec{g} \rVert \lVert \vec{v} \rVert}{\vec{g}\cdot\vec{v}} \right )
 $$
 
-<p align="center">
-  <img src="https://latex.codecogs.com/svg.latex?\theta,&space;\phi&space;=&space;cos^{-1}\left&space;(\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}}&space;\right&space;),&space;cos^{-1}\left&space;(\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}}&space;\right&space;)" title="\theta, \phi = cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right ), cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right )">
-</p>
+Last, a methionine-aromatic pair is deemed interacting if any of $\theta$ or $\phi$ is less than or equal to
+some cutoff angle $\delta$, that is, if:
 
-Last, a methionine-aromatic pair is deemed interacting if any of $\theta$ or $\phi$ is less than or equal to some cutoff angle $\delta$, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta"> holds.
+$$
+\theta \leq \delta \vee \phi \leq \delta
+$$
+
+holds.
 ### Summary
 The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues. A representative figure is shown below:
 <p align="center">
