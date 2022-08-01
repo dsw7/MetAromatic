@@ -37,25 +37,30 @@ Code for the following publications:
 the [Protein Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB
 entries or large scale multithreaded batch jobs consisting of hundreds of thousands of queries.
 ## How it works
-<!---
-Use svg for rendering and HTML for the embed code!
---->
 ### Step 1: Data preprocessing
-Files in the PDB are organized using the SMCRA hierarchy: _Structure_, _Model_, _Chain_, _Residue_ and _Atom_. For example, here is the fifth line for the entry 1RCY:
+Files in the PDB are organized using the SMCRA hierarchy: _Structure_, _Model_, _Chain_, _Residue_ and _Atom_.
+For example, here is the fifth line for the entry 1RCY:
 ```
 1         2  3   4   5   6     7         8      9       10   11              12
 ATOM      5  CB  THR A   5     -13.081   2.366  23.788  1.00 37.95           C
 ```
-Each line in a file corresponds to a single atom. In the above example, we have a carbon atom that is labelled `CB` (column 3) on a threonine residue (`THR`, column 4) located on the `A` chain (column 5). Columns 7-9 specify the $x$, $y$, $z$ coordinates of the carbon atom.
+Each line in a file corresponds to a single atom. In the above example, we have a carbon atom that is labelled
+`CB` (column 3) on a threonine residue (`THR`, column 4) located on the `A` chain (column 5). Columns 7-9
+specify the $x$, $y$, $z$ coordinates of the carbon atom.
 
-The Met-aromatic program starts by downloading a `*.pdb` file from the PDB over FTP. The file is then stripped down to the subset of coordinates corresponding to a chain `[A-Z]` of choosing. Most PDB entries consist of `A` and `B` chains. The program then strips the dataset down to the residues tyrosine (`TYR`), tryptophan (`TRP`), phenylalanine (`PHE`), and methionine (`MET`). In the last step of preprocessing, the program further strips the dataset down to any of the following atoms:
+The Met-aromatic program starts by downloading a `*.pdb` file from the PDB over FTP. The file is then stripped
+down to the subset of coordinates corresponding to a chain `[A-Z]` of choosing. Most PDB entries consist of
+`A` and `B` chains. The program then strips the dataset down to the residues tyrosine (`TYR`), tryptophan
+(`TRP`), phenylalanine (`PHE`), and methionine (`MET`). In the last step of preprocessing, the program further
+strips the dataset down to any of the following atoms:
 ```
 MET: CE, SD, CG
 TYR: CD1, CE1, CZ, CG, CD2, CE2
 TRP: CD2, CE3, CZ2, CH2, CZ3, CE2
 PHE: CD1, CE1, CZ, CG, CD2, CE2
 ```
-The above atoms are the aromatic carbon atoms in the aromatic residues tyrosine (`TYR`), tryptophan, (`TRP`) and phenylalanine (`PHE`).
+The above atoms are the aromatic carbon atoms in the aromatic residues tyrosine (`TYR`), tryptophan, (`TRP`)
+and phenylalanine (`PHE`).
 ### Step 2: The distance condition
 The program applies the distance condition to find methionine-aromatic pairs that are _physically near each other_. To do so, the program first finds the midpoints between all neighbouring aromatic carbon atoms in all of tyrosine, tryptophan and phenylalanine. These midpoints are denoted using a `*`:
 ```
