@@ -173,7 +173,7 @@ TYR        122        MET        18         3.95401    60.14475   68.35187
 ===========================================================================
 ```
 `MET-THETA` and `MET-PHI` refer to $\theta$ and $\phi$, respectively. In the above example, the default cutoff
-angle $\delta$ is used ($109.5^\circ$). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
+angle $\delta$ is used ( $109.5^\circ$ ). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
