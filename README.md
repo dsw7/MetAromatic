@@ -173,7 +173,8 @@ TYR        122        MET        18         3.95401    60.14475   68.35187
 ===========================================================================
 ```
 `MET-THETA` and `MET-PHI` refer to $\theta$ and $\phi$, respectively. In the above example, the default cutoff
-angle $\delta$ is used ( $109.5^\circ$ ). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
+angle $\delta$ is used ( $109.5^\circ$ ). The cutoff angle can be adjusted by using the `--cutoff-angle`
+option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
@@ -212,12 +213,15 @@ specify the chain:
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain.
 ### Finding "bridging interactions"
-Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
+Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the
+Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 <p align="center">
   <img width="399" height="300" src=./pngs/bridge-tyr-phe-6c8a.png>
 </p>
 
-We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the `bridge` argument. For example, to search for bridging interactions with a 7.0 $\overset{\circ}{\mathrm {A}}$ <img src="https://latex.codecogs.com/svg.latex?\left&space;\|&space;\vec{v}&space;\right&space;\|"> cutoff in 6LU7:
+We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the
+`bridge` argument. For example, to search for bridging interactions with a 7.0 $\overset{\circ}{\mathrm {A}}$
+$\lVert v \rVert$ cutoff in 6LU7:
 ```
 ./MetAromatic/runner.py --cutoff-distance 7.0 bridge 6lu7
 ```
@@ -227,7 +231,9 @@ PHE185     MET165     PHE181
 TYR209     PHE219     MET264
 TRP207     TRP218     MET276
 ```
-Where each row corresponds to a bridge. This program treats bridging interactions as networks with a defined set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The `--vertices` option can be passed to search for n-bridges:
+Where each row corresponds to a bridge. This program treats bridging interactions as networks with a defined
+set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The
+`--vertices` option can be passed to search for n-bridges:
 ```
 ./MetAromatic/runner.py --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
