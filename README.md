@@ -84,7 +84,17 @@ the distance condition if the following held:
 $$ \lVert \vec{v} \rVert = \sqrt{(CD1_x * -SD_x)^2 + (CD1_y * -SD_y)^2 + (CD1_z * -SD_z)^2} \leq c $$
 
 ### Step 3: The angular condition
-Any methionine-aromatic pairs meeting the distance condition are subjected to the angular condition. The angular condition can be loosely interpreted as _"find all the methionine-aromatic pairs where the methionine lone pairs are pointing into or near the region(s) of highest electron density on a corresponding aromatic moiety_." To apply the angular condition, two new vectors are introducted: vector $\vec{a}$ and vector $\vec{g}$, which describe the orientation of the `SD` lone pairs in three dimensional space. To find the lone pairs, the program considers the `SD` atom in a methionine atom to be the center of a regular tetrahedron with vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors $\vec{a}$ and $\vec{g}$. Next, the program obtains the angles between the lone pairs and $\vec{v}$:
+Any methionine-aromatic pairs meeting the distance condition are subjected to the angular condition. The
+angular condition can be loosely interpreted as _"find all the methionine-aromatic pairs where the methionine
+lone pairs are pointing into or near the region(s) of highest electron density on a corresponding aromatic
+moiety_." To apply the angular condition, two new vectors are introducted: vector $\vec{a}$ and vector
+$\vec{g}$, which describe the orientation of the `SD` lone pairs in three dimensional space. To find the lone
+pairs, the program considers the `SD` atom in a methionine atom to be the center of a regular tetrahedron with
+vertices `CE` and `CG`. Solving for the position of the remaining two vertices yields vectors $\vec{a}$ and
+$\vec{g}$. Next, the program obtains the angles between the lone pairs and $\vec{v}$:
+
+$$ \theta, \phi = cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right ), cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right )" title="\theta, \phi = cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right ), cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right ) $$
+
 <p align="center">
   <img src="https://latex.codecogs.com/svg.latex?\theta,&space;\phi&space;=&space;cos^{-1}\left&space;(\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}}&space;\right&space;),&space;cos^{-1}\left&space;(\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}}&space;\right&space;)" title="\theta, \phi = cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right ), cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right )">
 </p>
