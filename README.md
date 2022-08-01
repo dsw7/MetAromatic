@@ -72,7 +72,7 @@ Any methionine-aromatic pairs meeting the distance condition are subjected to th
   <img src="https://latex.codecogs.com/svg.latex?\theta,&space;\phi&space;=&space;cos^{-1}\left&space;(\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}}&space;\right&space;),&space;cos^{-1}\left&space;(\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}}&space;\right&space;)" title="\theta, \phi = cos^{-1}\left (\frac{\|\vec{a}\|\|\vec{v}\|}{\vec{a}\cdot\vec{v}} \right ), cos^{-1}\left (\frac{\|\vec{g}\|\|\vec{v}\|}{\vec{g}\cdot\vec{v}} \right )">
 </p>
 
-Last, a methionine-aromatic pair is deemed interacting if any of <img src="https://latex.codecogs.com/svg.latex?\theta"> or <img src="https://latex.codecogs.com/svg.latex?\phi"> is less than or equal to some cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta">, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta"> holds.
+Last, a methionine-aromatic pair is deemed interacting if any of $\theta$ or $\phi$ is less than or equal to some cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta">, that is, if <img src="https://latex.codecogs.com/svg.latex?\theta&space;\leq&space;\delta&space;\vee&space;\phi&space;\leq&space;\delta"> holds.
 ### Summary
 The end result is a dataset consisting of methionine-aromatic pairs whereby one or both of the methionine lone pairs are pointing into or near the region of highest electron density on the corresponding aromatic residues. A representative figure is shown below:
 <p align="center">
@@ -125,11 +125,11 @@ ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 TYR        122        MET        18         3.95401    60.14475   68.35187
 ===========================================================================
 ```
-`MET-THETA` and `MET-PHI` refer to <img src="https://latex.codecogs.com/svg.latex?\theta"> and <img src="https://latex.codecogs.com/svg.latex?\phi">, respectively. In the above example, the default cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta"> is used (<img src="https://latex.codecogs.com/svg.latex?109.5^\circ">). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
+`MET-THETA` and `MET-PHI` refer to $\theta$ and $\phi$, respectively. In the above example, the default cutoff angle <img src="https://latex.codecogs.com/svg.latex?\delta"> is used (<img src="https://latex.codecogs.com/svg.latex?109.5^\circ">). The cutoff angle can be adjusted by using the `--cutoff-angle` option:
 ```
 ./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
-The `--cutoff-angle` option ensures that **at least one of** <img src="https://latex.codecogs.com/svg.latex?\theta"> or <img src="https://latex.codecogs.com/svg.latex?\phi"> angles fall below the cutoff <img src="https://latex.codecogs.com/svg.latex?\delta">. This is seen in the below order II interaction:
+The `--cutoff-angle` option ensures that **at least one of** $\theta$ or $\phi$ angles fall below the cutoff <img src="https://latex.codecogs.com/svg.latex?\delta">. This is seen in the below order II interaction:
 ```
 ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
 ===========================================================================
