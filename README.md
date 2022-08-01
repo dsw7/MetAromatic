@@ -62,15 +62,24 @@ PHE: CD1, CE1, CZ, CG, CD2, CE2
 The above atoms are the aromatic carbon atoms in the aromatic residues tyrosine (`TYR`), tryptophan, (`TRP`)
 and phenylalanine (`PHE`).
 ### Step 2: The distance condition
-The program applies the distance condition to find methionine-aromatic pairs that are _physically near each other_. To do so, the program first finds the midpoints between all neighbouring aromatic carbon atoms in all of tyrosine, tryptophan and phenylalanine. These midpoints are denoted using a `*`:
+The program applies the distance condition to find methionine-aromatic pairs that are _physically near each
+other_. To do so, the program first finds the midpoints between all neighbouring aromatic carbon atoms in all
+of tyrosine, tryptophan and phenylalanine. These midpoints are denoted using a `*`:
 ```
 TYR: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
 TRP: CD2*|CE3*|CZ2*|CH2*|CZ3*|CE2*
 PHE: CD1*|CE1*|CZ*|CG*|CD2*|CE2*
 ```
-Next, the program finds all the vectors projecting from all methionine `SD` atoms to all the midpoints `*`. As an example, a substructure consisting of one methionine and two phenylalanines would have 12 possible such vectors, depicted here as $\vec{v}$, owing to the fact there can exist a total of six midpoints between neighbouring atoms in a hexagonal arrangement of atoms and there are two such arrangements for two phenylalanine residues.
+Next, the program finds all the vectors projecting from all methionine `SD` atoms to all the midpoints `*`. As
+an example, a substructure consisting of one methionine and two phenylalanines would have 12 possible such
+vectors, depicted here as $\vec{v}$, owing to the fact there can exist a total of six midpoints between
+neighbouring atoms in a hexagonal arrangement of atoms and there are two such arrangements for two
+phenylalanine residues.
 
-To apply the distance condition, the program simply banks those methionine-aromatic pairs where one or more vectors $\vec{v}$ are less than or equal to some cutoff $c$. As a motivating example, `CD1*` in `TYR` is the midpoint between the `CD1` and `CE1` carbon atoms. A `CD1* / SD` on an aromatic / methionine pair would meet the distance condition if the following held:
+To apply the distance condition, the program simply banks those methionine-aromatic pairs where one or more
+vectors $\vec{v}$ are less than or equal to some cutoff $c$. As a motivating example, `CD1*` in `TYR` is the
+midpoint between the `CD1` and `CE1` carbon atoms. A `CD1* / SD` on an aromatic / methionine pair would meet
+the distance condition if the following held:
 <p align="center">
   <img width="500" height="35" src="https://latex.codecogs.com/svg.latex?\|\vec{v}\|=\sqrt{(CD1_x*-SD_x)^2&plus;(CD1_y*-SD_y)^2&plus;(CD1_z*-SD_z)^2}&space;\leq&space;c">
 </p>
