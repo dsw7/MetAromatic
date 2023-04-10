@@ -8,34 +8,22 @@
 
 import sys
 from configparser import ConfigParser
-from os import path
-from click import (
-    group,
-    argument,
-    echo,
-    secho,
-    option,
-    Path,
-    pass_context,
-    pass_obj
-)
-from core.helpers.consts import (
-    EXIT_FAILURE,
-    MINIMUM_VERTICES
-)
+from pathlib import Path
+import click
+from core.helpers import consts
 
-@group()
-@option('--cutoff-distance', type=float, default=None, help='Override cutoff distance defined in *.ini file.', metavar='<Angstroms>')
-@option('--cutoff-angle', type=float, default=None, help='Override cutoff angle defined in *.ini file.', metavar='<degrees>')
-@option('--chain', default=None, help='Override chain defined in *.ini file.', metavar='<[A-Z]>')
-@option('--model', default=None, help='Override lone pair interpolation model defined in *.ini file.', metavar='<cp|rm>')
-@pass_context
+@click.group()
+@click.option('--cutoff-distance', type=float, default=None, help='Override cutoff distance defined in *.ini file.', metavar='<Angstroms>')
+@click.option('--cutoff-angle', type=float, default=None, help='Override cutoff angle defined in *.ini file.', metavar='<degrees>')
+@click.option('--chain', default=None, help='Override chain defined in *.ini file.', metavar='<[A-Z]>')
+@click.option('--model', default=None, help='Override lone pair interpolation model defined in *.ini file.', metavar='<cp|rm>')
+@click.pass_context
 def cli(context, **options):
-    path_ini = path.join(path.dirname(__file__), 'runner.ini')
 
-    if not path.exists(path_ini):
-        secho('Could not find initialization file: {}'.format(path_ini), fg='red')
-        sys.exit(EXIT_FAILURE)
+    path_ini = Path(__file__).resolve().parent / 'runner.ini'
+
+    if not path_ini.exists():
+        sys.exit(f'Could not find initialization file: {path_ini}')
 
     parser = ConfigParser()
     parser.read(path_ini)
@@ -60,33 +48,34 @@ def cli(context, **options):
         context.obj['model'] = options['model']
 
 @cli.command(help='Run a Met-aromatic query on a single PDB entry.')
-@argument('code')
-@pass_obj
+@click.argument('code')
+@click.pass_obj
 def pair(obj, code):
+
     from core.pair import MetAromatic
 
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     results = MetAromatic(**obj).get_met_aromatic_interactions(code)
 
     if results['exit_code'] == 0:
-        echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*header_success))
+        click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*header_success))
         for line in results['results']:
-            echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
+            click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
 
     else:
-        secho(results['exit_status'], fg='red')
-        secho('Exited with code: {}'.format(results['exit_code']), fg='red')
+        click.secho(results['exit_status'], fg='red')
+        click.secho('Exited with code: {}'.format(results['exit_code']), fg='red')
 
     sys.exit(results['exit_code'])
 
 @cli.command(help='Run a bridging interaction query on a single PDB entry.')
-@argument('code')
-@option('--vertices', default=3, type=int, metavar='<vertices>')
-@pass_obj
+@click.argument('code')
+@click.option('--vertices', default=3, type=int, metavar='<vertices>')
+@click.pass_obj
 def bridge(obj, code, vertices):
-    if vertices < MINIMUM_VERTICES:
-        secho('Vertices must be >= {}'.format(MINIMUM_VERTICES), fg='red')
-        sys.exit(EXIT_FAILURE)
+
+    if vertices < consts.MINIMUM_VERTICES:
+        sys.exit(f'Vertices must be >= {consts.MINIMUM_VERTICES}')
 
     from core.bridge import GetBridgingInteractions
 
@@ -95,32 +84,29 @@ def bridge(obj, code, vertices):
     )
 
     if results['exit_code'] == 0:
-        echo(results['results'])
+        click.echo(results['results'])
     else:
-        secho(results['exit_status'], fg='red')
-        secho('Exited with code: {}'.format(results['exit_code']), fg='red')
+        click.secho(results['exit_status'], fg='red')
+        click.secho('Exited with code: {}'.format(results['exit_code']), fg='red')
 
     sys.exit(results['exit_code'])
 
 @cli.command(help='Run a Met-aromatic query batch job.')
-@argument('path_batch_file', type=Path('rb'))
-@option('--threads', default=5, type=int, metavar='<number-threads>', help='Specify number of workers to use.')
-@option('--timeout', default=1.00, type=float, metavar='<timeout-in-seconds>', help='Specify MongoDB connection timeout in seconds.')
-@option('--host', default='localhost', metavar='<hostname>', help='Specify host name.')
-@option('--port', type=int, default=27017, metavar='<tcp-port>', help='Specify MongoDB TCP connection port.')
-@option('-u', '--username', default=None, metavar='<username>', help='Specify MongoDB username if authentication enabled.')
-@option('-p', '--password', default=None, metavar='<password>', help='Specify MongoDB password if authentication enabled.')
-@option('-d', '--database', default='default_ma', metavar='<database-name>', help='Specify MongoDB database to use.')
-@option('-c', '--collection', default='default_ma', metavar='<collection-name>', help='Specify MongoDB collection to use.')
-@option('-x', '--overwrite', is_flag=True, default=False, help='Specify whether to overwrite collection specified with -c.')
-@pass_obj
+@click.argument('path_batch_file', type=click.Path('rb'))
+@click.option('--threads', default=5, type=int, metavar='<number-threads>', help='Specify number of workers to use.')
+@click.option('--timeout', default=1.00, type=float, metavar='<timeout-in-seconds>', help='Specify MongoDB connection timeout in seconds.')
+@click.option('--host', default='localhost', metavar='<hostname>', help='Specify host name.')
+@click.option('--port', type=int, default=27017, metavar='<tcp-port>', help='Specify MongoDB TCP connection port.')
+@click.option('-u', '--username', default=None, metavar='<username>', help='Specify MongoDB username if authentication enabled.')
+@click.option('-p', '--password', default=None, metavar='<password>', help='Specify MongoDB password if authentication enabled.')
+@click.option('-d', '--database', default='default_ma', metavar='<database-name>', help='Specify MongoDB database to use.')
+@click.option('-c', '--collection', default='default_ma', metavar='<collection-name>', help='Specify MongoDB collection to use.')
+@click.option('-x', '--overwrite', is_flag=True, default=False, help='Specify whether to overwrite collection specified with -c.')
+@click.pass_obj
 def batch(obj, **kwargs):
+
     from core.batch import ParallelProcessing
-    all_options = {
-        **kwargs,
-        **obj
-    }
-    ParallelProcessing(all_options).deploy_jobs()
+    ParallelProcessing({**kwargs, **obj}).deploy_jobs()
 
 if __name__ == '__main__':
     cli()
