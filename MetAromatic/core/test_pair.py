@@ -19,7 +19,7 @@ TEST_PARAMETERS = {
 }
 
 ROOT = path.dirname(path.abspath(__file__))
-PATH_BENCHMARK_DATA = path.join(ROOT, 'helpers', 'data_483_output_a3_3_m.csv')
+PATH_BENCHMARK_DATA = path.join(ROOT, 'test_data', 'data_483_output_a3_3_m.csv')
 
 BENCHMARK_DATA = []
 try:

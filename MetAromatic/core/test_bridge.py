@@ -10,7 +10,7 @@ from .helpers.consts import EXIT_FAILURE
 from .bridge import GetBridgingInteractions
 
 CONTROL_BRIDGE_DATA = path.join(
-    path.dirname(path.abspath(__file__)), 'helpers', 'data_n_3_bridges_no_ang_limit_6_angstroms.json'
+    path.dirname(path.abspath(__file__)), 'test_data', 'data_n_3_bridges_no_ang_limit_6_angstroms.json'
 )
 NETWORK_SIZE = 4
 TEST_PARAMETERS = {
