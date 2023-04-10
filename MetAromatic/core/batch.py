@@ -173,7 +173,7 @@ class ParallelProcessing:
             else:
                 self.count += 1
                 logging.info('Processed %s. Count: %i', code, self.count)
-                self.collection_handle.insert(results)
+                self.collection_handle.insert_many([results])
 
     def deploy_jobs(self) -> int:
         logging.info('Deploying %i workers!', self.cli_args['threads'])
@@ -199,6 +199,6 @@ class ParallelProcessing:
 
                 self.batch_job_metadata['batch_job_execution_time'] = execution_time
                 self.batch_job_metadata['number_of_entries'] = len(self.pdb_codes)
-                collection_info.insert(self.batch_job_metadata)
+                collection_info.insert_one(self.batch_job_metadata)
 
         return EXIT_SUCCESS
