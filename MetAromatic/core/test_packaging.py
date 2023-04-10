@@ -3,7 +3,7 @@
 import pytest
 
 @pytest.mark.test_packaging
-def test_import_pair() -> None:
+def test_import_pair():
 
     arguments = {
         'cutoff_distance': 4.9,
@@ -16,7 +16,7 @@ def test_import_pair() -> None:
     assert MetAromatic(**arguments).get_met_aromatic_interactions('1rcy')['_id'] == '1rcy'
 
 @pytest.mark.test_packaging
-def test_import_bridge() -> None:
+def test_import_bridge():
     arguments = {
         'cutoff_distance': 6.0,
         'cutoff_angle': 360.00,
