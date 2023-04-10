@@ -7,7 +7,7 @@
 .PHONY = help \
          requirements setup teardown test full \
 		 wheel install clean uninstall test-wheel full-wheel \
-		 lint dockertest
+		 dockertest
 
 .DEFAULT_GOAL = help
 
@@ -54,8 +54,6 @@ To run an end-to-end packaging test
 Other:
 To display all targets:
     $$ make help
-To lint the project:
-    $$ make lint
 To run tests with Docker
     $$ make dockertest
 
@@ -139,15 +137,6 @@ full-wheel: install test-wheel clean uninstall
 help:
 	$(call RENDER_TITLE,* MET-AROMATIC OFFICIAL MAKEFILE *)
 	@echo "$$HELP_LIST_TARGETS"
-
-lint:
-	$(call RENDER_PREAMBLE,Linting the project using pylint static analysis tool)
-	@$(PYTHON_INTERP) -m pylint $(PROJECT_DIRECTORY) \
-	--output-format=colorized \
-	--exit-zero \
-	--rcfile=$(ROOT_DIRECTORY)/.pylintrc \
-	--ignore=pdb_file_reading_module_v4_0.py \
-	--msg-template "{msg_id}{line:4d}{column:3d} {obj} {msg}"
 
 dockertest:
 	$(call RENDER_PREAMBLE,Building docker image $(DOCKER_TAG))
