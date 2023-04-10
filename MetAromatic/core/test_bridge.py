@@ -4,9 +4,9 @@ from pathlib import Path
 import pytest
 from .bridge import GetBridgingInteractions
 
-TEST_DATA = Path(__file__).resolve().parent / 'test_data' / 'data_n_3_bridges_no_ang_limit_6_angstroms.json'
 NETWORK_SIZE = 4
 NUM_BRIDGES = 100
+
 TEST_PARAMETERS = {
     'cutoff_distance': 6.0,
     'cutoff_angle': 360.0,
@@ -14,12 +14,14 @@ TEST_PARAMETERS = {
     'model': 'cp'
 }
 
-if not TEST_DATA.exists():
-    pytest.exit(f'File {TEST_DATA} is missing')
+PATH_TEST_DATA = Path(__file__).resolve().parent / 'test_data' / 'data_n_3_bridges_no_ang_limit_6_angstroms.json'
+
+if not PATH_TEST_DATA.exists():
+    pytest.exit(f'File {PATH_TEST_DATA} is missing')
 
 def get_control_bridges():
 
-    with TEST_DATA.open() as f:
+    with PATH_TEST_DATA.open() as f:
         data = [loads(line) for line in f]
 
     bridges = []
@@ -34,7 +36,7 @@ def get_control_bridges():
 
 def get_control_bridge_test_ids():
 
-    with TEST_DATA.open() as f:
+    with PATH_TEST_DATA.open() as f:
         data = [loads(line) for line in f]
 
     pdb_codes = []
