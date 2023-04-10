@@ -36,13 +36,6 @@ class TestParallelProcessing:
 
         self.threads = 3
 
-        command = [
-            'batch',
-            test_data,
-            f'--threads={self.threads}',
-            f'--database={self.db_name}',
-            f'--collection={self.col_name}'
-        ]
         command = f'batch {test_data} --threads={self.threads} --database={self.db_name} --collection={self.col_name}'
 
         runner = CliRunner()
