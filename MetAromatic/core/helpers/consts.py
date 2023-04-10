@@ -1,7 +1,6 @@
 #### Exit codes
 EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
-EXIT_GENERAL_PROGRAM_FAILURES = 2
 
 #### General met aromatic algorithm parameters
 MINIMUM_CUTOFF_DIST = 0.00
