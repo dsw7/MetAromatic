@@ -1,3 +1,7 @@
+from typing import TypeVar
+
+T = TypeVar('T')
+
 #### Exit codes
 EXIT_SUCCESS = 0
 EXIT_FAILURE = 1

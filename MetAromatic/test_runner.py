@@ -6,6 +6,10 @@ from click.testing import CliRunner
 from pytest import mark
 from runner import cli
 
+TEST_DATA = Path(__file__).resolve().parent / 'core' / 'test_data' / 'data_coronavirus_entries.txt'
+DB_NAME = 'database_coronavirus'
+COL_NAME = 'collection_coronavirus'
+
 @contextmanager
 def restore_original_dir():
 
@@ -121,6 +125,18 @@ class TestRunner:
 
     def test_bad_query_type(self):
         command = '--query foobar pair 1rcy'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.exit_code != EX_OK
+
+    def test_batch_too_few_threads(self):
+        command = f'batch {TEST_DATA} --threads=-1 --database={DB_NAME} --collection={COL_NAME}'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.exit_code != EX_OK
+
+    def test_batch_too_many_threads(self):
+        command = f'batch {TEST_DATA} --threads=100 --database={DB_NAME} --collection={COL_NAME}'
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
