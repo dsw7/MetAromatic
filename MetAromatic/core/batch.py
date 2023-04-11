@@ -11,19 +11,16 @@ from pymongo import (
     MongoClient,
     errors
 )
-from .helpers.consts import (
-    EXIT_FAILURE,
-    EXIT_SUCCESS,
-    MAXIMUM_WORKERS,
-    LEN_PDB_CODE,
-    DEFAULT_LOGFILE_NAME,
-    ISO_8601_DATE_FORMAT,
-    LOGRECORD_FORMAT
-)
 from .pair import MetAromatic
 
+ISO_8601_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+LOGRECORD_FORMAT = '%(asctime)s %(levelname)5s [ %(funcName)s ] %(message)s'
+LOGFILE_NAME = 'met_aromatic.log'
+LEN_PDB_CODE = 4
+MAXIMUM_WORKERS = 15
+
 LOG_HANDLERS = [
-    logging.FileHandler(path.join(gettempdir(), DEFAULT_LOGFILE_NAME)),
+    logging.FileHandler(path.join(gettempdir(), LOGFILE_NAME)),
     logging.StreamHandler()
 ]
 
@@ -89,11 +86,11 @@ class ParallelProcessing:
             logging.error('1. The host "%s" is not running MongoDB', self.cli_args['host'])
             logging.error('2. The host and/or port are invalid')
             logging.error('3. The server is bound to localhost')
-            sys.exit(EXIT_FAILURE)
+            sys.exit('Batch job failed')
         except errors.OperationFailure as exception:
             logging.error(exception.details['errmsg'])
             logging.error('Invalid username and password credentials provided!')
-            sys.exit(EXIT_FAILURE)
+            sys.exit('Batch job failed')
 
         return client
 
@@ -102,7 +99,7 @@ class ParallelProcessing:
             self.client.admin.command('usersInfo')
         except errors.OperationFailure as exception:
             logging.error('Server has enabled authentication and no credentials were provided')
-            sys.exit(EXIT_FAILURE)
+            sys.exit('Batch job failed')
 
     def _drop_collection_if_overwrite_enabled(self) -> None:
         if not self.cli_args['overwrite']:
@@ -120,7 +117,7 @@ class ParallelProcessing:
 
         if self.cli_args['collection'] in collections:
             logging.error('Collection %s exists!', self.cli_args['collection'])
-            sys.exit(EXIT_FAILURE)
+            sys.exit('Batch job failed')
 
     def _disable_all_workers(self, ipc_signal, frame) -> None:
         logging.info('Detected SIGINT!')
@@ -200,5 +197,3 @@ class ParallelProcessing:
                 self.batch_job_metadata['batch_job_execution_time'] = execution_time
                 self.batch_job_metadata['number_of_entries'] = len(self.pdb_codes)
                 collection_info.insert_one(self.batch_job_metadata)
-
-        return EXIT_SUCCESS
