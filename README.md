@@ -399,6 +399,7 @@ if __name__ == '__main__':
 from MetAromatic.core.bridge import GetBridgingInteractions
 
 def main() -> None:
+
     arguments = {
         'cutoff_distance': 6.0,
         'cutoff_angle': 360.00,
@@ -406,8 +407,10 @@ def main() -> None:
         'model': 'cp'
     }
 
-    results = GetBridgingInteractions(**arguments).get_bridging_interactions('7mdh', 4)
-    print(results)
+    handle = GetBridgingInteractions(arguments)
+    handle.get_bridging_interactions('7mdh', 4)
+
+    print(handle.bridges)
 
 if __name__ == '__main__':
     main()
