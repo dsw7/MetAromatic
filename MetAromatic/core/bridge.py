@@ -1,4 +1,3 @@
-import sys
 from logging import getLogger
 from os import EX_OK
 from typing import Dict, Union
@@ -70,6 +69,6 @@ class GetBridgingInteractions:
     def display_results(self: T) -> None:
 
         if len(self.bridges) == 0:
-            sys.exit('No bridges found')
+            echo('No bridges found')
 
         echo(self.bridges)

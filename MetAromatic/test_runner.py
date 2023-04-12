@@ -56,7 +56,7 @@ class TestRunner:
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
-        assert result.output == 'Vertices must be >= 3\n'
+        assert 'Vertices must be >= 3\n' in result.output
 
     def test_bridge_with_cutoff_distance(self):
         command = '--cutoff-distance 7.0 bridge 6lu7'
