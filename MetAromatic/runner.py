@@ -63,6 +63,8 @@ def cli(context, **options):
     if options['model']:
         context.obj['model'] = options['model']
 
+    setup_child_logger()
+
 @cli.command(help='Run a Met-aromatic query on a single PDB entry.')
 @click.argument('code')
 @click.pass_obj

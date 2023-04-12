@@ -1,4 +1,5 @@
 import sys
+from logging import getLogger
 from os import EX_OK
 from typing import Dict, Union
 from networkx import Graph, connected_components
@@ -11,6 +12,8 @@ MINIMUM_VERTICES = 3
 
 class GetBridgingInteractions:
 
+    log = getLogger('met-aromatic')
+
     def __init__(self: T, cli_opts: Dict[str, Union[str, float]]) -> T:
 
         self.cli_opts = cli_opts
@@ -19,9 +22,12 @@ class GetBridgingInteractions:
 
     def get_interacting_pairs(self: T, code: str) -> bool:
 
+        self.log.info('Getting Met-aromatic interactions for PDB entry %s', code)
+
         results = MetAromatic(**self.cli_opts).get_met_aromatic_interactions(code)
 
         if results['exit_code'] != EX_OK:
+            self.log.error('Failed to acquire interactions')
             return False
 
         for interaction in results['results']:
@@ -35,6 +41,8 @@ class GetBridgingInteractions:
 
     def isolate_connected_components(self: T, vertices: int) -> None:
 
+        self.log.info('Locating bridging interactions')
+
         graph = Graph()
         graph.add_edges_from(self.interactions)
 
@@ -44,10 +52,12 @@ class GetBridgingInteractions:
 
         # Note that inverse bridges (MET-ARO-MET) not removed!
 
+        self.log.info('Found %i bridges', len(self.bridges))
+
     def get_bridging_interactions(self: T, code: str, vertices: int) -> bool:
 
         if vertices < MINIMUM_VERTICES:
-            #sys.exit(f'Vertices must be >= {MINIMUM_VERTICES}')
+            self.log.error('Vertices must be >= %i', MINIMUM_VERTICES)
             return False
 
         if not self.get_interacting_pairs(code):
