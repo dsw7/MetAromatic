@@ -9,27 +9,19 @@ from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient, errors
-from core.helpers.consts import T
+from core.helpers import consts
 from .pair import MetAromatic
 
-ISO_8601_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
-LOGRECORD_FORMAT = '%(asctime)s %(levelname)5s [ %(funcName)s ] %(message)s'
-LOGFILE_NAME = path.join(gettempdir(), 'met_aromatic.log')
 LEN_PDB_CODE = 4
 MAXIMUM_WORKERS = 15
 TIMEOUT_MSEC_MONGODB = 1000
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format=LOGRECORD_FORMAT,
-    datefmt=ISO_8601_DATE_FORMAT,
-    handlers=[logging.FileHandler(LOGFILE_NAME), logging.StreamHandler()]
-)
-
 
 class ParallelProcessing:
 
-    def __init__(self: T, cli_args: Dict[str, Union[int, bool, str]]) -> T:
+    log = logging.getLogger('met-aromatic')
+
+    def __init__(self: consts.T, cli_args: Dict[str, Union[int, bool, str]]) -> consts.T:
 
         self.cli_args = cli_args
         self.collection = None
@@ -39,62 +31,76 @@ class ParallelProcessing:
         self.count = 0
         self.bool_disable_workers = False
 
-    def get_collection_handle(self: T) -> None:
+    def set_log_filehandler(self: consts.T) -> None:
+
+        self.log.info('Setting up additional logger')
+
+        logfile_name = path.join(gettempdir(), 'met_aromatic.log')
+        self.log.info('Will log to file "%s"', logfile_name)
+
+        channel = logging.FileHandler(logfile_name)
+
+        formatter = logging.Formatter(fmt=consts.LOGRECORD_FORMAT, datefmt=consts.ISO_8601_DATE_FORMAT)
+        channel.setFormatter(formatter)
+
+        self.log.addHandler(channel)
+
+    def get_collection_handle(self: consts.T) -> None:
 
         uri = f"mongodb://{self.cli_args['host']}:{self.cli_args['port']}/"
-        logging.info('Handshaking with MongoDB at "%s"', uri)
+        self.log.info('Handshaking with MongoDB at "%s"', uri)
 
         client = MongoClient(uri, serverSelectionTimeoutMS=TIMEOUT_MSEC_MONGODB)
 
         try:
             client.list_databases()
         except errors.ServerSelectionTimeoutError:
-            logging.error('Could not connect to MongoDB')
+            self.log.error('Could not connect to MongoDB')
             sys.exit('Batch job failed')
         except errors.OperationFailure as exception:
-            logging.error(exception.details['errmsg'])
+            self.log.error(exception.details['errmsg'])
             sys.exit('Batch job failed')
 
         self.collection = client[self.cli_args['database']][self.cli_args['collection']]
 
-    def drop_collection_if_overwrite_enabled(self: T) -> None:
+    def drop_collection_if_overwrite_enabled(self: consts.T) -> None:
 
         if not self.cli_args['overwrite']:
             return
 
-        logging.info('Will overwrite collection "%s" if exists', self.cli_args['collection'])
+        self.log.info('Will overwrite collection "%s" if exists', self.cli_args['collection'])
         self.collection.database.drop_collection(self.cli_args['collection'])
 
         info_collection = f"{self.cli_args['collection']}_info"
 
-        logging.info('Will overwrite collection "%s" if exists', info_collection)
+        self.log.info('Will overwrite collection "%s" if exists', info_collection)
         self.collection.database.drop_collection(info_collection)
 
-    def ensure_collection_does_not_exist(self: T) -> None:
+    def ensure_collection_does_not_exist(self: consts.T) -> None:
 
         collections = self.collection.database.list_collection_names()
 
         if self.cli_args['collection'] in collections:
-            logging.error('Collection "%s" exists! Cannot proceed', self.cli_args['collection'])
+            self.log.error('Collection "%s" exists! Cannot proceed', self.cli_args['collection'])
             sys.exit('Batch job failed')
 
-    def disable_all_workers(self: T, *args) -> None:
+    def disable_all_workers(self: consts.T, *args) -> None:
 
-        logging.info('Detected SIGINT!')
-        logging.info('Attempting to stop all workers!')
+        self.log.info('Detected SIGINT!')
+        self.log.info('Attempting to stop all workers!')
 
         self.bool_disable_workers = True
 
-    def register_ipc_signals(self: T) -> None:
+    def register_ipc_signals(self: consts.T) -> None:
 
-        logging.info('Registering SIGINT to thread terminator')
+        self.log.info('Registering SIGINT to thread terminator')
 
         self.bool_disable_workers = False
         signal(SIGINT, self.disable_all_workers)
 
-    def get_pdb_code_chunks(self: T) -> None:
+    def get_pdb_code_chunks(self: consts.T) -> None:
 
-        logging.info('Imported pdb codes from file %s', self.cli_args['path_batch_file'])
+        self.log.info('Imported pdb codes from file %s', self.cli_args['path_batch_file'])
 
         with open(self.cli_args['path_batch_file']) as f:
             for line in f:
@@ -110,13 +116,13 @@ class ParallelProcessing:
         if self.cli_args['threads'] > 15:
             sys.exit('Maximum number of threads is 15')
 
-        logging.info('Splitting list of pdb codes into %i chunks', self.cli_args['threads'])
+        self.log.info('Splitting list of pdb codes into %i chunks', self.cli_args['threads'])
 
         self.pdb_codes = [
             self.pdb_codes[i::self.cli_args['threads']] for i in range(self.cli_args['threads'])
         ]
 
-    def worker_met_aromatic(self: T, chunk: List[str]) -> None:
+    def worker_met_aromatic(self: consts.T, chunk: List[str]) -> None:
 
         handle_ma = MetAromatic(
             self.cli_args['cutoff_distance'],
@@ -128,22 +134,22 @@ class ParallelProcessing:
         for code in chunk:
 
             if self.bool_disable_workers:
-                logging.info('Received interrupt signal - stopping worker thread...')
+                self.log.info('Received interrupt signal - stopping worker thread...')
                 break
 
             try:
                 results = handle_ma.get_met_aromatic_interactions(code)
             except Exception:
                 self.count += 1
-                logging.exception('Could not process code: %s. Count: %i', code, self.count)
+                self.log.exception('Could not process code: %s. Count: %i', code, self.count)
             else:
                 self.count += 1
-                logging.info('Processed %s. Count: %i', code, self.count)
+                self.log.info('Processed %s. Count: %i', code, self.count)
                 self.collection.insert_many([results])
 
-    def deploy_jobs(self: T) -> None:
+    def deploy_jobs(self: consts.T) -> None:
 
-        logging.info('Deploying %i workers!', self.cli_args['threads'])
+        self.log.info('Deploying %i workers!', self.cli_args['threads'])
 
         batch_job_metadata = {
             'num_workers': self.cli_args['threads'],
@@ -168,23 +174,24 @@ class ParallelProcessing:
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
                 execution_time = round(time() - start_time, 3)
 
-                logging.info('Batch job complete!')
-                logging.info('Results loaded into database: %s', self.cli_args['database'])
-                logging.info('Results loaded into collection: %s', self.cli_args['collection'])
-                logging.info('Batch job statistics loaded into collection: %s', name_collection_info)
-                logging.info('Batch job execution time: %f s', execution_time)
+                self.log.info('Batch job complete!')
+                self.log.info('Results loaded into database: %s', self.cli_args['database'])
+                self.log.info('Results loaded into collection: %s', self.cli_args['collection'])
+                self.log.info('Batch job statistics loaded into collection: %s', name_collection_info)
+                self.log.info('Batch job execution time: %f s', execution_time)
 
                 batch_job_metadata['batch_job_execution_time'] = execution_time
                 batch_job_metadata['number_of_entries'] = self.num_codes
                 collection_info.insert_one(batch_job_metadata)
 
-    def main(self: T) -> None:
+    def main(self: consts.T) -> None:
 
+        self.set_log_filehandler()
         self.get_collection_handle()
 
         if self.cli_args['threads'] > MAXIMUM_WORKERS:
-            logging.warning('Number of selected workers exceeds maximum number of workers.')
-            logging.warning('The thread pool will use a maximum of %i workers.', MAXIMUM_WORKERS)
+            self.log.warning('Number of selected workers exceeds maximum number of workers.')
+            self.log.warning('The thread pool will use a maximum of %i workers.', MAXIMUM_WORKERS)
 
         self.drop_collection_if_overwrite_enabled()
         self.ensure_collection_does_not_exist()
