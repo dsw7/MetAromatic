@@ -7,10 +7,26 @@
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
 
 import sys
+import logging
 from configparser import ConfigParser
 from pathlib import Path
 import click
 from core.helpers import consts
+
+def setup_child_logger():
+
+    logging.addLevelName(logging.ERROR, 'E')
+    logging.addLevelName(logging.WARNING, 'W')
+    logging.addLevelName(logging.INFO, 'I')
+    logging.addLevelName(logging.DEBUG, 'D')
+
+    logger = logging.getLogger('met-aromatic')
+    logger.setLevel(logging.DEBUG)
+
+    channel = logging.StreamHandler()
+    formatter = logging.Formatter(fmt=consts.LOGRECORD_FORMAT, datefmt=consts.ISO_8601_DATE_FORMAT)
+    channel.setFormatter(formatter)
+    logger.addHandler(channel)
 
 @click.group()
 @click.option('--cutoff-distance', type=float, default=None, help='Override cutoff distance defined in *.ini file.', metavar='<Angstroms>')
