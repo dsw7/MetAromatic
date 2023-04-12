@@ -1,82 +1,65 @@
-from networkx import (
-    Graph,
-    connected_components
-)
-from .helpers.consts import EXIT_FAILURE
+import sys
+from os import EX_OK
+from typing import Dict, Union
+from networkx import Graph, connected_components
+from click import echo
+from core.helpers.consts import T
 from .pair import MetAromatic
+
+MINIMUM_VERTICES = 3
 
 
 class GetBridgingInteractions:
 
-    def __init__(self, cutoff_distance: float, cutoff_angle: float, chain: str, model: str) -> None:
-        self.arguments = {
-            'cutoff_distance': cutoff_distance,
-            'cutoff_angle': cutoff_angle,
-            'chain': chain,
-            'model': model
-        }
+    def __init__(self: T, cli_opts: Dict[str, Union[str, float]]) -> T:
 
-        self.results = None
-        self.vertices = None
-        self.code = None
-        self.joined_pairs = set()
-        self.bridges = None
+        self.cli_opts = cli_opts
+        self.interactions = set()
+        self.bridges = []
 
-    def run_met_aromatic(self) -> bool:
-        self.results = MetAromatic(
-            **self.arguments
-        ).get_met_aromatic_interactions(self.code)
+    def get_interacting_pairs(self: T, code: str) -> bool:
 
-        if self.results['exit_code'] == EXIT_FAILURE:
+        results = MetAromatic(**self.cli_opts).get_met_aromatic_interactions(code)
+
+        if results['exit_code'] != EX_OK:
             return False
 
-        return True
-
-    def get_joined_pairs(self) -> bool:
-        for result in self.results['results']:
+        for interaction in results['results']:
             pair = (
-                '{}{}'.format(result['aromatic_residue'], result['aromatic_position']),
-                'MET{}'.format(result['methionine_position'])
+                f"{interaction['aromatic_residue']}{interaction['aromatic_position']}",
+                f"MET{interaction['methionine_position']}"
             )
-            self.joined_pairs.add(pair)
+            self.interactions.add(pair)
 
-    def compute_connected_components(self) -> bool:
-        graph = Graph()
-        graph.add_edges_from(self.joined_pairs)
-        self.bridges = list(connected_components(graph))
-
-        if not self.bridges:
-            return False
         return True
 
-    def get_bridges(self) -> bool:
+    def isolate_connected_components(self: T, vertices: int) -> None:
 
-        self.results['results'] = []
+        graph = Graph()
+        graph.add_edges_from(self.interactions)
 
-        for bridge in self.bridges:
-            if len(bridge) == self.vertices:
-                self.results['results'].append(bridge)
+        for bridge in connected_components(graph):
+            if len(bridge) == vertices:
+                self.bridges.append(bridge)
 
         # Note that inverse bridges (MET-ARO-MET) not removed!
 
-        if not self.results['results']:
+    def get_bridging_interactions(self: T, code: str, vertices: int) -> bool:
+
+        if vertices < MINIMUM_VERTICES:
+            #sys.exit(f'Vertices must be >= {MINIMUM_VERTICES}')
             return False
+
+        if not self.get_interacting_pairs(code):
+            return False
+
+        self.isolate_connected_components(vertices=vertices)
 
         return True
 
-    def get_bridging_interactions(self, code: str, vertices: int) -> dict:
-        self.code = code
-        self.vertices = vertices
+    def display_results(self: T) -> None:
 
-        if not self.run_met_aromatic():
-            return self.results
+        if len(self.bridges) == 0:
+            sys.exit('No bridges found')
 
-        self.get_joined_pairs()
-
-        if not self.compute_connected_components():
-            return self.results
-
-        if not self.get_bridges():
-            return self.results
-
-        return self.results
+        echo(self.bridges)

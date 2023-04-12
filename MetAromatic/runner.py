@@ -74,22 +74,11 @@ def pair(obj, code):
 @click.pass_obj
 def bridge(obj, code, vertices):
 
-    if vertices < consts.MINIMUM_VERTICES:
-        sys.exit(f'Vertices must be >= {consts.MINIMUM_VERTICES}')
-
     from core.bridge import GetBridgingInteractions
 
-    results = GetBridgingInteractions(**obj).get_bridging_interactions(
-        vertices=vertices, code=code
-    )
-
-    if results['exit_code'] == 0:
-        click.echo(results['results'])
-    else:
-        click.secho(results['exit_status'], fg='red')
-        click.secho('Exited with code: {}'.format(results['exit_code']), fg='red')
-
-    sys.exit(results['exit_code'])
+    obj_bridge = GetBridgingInteractions(obj)
+    if obj_bridge.get_bridging_interactions(vertices=vertices, code=code):
+        obj_bridge.display_results()
 
 @cli.command(help='Run a Met-aromatic query batch job.')
 @click.argument('path_batch_file', type=click.Path('rb'))
