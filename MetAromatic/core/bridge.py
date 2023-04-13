@@ -21,8 +21,6 @@ class GetBridgingInteractions:
 
     def get_interacting_pairs(self: T, code: str) -> bool:
 
-        self.log.info('Getting Met-aromatic interactions for PDB entry %s', code)
-
         results = MetAromatic(**self.cli_opts).get_met_aromatic_interactions(code)
 
         if results['exit_code'] != EX_OK:
