@@ -75,16 +75,13 @@ def pair(obj, code):
     header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     results = MetAromatic(**obj).get_met_aromatic_interactions(code)
 
-    if results['exit_code'] == 0:
-        click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*header_success))
-        for line in results['results']:
-            click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
+    if not results.OK:
+        sys.exit(results.STATUS)
 
-    else:
-        click.secho(results['exit_status'], fg='red')
-        click.secho('Exited with code: {}'.format(results['exit_code']), fg='red')
+    click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*header_success))
 
-    sys.exit(results['exit_code'])
+    for line in results.INTERACTIONS:
+        click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
 
 @cli.command(help='Run a bridging interaction query on a single PDB entry.')
 @click.argument('code')

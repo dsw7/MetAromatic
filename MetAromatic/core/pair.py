@@ -1,19 +1,15 @@
 from logging import getLogger
 from typing import Optional, List
 from typing import Dict, Union
-from .helpers import (
+from numpy import ndarray
+from core.helpers.consts import T
+from core.helpers import (
     filegetter,
     preprocessing,
     get_aromatic_midpoints,
     get_lone_pairs,
     distance_angular
 )
-from .helpers.consts import (
-    EXIT_FAILURE,
-    EXIT_SUCCESS,
-    T
-)
-from numpy import ndarray
 
 MAXIMUM_CUTOFF_ANGLE = 360.00
 
@@ -41,6 +37,9 @@ class FeatureSpace:
 
     INTERACTIONS: Optional[List[Dict[str, Union[int, float, str]]]] = []
 
+    OK: bool = True
+    STATUS: str = 'Success'
+
 
 class MetAromatic:
 
@@ -54,7 +53,6 @@ class MetAromatic:
         self.model = model
 
         self.f = None
-        self.results = None
 
     def check_invalid_cutoff_distance(self: T) -> bool:
 
@@ -63,8 +61,8 @@ class MetAromatic:
         if self.cutoff_distance <= 0:
 
             self.log.error('Invalid cutoff distance. Cutoff distance must exceed 0 Angstroms')
-            self.results['exit_status'] = "Invalid cutoff distance"
-            self.results['exit_code'] = EXIT_FAILURE
+            self.f.STATUS = "Invalid cutoff distance"
+            self.f.OK = False
             return False
 
         return True
@@ -75,8 +73,8 @@ class MetAromatic:
 
         if (self.cutoff_angle < 0) or (self.cutoff_angle > MAXIMUM_CUTOFF_ANGLE):
             self.log.error('Invalid cutoff angle. Cutoff angle must be between 0 and %i degrees', MAXIMUM_CUTOFF_ANGLE)
-            self.results['exit_status'] = "Invalid cutoff angle"
-            self.results['exit_code'] = EXIT_FAILURE
+            self.f.STATUS = "Invalid cutoff angle"
+            self.f.OK = False
             return False
 
         return True
@@ -85,21 +83,21 @@ class MetAromatic:
 
         self.log.info('Fetching PDB file')
 
-        file_from_pdb = filegetter.PDBFileGetter(self.results['_id'])
+        file_from_pdb = filegetter.PDBFileGetter(self.f.PDB_CODE)
 
         filepath = file_from_pdb.fetch_entry_from_pdb()
         if not filepath:
             self.log.error('Invalid PDB file. Entry possibly does not exist')
-            self.results['exit_status'] = "Invalid PDB file"
-            self.results['exit_code'] = EXIT_FAILURE
+            self.f.STATUS = "Invalid PDB file"
+            self.f.OK = False
             return False
 
         self.f.RAW_DATA = preprocessing.get_raw_data_from_file(filepath)
 
         if not file_from_pdb.remove_entry():
             self.log.error('Could not remove PDB file')
-            self.results['exit_status'] = "Could not remove PDB file"
-            self.results['exit_code'] = EXIT_FAILURE
+            self.f.STATUS = "Could not remove PDB file"
+            self.f.OK = False
             return False
 
         return True
@@ -112,8 +110,8 @@ class MetAromatic:
 
         if len(self.f.FIRST_MODEL) == 0:
             self.log.error('No data for first model')
-            self.results['exit_status'] = "No first model data"
-            self.results['exit_code'] = EXIT_FAILURE
+            self.f.STATUS = "No first model data"
+            self.f.OK = False
             return False
 
         return True
@@ -127,8 +125,8 @@ class MetAromatic:
         )
 
         if len(self.f.COORDS_MET) == 0:
-            self.results['exit_status'] = "No MET residues"
-            self.results['exit_code'] = EXIT_FAILURE
+            self.f.STATUS = "No MET residues"
+            self.f.OK = False
             return False
 
         return True
@@ -163,8 +161,8 @@ class MetAromatic:
 
         if not any([self.f.COORDS_PHE, self.f.COORDS_TYR, self.f.COORDS_TRP]):
             self.log.error('No aromatic residues in feature space')
-            self.results['exit_status'] = "No PHE/TYR/TRP residues"
-            self.results['exit_code'] = EXIT_FAILURE
+            self.f.STATUS = "No PHE/TYR/TRP residues"
+            self.f.OK = False
             return False
 
         return True
@@ -179,8 +177,8 @@ class MetAromatic:
 
         if not self.f.LONE_PAIRS_MET:
             self.log.error('Invalid model "%s"', self.model)
-            self.results['exit_status'] = "Invalid model"
-            self.results['exit_code'] = EXIT_FAILURE
+            self.f.STATUS = "Invalid model"
+            self.f.OK = False
             return False
 
         return True
@@ -205,7 +203,7 @@ class MetAromatic:
             self.f.COORDS_TRP
         )
 
-    def get_interactions(self: T) -> bool:
+    def get_interactions(self: T) -> None:
 
         self.log.info('Finding pairs meeting Met-aromatic algorithm criteria in feature space')
 
@@ -218,15 +216,10 @@ class MetAromatic:
 
         if len(self.f.INTERACTIONS) == 0:
             self.log.error('Found no Met-aromatic interactions')
-            self.results['exit_status'] = "No interactions"
-            self.results['exit_code'] = EXIT_FAILURE
-            return False
+            self.f.STATUS = "No interactions"
+            self.f.OK = False
 
-        self.results['exit_status'] = "Success"
-        self.results['results'] = self.f.INTERACTIONS
-        return True
-
-    def get_met_aromatic_interactions(self: T, code: str) -> dict:
+    def get_met_aromatic_interactions(self: T, code: str) -> FeatureSpace:
 
         self.log.info('Getting Met-aromatic interactions for PDB entry %s', code)
 
@@ -238,41 +231,32 @@ class MetAromatic:
         self.f.CHAIN = self.chain
         self.f.MODEL = self.model
 
-        self.results = {
-            '_id': code,
-            'exit_code': EXIT_SUCCESS,
-            'exit_status': None,
-            'results': None
-        }
-
         if not self.check_invalid_cutoff_distance():
-            return self.results
+            return self.f
 
         if not self.check_invalid_cutoff_angle():
-            return self.results
+            return self.f
 
         if not self.fetch_pdb_file():
-            return self.results
+            return self.f
 
         if not self.get_first_model():
-            return self.results
+            return self.f
 
         if not self.get_met_coordinates():
-            return self.results
+            return self.f
 
         self.get_phe_coordinates()
         self.get_tyr_coordinates()
         self.get_trp_coordinates()
 
         if not self.check_if_not_coordinates():
-            return self.results
+            return self.f
 
         if not self.get_met_lone_pairs():
-            return self.results
+            return self.f
 
         self.get_midpoints()
+        self.get_interactions()
 
-        if not self.get_interactions():
-            return self.results
-
-        return self.results
+        return self.f
