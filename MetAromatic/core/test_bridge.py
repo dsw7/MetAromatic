@@ -1,7 +1,7 @@
 from json import loads
 from pathlib import Path
 import pytest
-from .bridge import GetBridgingInteractions
+from core.bridge import GetBridgingInteractions
 
 NETWORK_SIZE = 4
 NUM_BRIDGES = 100
@@ -49,12 +49,15 @@ def get_control_bridge_test_ids():
 def test_bridge_collector(bridges):
 
     try:
-        handle = GetBridgingInteractions(TEST_PARAMETERS)
-        handle.get_bridging_interactions(vertices=NETWORK_SIZE, code=bridges.get('pdb_code'))
+        results = GetBridgingInteractions(
+            TEST_PARAMETERS
+        ).get_bridging_interactions(
+            vertices=NETWORK_SIZE, code=bridges.get('pdb_code')
+        )
     except IndexError:
         pytest.skip('Skipping list index out of range error. Occurs because of missing data.')
     else:
-        assert set(bridges.get('bridge')) in handle.bridges
+        assert set(bridges.get('bridge')) in results.BRIDGES
 
 @pytest.mark.test_command_line_interface
 @pytest.mark.parametrize(
@@ -83,7 +86,5 @@ def test_no_bridges_response(code, cutoff_distance, cutoff_angle):
         'chain': TEST_PARAMETERS['chain']
     }
 
-    handle = GetBridgingInteractions(params)
-    handle.get_bridging_interactions(code=code, vertices=NETWORK_SIZE)
-
-    assert len(handle.bridges) == 0
+    results = GetBridgingInteractions(params).get_bridging_interactions(code=code, vertices=NETWORK_SIZE)
+    assert len(results.BRIDGES) == 0

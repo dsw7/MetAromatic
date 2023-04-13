@@ -10,7 +10,7 @@ from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient, errors
 from core.helpers import consts
-from .pair import MetAromatic
+from core.pair import MetAromatic
 
 LEN_PDB_CODE = 4
 MAXIMUM_WORKERS = 15
@@ -145,7 +145,7 @@ class ParallelProcessing:
             else:
                 self.count += 1
                 self.log.info('Processed %s. Count: %i', code, self.count)
-                self.collection.insert_many([results])
+                self.collection.insert_many([results.INTERACTIONS])
 
     def deploy_jobs(self: consts.T) -> None:
 
