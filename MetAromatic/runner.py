@@ -91,9 +91,12 @@ def bridge(obj, code, vertices):
 
     from core.bridge import GetBridgingInteractions
 
-    obj_bridge = GetBridgingInteractions(obj)
-    if obj_bridge.get_bridging_interactions(vertices=vertices, code=code):
-        obj_bridge.display_results()
+    results = GetBridgingInteractions(obj).get_bridging_interactions(vertices=vertices, code=code)
+
+    if not results.OK:
+        sys.exit(results.STATUS)
+
+    click.echo(results.BRIDGES)
 
 @cli.command(help='Run a Met-aromatic query batch job.')
 @click.argument('path_batch_file', type=click.Path('rb'))

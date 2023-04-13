@@ -1,12 +1,20 @@
 from logging import getLogger
-from os import EX_OK
-from typing import Dict, Union
+from typing import Optional, Set, Tuple
+from typing import Dict, Union, List
 from networkx import Graph, connected_components
-from click import echo
 from core.helpers.consts import T
-from .pair import MetAromatic
+from core.pair import MetAromatic
 
 MINIMUM_VERTICES = 3
+
+
+class BridgeSpace:
+
+    INTERACTIONS: Optional[Set[Tuple[str]]] = set()
+    BRIDGES: Optional[List[Set[str]]] = []
+
+    OK: bool = True
+    STATUS: str = 'Success'
 
 
 class GetBridgingInteractions:
@@ -16,23 +24,25 @@ class GetBridgingInteractions:
     def __init__(self: T, cli_opts: Dict[str, Union[str, float]]) -> T:
 
         self.cli_opts = cli_opts
-        self.interactions = set()
-        self.bridges = []
+        self.f = None
 
     def get_interacting_pairs(self: T, code: str) -> bool:
 
         results = MetAromatic(**self.cli_opts).get_met_aromatic_interactions(code)
 
-        if results['exit_code'] != EX_OK:
-            self.log.error('Failed to acquire interactions')
+        if not results.OK:
+            self.log.error('Cannot get bridging interactions as Met-aromatic algorithm failed')
+
+            self.f.OK = False
+            self.f.STATUS = results.STATUS
             return False
 
-        for interaction in results['results']:
+        for interaction in results.INTERACTIONS:
             pair = (
                 f"{interaction['aromatic_residue']}{interaction['aromatic_position']}",
                 f"MET{interaction['methionine_position']}"
             )
-            self.interactions.add(pair)
+            self.f.INTERACTIONS.add(pair)
 
         return True
 
@@ -41,32 +51,30 @@ class GetBridgingInteractions:
         self.log.info('Locating bridging interactions')
 
         graph = Graph()
-        graph.add_edges_from(self.interactions)
+        graph.add_edges_from(self.f.INTERACTIONS)
 
         for bridge in connected_components(graph):
             if len(bridge) == vertices:
-                self.bridges.append(bridge)
+                self.f.BRIDGES.append(bridge)
 
         # Note that inverse bridges (MET-ARO-MET) not removed!
 
-        self.log.info('Found %i bridges', len(self.bridges))
+        self.log.info('Found %i bridges', len(self.f.BRIDGES))
 
-    def get_bridging_interactions(self: T, code: str, vertices: int) -> bool:
+    def get_bridging_interactions(self: T, code: str, vertices: int) -> BridgeSpace:
+
+        self.f = BridgeSpace()
 
         if vertices < MINIMUM_VERTICES:
             self.log.error('Vertices must be >= %i', MINIMUM_VERTICES)
-            return False
+
+            self.f.OK = False
+            self.f.STATUS = f'Vertices must be >= {MINIMUM_VERTICES}'
+            return self.f
 
         if not self.get_interacting_pairs(code):
-            return False
+            return self.f
 
         self.isolate_connected_components(vertices=vertices)
 
-        return True
-
-    def display_results(self: T) -> None:
-
-        if len(self.bridges) == 0:
-            echo('No bridges found')
-
-        echo(self.bridges)
+        return self.f
