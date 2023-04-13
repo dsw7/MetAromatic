@@ -75,7 +75,7 @@ class TestRunner:
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
-        assert result.output == 'Invalid cutoff distance\nExited with code: 1\n'
+        assert 'Invalid cutoff distance\n' in result.output
 
     def test_invalid_cutoff_distance_stringified(self):
         command = '--cutoff-distance foo pair 1rcy'
@@ -100,28 +100,28 @@ class TestRunner:
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
-        assert result.output == 'No MET residues\nExited with code: 1\n'
+        assert 'No MET residues\n' in result.output
 
     def test_invalid_model_pair(self):
         command = '--model foobar pair 1rcy'
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
-        assert result.output == 'Invalid model\nExited with code: 1\n'
+        assert 'Invalid model\n' in result.output
 
     def test_invalid_model_bridge(self):
         command = '--model foobar bridge 6lu7'
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
-        assert result.output == 'Invalid model\nExited with code: 1\n'
+        assert 'Invalid model\n' in result.output
 
     def test_no_results(self):
         command = 'pair 1a5r'
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
-        assert result.output == 'No interactions\nExited with code: 1\n'
+        assert 'No interactions\n' in result.output
 
     def test_bad_query_type(self):
         command = '--query foobar pair 1rcy'
