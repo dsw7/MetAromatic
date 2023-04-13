@@ -1,4 +1,6 @@
 from logging import getLogger
+from typing import Optional, List
+from typing import Dict, Union
 from .helpers import (
     filegetter,
     preprocessing,
@@ -11,14 +13,33 @@ from .helpers.consts import (
     EXIT_SUCCESS,
     T
 )
+from numpy import ndarray
 
 MAXIMUM_CUTOFF_ANGLE = 360.00
 
+
 class FeatureSpace:
 
-    RAW_DATA: None
+    PDB_CODE: str = None
+    CUTOFF_DIST: float = None
+    CUTOFF_ANGLE: float = None
+    CHAIN: str = None
+    MODEL: str = None
 
+    RAW_DATA: Optional[List[str]] = []
+    FIRST_MODEL: Optional[List[str]] = []
 
+    COORDS_MET: Optional[List[List[str]]] = []
+    COORDS_PHE: Optional[List[List[str]]] = []
+    COORDS_TYR: Optional[List[List[str]]] = []
+    COORDS_TRP: Optional[List[List[str]]] = []
+
+    LONE_PAIRS_MET: Optional[List[Dict[str, ndarray]]] = []
+    MIDPOINTS_PHE: Optional[List[List[Union[str, ndarray]]]] = []
+    MIDPOINTS_TYR: Optional[List[List[Union[str, ndarray]]]] = []
+    MIDPOINTS_TRP: Optional[List[List[Union[str, ndarray]]]] = []
+
+    INTERACTIONS: Optional[List[Dict[str, Union[int, float, str]]]] = []
 
 
 class MetAromatic:
@@ -33,22 +54,7 @@ class MetAromatic:
         self.model = model
 
         self.f = None
-
         self.results = None
-
-        self.transport = {
-            'raw_data': None,
-            'first_model': None,
-            'met_coordinates': None,
-            'phe_coordinates': None,
-            'tyr_coordinates': None,
-            'trp_coordinates': None,
-            'met_lone_pairs': None,
-            'phe_midpoints': None,
-            'tyr_midpoints': None,
-            'trp_midpoints': None,
-            'interactions': None
-        }
 
     def check_invalid_cutoff_distance(self: T) -> bool:
 
@@ -88,7 +94,7 @@ class MetAromatic:
             self.results['exit_code'] = EXIT_FAILURE
             return False
 
-        self.transport['raw_data'] = preprocessing.get_raw_data_from_file(filepath)
+        self.f.RAW_DATA = preprocessing.get_raw_data_from_file(filepath)
 
         if not file_from_pdb.remove_entry():
             self.log.error('Could not remove PDB file')
@@ -102,9 +108,9 @@ class MetAromatic:
 
         self.log.info('Stripping feature space down to only first model')
 
-        self.transport['first_model'] = preprocessing.get_first_model_from_raw_data(self.transport['raw_data'])
+        self.f.FIRST_MODEL = preprocessing.get_first_model_from_raw_data(self.f.RAW_DATA)
 
-        if not self.transport['first_model']:
+        if len(self.f.FIRST_MODEL) == 0:
             self.log.error('No data for first model')
             self.results['exit_status'] = "No first model data"
             self.results['exit_code'] = EXIT_FAILURE
@@ -116,11 +122,11 @@ class MetAromatic:
 
         self.log.info('Isolating MET coordinates from feature space')
 
-        self.transport['met_coordinates'] = preprocessing.get_relevant_met_coordinates(
-            self.transport['first_model'], self.chain
+        self.f.COORDS_MET = preprocessing.get_relevant_met_coordinates(
+            self.f.FIRST_MODEL, self.chain
         )
 
-        if not self.transport['met_coordinates']:
+        if len(self.f.COORDS_MET) == 0:
             self.results['exit_status'] = "No MET residues"
             self.results['exit_code'] = EXIT_FAILURE
             return False
@@ -131,31 +137,31 @@ class MetAromatic:
 
         self.log.info('Isolating PHE coordinates from feature space')
 
-        self.transport['phe_coordinates'] = preprocessing.get_relevant_phe_coordinates(
-            self.transport['first_model'], self.chain
+        self.f.COORDS_PHE = preprocessing.get_relevant_phe_coordinates(
+            self.f.FIRST_MODEL, self.chain
         )
 
     def get_tyr_coordinates(self: T) -> None:
 
         self.log.info('Isolating TYR coordinates from feature space')
 
-        self.transport['tyr_coordinates'] = preprocessing.get_relevant_tyr_coordinates(
-            self.transport['first_model'], self.chain
+        self.f.COORDS_TYR = preprocessing.get_relevant_tyr_coordinates(
+            self.f.FIRST_MODEL, self.chain
         )
 
     def get_trp_coordinates(self: T) -> None:
 
         self.log.info('Isolating TRP coordinates from feature space')
 
-        self.transport['trp_coordinates'] = preprocessing.get_relevant_trp_coordinates(
-            self.transport['first_model'], self.chain
+        self.f.COORDS_TRP = preprocessing.get_relevant_trp_coordinates(
+            self.f.FIRST_MODEL, self.chain
         )
 
     def check_if_not_coordinates(self: T) -> bool:
 
         self.log.info('Ensuring that at least one aromatic residue exists in feature space')
 
-        if not any([self.transport['phe_coordinates'], self.transport['tyr_coordinates'], self.transport['trp_coordinates']]):
+        if not any([self.f.COORDS_PHE, self.f.COORDS_TYR, self.f.COORDS_TRP]):
             self.log.error('No aromatic residues in feature space')
             self.results['exit_status'] = "No PHE/TYR/TRP residues"
             self.results['exit_code'] = EXIT_FAILURE
@@ -167,11 +173,11 @@ class MetAromatic:
 
         self.log.info('Computing MET lone pair positions using "%s" model', self.model)
 
-        self.transport['met_lone_pairs'] = get_lone_pairs.get_lone_pairs(
-            self.transport['met_coordinates'], self.model
+        self.f.LONE_PAIRS_MET = get_lone_pairs.get_lone_pairs(
+            self.f.COORDS_MET, self.model
         )
 
-        if not self.transport['met_lone_pairs']:
+        if not self.f.LONE_PAIRS_MET:
             self.log.error('Invalid model "%s"', self.model)
             self.results['exit_status'] = "Invalid model"
             self.results['exit_code'] = EXIT_FAILURE
@@ -183,41 +189,41 @@ class MetAromatic:
 
         self.log.info('Computing midpoints between PHE aromatic carbon atoms')
 
-        self.transport['phe_midpoints'] = get_aromatic_midpoints.get_phe_midpoints(
-            self.transport['phe_coordinates']
+        self.f.MIDPOINTS_PHE = get_aromatic_midpoints.get_phe_midpoints(
+            self.f.COORDS_PHE
         )
 
         self.log.info('Computing midpoints between TYR aromatic carbon atoms')
 
-        self.transport['tyr_midpoints'] = get_aromatic_midpoints.get_tyr_midpoints(
-            self.transport['tyr_coordinates']
+        self.f.MIDPOINTS_TYR = get_aromatic_midpoints.get_tyr_midpoints(
+            self.f.COORDS_TYR
         )
 
         self.log.info('Computing midpoints between TRP aromatic carbon atoms')
 
-        self.transport['trp_midpoints'] = get_aromatic_midpoints.get_trp_midpoints(
-            self.transport['trp_coordinates']
+        self.f.MIDPOINTS_TRP = get_aromatic_midpoints.get_trp_midpoints(
+            self.f.COORDS_TRP
         )
 
     def get_interactions(self: T) -> bool:
 
         self.log.info('Finding pairs meeting Met-aromatic algorithm criteria in feature space')
 
-        self.transport['interactions'] = distance_angular.apply_distance_angular_condition(
-            self.transport['phe_midpoints'] + self.transport['tyr_midpoints'] + self.transport['trp_midpoints'],
-            self.transport['met_lone_pairs'],
+        self.f.INTERACTIONS = distance_angular.apply_distance_angular_condition(
+            self.f.MIDPOINTS_PHE + self.f.MIDPOINTS_TYR + self.f.MIDPOINTS_TRP,
+            self.f.LONE_PAIRS_MET,
             self.cutoff_distance,
             self.cutoff_angle
         )
 
-        if not self.transport['interactions']:
+        if len(self.f.INTERACTIONS) == 0:
             self.log.error('Found no Met-aromatic interactions')
             self.results['exit_status'] = "No interactions"
             self.results['exit_code'] = EXIT_FAILURE
             return False
 
         self.results['exit_status'] = "Success"
-        self.results['results'] = self.transport['interactions']
+        self.results['results'] = self.f.INTERACTIONS
         return True
 
     def get_met_aromatic_interactions(self: T, code: str) -> dict:
@@ -225,6 +231,12 @@ class MetAromatic:
         self.log.info('Getting Met-aromatic interactions for PDB entry %s', code)
 
         self.f = FeatureSpace()
+
+        self.f.PDB_CODE = code
+        self.f.CUTOFF_DIST = self.cutoff_distance
+        self.f.CUTOFF_ANGLE = self.cutoff_angle
+        self.f.CHAIN = self.chain
+        self.f.MODEL = self.model
 
         self.results = {
             '_id': code,
