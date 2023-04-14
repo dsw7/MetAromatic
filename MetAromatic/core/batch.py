@@ -138,14 +138,20 @@ class ParallelProcessing:
                 break
 
             try:
-                results = handle_ma.get_met_aromatic_interactions(code)
+                fs = handle_ma.get_met_aromatic_interactions(code)
+                results = {
+                    '_id': fs.PDB_CODE,
+                    'ok': fs.OK,
+                    'status': fs.STATUS,
+                    'results': fs.INTERACTIONS
+                }
             except Exception:
                 self.count += 1
                 self.log.exception('Could not process code: %s. Count: %i', code, self.count)
             else:
                 self.count += 1
                 self.log.info('Processed %s. Count: %i', code, self.count)
-                self.collection.insert_many([results.INTERACTIONS])
+                self.collection.insert_one(results)
 
     def deploy_jobs(self: consts.T) -> None:
 
