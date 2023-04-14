@@ -142,7 +142,7 @@ def test_mongodb_output_invalid_results(code, cutoff_distance, cutoff_angle):
         ('1rcy', 4.95, 720.0, 'Invalid cutoff angle'),
         ('2rcy', 4.95, 109.5, 'No MET residues'),
         ('3nir', 4.95, 109.5, 'No MET residues'),
-        ('abcd', 4.95, 109.5, 'Invalid PDB file')
+        ('abcd', 4.95, 109.5, 'Invalid PDB entry')
     ]
 )
 def test_mongodb_output_invalid_results_exception_boolean(code, cutoff_distance, cutoff_angle, errmsg):

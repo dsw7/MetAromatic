@@ -1,4 +1,3 @@
-from typing import Union
 from re import match
 
 ATOMS_MET = r'CE|SD|CG'
@@ -17,18 +16,6 @@ def pattern_regex_tyr(chain: str) -> str:
 
 def pattern_regex_trp(chain: str) -> str:
     return r'(ATOM.*({})\s+TRP\s+{}\s)'.format(ATOMS_TRP, chain)
-
-def get_raw_data_from_file(filepath: str) -> Union[bool, list]:
-    raw_data = []
-    try:
-        with open(filepath, 'r') as f:
-            for line in f:
-                raw_data.append(line)
-
-    except FileNotFoundError:
-        return False
-    else:
-        return raw_data
 
 def get_first_model_from_raw_data(raw_data: list) -> list:
     first_model = []

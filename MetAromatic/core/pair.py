@@ -85,23 +85,29 @@ class MetAromatic:
 
         self.log.info('Fetching PDB file')
 
-        file_from_pdb = filegetter.PDBFileGetter(self.f.PDB_CODE)
+        file_handle = filegetter.PDBFileGetter(self.f.PDB_CODE)
 
-        filepath = file_from_pdb.fetch_entry_from_pdb()
-        if not filepath:
-            self.log.error('Invalid PDB file. Entry possibly does not exist')
-            self.f.STATUS = "Invalid PDB file"
+        path_pdb_file = file_handle.fetch_entry_from_pdb()
+
+        if path_pdb_file is None:
+            self.log.error('Invalid PDB entry. Entry possibly does not exist')
+            self.f.STATUS = "Invalid PDB entry"
             self.f.OK = False
             return False
 
-        self.f.RAW_DATA = preprocessing.get_raw_data_from_file(filepath)
-
-        if not file_from_pdb.remove_entry():
-            self.log.error('Could not remove PDB file')
-            self.f.STATUS = "Could not remove PDB file"
+        if not path_pdb_file.exists():
+            self.log.error('Could not find PDB file "%s"', path_pdb_file)
+            self.f.STATUS = 'PDB file does not exist'
             self.f.OK = False
             return False
 
+        self.log.info('Loading data from PDB file "%s"', path_pdb_file)
+
+        with path_pdb_file.open() as f:
+            for line in f:
+                self.f.RAW_DATA.append(line)
+
+        file_handle.remove_entry()
         return True
 
     def get_first_model(self: T) -> bool:
