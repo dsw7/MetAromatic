@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from logging import getLogger
 from typing import Optional, List
 from typing import Dict, Union
@@ -14,6 +15,7 @@ from core.helpers import (
 MAXIMUM_CUTOFF_ANGLE = 360.00
 
 
+@dataclass
 class FeatureSpace:
 
     PDB_CODE: str = None
@@ -22,20 +24,20 @@ class FeatureSpace:
     CHAIN: str = None
     MODEL: str = None
 
-    RAW_DATA: Optional[List[str]] = []
-    FIRST_MODEL: Optional[List[str]] = []
+    RAW_DATA: Optional[List[str]] = field(default_factory=list)
+    FIRST_MODEL: Optional[List[str]] = field(default_factory=list)
 
-    COORDS_MET: Optional[List[List[str]]] = []
-    COORDS_PHE: Optional[List[List[str]]] = []
-    COORDS_TYR: Optional[List[List[str]]] = []
-    COORDS_TRP: Optional[List[List[str]]] = []
+    COORDS_MET: Optional[List[List[str]]] = field(default_factory=list)
+    COORDS_PHE: Optional[List[List[str]]] = field(default_factory=list)
+    COORDS_TYR: Optional[List[List[str]]] = field(default_factory=list)
+    COORDS_TRP: Optional[List[List[str]]] = field(default_factory=list)
 
-    LONE_PAIRS_MET: Optional[List[Dict[str, ndarray]]] = []
-    MIDPOINTS_PHE: Optional[List[List[Union[str, ndarray]]]] = []
-    MIDPOINTS_TYR: Optional[List[List[Union[str, ndarray]]]] = []
-    MIDPOINTS_TRP: Optional[List[List[Union[str, ndarray]]]] = []
+    LONE_PAIRS_MET: Optional[List[Dict[str, ndarray]]] = field(default_factory=list)
+    MIDPOINTS_PHE: Optional[List[List[Union[str, ndarray]]]] = field(default_factory=list)
+    MIDPOINTS_TYR: Optional[List[List[Union[str, ndarray]]]] = field(default_factory=list)
+    MIDPOINTS_TRP: Optional[List[List[Union[str, ndarray]]]] = field(default_factory=list)
 
-    INTERACTIONS: Optional[List[Dict[str, Union[int, float, str]]]] = []
+    INTERACTIONS: Optional[List[Dict[str, Union[int, float, str]]]] = field(default_factory=list)
 
     OK: bool = True
     STATUS: str = 'Success'
