@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from logging import getLogger
 from typing import Optional, Set, Tuple
 from typing import Dict, Union, List
@@ -8,10 +9,11 @@ from core.pair import MetAromatic
 MINIMUM_VERTICES = 3
 
 
+@dataclass
 class BridgeSpace:
 
-    INTERACTIONS: Optional[Set[Tuple[str]]] = set()
-    BRIDGES: Optional[List[Set[str]]] = []
+    INTERACTIONS: Optional[Set[Tuple[str]]] = field(default_factory=set)
+    BRIDGES: Optional[List[Set[str]]] = field(default_factory=list)
 
     OK: bool = True
     STATUS: str = 'Success'
