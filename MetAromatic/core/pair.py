@@ -5,9 +5,11 @@ from typing import Optional, List
 from typing import Dict, Union
 from numpy import ndarray
 from core.helpers.consts import T
+from core.helpers.get_aromatic_midpoints import get_phe_midpoints
+from core.helpers.get_aromatic_midpoints import get_tyr_midpoints
+from core.helpers.get_aromatic_midpoints import get_trp_midpoints
 from core.helpers import (
     filegetter,
-    get_aromatic_midpoints,
     get_lone_pairs,
     distance_angular
 )
@@ -198,22 +200,13 @@ class MetAromatic:
     def get_midpoints(self: T) -> None:
 
         self.log.info('Computing midpoints between PHE aromatic carbon atoms')
-
-        self.f.MIDPOINTS_PHE = get_aromatic_midpoints.get_phe_midpoints(
-            self.f.COORDS_PHE
-        )
+        self.f.MIDPOINTS_PHE = get_phe_midpoints(self.f.COORDS_PHE)
 
         self.log.info('Computing midpoints between TYR aromatic carbon atoms')
-
-        self.f.MIDPOINTS_TYR = get_aromatic_midpoints.get_tyr_midpoints(
-            self.f.COORDS_TYR
-        )
+        self.f.MIDPOINTS_TYR = get_tyr_midpoints(self.f.COORDS_TYR)
 
         self.log.info('Computing midpoints between TRP aromatic carbon atoms')
-
-        self.f.MIDPOINTS_TRP = get_aromatic_midpoints.get_trp_midpoints(
-            self.f.COORDS_TRP
-        )
+        self.f.MIDPOINTS_TRP = get_trp_midpoints(self.f.COORDS_TRP)
 
     def get_interactions(self: T) -> None:
 
