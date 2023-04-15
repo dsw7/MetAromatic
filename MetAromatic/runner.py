@@ -6,10 +6,16 @@
 
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
 
+from os import get_terminal_size
 import sys
 import logging
 import click
 from core.helpers import consts
+
+try:
+    SEPARATOR = get_terminal_size()[0] * '-'
+except OSError:
+    SEPARATOR = 25 * '-'
 
 def setup_child_logger():
 
@@ -44,16 +50,22 @@ def pair(obj, code):
 
     from core.pair import MetAromatic
 
-    header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     results = MetAromatic(**obj).get_met_aromatic_interactions(code)
 
     if not results.OK:
         sys.exit(results.STATUS)
 
+    click.echo(SEPARATOR)
+
+    header_success = ['ARO', 'POS', 'MET POS', 'NORM', 'MET-THETA', 'MET-PHI']
     click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*header_success))
+
+    click.echo(SEPARATOR)
 
     for line in results.INTERACTIONS:
         click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
+
+    click.echo(SEPARATOR)
 
 @cli.command(help='Run a bridging interaction query on a single PDB entry.')
 @click.argument('code')
@@ -68,7 +80,12 @@ def bridge(obj, code, vertices):
     if not results.OK:
         sys.exit(results.STATUS)
 
-    click.echo(results.BRIDGES)
+    click.echo(SEPARATOR)
+
+    for line in results.BRIDGES:
+        click.echo('{' + '}-{'.join(line) + '}')
+
+    click.echo(SEPARATOR)
 
 @cli.command(help='Run a Met-aromatic query batch job.')
 @click.argument('path_batch_file', type=click.Path('rb'))

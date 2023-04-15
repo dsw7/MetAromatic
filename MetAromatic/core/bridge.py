@@ -46,7 +46,7 @@ class GetBridgingInteractions:
 
         return True
 
-    def isolate_connected_components(self: T, vertices: int) -> None:
+    def isolate_connected_components(self: T, vertices: int) -> bool:
 
         self.log.info('Locating bridging interactions')
 
@@ -59,7 +59,16 @@ class GetBridgingInteractions:
 
         # Note that inverse bridges (MET-ARO-MET) not removed!
 
+        if len(self.f.BRIDGES) == 0:
+            self.log.error('Found no bridges')
+
+            self.f.OK = False
+            self.f.STATUS = 'No bridges'
+            return False
+
         self.log.info('Found %i bridges', len(self.f.BRIDGES))
+
+        return True
 
     def get_bridging_interactions(self: T, code: str, vertices: int) -> BridgeSpace:
 
@@ -68,6 +77,7 @@ class GetBridgingInteractions:
         if not self.get_interacting_pairs(code):
             return self.f
 
-        self.isolate_connected_components(vertices=vertices)
+        if not self.isolate_connected_components(vertices=vertices):
+            return self.f
 
         return self.f
