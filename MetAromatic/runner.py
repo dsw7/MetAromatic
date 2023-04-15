@@ -27,8 +27,8 @@ def setup_child_logger():
     logger.addHandler(channel)
 
 @click.group()
-@click.option('--cutoff-distance', type=float, default=4.9, metavar='<Angstroms>')
-@click.option('--cutoff-angle', type=float, default=109.5, metavar='<degrees>')
+@click.option('--cutoff-distance', type=click.FloatRange(min=0), default=4.9, metavar='<Angstroms>')
+@click.option('--cutoff-angle', type=click.FloatRange(min=0, max=360), default=109.5, metavar='<degrees>')
 @click.option('--chain', default='A', metavar='<[A-Z]>')
 @click.option('--model', type=click.Choice(['cp', 'rm']), default='cp', metavar='<cp|rm>')
 @click.pass_context

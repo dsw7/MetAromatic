@@ -75,19 +75,21 @@ class TestRunner:
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
-        assert 'Invalid cutoff distance\n' in result.output
+        assert "Invalid value for '--cutoff-distance'" in result.output
 
     def test_invalid_cutoff_distance_stringified(self):
         command = '--cutoff-distance foo pair 1rcy'
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
+        assert "Invalid value for '--cutoff-distance'" in result.output
 
     def test_invalid_cutoff_angle(self):
         command = '--cutoff-angle 361.00 pair 1rcy'
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
+        assert "Invalid value for '--cutoff-angle'" in result.output
 
     def test_invalid_code(self):
         command = 'pair foobar'

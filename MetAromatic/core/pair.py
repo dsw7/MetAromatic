@@ -14,8 +14,6 @@ from core.helpers import (
     distance_angular
 )
 
-MAXIMUM_CUTOFF_ANGLE = 360.00
-
 
 @dataclass
 class FeatureSpace:
@@ -57,31 +55,6 @@ class MetAromatic:
         self.model = model
 
         self.f = None
-
-    def check_invalid_cutoff_distance(self: T) -> bool:
-
-        self.log.info('Validating cutoff distance')
-
-        if self.cutoff_distance <= 0:
-
-            self.log.error('Invalid cutoff distance. Cutoff distance must exceed 0 Angstroms')
-            self.f.STATUS = "Invalid cutoff distance"
-            self.f.OK = False
-            return False
-
-        return True
-
-    def check_invalid_cutoff_angle(self: T) -> bool:
-
-        self.log.info('Validating cutoff angle')
-
-        if (self.cutoff_angle < 0) or (self.cutoff_angle > MAXIMUM_CUTOFF_ANGLE):
-            self.log.error('Invalid cutoff angle. Cutoff angle must be between 0 and %i degrees', MAXIMUM_CUTOFF_ANGLE)
-            self.f.STATUS = "Invalid cutoff angle"
-            self.f.OK = False
-            return False
-
-        return True
 
     def fetch_pdb_file(self: T) -> bool:
 
@@ -224,12 +197,6 @@ class MetAromatic:
         self.f.CUTOFF_ANGLE = self.cutoff_angle
         self.f.CHAIN = self.chain
         self.f.MODEL = self.model
-
-        if not self.check_invalid_cutoff_distance():
-            return self.f
-
-        if not self.check_invalid_cutoff_angle():
-            return self.f
 
         if not self.fetch_pdb_file():
             return self.f
