@@ -57,7 +57,7 @@ def pair(obj, code):
 
 @cli.command(help='Run a bridging interaction query on a single PDB entry.')
 @click.argument('code')
-@click.option('--vertices', default=3, type=int, metavar='<vertices>')
+@click.option('--vertices', default=3, type=click.IntRange(min=3), metavar='<vertices>')
 @click.pass_obj
 def bridge(obj, code, vertices):
 

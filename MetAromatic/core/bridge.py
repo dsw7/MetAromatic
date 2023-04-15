@@ -6,8 +6,6 @@ from networkx import Graph, connected_components
 from core.helpers.consts import T
 from core.pair import MetAromatic
 
-MINIMUM_VERTICES = 3
-
 
 @dataclass
 class BridgeSpace:
@@ -66,13 +64,6 @@ class GetBridgingInteractions:
     def get_bridging_interactions(self: T, code: str, vertices: int) -> BridgeSpace:
 
         self.f = BridgeSpace()
-
-        if vertices < MINIMUM_VERTICES:
-            self.log.error('Vertices must be >= %i', MINIMUM_VERTICES)
-
-            self.f.OK = False
-            self.f.STATUS = f'Vertices must be >= {MINIMUM_VERTICES}'
-            return self.f
 
         if not self.get_interacting_pairs(code):
             return self.f
