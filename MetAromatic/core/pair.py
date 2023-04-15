@@ -181,21 +181,10 @@ class MetAromatic:
 
         return True
 
-    def get_met_lone_pairs(self: T) -> bool:
+    def get_met_lone_pairs(self: T) -> None:
 
         self.log.info('Computing MET lone pair positions using "%s" model', self.model)
-
-        self.f.LONE_PAIRS_MET = get_lone_pairs.get_lone_pairs(
-            self.f.COORDS_MET, self.model
-        )
-
-        if not self.f.LONE_PAIRS_MET:
-            self.log.error('Invalid model "%s"', self.model)
-            self.f.STATUS = "Invalid model"
-            self.f.OK = False
-            return False
-
-        return True
+        self.f.LONE_PAIRS_MET = get_lone_pairs.get_lone_pairs(self.f.COORDS_MET, self.model)
 
     def get_midpoints(self: T) -> None:
 
@@ -257,9 +246,7 @@ class MetAromatic:
         if not self.check_if_not_coordinates():
             return self.f
 
-        if not self.get_met_lone_pairs():
-            return self.f
-
+        self.get_met_lone_pairs()
         self.get_midpoints()
         self.get_interactions()
 

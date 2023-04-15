@@ -1,4 +1,3 @@
-from typing import Union
 from itertools import groupby
 from operator import itemgetter
 from numpy import array
@@ -6,7 +5,8 @@ from numpy import array
 from .rodrigues_method import RodriguesMethod
 from .cross_product_method import CrossProductMethod
 
-def get_lone_pairs(met_coordinates: list, model: str) -> Union[list, bool]:
+def get_lone_pairs(met_coordinates: list, model: str) -> list:
+
     lone_pairs = []
 
     for position, groups in groupby(met_coordinates, lambda entry: entry[5]):
@@ -16,12 +16,10 @@ def get_lone_pairs(met_coordinates: list, model: str) -> Union[list, bool]:
         coordinates_cg = array(ordered[1][6:9]).astype(float)
         coordinates_sd = array(ordered[2][6:9]).astype(float)
 
-        if model == 'rm':
-            lonepair = RodriguesMethod(coordinates_cg, coordinates_sd, coordinates_ce)
-        elif model == 'cp':
+        if model == 'cp':
             lonepair = CrossProductMethod(coordinates_cg, coordinates_sd, coordinates_ce)
         else:
-            return False
+            lonepair = RodriguesMethod(coordinates_cg, coordinates_sd, coordinates_ce)
 
         lone_pairs.append({
             'vector_a': lonepair.get_vector_a(),

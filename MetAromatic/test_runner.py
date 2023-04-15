@@ -107,14 +107,14 @@ class TestRunner:
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
-        assert 'Invalid model\n' in result.output
+        assert "Invalid value for '--model'" in result.output
 
     def test_invalid_model_bridge(self):
         command = '--model foobar bridge 6lu7'
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
-        assert 'Invalid model\n' in result.output
+        assert "Invalid value for '--model'" in result.output
 
     def test_no_results(self):
         command = 'pair 1a5r'
