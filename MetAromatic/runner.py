@@ -8,8 +8,6 @@
 
 import sys
 import logging
-from configparser import ConfigParser
-from pathlib import Path
 import click
 from core.helpers import consts
 
@@ -29,40 +27,14 @@ def setup_child_logger():
     logger.addHandler(channel)
 
 @click.group()
-@click.option('--cutoff-distance', type=float, default=None, help='Override cutoff distance defined in *.ini file.', metavar='<Angstroms>')
-@click.option('--cutoff-angle', type=float, default=None, help='Override cutoff angle defined in *.ini file.', metavar='<degrees>')
-@click.option('--chain', default=None, help='Override chain defined in *.ini file.', metavar='<[A-Z]>')
-@click.option('--model', default=None, help='Override lone pair interpolation model defined in *.ini file.', metavar='<cp|rm>')
+@click.option('--cutoff-distance', type=float, default=4.9, metavar='<Angstroms>')
+@click.option('--cutoff-angle', type=float, default=109.5, metavar='<degrees>')
+@click.option('--chain', default='A', metavar='<[A-Z]>')
+@click.option('--model', default='cp', metavar='<cp|rm>')
 @click.pass_context
 def cli(context, **options):
 
-    path_ini = Path(__file__).resolve().parent / 'runner.ini'
-
-    if not path_ini.exists():
-        sys.exit(f'Could not find initialization file: {path_ini}')
-
-    parser = ConfigParser()
-    parser.read(path_ini)
-
-    context.obj = {
-        'cutoff_distance': parser['root-configs'].getfloat('cutoff-distance'),
-        'cutoff_angle': parser['root-configs'].getfloat('cutoff-angle'),
-        'chain': parser['root-configs']['chain'],
-        'model': parser['root-configs']['model']
-    }
-
-    if options['cutoff_distance']:
-        context.obj['cutoff_distance'] = options['cutoff_distance']
-
-    if options['cutoff_angle']:
-        context.obj['cutoff_angle'] = options['cutoff_angle']
-
-    if options['chain']:
-        context.obj['chain'] = options['chain']
-
-    if options['model']:
-        context.obj['model'] = options['model']
-
+    context.obj = options
     setup_child_logger()
 
 @cli.command(help='Run a Met-aromatic query on a single PDB entry.')
