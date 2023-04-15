@@ -17,17 +17,6 @@ def pattern_regex_tyr(chain: str) -> str:
 def pattern_regex_trp(chain: str) -> str:
     return r'(ATOM.*({})\s+TRP\s+{}\s)'.format(ATOMS_TRP, chain)
 
-def get_first_model_from_raw_data(raw_data: list) -> list:
-    first_model = []
-
-    for line in raw_data:
-        if 'ENDMDL' not in line:
-            first_model.append(line)
-        else:
-            break
-
-    return first_model
-
 def get_relevant_met_coordinates(first_model: list, chain: str) -> list:
     return [line.split()[:9] for line in first_model if match(pattern_regex_met(chain), line)]
 

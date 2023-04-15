@@ -110,19 +110,15 @@ class MetAromatic:
         file_handle.remove_entry()
         return True
 
-    def get_first_model(self: T) -> bool:
+    def get_first_model(self: T) -> None:
 
         self.log.info('Stripping feature space down to only first model')
 
-        self.f.FIRST_MODEL = preprocessing.get_first_model_from_raw_data(self.f.RAW_DATA)
+        for line in self.f.RAW_DATA:
+            if 'ENDMDL' in line:
+                break
 
-        if len(self.f.FIRST_MODEL) == 0:
-            self.log.error('No data for first model')
-            self.f.STATUS = "No first model data"
-            self.f.OK = False
-            return False
-
-        return True
+            self.f.FIRST_MODEL.append(line)
 
     def get_met_coordinates(self: T) -> bool:
 
@@ -248,8 +244,7 @@ class MetAromatic:
         if not self.fetch_pdb_file():
             return self.f
 
-        if not self.get_first_model():
-            return self.f
+        self.get_first_model()
 
         if not self.get_met_coordinates():
             return self.f
