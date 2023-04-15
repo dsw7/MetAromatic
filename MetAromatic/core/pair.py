@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from re import match, compile
 from logging import getLogger
 from typing import Optional, List
 from typing import Dict, Union
@@ -6,7 +7,6 @@ from numpy import ndarray
 from core.helpers.consts import T
 from core.helpers import (
     filegetter,
-    preprocessing,
     get_aromatic_midpoints,
     get_lone_pairs,
     distance_angular
@@ -124,9 +124,11 @@ class MetAromatic:
 
         self.log.info('Isolating MET coordinates from feature space')
 
-        self.f.COORDS_MET = preprocessing.get_relevant_met_coordinates(
-            self.f.FIRST_MODEL, self.chain
-        )
+        pattern = compile(rf'(ATOM.*(CE|SD|CG)\s+MET\s+{self.chain}\s)')
+
+        for line in self.f.FIRST_MODEL:
+            if match(pattern, line):
+                self.f.COORDS_MET.append(line.split()[:9])
 
         if len(self.f.COORDS_MET) == 0:
             self.f.STATUS = "No MET residues"
@@ -139,25 +141,31 @@ class MetAromatic:
 
         self.log.info('Isolating PHE coordinates from feature space')
 
-        self.f.COORDS_PHE = preprocessing.get_relevant_phe_coordinates(
-            self.f.FIRST_MODEL, self.chain
-        )
+        pattern = compile(rf'(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+PHE\s+{self.chain}\s)')
+
+        for line in self.f.FIRST_MODEL:
+            if match(pattern, line):
+                self.f.COORDS_PHE.append(line.split()[:9])
 
     def get_tyr_coordinates(self: T) -> None:
 
         self.log.info('Isolating TYR coordinates from feature space')
 
-        self.f.COORDS_TYR = preprocessing.get_relevant_tyr_coordinates(
-            self.f.FIRST_MODEL, self.chain
-        )
+        pattern = compile(rf'(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+TYR\s+{self.chain}\s)')
+
+        for line in self.f.FIRST_MODEL:
+            if match(pattern, line):
+                self.f.COORDS_TYR.append(line.split()[:9])
 
     def get_trp_coordinates(self: T) -> None:
 
         self.log.info('Isolating TRP coordinates from feature space')
 
-        self.f.COORDS_TRP = preprocessing.get_relevant_trp_coordinates(
-            self.f.FIRST_MODEL, self.chain
-        )
+        pattern = compile(rf'(ATOM.*(CD2|CE3|CZ2|CH2|CZ3|CE2)\s+TRP\s+{self.chain}\s)')
+
+        for line in self.f.FIRST_MODEL:
+            if match(pattern, line):
+                self.f.COORDS_TRP.append(line.split()[:9])
 
     def check_if_not_coordinates(self: T) -> bool:
 
