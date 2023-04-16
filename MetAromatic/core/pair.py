@@ -10,15 +10,21 @@ from typing import Optional, List
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 
-from numpy import ndarray, array
+from numpy import ndarray, array, dot, linalg, degrees, arccos
 from core.helpers.consts import T
-from core.helpers.distance_angular import apply_distance_angular_condition
 from core.helpers.get_aromatic_midpoints import get_phe_midpoints
 from core.helpers.get_aromatic_midpoints import get_trp_midpoints
 from core.helpers.get_aromatic_midpoints import get_tyr_midpoints
 from core.helpers.lone_pair_interpolators import RodriguesMethod, CrossProductMethod
 
 TMPDIR = gettempdir()
+
+def vector_angle(u: ndarray, v: ndarray) -> float:
+
+    dot_prod = dot(u, v)
+    prod_mag = linalg.norm(v) * linalg.norm(u)
+
+    return degrees(arccos(dot_prod / prod_mag))
 
 
 @dataclass
@@ -196,16 +202,33 @@ class MetAromatic:
         self.log.info('Computing midpoints between TRP aromatic carbon atoms')
         self.f.MIDPOINTS_TRP = get_trp_midpoints(self.f.COORDS_TRP)
 
-    def get_interactions(self: T) -> None:
+    def apply_met_aromatic_criteria(self: T) -> None:
 
         self.log.info('Finding pairs meeting Met-aromatic algorithm criteria in feature space')
 
-        self.f.INTERACTIONS = apply_distance_angular_condition(
-            self.f.MIDPOINTS_PHE + self.f.MIDPOINTS_TYR + self.f.MIDPOINTS_TRP,
-            self.f.LONE_PAIRS_MET,
-            self.cutoff_distance,
-            self.cutoff_angle
-        )
+        for lone_pair in self.f.LONE_PAIRS_MET:
+            for midpoint in self.f.MIDPOINTS_PHE + self.f.MIDPOINTS_TYR + self.f.MIDPOINTS_TRP:
+
+                v = midpoint[2] - lone_pair['coords_sd']
+                norm_v = linalg.norm(v)
+
+                if norm_v > self.cutoff_distance:
+                    continue
+
+                met_theta_angle = vector_angle(v, lone_pair['vector_a'])
+                met_phi_angle = vector_angle(v, lone_pair['vector_g'])
+
+                if (met_theta_angle > self.cutoff_angle) and (met_phi_angle > self.cutoff_angle):
+                    continue
+
+                self.f.INTERACTIONS.append({
+                    'aromatic_residue': midpoint[1],
+                    'aromatic_position': int(midpoint[0]),
+                    'methionine_position': int(lone_pair['position']),
+                    'norm': round(norm_v, 3),
+                    'met_theta_angle': round(met_theta_angle, 3),
+                    'met_phi_angle': round(met_phi_angle, 3)
+                })
 
         if len(self.f.INTERACTIONS) == 0:
             self.log.error('Found no Met-aromatic interactions')
@@ -241,6 +264,6 @@ class MetAromatic:
 
         self.get_met_lone_pairs()
         self.get_midpoints()
-        self.get_interactions()
+        self.apply_met_aromatic_criteria()
 
         return self.f
