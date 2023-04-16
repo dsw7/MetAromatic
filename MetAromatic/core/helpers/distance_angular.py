@@ -1,7 +1,11 @@
-from numpy.linalg import norm
-from .cross_product_method import vector_angle
+import numpy as np
 
-ROUND_TO_NUMBER = 3
+def vector_angle(u: np.ndarray, v: np.ndarray) -> float:
+
+    numerator = np.dot(u, v)
+    denominator = np.linalg.norm(v) * np.linalg.norm(u)
+
+    return np.degrees(np.arccos(numerator / denominator))
 
 def apply_distance_angular_condition(midpoints: list, lone_pairs: list, cutoff_distance: float, cutoff_angle: float) -> list:
     met_aromatic_interactions = []
@@ -10,7 +14,7 @@ def apply_distance_angular_condition(midpoints: list, lone_pairs: list, cutoff_d
         for midpoint in midpoints:
 
             v = midpoint[2] - lone_pair_data['coords_sd']
-            norm_v = norm(v)
+            norm_v = np.linalg.norm(v)
 
             if norm_v <= cutoff_distance:
 
@@ -22,9 +26,9 @@ def apply_distance_angular_condition(midpoints: list, lone_pairs: list, cutoff_d
                         'aromatic_residue': midpoint[1],
                         'aromatic_position': int(midpoint[0]),
                         'methionine_position': int(lone_pair_data['position']),
-                        'norm': round(norm_v, ROUND_TO_NUMBER),
-                        'met_theta_angle': round(met_theta_angle, ROUND_TO_NUMBER),
-                        'met_phi_angle': round(met_phi_angle, ROUND_TO_NUMBER)
+                        'norm': round(norm_v, 3),
+                        'met_theta_angle': round(met_theta_angle, 3),
+                        'met_phi_angle': round(met_phi_angle, 3)
                     }
                     met_aromatic_interactions.append(result)
 

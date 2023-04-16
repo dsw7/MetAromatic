@@ -1,9 +1,7 @@
 from itertools import groupby
 from operator import itemgetter
 from numpy import array
-
-from .rodrigues_method import RodriguesMethod
-from .cross_product_method import CrossProductMethod
+from core.helpers.lone_pair_interpolators import RodriguesMethod, CrossProductMethod
 
 def get_lone_pairs(met_coordinates: list, model: str) -> list:
 
