@@ -3,16 +3,21 @@ from re import match, compile
 from logging import getLogger
 from typing import Optional, List
 from typing import Dict, Union
+from tempfile import gettempdir, NamedTemporaryFile
+from urllib.request import urlretrieve, urlcleanup
+from urllib.error import URLError
+from gzip import open as gz_open
 from numpy import ndarray
 from core.helpers.consts import T
 from core.helpers.get_aromatic_midpoints import get_phe_midpoints
 from core.helpers.get_aromatic_midpoints import get_tyr_midpoints
 from core.helpers.get_aromatic_midpoints import get_trp_midpoints
 from core.helpers import (
-    filegetter,
     get_lone_pairs,
     distance_angular
 )
+
+TMPDIR = gettempdir()
 
 
 @dataclass
@@ -58,31 +63,31 @@ class MetAromatic:
 
     def fetch_pdb_file(self: T) -> bool:
 
-        self.log.info('Fetching PDB file')
+        self.log.info('Fetching PDB file "%s"', self.f.PDB_CODE)
 
-        file_handle = filegetter.PDBFileGetter(self.f.PDB_CODE)
+        code = self.f.PDB_CODE.lower()
 
-        path_pdb_file = file_handle.fetch_entry_from_pdb()
+        ent_gz = f'pdb{code}.ent.gz'
+        ftp_url = f'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{code[1:3]}/{ent_gz}'
 
-        if path_pdb_file is None:
-            self.log.error('Invalid PDB entry. Entry possibly does not exist')
-            self.f.STATUS = "Invalid PDB entry"
-            self.f.OK = False
-            return False
+        self.log.info('Accessing URL: "%s"', ftp_url)
 
-        if not path_pdb_file.exists():
-            self.log.error('Could not find PDB file "%s"', path_pdb_file)
-            self.f.STATUS = 'PDB file does not exist'
-            self.f.OK = False
-            return False
+        with NamedTemporaryFile(dir=TMPDIR) as f:
 
-        self.log.info('Loading data from PDB file "%s"', path_pdb_file)
+            try:
+                urlcleanup()
+                urlretrieve(ftp_url, f.name)
+            except URLError:
+                self.log.error('Invalid PDB entry. Entry possibly does not exist')
 
-        with path_pdb_file.open() as f:
-            for line in f:
-                self.f.RAW_DATA.append(line)
+                self.f.STATUS = "Invalid PDB entry"
+                self.f.OK = False
+                return False
 
-        file_handle.remove_entry()
+            with gz_open(f.name, 'rt') as gz:
+                for line in gz:
+                    self.f.RAW_DATA.append(line)
+
         return True
 
     def get_first_model(self: T) -> None:
