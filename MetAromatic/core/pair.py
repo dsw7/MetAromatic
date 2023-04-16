@@ -1,21 +1,22 @@
 from dataclasses import dataclass, field
-from re import match, compile
-from logging import getLogger
-from typing import Optional, List
-from typing import Dict, Union
-from tempfile import gettempdir, NamedTemporaryFile
-from urllib.request import urlretrieve, urlcleanup
-from urllib.error import URLError
 from gzip import open as gz_open
-from numpy import ndarray
+from itertools import groupby
+from logging import getLogger
+from operator import itemgetter
+from re import match, compile
+from tempfile import gettempdir, NamedTemporaryFile
+from typing import Dict, Union
+from typing import Optional, List
+from urllib.error import URLError
+from urllib.request import urlretrieve, urlcleanup
+
+from numpy import ndarray, array
 from core.helpers.consts import T
+from core.helpers.distance_angular import apply_distance_angular_condition
 from core.helpers.get_aromatic_midpoints import get_phe_midpoints
-from core.helpers.get_aromatic_midpoints import get_tyr_midpoints
 from core.helpers.get_aromatic_midpoints import get_trp_midpoints
-from core.helpers import (
-    get_lone_pairs,
-    distance_angular
-)
+from core.helpers.get_aromatic_midpoints import get_tyr_midpoints
+from core.helpers.lone_pair_interpolators import RodriguesMethod, CrossProductMethod
 
 TMPDIR = gettempdir()
 
@@ -162,7 +163,27 @@ class MetAromatic:
     def get_met_lone_pairs(self: T) -> None:
 
         self.log.info('Computing MET lone pair positions using "%s" model', self.model)
-        self.f.LONE_PAIRS_MET = get_lone_pairs.get_lone_pairs(self.f.COORDS_MET, self.model)
+
+        if self.model == 'cp':
+            model_lp = CrossProductMethod
+        else:
+            model_lp = RodriguesMethod
+
+        for position, groups in groupby(self.f.COORDS_MET, lambda entry: entry[5]):
+            ordered = sorted(list(groups), key=itemgetter(2))
+
+            coords_ce = array(ordered[0][6:9]).astype(float)
+            coords_cg = array(ordered[1][6:9]).astype(float)
+            coords_sd = array(ordered[2][6:9]).astype(float)
+
+            lp = model_lp(coords_cg, coords_sd, coords_ce)
+
+            self.f.LONE_PAIRS_MET.append({
+                'vector_a': lp.get_vector_a(),
+                'vector_g': lp.get_vector_g(),
+                'coords_sd': coords_sd,
+                'position': position
+            })
 
     def get_midpoints(self: T) -> None:
 
@@ -179,7 +200,7 @@ class MetAromatic:
 
         self.log.info('Finding pairs meeting Met-aromatic algorithm criteria in feature space')
 
-        self.f.INTERACTIONS = distance_angular.apply_distance_angular_condition(
+        self.f.INTERACTIONS = apply_distance_angular_condition(
             self.f.MIDPOINTS_PHE + self.f.MIDPOINTS_TYR + self.f.MIDPOINTS_TRP,
             self.f.LONE_PAIRS_MET,
             self.cutoff_distance,
