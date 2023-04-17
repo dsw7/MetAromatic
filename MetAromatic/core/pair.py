@@ -206,8 +206,10 @@ class MetAromatic:
 
         self.log.debug('Finding pairs meeting Met-aromatic algorithm criteria in feature space')
 
+        midpoints = self.f.MIDPOINTS_PHE + self.f.MIDPOINTS_TYR + self.f.MIDPOINTS_TRP
+
         for lone_pair in self.f.LONE_PAIRS_MET:
-            for midpoint in self.f.MIDPOINTS_PHE + self.f.MIDPOINTS_TYR + self.f.MIDPOINTS_TRP:
+            for midpoint in midpoints:
 
                 v = midpoint[2] - lone_pair['coords_sd']
                 norm_v = linalg.norm(v)
