@@ -169,7 +169,7 @@ class ParallelProcessing:
         name_collection_info = f"{self.cli_args['collection']}_info"
         collection_info = self.collection.database[name_collection_info]
 
-        with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS) as executor:
+        with futures.ThreadPoolExecutor(max_workers=MAXIMUM_WORKERS, thread_name_prefix='Batch') as executor:
 
             start_time = time()
 
