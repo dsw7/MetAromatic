@@ -7,6 +7,7 @@
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
 
 from os import get_terminal_size
+from typing import Union, Dict
 import sys
 import logging
 import click
@@ -38,7 +39,7 @@ def setup_child_logger():
 @click.option('--chain', default='A', metavar='<[A-Z]>')
 @click.option('--model', type=click.Choice(['cp', 'rm']), default='cp', metavar='<cp|rm>')
 @click.pass_context
-def cli(context, **options):
+def cli(context: click.core.Context, **options: Union[str, float]) -> None:
 
     context.obj = options
     setup_child_logger()
@@ -46,7 +47,7 @@ def cli(context, **options):
 @cli.command(help='Run a Met-aromatic query on a single PDB entry.')
 @click.argument('code')
 @click.pass_obj
-def pair(obj, code):
+def pair(obj: Dict[str, Union[str, float]], code: str) -> None:
 
     from core.pair import MetAromatic
 
@@ -71,7 +72,7 @@ def pair(obj, code):
 @click.argument('code')
 @click.option('--vertices', default=3, type=click.IntRange(min=3), metavar='<vertices>')
 @click.pass_obj
-def bridge(obj, code, vertices):
+def bridge(obj: Dict[str, Union[str, float]], code: str, vertices: int) -> None:
 
     from core.bridge import GetBridgingInteractions
 
@@ -96,10 +97,10 @@ def bridge(obj, code, vertices):
 @click.option('-c', '--collection', default='default_ma', metavar='<collection-name>', help='Specify MongoDB collection to use.')
 @click.option('-x', '--overwrite', is_flag=True, default=False, help='Specify whether to overwrite collection specified with -c.')
 @click.pass_obj
-def batch(obj, **kwargs):
+def batch(obj: Dict[str, Union[str, float]], **options: Union[str, float]) -> None:
 
     from core.batch import ParallelProcessing
-    ParallelProcessing({**kwargs, **obj}).main()
+    ParallelProcessing({**options, **obj}).main()
 
 if __name__ == '__main__':
     cli()
