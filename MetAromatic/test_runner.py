@@ -1,6 +1,6 @@
 from pathlib import Path
 from os import chdir, getcwd, EX_OK
-from subprocess import call, DEVNULL
+from subprocess import call, DEVNULL, STDOUT
 from contextlib import contextmanager
 from click.testing import CliRunner
 from pytest import mark
@@ -170,7 +170,7 @@ class TestRunFromDifferentDirectories:
 
         with restore_original_dir():
             chdir(self.root.parent)
-            exit_code = call('MetAromatic/runner.py pair 1rcy'.split(), stdout=DEVNULL)
+            exit_code = call('MetAromatic/runner.py pair 1rcy'.split(), stdout=DEVNULL, stderr=STDOUT)
 
             assert exit_code == EX_OK
 
@@ -178,7 +178,7 @@ class TestRunFromDifferentDirectories:
 
         with restore_original_dir():
             chdir(self.root / 'core')
-            exit_code = call('../runner.py pair 1rcy'.split(), stdout=DEVNULL)
+            exit_code = call('../runner.py pair 1rcy'.split(), stdout=DEVNULL, stderr=STDOUT)
 
             assert exit_code == EX_OK
 
@@ -186,7 +186,7 @@ class TestRunFromDifferentDirectories:
 
         with restore_original_dir():
             chdir(self.root.parent)
-            exit_code = call('MetAromatic/runner.py bridge 6lu7'.split(), stdout=DEVNULL)
+            exit_code = call('MetAromatic/runner.py bridge 6lu7'.split(), stdout=DEVNULL, stderr=STDOUT)
 
             assert exit_code == EX_OK
 
@@ -194,6 +194,6 @@ class TestRunFromDifferentDirectories:
 
         with restore_original_dir():
             chdir(self.root / 'core')
-            exit_code = call('../runner.py bridge 6lu7'.split(), stdout=DEVNULL)
+            exit_code = call('../runner.py bridge 6lu7'.split(), stdout=DEVNULL, stderr=STDOUT)
 
             assert exit_code == EX_OK
