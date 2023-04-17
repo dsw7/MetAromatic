@@ -7,16 +7,37 @@ from runner import cli
 
 HOST_MONGODB = 'localhost'
 PORT_MONGODB = 27017
-TIMEOUT_MONGODB_MSEC = 1000
+DB_NAME = 'database_coronavirus'
+COL_NAME = 'collection_coronavirus'
+TEST_DATA = Path(__file__).resolve().parent / 'core' / 'test_data' / 'data_coronavirus_entries.txt'
+
+if not TEST_DATA.exists():
+    pytest.exit(f'File {TEST_DATA} is missing')
+
+
+@pytest.mark.test_command_line_interface
+class TestRunnerBatch:
+
+    def setup_class(self):
+        self.runner = CliRunner()
+
+    def test_batch_too_few_threads(self):
+        command = f'batch {TEST_DATA} --threads=-1 --database={DB_NAME} --collection={COL_NAME}'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.exit_code != EX_OK
+
+    def test_batch_too_many_threads(self):
+        command = f'batch {TEST_DATA} --threads=100 --database={DB_NAME} --collection={COL_NAME}'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.exit_code != EX_OK
 
 
 @pytest.mark.test_command_line_interface
 class TestParallelProcessing:
 
     def setup_class(self):
-
-        self.db_name = 'database_coronavirus'
-        self.col_name = 'collection_coronavirus'
 
         self.client = MongoClient(host=HOST_MONGODB, port=PORT_MONGODB)
 
@@ -27,16 +48,10 @@ class TestParallelProcessing:
         except errors.ServerSelectionTimeoutError as e:
             pytest.exit(str(e))
 
-        self.cursor = self.client[self.db_name][self.col_name]
-
-        test_data = Path(__file__).resolve().parent / 'core' / 'test_data' / 'data_coronavirus_entries.txt'
-
-        if not test_data.exists():
-            pytest.exit(f'File {test_data} is missing')
-
+        self.cursor = self.client[DB_NAME][COL_NAME]
         self.threads = 3
 
-        command = f'batch {test_data} --threads={self.threads} --database={self.db_name} --collection={self.col_name}'
+        command = f'batch {TEST_DATA} --threads={self.threads} --database={DB_NAME} --collection={COL_NAME}'
 
         runner = CliRunner()
         result = runner.invoke(cli, command.split())
@@ -46,11 +61,11 @@ class TestParallelProcessing:
 
         self.num_coronavirus_entries = 9
 
-        info_collection = self.client[self.db_name][self.col_name + '_info']
+        info_collection = self.client[DB_NAME][COL_NAME + '_info']
         self.results_info = list(info_collection.find())[0]
 
     def teardown_class(self):
-        self.client.drop_database(self.db_name)
+        self.client.drop_database(DB_NAME)
 
     def test_correct_count(self):
         assert len(list(self.cursor.find())) == self.num_coronavirus_entries
@@ -83,8 +98,8 @@ class TestParallelProcessing:
         assert not list(self.cursor.find({'_id': 'spam'}))[0]['ok']
 
     def test_info_file_in_results(self):
-        collections = self.client[self.db_name].list_collection_names()
-        assert self.col_name + '_info' in collections
+        collections = self.client[DB_NAME].list_collection_names()
+        assert COL_NAME + '_info' in collections
 
     def test_info_file_correct_num_workers(self):
         assert self.results_info['num_workers'] == self.threads
