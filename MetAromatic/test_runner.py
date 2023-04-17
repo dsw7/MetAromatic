@@ -144,6 +144,30 @@ class TestRunner:
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
 
+    def test_pair_enable_debug(self):
+        command = '--debug pair 1rcy'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.output.count(' D ') > 0
+
+    def test_bridge_enable_debug(self):
+        command = '--debug bridge 1rcy'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.output.count(' D ') > 0
+
+    def test_pair_disable_debug(self):
+        command = 'pair 1rcy'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.output.count(' D ') == 0
+
+    def test_bridge_disable_debug(self):
+        command = 'bridge 1rcy'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.output.count(' D ') == 0
+
     @mark.parametrize(
         'subquery',
         [

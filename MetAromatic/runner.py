@@ -5,6 +5,7 @@
 # Therefore disable C0415:
 
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
+# pylint: disable=C0301   # Disable "Line too long"
 
 from os import get_terminal_size
 from typing import Union, Dict
@@ -44,10 +45,10 @@ def setup_child_logger(debug: bool) -> None:
 @click.option('--chain', default='A', metavar='<[A-Z]>')
 @click.option('--model', type=click.Choice(['cp', 'rm']), default='cp', metavar='<cp|rm>')
 @click.pass_context
-def cli(context: click.core.Context, **options: Union[str, float, bool]) -> None:
+def cli(context: click.core.Context, debug: bool, **options: Union[str, float]) -> None:
 
     context.obj = options
-    setup_child_logger(options['debug'])
+    setup_child_logger(debug=debug)
 
 @cli.command(help='Run a Met-aromatic query on a single PDB entry.')
 @click.argument('code')
