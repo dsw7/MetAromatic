@@ -33,7 +33,7 @@ class ParallelProcessing:
 
     def set_log_filehandler(self: consts.T) -> None:
 
-        self.log.info('Setting up additional logger')
+        self.log.debug('Setting up additional logger')
 
         logfile_name = path.join(gettempdir(), 'met_aromatic.log')
         self.log.info('Will log to file "%s"', logfile_name)
@@ -68,12 +68,12 @@ class ParallelProcessing:
         if not self.cli_args['overwrite']:
             return
 
-        self.log.info('Will overwrite collection "%s" if exists', self.cli_args['collection'])
+        self.log.debug('Will overwrite collection "%s" if exists', self.cli_args['collection'])
         self.collection.database.drop_collection(self.cli_args['collection'])
 
         info_collection = f"{self.cli_args['collection']}_info"
 
-        self.log.info('Will overwrite collection "%s" if exists', info_collection)
+        self.log.debug('Will overwrite collection "%s" if exists', info_collection)
         self.collection.database.drop_collection(info_collection)
 
     def ensure_collection_does_not_exist(self: consts.T) -> None:
@@ -93,7 +93,7 @@ class ParallelProcessing:
 
     def register_ipc_signals(self: consts.T) -> None:
 
-        self.log.info('Registering SIGINT to thread terminator')
+        self.log.debug('Registering SIGINT to thread terminator')
 
         self.bool_disable_workers = False
         signal(SIGINT, self.disable_all_workers)
@@ -116,7 +116,7 @@ class ParallelProcessing:
         if self.cli_args['threads'] > 15:
             sys.exit('Maximum number of threads is 15')
 
-        self.log.info('Splitting list of pdb codes into %i chunks', self.cli_args['threads'])
+        self.log.debug('Splitting list of pdb codes into %i chunks', self.cli_args['threads'])
 
         self.pdb_codes = [
             self.pdb_codes[i::self.cli_args['threads']] for i in range(self.cli_args['threads'])
@@ -134,7 +134,7 @@ class ParallelProcessing:
         for code in chunk:
 
             if self.bool_disable_workers:
-                self.log.info('Received interrupt signal - stopping worker thread...')
+                self.log.debug('Received interrupt signal - stopping worker thread...')
                 break
 
             try:
@@ -155,7 +155,7 @@ class ParallelProcessing:
 
     def deploy_jobs(self: consts.T) -> None:
 
-        self.log.info('Deploying %i workers!', self.cli_args['threads'])
+        self.log.debug('Deploying %i workers!', self.cli_args['threads'])
 
         batch_job_metadata = {
             'num_workers': self.cli_args['threads'],

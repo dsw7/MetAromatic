@@ -70,14 +70,14 @@ class MetAromatic:
 
     def fetch_pdb_file(self: T) -> bool:
 
-        self.log.info('Fetching PDB file "%s"', self.f.PDB_CODE)
+        self.log.debug('Fetching PDB file "%s"', self.f.PDB_CODE)
 
         code = self.f.PDB_CODE.lower()
 
         ent_gz = f'pdb{code}.ent.gz'
         ftp_url = f'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{code[1:3]}/{ent_gz}'
 
-        self.log.info('Accessing URL: "%s"', ftp_url)
+        self.log.debug('Accessing URL: "%s"', ftp_url)
 
         with NamedTemporaryFile(dir=TMPDIR) as f:
 
@@ -99,7 +99,7 @@ class MetAromatic:
 
     def get_first_model(self: T) -> None:
 
-        self.log.info('Stripping feature space down to only first model')
+        self.log.debug('Stripping feature space down to only first model')
 
         for line in self.f.RAW_DATA:
             if 'ENDMDL' in line:
@@ -109,7 +109,7 @@ class MetAromatic:
 
     def get_met_coordinates(self: T) -> bool:
 
-        self.log.info('Isolating MET coordinates from feature space')
+        self.log.debug('Isolating MET coordinates from feature space')
 
         pattern = compile(rf'(ATOM.*(CE|SD|CG)\s+MET\s+{self.chain}\s)')
 
@@ -126,7 +126,7 @@ class MetAromatic:
 
     def get_phe_coordinates(self: T) -> None:
 
-        self.log.info('Isolating PHE coordinates from feature space')
+        self.log.debug('Isolating PHE coordinates from feature space')
 
         pattern = compile(rf'(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+PHE\s+{self.chain}\s)')
 
@@ -136,7 +136,7 @@ class MetAromatic:
 
     def get_tyr_coordinates(self: T) -> None:
 
-        self.log.info('Isolating TYR coordinates from feature space')
+        self.log.debug('Isolating TYR coordinates from feature space')
 
         pattern = compile(rf'(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+TYR\s+{self.chain}\s)')
 
@@ -146,7 +146,7 @@ class MetAromatic:
 
     def get_trp_coordinates(self: T) -> None:
 
-        self.log.info('Isolating TRP coordinates from feature space')
+        self.log.debug('Isolating TRP coordinates from feature space')
 
         pattern = compile(rf'(ATOM.*(CD2|CE3|CZ2|CH2|CZ3|CE2)\s+TRP\s+{self.chain}\s)')
 
@@ -156,7 +156,7 @@ class MetAromatic:
 
     def check_if_not_coordinates(self: T) -> bool:
 
-        self.log.info('Ensuring that at least one aromatic residue exists in feature space')
+        self.log.debug('Ensuring that at least one aromatic residue exists in feature space')
 
         if not any([self.f.COORDS_PHE, self.f.COORDS_TYR, self.f.COORDS_TRP]):
             self.log.error('No aromatic residues in feature space')
@@ -168,7 +168,7 @@ class MetAromatic:
 
     def get_met_lone_pairs(self: T) -> None:
 
-        self.log.info('Computing MET lone pair positions using "%s" model', self.model)
+        self.log.debug('Computing MET lone pair positions using "%s" model', self.model)
 
         if self.model == 'cp':
             model_lp = CrossProductMethod
@@ -193,18 +193,18 @@ class MetAromatic:
 
     def get_midpoints(self: T) -> None:
 
-        self.log.info('Computing midpoints between PHE aromatic carbon atoms')
+        self.log.debug('Computing midpoints between PHE aromatic carbon atoms')
         self.f.MIDPOINTS_PHE = get_phe_midpoints(self.f.COORDS_PHE)
 
-        self.log.info('Computing midpoints between TYR aromatic carbon atoms')
+        self.log.debug('Computing midpoints between TYR aromatic carbon atoms')
         self.f.MIDPOINTS_TYR = get_tyr_midpoints(self.f.COORDS_TYR)
 
-        self.log.info('Computing midpoints between TRP aromatic carbon atoms')
+        self.log.debug('Computing midpoints between TRP aromatic carbon atoms')
         self.f.MIDPOINTS_TRP = get_trp_midpoints(self.f.COORDS_TRP)
 
     def apply_met_aromatic_criteria(self: T) -> None:
 
-        self.log.info('Finding pairs meeting Met-aromatic algorithm criteria in feature space')
+        self.log.debug('Finding pairs meeting Met-aromatic algorithm criteria in feature space')
 
         for lone_pair in self.f.LONE_PAIRS_MET:
             for midpoint in self.f.MIDPOINTS_PHE + self.f.MIDPOINTS_TYR + self.f.MIDPOINTS_TRP:

@@ -18,7 +18,7 @@ try:
 except OSError:
     SEPARATOR = 25 * '-'
 
-def setup_child_logger():
+def setup_child_logger(debug: bool) -> None:
 
     logging.addLevelName(logging.ERROR, 'E')
     logging.addLevelName(logging.WARNING, 'W')
@@ -26,7 +26,11 @@ def setup_child_logger():
     logging.addLevelName(logging.DEBUG, 'D')
 
     logger = logging.getLogger('met-aromatic')
-    logger.setLevel(logging.DEBUG)
+
+    if debug:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
 
     channel = logging.StreamHandler()
     formatter = logging.Formatter(fmt=consts.LOGRECORD_FORMAT, datefmt=consts.ISO_8601_DATE_FORMAT)
@@ -34,15 +38,16 @@ def setup_child_logger():
     logger.addHandler(channel)
 
 @click.group()
+@click.option('--debug', is_flag=True, default=False, help='Enable debug logging')
 @click.option('--cutoff-distance', type=click.FloatRange(min=0), default=4.9, metavar='<Angstroms>')
 @click.option('--cutoff-angle', type=click.FloatRange(min=0, max=360), default=109.5, metavar='<degrees>')
 @click.option('--chain', default='A', metavar='<[A-Z]>')
 @click.option('--model', type=click.Choice(['cp', 'rm']), default='cp', metavar='<cp|rm>')
 @click.pass_context
-def cli(context: click.core.Context, **options: Union[str, float]) -> None:
+def cli(context: click.core.Context, **options: Union[str, float, bool]) -> None:
 
     context.obj = options
-    setup_child_logger()
+    setup_child_logger(options['debug'])
 
 @cli.command(help='Run a Met-aromatic query on a single PDB entry.')
 @click.argument('code')

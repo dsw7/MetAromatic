@@ -48,8 +48,6 @@ class GetBridgingInteractions:
 
     def isolate_connected_components(self: T, vertices: int) -> bool:
 
-        self.log.info('Locating bridging interactions')
-
         graph = Graph()
         graph.add_edges_from(self.f.INTERACTIONS)
 
@@ -71,6 +69,8 @@ class GetBridgingInteractions:
         return True
 
     def get_bridging_interactions(self: T, code: str, vertices: int) -> BridgeSpace:
+
+        self.log.info('Locating bridging interactions for entry "%s"', code)
 
         self.f = BridgeSpace()
 
