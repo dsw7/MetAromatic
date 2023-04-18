@@ -85,7 +85,7 @@ class MetAromatic:
                 urlcleanup()
                 urlretrieve(ftp_url, f.name)
             except URLError:
-                self.log.error('Invalid PDB entry. Entry possibly does not exist')
+                self.log.error('Invalid PDB entry "%s"', self.f.PDB_CODE)
 
                 self.f.STATUS = "Invalid PDB entry"
                 self.f.OK = False
@@ -118,6 +118,8 @@ class MetAromatic:
                 self.f.COORDS_MET.append(line.split()[:9])
 
         if len(self.f.COORDS_MET) == 0:
+            self.log.error('No methionine residues found for entry "%s"', self.f.PDB_CODE)
+
             self.f.STATUS = "No MET residues"
             self.f.OK = False
             return False
@@ -159,7 +161,7 @@ class MetAromatic:
         self.log.debug('Ensuring that at least one aromatic residue exists in feature space')
 
         if not any([self.f.COORDS_PHE, self.f.COORDS_TYR, self.f.COORDS_TRP]):
-            self.log.error('No aromatic residues in feature space')
+            self.log.error('No aromatic residues found for entry "%s"', self.f.PDB_CODE)
             self.f.STATUS = "No PHE/TYR/TRP residues"
             self.f.OK = False
             return False
@@ -233,7 +235,7 @@ class MetAromatic:
                 })
 
         if len(self.f.INTERACTIONS) == 0:
-            self.log.error('Found no Met-aromatic interactions')
+            self.log.error('Found no Met-aromatic interactions for entry "%s"', self.f.PDB_CODE)
             self.f.STATUS = "No interactions"
             self.f.OK = False
 
