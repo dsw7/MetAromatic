@@ -120,17 +120,49 @@ A representative figure is shown below:
 </p>
 
 ## Setup
-Start by fetching the repository:
-```bash
+Start by selecting a directory to run the project from. For example, `foo`:
+```
+mkdir /path/to/foo
+```
+Change directories into `foo` and set up a virtual environment:
+```
+python3 -m venv ma
+```
+Activate the environment:
+```
+source ma/bin/activate
+```
+Then clone the project:
+```
 git clone https://github.com/dsw7/MetAromatic.git
 ```
-Change directories into the project and run the following `make` target:
-```bash
-make setup   # Only sets up project
+Change directories into the newly created `MetAromatic` directory and run:
 ```
-Or:
-```bash
-make full    # Sets up project AND runs unit tests
+pip3 install pipreqs
+```
+Then generate the `requirements.txt` file by running:
+```
+pipreqs
+```
+Then run:
+```
+pip3 install --requirement requirements.txt
+```
+This commmand will install the remaining project dependencies based on the `requirements.txt` file. Last, make the program entrypoint executable:
+```
+chmod +x MetAromatic/runner.py
+```
+Then try running:
+```
+./MetAromatic/runner.py --help
+```
+Which should return a help menu. Unit tests can be run as a quick sanity check as well:
+```
+pytest -vsx MetAromatic/test_runner_pair.py
+```
+Upon completion, the virtual environment can be deactivated by running:
+```
+deactivate
 ```
 ## Basic usage
 ### Finding Met-aromatic pairs
