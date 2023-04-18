@@ -5,7 +5,7 @@
 ####################################
 
 .PHONY = help \
-         requirements setup teardown test full \
+         requirements setup test full \
 		 wheel install clean uninstall test-wheel full-wheel \
 		 dockertest
 
@@ -26,8 +26,6 @@ Command line program:
         $$ make requirements
     To setup all project dependencies:
         $$ make setup
-    To uninstall all project dependencies:
-        $$ make teardown
     To test the project:
         $$ make test
     To perform an end-to-end test:
@@ -86,10 +84,6 @@ setup: requirements
 	@python3 -m pip install --user --requirement $(REQUIREMENTS_TXT)
 	$(call RENDER_PREAMBLE,Making runner executable)
 	chmod +x $(PROJECT_DIRECTORY)/runner.py
-
-teardown: requirements
-	$(call RENDER_PREAMBLE,Uninstalling all project dependencies)
-	@python3 -m pip uninstall --yes --requirement $(REQUIREMENTS_TXT)
 
 test:
 	$(call RENDER_PREAMBLE,Running pytest over project)
