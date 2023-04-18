@@ -148,7 +148,7 @@ Then run:
 ```
 pip3 install --requirement requirements.txt
 ```
-This commmand will install the remaining project dependencies based on the `requirements.txt` file. Last, make
+This command will install the remaining project dependencies based on the `requirements.txt` file. Last, make
 the program entrypoint executable:
 ```
 chmod +x MetAromatic/runner.py
@@ -425,7 +425,8 @@ Now, `MetAromatic` should import without issues:
 ```
 python3 -c "import MetAromatic"
 ```
-The installation process will leave behind some artifacts. To remove the resulting `build`, `dist` and `egg-info` artifacts, simply run:
+The installation process will leave behind some artifacts. To remove the resulting `build`, `dist` and
+`egg-info` artifacts, simply run:
 ```
 make clean
 ```
@@ -476,11 +477,7 @@ To test the command line program, simply run the following target:
 make test
 ```
 ### Testing the package installation
-To test a package that was set up via `pip`, run:
+To test a package that was installed from source, run:
 ```
 make test-wheel
-```
-This assumes that the package was already set up by running:
-```
-make install
 ```
