@@ -142,18 +142,19 @@ query follows:
 Here, the `pair` argument specifies that we want to run a single aromatic interaction calculation. The query
 will yield the following results:
 ```
-ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
-===========================================================================
-TYR        122        MET        18         4.21071    75.76586   64.3175
-TYR        122        MET        18         3.95401    60.14475   68.35187
-TYR        122        MET        18         4.05137    47.19765   85.15065
-TYR        122        MET        18         4.38983    53.39991   95.48742
-TYR        122        MET        18         4.61966    68.45225   90.77119
-TYR        122        MET        18         4.53651    78.56813   76.4056
-PHE        54         MET        148        4.77709    105.94702  143.02178
-PHE        54         MET        148        4.6104     93.38207   156.92157
-PHE        54         MET        148        4.75563    93.28732   154.63001
-===========================================================================
+-------------------------------------------------------------------
+ARO        POS        MET POS    NORM       MET-THETA  MET-PHI
+-------------------------------------------------------------------
+TYR        122        18         4.211      75.766     64.317
+TYR        122        18         3.954      60.145     68.352
+TYR        122        18         4.051      47.198     85.151
+TYR        122        18         4.39       53.4       95.487
+TYR        122        18         4.62       68.452     90.771
+TYR        122        18         4.537      78.568     76.406
+PHE        54         148        4.777      105.947    143.022
+PHE        54         148        4.61       93.382     156.922
+PHE        54         148        4.756      93.287     154.63
+-------------------------------------------------------------------
 ```
 Above we have an order VI interaction between TYR 122 and MET 18, that is, all six vectors $\vec{v}$
 projecting from the `SD` on MET 18 to the midpoints on TYR 122 meet Met-aromatic criteria. We also have an
@@ -166,10 +167,11 @@ $\overset{\circ}{\mathrm {A}}$. The cutoff can be adjusted, however, using the `
 ```
 Reducing the cutoff distance yields an order I interaction between TYR 122 and MET 18.
 ```
-ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
-===========================================================================
-TYR        122        MET        18         3.95401    60.14475   68.35187
-===========================================================================
+-------------------------------------------------------------------
+ARO        POS        MET POS    NORM       MET-THETA  MET-PHI
+-------------------------------------------------------------------
+TYR        122        18         3.954      60.145     68.352
+-------------------------------------------------------------------
 ```
 `MET-THETA` and `MET-PHI` refer to $\theta$ and $\phi$, respectively. In the above example, the default cutoff
 angle $\delta$ is used ( $109.5^\circ$ ). The cutoff angle can be adjusted by using the `--cutoff-angle`
@@ -180,11 +182,12 @@ option:
 The `--cutoff-angle` option ensures that **at least one of** $\theta$ or $\phi$ angles fall below the cutoff
 $\delta$. This is seen in the below order II interaction:
 ```
-ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
-===========================================================================
-TYR        122        MET        18         4.05137    47.19765   85.15065
-TYR        122        MET        18         4.38983    53.39991   95.48742
-===========================================================================
+-------------------------------------------------------------------
+ARO        POS        MET POS    NORM       MET-THETA  MET-PHI
+-------------------------------------------------------------------
+TYR        122        18         4.051      47.198     85.151
+TYR        122        18         4.39       53.4       95.487
+-------------------------------------------------------------------
 ```
 The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in my
 master's thesis: [Applications of numerical linear algebra to protein structural analysis: the case of
@@ -196,12 +199,13 @@ model type can be passed as follows:
 ```
 Which yields similar results:
 ```
-ARO        POS        MET        POS        NORM       MET-THETA  MET-PHI
-===========================================================================
-TYR        122        MET        18         3.95401    57.23706   64.22606
-TYR        122        MET        18         4.05137    45.0966    80.76811
-TYR        122        MET        18         4.38983    52.50492   91.84111
-===========================================================================
+-------------------------------------------------------------------
+ARO        POS        MET POS    NORM       MET-THETA  MET-PHI
+-------------------------------------------------------------------
+TYR        122        18         3.954      57.237     64.226
+TYR        122        18         4.051      45.097     80.768
+TYR        122        18         4.39       52.505     91.841
+-------------------------------------------------------------------
 ```
 Note that the Euclidean distances between TYR aromatic carbon atoms and MET remain unchanged. By default, this
 program searches for "A" delimited chains. Some researchers may, however, be interested in searching for
@@ -226,9 +230,11 @@ $\lVert v \rVert$ cutoff in 6LU7:
 ```
 Which will return a list as follows:
 ```
-PHE185     MET165     PHE181
-TYR209     PHE219     MET264
-TRP207     TRP218     MET276
+-------------------------------------------------------------------
+{MET264}-{PHE219}-{TYR209}
+{MET276}-{TRP207}-{TRP218}
+{PHE185}-{PHE181}-{MET165}
+-------------------------------------------------------------------
 ```
 Where each row corresponds to a bridge. This program treats bridging interactions as networks with a defined
 set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The
