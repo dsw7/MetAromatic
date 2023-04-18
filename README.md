@@ -408,15 +408,27 @@ A mining job can now be run as:
 ```
 ## Installing this package from source
 One may be interested in extending the Met-aromatic project into a customized workflow. To do so, this project
-can be built and installed from source by running the target:
+can be built and installed from source. First, set up the product according to the [Setup](#setup) section (do
+not `deactivate` the environment). Then install `wheel`:
 ```
-make install
+pip3 install wheel
 ```
-To remove the resulting `build`, `dist` and `egg-info` artifacts, simply run:
+From the `MetAromatic` directory, run:
+```
+python3 setup.py clean --all bdist_wheel
+```
+Then install `MetAromatic`:
+```
+pip3 install dist/*whl
+```
+Now, `MetAromatic` should import without issues:
+```
+python3 -c "import MetAromatic"
+```
+The installation process will leave behind some artifacts. To remove the resulting `build`, `dist` and `egg-info` artifacts, simply run:
 ```
 make clean
 ```
-Now `MetAromatic.core` can be imported.
 ### Example: programmatically obtaining Met-aromatic pairs
 ```python
 from json import dumps
