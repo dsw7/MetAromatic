@@ -308,13 +308,6 @@ suffixed with `_info`. For example, the above scenario would generate the `defau
         "number_of_entries" : 9
 }
 ```
-The runner will fail with the following log:
-```
-1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB on host localhost
-1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Could not connect to MongoDB on host localhost and port 27017
-1970-01-01T00:00:00 ERROR [ _get_mongo_client ] Either MongoDB is not installed or the socket address is invalid
-```
-If a `mongod` instance is not listening on the specified TCP port.
 ### Designing a distributed mining strategy
 A user may be tempted to mine data on a high performance machine and then route the results to a storage
 server. This software supports this. The steps in this section can be followed to implement such a strategy.
