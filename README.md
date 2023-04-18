@@ -249,8 +249,9 @@ MongoDB database (https://www.mongodb.com/).  To start a batch job, ensure that 
 MongoDB installation then supply a batch file. A batch file can be a regular text file consisting of delimited
 PDB codes:
 ```
-1BPY, 1CWE, 1DZI, 1EAK, 1EB1, 1GU4, 1GU5, 1GXC, 1GY3, 1H6F,
-1JYR, 1M4H, 1MCD, 1N0X, 1NU8, 1O6P, 1OKV, 2A2X, 1WB0
+1xak, 1uw7, 2ca1
+1qz8, 2fxp, 2fyg
+2cme, 6mwm, spam
 ```
 The command follows:
 ```
@@ -261,25 +262,35 @@ The MongoDB dump database is specified using the `--database` option. The collec
 recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.  By default, mining
 jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
 ```
-1970-01-01T00:00:00 INFO  [ _get_mongo_client ] Handshaking with MongoDB on host localhost
-1970-01-01T00:00:00 INFO  [ _register_ipc_signals ] Registering SIGINT to thread terminator
-1970-01-01T00:00:00 INFO  [ _read_batch_file ] Imported pdb codes from file core/helpers/data_coronavirus_entries.txt
-1970-01-01T00:00:00 INFO  [ _generate_chunks ] Splitting list of pdb codes into 5 chunks
-1970-01-01T00:00:00 INFO  [ deploy_jobs ] Deploying 5 workers!
-1970-01-01T00:00:00 INFO  [ worker_met_aromatic ] Processed 1xak. Count: 1
-1970-01-01T00:00:00 INFO  [ worker_met_aromatic ] Processed 1uw7. Count: 2
-1970-01-01T00:00:00 INFO  [ worker_met_aromatic ] Processed 2ca1. Count: 3
-1970-01-01T00:00:00 INFO  [ worker_met_aromatic ] Processed 1qz8. Count: 4
-1970-01-01T00:00:01 INFO  [ worker_met_aromatic ] Processed 2fxp. Count: 5
-1970-01-01T00:00:01 INFO  [ worker_met_aromatic ] Processed 2fyg. Count: 6
-1970-01-01T00:00:01 INFO  [ worker_met_aromatic ] Processed 2cme. Count: 7
-1970-01-01T00:00:01 INFO  [ worker_met_aromatic ] Processed 6mwm. Count: 8
-1970-01-01T00:00:02 INFO  [ worker_met_aromatic ] Processed spam. Count: 9
-1970-01-01T00:00:02 INFO  [ deploy_jobs ] Batch job complete!
-1970-01-01T00:00:02 INFO  [ deploy_jobs ] Results loaded into database: default_ma
-1970-01-01T00:00:02 INFO  [ deploy_jobs ] Results loaded into collection: default_ma
-1970-01-01T00:00:02 INFO  [ deploy_jobs ] Batch job statistics loaded into collection: default_ma_info
-1970-01-01T00:00:02 INFO  [ deploy_jobs ] Batch job execution time: 2.077000 s
+1970-01-01T00:00:00 MainThread I Handshaking with MongoDB at "mongodb://localhost:27017/"
+1970-01-01T00:00:00 MainThread I Imported pdb codes from file /tmp/foo.txt
+1970-01-01T00:00:00 Batch_0 I Getting Met-aromatic interactions for PDB entry 1xak
+1970-01-01T00:00:00 Batch_1 I Getting Met-aromatic interactions for PDB entry 1uw7
+1970-01-01T00:00:00 Batch_2 I Getting Met-aromatic interactions for PDB entry 2ca1
+1970-01-01T00:00:00 Batch_0 E No methionine residues found for entry "1xak"
+1970-01-01T00:00:00 Batch_0 I Processed 1xak. Count: 1
+1970-01-01T00:00:00 Batch_0 I Getting Met-aromatic interactions for PDB entry 1qz8
+1970-01-01T00:00:00 Batch_2 I Processed 2ca1. Count: 2
+1970-01-01T00:00:00 Batch_2 I Getting Met-aromatic interactions for PDB entry 2fyg
+1970-01-01T00:00:00 Batch_1 I Processed 1uw7. Count: 3
+1970-01-01T00:00:00 Batch_1 I Getting Met-aromatic interactions for PDB entry 2fxp
+1970-01-01T00:00:01 Batch_2 I Processed 2fyg. Count: 4
+1970-01-01T00:00:01 Batch_2 I Getting Met-aromatic interactions for PDB entry 1rcy
+1970-01-01T00:00:01 Batch_0 I Processed 1qz8. Count: 5
+1970-01-01T00:00:01 Batch_0 I Getting Met-aromatic interactions for PDB entry 2cme
+1970-01-01T00:00:01 Batch_1 E No methionine residues found for entry "2fxp"
+1970-01-01T00:00:01 Batch_1 I Processed 2fxp. Count: 6
+1970-01-01T00:00:01 Batch_1 I Getting Met-aromatic interactions for PDB entry 6mwm
+1970-01-01T00:00:02 Batch_2 I Processed 1rcy. Count: 7
+1970-01-01T00:00:02 Batch_0 E Found no Met-aromatic interactions for entry "2cme"
+1970-01-01T00:00:02 Batch_0 I Processed 2cme. Count: 8
+1970-01-01T00:00:02 Batch_1 E No aromatic residues found for entry "6mwm"
+1970-01-01T00:00:02 Batch_1 I Processed 6mwm. Count: 9
+1970-01-01T00:00:02 MainThread I Batch job complete!
+1970-01-01T00:00:02 MainThread I Results loaded into database: default_ma
+1970-01-01T00:00:02 MainThread I Results loaded into collection: default_ma
+1970-01-01T00:00:02 MainThread I Batch job statistics loaded into collection: default_ma_info
+1970-01-01T00:00:02 MainThread I Batch job execution time: 2.213000 s
 ```
 A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary
 collection will house all the batch job parameters and other statistics and the collection name will be
@@ -287,13 +298,13 @@ suffixed with `_info`. For example, the above scenario would generate the `defau
 ```
 {
         "_id" : ObjectId("6145d54c6f016f61e0afcaa5"),
-        "num_workers" : 5,
+        "num_workers" : 3,
         "cutoff_distance" : 4.9,
         "cutoff_angle" : 109.5,
         "chain" : "A",
         "model" : "cp",
         "data_acquisition_date" : ISODate("1970-01-01T00:00:02.077Z"),
-        "batch_job_execution_time" : 2.077,
+        "batch_job_execution_time" : 2.213,
         "number_of_entries" : 9
 }
 ```
