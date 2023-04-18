@@ -148,7 +148,8 @@ Then run:
 ```
 pip3 install --requirement requirements.txt
 ```
-This commmand will install the remaining project dependencies based on the `requirements.txt` file. Last, make the program entrypoint executable:
+This commmand will install the remaining project dependencies based on the `requirements.txt` file. Last, make
+the program entrypoint executable:
 ```
 chmod +x MetAromatic/runner.py
 ```

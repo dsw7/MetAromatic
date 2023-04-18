@@ -5,7 +5,7 @@
 ####################################
 
 .PHONY = help \
-         requirements setup test full \
+         test \
 		 wheel install clean uninstall test-wheel full-wheel \
 		 dockertest
 
@@ -20,16 +20,10 @@ endef
 
 define HELP_LIST_TARGETS
 
-Command line program:
+Unit tests:
 
-    To generate a requirements.txt file:
-        $$ make requirements
-    To setup all project dependencies:
-        $$ make setup
     To test the project:
         $$ make test
-    To perform an end-to-end test:
-        $$ make full
 
 Wheel installation:
 
@@ -60,36 +54,15 @@ export HELP_LIST_TARGETS
 PROJECT_NAME = MetAromatic
 ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 PROJECT_DIRECTORY = $(ROOT_DIRECTORY)/MetAromatic
-REQUIREMENTS_TXT = $(ROOT_DIRECTORY)/requirements.txt
 DOCKER_TAG = ma
 
 # ----------------------------------
-# Simple install for running program via CLI
+# Unit tests
 # ----------------------------------
-
-requirements:
-	$(call RENDER_PREAMBLE,Checking if pipreqs is installed)
-	@python3 -m pip list | grep --word-regexp pipreqs || \
-	(echo "Library 'pipreqs' is not installed. Installing pipreqs" && \
-	python3 -m pip install --user pipreqs)
-
-	$(call RENDER_PREAMBLE,Generating requirements.txt file)
-	@python3 -m pipreqs.pipreqs --force \
-	--savepath $(REQUIREMENTS_TXT) \
-	--ignore $(PROJECT_DIRECTORY)/utils/test_data/ \
-	$(PROJECT_DIRECTORY)
-
-setup: requirements
-	$(call RENDER_PREAMBLE,Installing all project dependencies)
-	@python3 -m pip install --user --requirement $(REQUIREMENTS_TXT)
-	$(call RENDER_PREAMBLE,Making runner executable)
-	chmod +x $(PROJECT_DIRECTORY)/runner.py
 
 test:
 	$(call RENDER_PREAMBLE,Running pytest over project)
 	@python3 -m pytest -vs -m 'test_command_line_interface' $(PROJECT_DIRECTORY)
-
-full: setup test
 
 # ----------------------------------
 # Wheel install for importing Met-aromatic scripts
