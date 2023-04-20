@@ -12,7 +12,7 @@ from typing import Union, Dict
 import sys
 import logging
 import click
-from core import consts
+import consts
 
 try:
     SEPARATOR = get_terminal_size()[0] * '-'
@@ -55,7 +55,7 @@ def cli(context: click.core.Context, debug: bool, **options: Union[str, float]) 
 @click.pass_obj
 def pair(obj: Dict[str, Union[str, float]], code: str) -> None:
 
-    from core.pair import MetAromatic
+    from pair import MetAromatic
 
     results = MetAromatic(**obj).get_met_aromatic_interactions(code)
 
@@ -80,7 +80,7 @@ def pair(obj: Dict[str, Union[str, float]], code: str) -> None:
 @click.pass_obj
 def bridge(obj: Dict[str, Union[str, float]], code: str, vertices: int) -> None:
 
-    from core.bridge import GetBridgingInteractions
+    from bridge import GetBridgingInteractions
 
     results = GetBridgingInteractions(obj).get_bridging_interactions(vertices=vertices, code=code)
 
@@ -105,7 +105,7 @@ def bridge(obj: Dict[str, Union[str, float]], code: str, vertices: int) -> None:
 @click.pass_obj
 def batch(obj: Dict[str, Union[str, float]], **options: Union[str, float]) -> None:
 
-    from core.batch import ParallelProcessing
+    from batch import ParallelProcessing
     ParallelProcessing({**options, **obj}).main()
 
 if __name__ == '__main__':
