@@ -12,7 +12,7 @@ from typing import Union, Dict
 import sys
 import logging
 import click
-from core.helpers import consts
+from MetAromatic.core.helpers import consts
 
 try:
     SEPARATOR = get_terminal_size()[0] * '-'

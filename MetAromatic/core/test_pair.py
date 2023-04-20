@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-from .pair import MetAromatic
+from MetAromatic.core.pair import MetAromatic
 
 TEST_PARAMETERS = {
     'cutoff_distance': 4.9,

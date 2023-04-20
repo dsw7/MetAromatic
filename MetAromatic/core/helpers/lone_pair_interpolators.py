@@ -2,7 +2,7 @@
 
 from typing import List
 import numpy as np
-from core.helpers.consts import T
+from MetAromatic.core.helpers.consts import T
 
 SCAL1 = np.sin(np.pi / 2)
 SCAL2 = 1 - np.cos(np.pi / 2)

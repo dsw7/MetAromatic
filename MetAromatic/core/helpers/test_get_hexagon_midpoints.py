@@ -1,5 +1,5 @@
 from pytest import mark
-from core.helpers.get_aromatic_midpoints import get_hexagon_midpoints
+from MetAromatic.core.helpers.get_aromatic_midpoints import get_hexagon_midpoints
 
 HEXAGON_COORDINATES = [
     (0.866, 0.5, 0.0),

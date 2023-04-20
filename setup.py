@@ -7,10 +7,7 @@ setup(
         'MetAromatic/core',
         'MetAromatic/core/helpers'
     ],
-    install_requires=[
-        'pymongo',
-        'networkx',
-        'numpy',
-        'pytest'
-    ]
+    entry_points={
+        'console_scripts': ['ma = MetAromatic.runner:cli']
+    }
 )

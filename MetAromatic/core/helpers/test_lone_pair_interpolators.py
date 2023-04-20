@@ -2,7 +2,7 @@
 
 from pytest import mark
 from numpy import array, around, array_equal
-from core.helpers.lone_pair_interpolators import CrossProductMethod, RodriguesMethod
+from MetAromatic.core.helpers.lone_pair_interpolators import CrossProductMethod, RodriguesMethod
 
 VERTEX_A = array([0.5, 0.5, 0.0])
 VERTEX_G = array([0.5, -0.5, 0.0])

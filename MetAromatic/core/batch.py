@@ -9,8 +9,8 @@ from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient, errors
-from core.helpers import consts
-from core.pair import MetAromatic
+from MetAromatic.core.helpers import consts
+from MetAromatic.core.pair import MetAromatic
 
 LEN_PDB_CODE = 4
 MAXIMUM_WORKERS = 15

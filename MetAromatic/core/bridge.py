@@ -3,8 +3,8 @@ from logging import getLogger
 from typing import Optional, Set, Tuple
 from typing import Dict, Union, List
 from networkx import Graph, connected_components
-from core.helpers.consts import T
-from core.pair import MetAromatic
+from MetAromatic.core.helpers.consts import T
+from MetAromatic.core.pair import MetAromatic
 
 
 @dataclass

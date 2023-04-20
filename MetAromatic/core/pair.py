@@ -11,11 +11,11 @@ from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 
 from numpy import ndarray, array, dot, linalg, degrees, arccos
-from core.helpers.consts import T
-from core.helpers.get_aromatic_midpoints import get_phe_midpoints
-from core.helpers.get_aromatic_midpoints import get_trp_midpoints
-from core.helpers.get_aromatic_midpoints import get_tyr_midpoints
-from core.helpers.lone_pair_interpolators import RodriguesMethod, CrossProductMethod
+from MetAromatic.core.helpers.consts import T
+from MetAromatic.core.helpers.get_aromatic_midpoints import get_phe_midpoints
+from MetAromatic.core.helpers.get_aromatic_midpoints import get_trp_midpoints
+from MetAromatic.core.helpers.get_aromatic_midpoints import get_tyr_midpoints
+from MetAromatic.core.helpers.lone_pair_interpolators import RodriguesMethod, CrossProductMethod
 
 TMPDIR = gettempdir()
 
