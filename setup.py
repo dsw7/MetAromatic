@@ -7,6 +7,6 @@ setup(
         'MetAromatic',
     ],
     entry_points={
-        'console_scripts': ['ma = MetAromatic.runner:cli']
+        'console_scripts': ['runner = MetAromatic.runner:cli']
     }
 )
