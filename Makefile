@@ -38,6 +38,14 @@ help:
 	$(call RENDER_PREAMBLE,MET-AROMATIC OFFICIAL MAKEFILE)
 	@echo "$$HELP_LIST_TARGETS"
 
+setup:
+	$(call RENDER_PREAMBLE,Setting up project)
+	@pip3 install pipreqs wheel
+	@pipreqs --force --ignore MetAromatic/tests
+	@pip3 install --requirement requirements.txt
+	@python3 setup.py clean --all bdist_wheel
+	@pip3 install dist/*whl --force-reinstall
+
 test:
 	$(call RENDER_PREAMBLE,Running pytest over project)
 	@python3 -m pytest -vs -m 'test_command_line_interface' $(PROJECT_DIRECTORY)
