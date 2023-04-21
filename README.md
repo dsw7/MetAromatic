@@ -26,7 +26,7 @@ Code for the following publications:
     - [Step 5: Reset the bind IP](#step-5-reset-the-bind-ip)
     - [Step 6: Restart the service](#step-6-restart-the-service)
     - [Step 7: Run a mining job](#step-7-run-a-mining-job)
-- [Installing this package from source](#installing-this-package-from-source)
+- [Using the MetAromatic API](#using-the-metaromatic-api)
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
 - [Tests and automation](#tests-and-automation)
@@ -138,29 +138,18 @@ git clone https://github.com/dsw7/MetAromatic.git
 ```
 Change directories into the newly created `MetAromatic` directory and run:
 ```
-pip3 install pipreqs
-```
-Then generate the `requirements.txt` file by running:
-```
-pipreqs
-```
-Then run:
-```
-pip3 install --requirement requirements.txt wheel
-```
-This command will install the remaining project dependencies based on the `requirements.txt` file. Additionally, the command will install `wheel`. Next, generate the wheel:
-```
-python3 setup.py clean --all bdist_wheel
-```
-Then install the package from the wheel:
-```
-pip3 install dist/*.whl
+make setup
 ```
 A `runner` binary should exist in `$PATH` if the installation succeeded. Run:
 ```
 runner --help
 ```
-Which should return a help menu. Upon completion, the virtual environment can be deactivated by running:
+Which should return a help menu. Now, clean any artifacts left over during the
+build process:
+```
+make clean
+```
+Upon completion, the virtual environment can be deactivated by running:
 ```
 deactivate
 ```
@@ -405,30 +394,9 @@ A mining job can now be run as:
 ```
 ./MetAromatic/runner.py batch /path/batch/file --username <new-username> --password <new-password> --host <host-or-ip-storage-server>
 ```
-## Installing this package from source
-One may be interested in extending the Met-aromatic project into a customized workflow. To do so, this project
-can be built and installed from source. First, set up the product according to the [Setup](#setup) section (do
-not `deactivate` the environment). Then install `wheel`:
-```
-pip3 install wheel
-```
-From the `MetAromatic` directory, run:
-```
-python3 setup.py clean --all bdist_wheel
-```
-Then install `MetAromatic`:
-```
-pip3 install dist/*whl
-```
-Now, `MetAromatic` should import without issues:
-```
-python3 -c "import MetAromatic"
-```
-The installation process will leave behind some artifacts. To remove the resulting `build`, `dist` and
-`egg-info` artifacts, simply run:
-```
-make clean
-```
+## Using the MetAromatic API
+One may be interested in extending the Met-aromatic project into a customized workflow. The instructions provided in the [Setup](#setup)
+section install MetAromatic source into `site-packages`. Therefore, the API can be exposed for use in a custom script.
 ### Example: programmatically obtaining Met-aromatic pairs
 ```python
 from json import dumps
