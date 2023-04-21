@@ -398,9 +398,74 @@ A mining job can now be run as:
 One may be interested in extending the Met-aromatic project into a customized workflow. The instructions provided in the [Setup](#setup)
 section install MetAromatic source into `site-packages`. Therefore, the API can be exposed for use in a custom script.
 ### Example: programmatically obtaining Met-aromatic pairs
-```python
+The command:
+```
+runner --cutoff-distance=4.1 pair 1rcy
+```
+Will return:
+```
+-------------------------------------------------------------------
+ARO        POS        MET POS    NORM       MET-THETA  MET-PHI
+-------------------------------------------------------------------
+TYR        122        18         3.954      60.145     68.352
+TYR        122        18         4.051      47.198     85.151
+-------------------------------------------------------------------
+```
+To programmatically emulate this command, the following script applies:
+```python3
 from json import dumps
-from MetAromatic.core.pair import MetAromatic
+from MetAromatic.pair import MetAromatic
+
+def main() -> None:
+    arguments = {
+        'cutoff_distance': 4.1,
+        'cutoff_angle': 109.5,
+        'chain': 'A',
+        'model': 'cp'
+    }
+
+    results = MetAromatic(**arguments).get_met_aromatic_interactions('1rcy')
+
+    for interaction in results.INTERACTIONS:
+        print(dumps(interaction, indent=4))
+
+if __name__ == '__main__':
+    main()
+```
+Which will print to `stdout`:
+```
+{
+    "aromatic_residue": "TYR",
+    "aromatic_position": 122,
+    "methionine_position": 18,
+    "norm": 3.954,
+    "met_theta_angle": 60.145,
+    "met_phi_angle": 68.352
+}
+{
+    "aromatic_residue": "TYR",
+    "aromatic_position": 122,
+    "methionine_position": 18,
+    "norm": 4.051,
+    "met_theta_angle": 47.198,
+    "met_phi_angle": 85.151
+}
+```
+This output roughly matches that of the aforementioned `runner` invocation.
+### Example: programmatically obtaining bridging interactions
+The command:
+```
+runner bridge 6lu7
+```
+Will return:
+```
+-------------------------------------------------------------------
+{PHE134}-{TYR182}-{MET130}
+-------------------------------------------------------------------
+```
+To programmatically emulate this command, the following script applies:
+```python3
+from MetAromatic.bridge import GetBridgingInteractions
 
 def main() -> None:
     arguments = {
@@ -410,33 +475,17 @@ def main() -> None:
         'model': 'cp'
     }
 
-    results = MetAromatic(**arguments).get_met_aromatic_interactions('1rcy')
-    print(dumps(results, indent=4))
+    results = GetBridgingInteractions(arguments).get_bridging_interactions('6lu7', 3)
+    print(results.BRIDGES[0])
 
 if __name__ == '__main__':
     main()
 ```
-### Example: programmatically obtaining bridging interactions
-```python
-from MetAromatic.core.bridge import GetBridgingInteractions
-
-def main() -> None:
-
-    arguments = {
-        'cutoff_distance': 6.0,
-        'cutoff_angle': 360.00,
-        'chain': 'A',
-        'model': 'cp'
-    }
-
-    handle = GetBridgingInteractions(arguments)
-    handle.get_bridging_interactions('7mdh', 4)
-
-    print(handle.bridges)
-
-if __name__ == '__main__':
-    main()
+Running this script will return:
 ```
+{'MET130', 'PHE134', 'TYR182'}
+```
+Which roughly matches the output of the aforementioned `runner` invocation.
 ## Tests and automation
 ### Testing the command line program
 To test the command line program, simply run the following target:
