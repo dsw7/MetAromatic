@@ -146,22 +146,21 @@ pipreqs
 ```
 Then run:
 ```
-pip3 install --requirement requirements.txt
+pip3 install --requirement requirements.txt wheel
 ```
-This command will install the remaining project dependencies based on the `requirements.txt` file. Last, make
-the program entrypoint executable:
+This command will install the remaining project dependencies based on the `requirements.txt` file. Additionally, the command will install `wheel`. Next, generate the wheel:
 ```
-chmod +x MetAromatic/runner.py
+python3 setup.py clean --all bdist_wheel
 ```
-Then try running:
+Then install the package from the wheel:
 ```
-./MetAromatic/runner.py --help
+pip3 install dist/*.whl
 ```
-Which should return a help menu. Unit tests can be run as a quick sanity check as well:
+A `runner` binary should exist in `$PATH` if the installation succeeded. Run:
 ```
-pytest -vsx MetAromatic/test_runner_pair.py
+runner --help
 ```
-Upon completion, the virtual environment can be deactivated by running:
+Which should return a help menu. Upon completion, the virtual environment can be deactivated by running:
 ```
 deactivate
 ```
@@ -170,7 +169,7 @@ deactivate
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest
 query follows:
 ```
-./MetAromatic/runner.py pair 1rcy
+runner pair 1rcy
 ```
 Here, the `pair` argument specifies that we want to run a single aromatic interaction calculation. The query
 will yield the following results:
@@ -196,7 +195,7 @@ $\overset{\circ}{\mathrm {A}}$) between the MET residue and one of the midpoints
 an aromatic ring, or $\lVert v \rVert$. The default cutoff $c$ was applied in the above example, at 4.9
 $\overset{\circ}{\mathrm {A}}$. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
 ```
-./MetAromatic/runner.py --cutoff-distance 4.0 pair 1rcy
+runner --cutoff-distance 4.0 pair 1rcy
 ```
 Reducing the cutoff distance yields an order I interaction between TYR 122 and MET 18.
 ```
@@ -210,7 +209,7 @@ TYR        122        18         3.954      60.145     68.352
 angle $\delta$ is used ( $109.5^\circ$ ). The cutoff angle can be adjusted by using the `--cutoff-angle`
 option:
 ```
-./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
+runner --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
 The `--cutoff-angle` option ensures that **at least one of** $\theta$ or $\phi$ angles fall below the cutoff
 $\delta$. This is seen in the below order II interaction:
@@ -228,7 +227,7 @@ methionine-aromatic motifs](https://summit.sfu.ca/item/18741)). There exists ano
 Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The
 model type can be passed as follows:
 ```
-./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
+runner --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
 ```
 Which yields similar results:
 ```
@@ -245,7 +244,7 @@ program searches for "A" delimited chains. Some researchers may, however, be int
 aromatic interactions in a different chain within a multichain protein. The `--chain` option can be used to
 specify the chain:
 ```
-./MetAromatic/runner.py --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B pair 1rcy
+runner --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B pair 1rcy
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain.
 ### Finding "bridging interactions"
@@ -259,7 +258,7 @@ We can specify a search for bridging interactions, instead of conventional aroma
 `bridge` argument. For example, to search for bridging interactions with a 7.0 $\overset{\circ}{\mathrm {A}}$
 $\lVert v \rVert$ cutoff in 6LU7:
 ```
-./MetAromatic/runner.py --cutoff-distance 7.0 bridge 6lu7
+runner --cutoff-distance 7.0 bridge 6lu7
 ```
 Which will return a list as follows:
 ```
@@ -273,7 +272,7 @@ Where each row corresponds to a bridge. This program treats bridging interaction
 set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The
 `--vertices` option can be passed to search for n-bridges:
 ```
-./MetAromatic/runner.py --cutoff-distance 6.0 bridge 6lu7 --vertices 4
+runner --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
 ## Batch jobs and MongoDB integration
 ### A brief overview
@@ -288,7 +287,7 @@ PDB codes:
 ```
 The command follows:
 ```
-./MetAromatic/runner.py batch </path/batch/file> --threads <num-threads> --database <db> --collection <collection>
+runner batch </path/batch/file> --threads <num-threads> --database <db> --collection <collection>
 ```
 The MongoDB dump database is specified using the `--database` option. The collection is specified with the
 `--collection` option. The `--threads` option specifies how many threads to use for processing the batch. The
