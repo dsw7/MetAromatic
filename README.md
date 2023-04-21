@@ -395,8 +395,9 @@ A mining job can now be run as:
 ./MetAromatic/runner.py batch /path/batch/file --username <new-username> --password <new-password> --host <host-or-ip-storage-server>
 ```
 ## Using the MetAromatic API
-One may be interested in extending the Met-aromatic project into a customized workflow. The instructions provided in the [Setup](#setup)
-section install MetAromatic source into `site-packages`. Therefore, the API can be exposed for use in a custom script.
+One may be interested in extending the Met-aromatic project into a customized workflow. The instructions
+provided in the [Setup](#setup) section install MetAromatic source into `site-packages`. Therefore, the API
+can be exposed for use in a custom script.
 ### Example: programmatically obtaining Met-aromatic pairs
 The command:
 ```
@@ -433,7 +434,7 @@ if __name__ == '__main__':
     main()
 ```
 Which will print to `stdout`:
-```
+```json
 {
     "aromatic_residue": "TYR",
     "aromatic_position": 122,
