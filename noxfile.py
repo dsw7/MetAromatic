@@ -16,7 +16,7 @@ def tests(session: sessions.Session) -> None:
     if len(whl) > 1:
         sys.exit('More than one wheel file exists. Cannot proceed')
 
-    session.install(whl[0])
+    session.install(whl[0], '--force-reinstall')
     session.install('pytest')
 
     command = f'pytest -vsx {PATH_TESTS}'

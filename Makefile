@@ -1,10 +1,4 @@
-####################################
-#                                  #
-#  MET-AROMATIC OFFICIAL MAKEFILE  #
-#                                  #
-####################################
-
-.PHONY = help test test-wheel dockertest clean
+.PHONY = help setup test dockertest clean
 
 .DEFAULT_GOAL = help
 
@@ -17,10 +11,10 @@ endef
 
 define HELP_LIST_TARGETS
 
+    To set up the project:
+        $$ make setup
     To test the project:
         $$ make test
-    To run a packaging test
-        $$ make test-wheel
     To run tests with Docker
         $$ make dockertest
     To remove build, dist and other setuo.py directories:
@@ -40,19 +34,20 @@ help:
 
 setup:
 	$(call RENDER_PREAMBLE,Setting up project)
-	@pip3 install pipreqs wheel
-	@pipreqs --force --ignore MetAromatic/tests
+	@pip3 install pipreqs
+	@pipreqs --force --savepath=requirements.txt $(PROJECT_DIRECTORY)
 	@pip3 install --requirement requirements.txt
+	@pip3 install wheel
 	@python3 setup.py clean --all bdist_wheel
 	@pip3 install dist/*whl --force-reinstall
 
 test:
-	$(call RENDER_PREAMBLE,Running pytest over project)
-	@python3 -m pytest -vs -m 'test_command_line_interface' $(PROJECT_DIRECTORY)
-
-test-wheel:
-	$(call RENDER_PREAMBLE,Testing wheel installation)
-	@cd MetAromatic/; python3 -m pytest -vs -m 'test_packaging' $(PROJECT_DIRECTORY); cd ..
+	$(call RENDER_PREAMBLE,Running nox tests)
+	@pip3 install pipreqs
+	@pipreqs --force --savepath=requirements.txt $(PROJECT_DIRECTORY)
+	@python3 setup.py clean --all bdist_wheel
+	@pip3 install nox
+	@nox
 
 dockertest:
 	$(call RENDER_PREAMBLE,Building docker image $(DOCKER_TAG))
