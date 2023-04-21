@@ -1,6 +1,6 @@
 from pathlib import Path
-import pytest
-from MetAromatic.core.pair import MetAromatic
+from pytest import mark, exit, skip
+from MetAromatic.pair import MetAromatic
 
 TEST_PARAMETERS = {
     'cutoff_distance': 4.9,
@@ -9,10 +9,10 @@ TEST_PARAMETERS = {
     'model': 'cp'
 }
 
-PATH_TEST_DATA = Path(__file__).resolve().parent / 'test_data' / 'data_483_output_a3_3_m.csv'
+PATH_TEST_DATA = Path(__file__).resolve().parent / 'data_483_output_a3_3_m.csv'
 
 if not PATH_TEST_DATA.exists():
-    pytest.exit(f'File {PATH_TEST_DATA} is missing')
+    exit(f'File {PATH_TEST_DATA} is missing')
 
 TEST_DATA = []
 
@@ -79,8 +79,8 @@ VALID_RESULTS_1RCY = [
     }
 ]
 
-@pytest.mark.test_command_line_interface
-@pytest.mark.parametrize('code', TEST_PDB_CODES)
+@mark.test_command_line_interface
+@mark.parametrize('code', TEST_PDB_CODES)
 def test_metaromatic_algorithm_against_483_data(code):
 
     control = []
@@ -92,7 +92,7 @@ def test_metaromatic_algorithm_against_483_data(code):
         test_data = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code=code)
 
     except IndexError:
-        pytest.skip('Skipping list index out of range error. Occurs because of missing data.')
+        skip('Skipping list index out of range error. Occurs because of missing data.')
 
     sum_norms_control = sum(float(i[6]) for i in control)
     sum_theta_control = sum(float(i[5]) for i in control)
@@ -105,8 +105,8 @@ def test_metaromatic_algorithm_against_483_data(code):
     assert abs(sum_theta_control - sum_theta_test) < 0.01
     assert abs(sum_phi_control - sum_phi_test) < 0.01
 
-@pytest.mark.test_command_line_interface
-@pytest.mark.parametrize(
+@mark.test_command_line_interface
+@mark.parametrize(
     'code, cutoff_distance, cutoff_angle',
     [
         ('1rcy', 0.00, 109.5),
@@ -134,8 +134,8 @@ def test_mongodb_output_invalid_results(code, cutoff_distance, cutoff_angle):
 
     assert not results.OK
 
-@pytest.mark.test_command_line_interface
-@pytest.mark.parametrize(
+@mark.test_command_line_interface
+@mark.parametrize(
     'code, cutoff_distance, cutoff_angle, errmsg',
     [
         ('1rcy', 0.00, 109.5, 'Invalid cutoff distance'),
@@ -156,7 +156,7 @@ def test_mongodb_output_invalid_results_exception_boolean(code, cutoff_distance,
 
     assert results.STATUS == errmsg
 
-@pytest.mark.test_command_line_interface
+@mark.test_command_line_interface
 def test_mongodb_output_valid_results():
 
     sum_met_theta_control = sum(i['met_theta_angle'] for i in VALID_RESULTS_1RCY)
@@ -170,7 +170,7 @@ def test_mongodb_output_valid_results():
     assert sum_met_theta_control == sum_met_theta_test
     assert sum_met_phi_control == sum_met_phi_test
 
-@pytest.mark.test_command_line_interface
+@mark.test_command_line_interface
 def test_invalid_distance_error():
 
     results = MetAromatic(
@@ -182,7 +182,7 @@ def test_invalid_distance_error():
 
     assert not results.OK
 
-@pytest.mark.test_command_line_interface
+@mark.test_command_line_interface
 def test_invalid_angle_error():
 
     results = MetAromatic(
@@ -194,19 +194,19 @@ def test_invalid_angle_error():
 
     assert not results.OK
 
-@pytest.mark.test_command_line_interface
+@mark.test_command_line_interface
 def test_invalid_pdb_code_error():
 
     results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code='foo')
     assert not results.OK
 
-@pytest.mark.test_command_line_interface
+@mark.test_command_line_interface
 def test_no_met_coordinates_error():
 
     results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code='3nir')
     assert not results.OK
 
-@pytest.mark.test_command_line_interface
+@mark.test_command_line_interface
 def test_invalid_model_error():
 
     results = MetAromatic(
@@ -218,7 +218,7 @@ def test_invalid_model_error():
 
     assert not results.OK
 
-@pytest.mark.test_command_line_interface
+@mark.test_command_line_interface
 def test_no_results_error():
 
     results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code='1a5r')

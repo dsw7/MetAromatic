@@ -3,13 +3,13 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 from pymongo import MongoClient, errors
-from runner import cli
+from MetAromatic.runner import cli
 
 HOST_MONGODB = 'localhost'
 PORT_MONGODB = 27017
 DB_NAME = 'database_coronavirus'
 COL_NAME = 'collection_coronavirus'
-TEST_DATA = Path(__file__).resolve().parent / 'core' / 'test_data' / 'data_coronavirus_entries.txt'
+TEST_DATA = Path(__file__).resolve().parent / 'data_coronavirus_entries.txt'
 
 if not TEST_DATA.exists():
     pytest.exit(f'File {TEST_DATA} is missing')

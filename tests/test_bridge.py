@@ -1,7 +1,7 @@
 from json import loads
 from pathlib import Path
-import pytest
-from core.bridge import GetBridgingInteractions
+from pytest import mark, exit, skip
+from MetAromatic.bridge import GetBridgingInteractions
 
 NETWORK_SIZE = 4
 NUM_BRIDGES = 100
@@ -13,10 +13,10 @@ TEST_PARAMETERS = {
     'model': 'cp'
 }
 
-PATH_TEST_DATA = Path(__file__).resolve().parent / 'test_data' / 'data_n_3_bridges_no_ang_limit_6_angstroms.json'
+PATH_TEST_DATA = Path(__file__).resolve().parent / 'data_n_3_bridges_no_ang_limit_6_angstroms.json'
 
 if not PATH_TEST_DATA.exists():
-    pytest.exit(f'File {PATH_TEST_DATA} is missing')
+    exit(f'File {PATH_TEST_DATA} is missing')
 
 def get_control_bridges():
 
@@ -44,8 +44,8 @@ def get_control_bridge_test_ids():
 
     return pdb_codes
 
-@pytest.mark.test_command_line_interface
-@pytest.mark.parametrize('bridges', get_control_bridges(), ids=get_control_bridge_test_ids())
+@mark.test_command_line_interface
+@mark.parametrize('bridges', get_control_bridges(), ids=get_control_bridge_test_ids())
 def test_bridge_collector(bridges):
 
     try:
@@ -55,12 +55,12 @@ def test_bridge_collector(bridges):
             vertices=NETWORK_SIZE, code=bridges.get('pdb_code')
         )
     except IndexError:
-        pytest.skip('Skipping list index out of range error. Occurs because of missing data.')
+        skip('Skipping list index out of range error. Occurs because of missing data.')
     else:
         assert set(bridges.get('bridge')) in results.BRIDGES
 
-@pytest.mark.test_command_line_interface
-@pytest.mark.parametrize(
+@mark.test_command_line_interface
+@mark.parametrize(
     'code, cutoff_distance, cutoff_angle',
     [
         ('1rcy', 0.00, 109.5),
