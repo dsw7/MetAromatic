@@ -19,5 +19,5 @@ def tests(session: sessions.Session) -> None:
     session.install(whl[0], '--force-reinstall')
     session.install('pytest')
 
-    command = f'pytest -vsx {PATH_TESTS}'
+    command = f'pytest -vs {PATH_TESTS}'
     session.run(*command.split())
