@@ -1,6 +1,5 @@
 # pylint: disable=W0201  # Disable "Attribute defined outside __init__"
 
-from pytest import mark
 from numpy import array, around, array_equal
 from MetAromatic.lone_pair_interpolators import CrossProductMethod, RodriguesMethod
 
@@ -9,7 +8,6 @@ VERTEX_G = array([0.5, -0.5, 0.0])
 ORIGIN = array([0.0, 0.0, 0.0])
 
 
-@mark.test_command_line_interface
 class TestCrossProductMethod:
 
     def setup_class(self) -> None:
@@ -22,7 +20,6 @@ class TestCrossProductMethod:
         assert array_equal(around(self.frame_cp.get_vector_g(), decimals=2), [-1., 0., 1.41])
 
 
-@mark.test_command_line_interface
 class TestRodriguesMethod:
 
     def setup_class(self) -> None:

@@ -1,10 +1,8 @@
 from os import EX_OK
 from click.testing import CliRunner
-from pytest import mark
 from MetAromatic.runner import cli
 
 
-@mark.test_command_line_interface
 class TestRunnerBridge:
 
     def setup_class(self):

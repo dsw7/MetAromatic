@@ -44,7 +44,6 @@ def get_control_bridge_test_ids():
 
     return pdb_codes
 
-@mark.test_command_line_interface
 @mark.parametrize('bridges', get_control_bridges(), ids=get_control_bridge_test_ids())
 def test_bridge_collector(bridges):
 
@@ -59,7 +58,6 @@ def test_bridge_collector(bridges):
     else:
         assert set(bridges.get('bridge')) in results.BRIDGES
 
-@mark.test_command_line_interface
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle',
     [

@@ -79,7 +79,6 @@ VALID_RESULTS_1RCY = [
     }
 ]
 
-@mark.test_command_line_interface
 @mark.parametrize('code', TEST_PDB_CODES)
 def test_metaromatic_algorithm_against_483_data(code):
 
@@ -105,7 +104,6 @@ def test_metaromatic_algorithm_against_483_data(code):
     assert abs(sum_theta_control - sum_theta_test) < 0.01
     assert abs(sum_phi_control - sum_phi_test) < 0.01
 
-@mark.test_command_line_interface
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle',
     [
@@ -134,7 +132,6 @@ def test_mongodb_output_invalid_results(code, cutoff_distance, cutoff_angle):
 
     assert not results.OK
 
-@mark.test_command_line_interface
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle, errmsg',
     [
@@ -156,7 +153,6 @@ def test_mongodb_output_invalid_results_exception_boolean(code, cutoff_distance,
 
     assert results.STATUS == errmsg
 
-@mark.test_command_line_interface
 def test_mongodb_output_valid_results():
 
     sum_met_theta_control = sum(i['met_theta_angle'] for i in VALID_RESULTS_1RCY)
@@ -170,7 +166,6 @@ def test_mongodb_output_valid_results():
     assert sum_met_theta_control == sum_met_theta_test
     assert sum_met_phi_control == sum_met_phi_test
 
-@mark.test_command_line_interface
 def test_invalid_distance_error():
 
     results = MetAromatic(
@@ -182,7 +177,6 @@ def test_invalid_distance_error():
 
     assert not results.OK
 
-@mark.test_command_line_interface
 def test_invalid_angle_error():
 
     results = MetAromatic(
@@ -194,19 +188,16 @@ def test_invalid_angle_error():
 
     assert not results.OK
 
-@mark.test_command_line_interface
 def test_invalid_pdb_code_error():
 
     results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code='foo')
     assert not results.OK
 
-@mark.test_command_line_interface
 def test_no_met_coordinates_error():
 
     results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code='3nir')
     assert not results.OK
 
-@mark.test_command_line_interface
 def test_invalid_model_error():
 
     results = MetAromatic(
@@ -218,7 +209,6 @@ def test_invalid_model_error():
 
     assert not results.OK
 
-@mark.test_command_line_interface
 def test_no_results_error():
 
     results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code='1a5r')

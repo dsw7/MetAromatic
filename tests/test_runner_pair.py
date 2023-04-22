@@ -4,7 +4,6 @@ from pytest import mark
 from MetAromatic.runner import cli
 
 
-@mark.test_command_line_interface
 class TestRunnerPair:
 
     def setup_class(self):
