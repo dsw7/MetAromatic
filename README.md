@@ -30,8 +30,6 @@ Code for the following publications:
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
 - [Tests and automation](#tests-and-automation)
-  - [Testing the command line program](#testing-the-command-line-program)
-  - [Testing the package installation](#testing-the-package-installation)
 
 ## Synopsis
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein
@@ -488,13 +486,8 @@ Running this script will return:
 ```
 Which roughly matches the output of the aforementioned `runner` invocation.
 ## Tests and automation
-### Testing the command line program
-To test the command line program, simply run the following target:
+To test the program, run the following target:
 ```
-make test
+make nox
 ```
-### Testing the package installation
-To test a package that was installed from source, run:
-```
-make test-wheel
-```
+This target will run all unit tests within a `nox` generated virtual environment.

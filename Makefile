@@ -43,9 +43,6 @@ setup:
 
 test:
 	$(call RENDER_PREAMBLE,Running nox tests)
-	@pip3 install pipreqs
-	@pipreqs --force --savepath=requirements.txt $(PROJECT_DIRECTORY)
-	@python3 setup.py clean --all bdist_wheel
 	@pip3 install nox
 	@nox
 
