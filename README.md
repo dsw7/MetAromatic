@@ -488,6 +488,6 @@ Which roughly matches the output of the aforementioned `runner` invocation.
 ## Tests and automation
 To test the program, run the following target:
 ```
-make nox
+make test
 ```
 This target will run all unit tests within a `nox` generated virtual environment.
