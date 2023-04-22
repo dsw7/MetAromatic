@@ -44,7 +44,7 @@ setup:
 test:
 	$(call RENDER_PREAMBLE,Running nox tests)
 	@pip3 install nox
-	@nox
+	@nox --envdir=/tmp
 
 dockertest:
 	$(call RENDER_PREAMBLE,Building docker image $(DOCKER_TAG))
