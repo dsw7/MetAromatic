@@ -13,7 +13,7 @@ class TestRunnerBridge:
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EX_OK
-        assert 'No bridges\n' in result.output
+        assert 'Found no bridges' in result.output
 
     def test_bridge_working_query_with_options(self):
         command = '--cutoff-distance 6.0 --cutoff-angle 109.5 --model rm --chain A bridge 6lu7'
