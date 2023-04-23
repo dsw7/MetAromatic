@@ -9,6 +9,7 @@ from MetAromatic.bridge import GetBridgingInteractions
         ('1rcy',  4.95,  720.0,  'cp', 'Invalid cutoff angle'),
         ('2rcy',  4.95,  109.5,  'cp', 'No MET residues'),
         ('3nir',  4.95,  109.5,  'cp', 'No MET residues'),
+        ('6mwm',  4.95,  109.5,  'cp', 'No PHE/TYR/TRP residues'),
         ('abcd',  4.95,  109.5,  'cp', 'Invalid PDB entry'),
         ('1rcy',  4.95,  109.5,  'pc', 'Invalid model'),
         ('1rcy', '4.95', 109.5,  'cp', 'Cutoff distance must be a valid float'),

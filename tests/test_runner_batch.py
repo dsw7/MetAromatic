@@ -90,7 +90,7 @@ class TestParallelProcessing:
         assert not list(self.cursor.find({'_id': '6mwm'}))[0]['ok']
 
     def test_correct_exit_code_2cme(self):
-        assert not list(self.cursor.find({'_id': '2cme'}))[0]['ok']
+        assert list(self.cursor.find({'_id': '2cme'}))[0]['ok']
 
     def test_correct_exit_code_spam(self):
         assert not list(self.cursor.find({'_id': 'spam'}))[0]['ok']

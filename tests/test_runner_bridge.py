@@ -12,7 +12,7 @@ class TestRunnerBridge:
         command = 'bridge 1rcy --vertices 3'
 
         result = self.runner.invoke(cli, command.split())
-        assert result.exit_code != EX_OK
+        assert result.exit_code == EX_OK
         assert 'No bridges\n' in result.output
 
     def test_bridge_working_query_with_options(self):

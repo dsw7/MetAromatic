@@ -66,7 +66,7 @@ class TestRunnerPair:
         command = 'pair 1a5r'
 
         result = self.runner.invoke(cli, command.split())
-        assert result.exit_code != EX_OK
+        assert result.exit_code == EX_OK
         assert 'No interactions\n' in result.output
 
     def test_pair_bad_query_type(self):
