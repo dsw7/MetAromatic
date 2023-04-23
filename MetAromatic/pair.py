@@ -277,9 +277,8 @@ class MetAromatic:
                 })
 
         if len(self.f.interactions) == 0:
-            self.log.error('Found no Met-aromatic interactions for entry "%s"', self.f.pdb_code)
+            self.log.info('Found no Met-aromatic interactions for entry "%s"', self.f.pdb_code)
             self.f.status = "No interactions"
-            self.f.OK = False
 
     def get_met_aromatic_interactions(self: T, code: str) -> FeatureSpace:
 

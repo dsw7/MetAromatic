@@ -28,16 +28,22 @@ class GetBridgingInteractions:
 
     def get_interacting_pairs(self: T, code: str) -> bool:
 
-        results = MetAromatic(**self.cli_opts).get_met_aromatic_interactions(code)
+        ma_results = MetAromatic(**self.cli_opts).get_met_aromatic_interactions(code)
 
-        if not results.OK:
+        if not ma_results.OK:
             self.log.error('Cannot get bridging interactions as Met-aromatic algorithm failed')
 
             self.f.OK = False
-            self.f.status = results.status
+            self.f.status = ma_results.status
             return False
 
-        for interaction in results.interactions:
+        if len(ma_results.interactions) < 1:
+            self.log.info('No Met-aromatic interactions were found therefore cannot find bridges')
+
+            self.f.status = 'No Met-aromatic interactions were found'
+            return False
+
+        for interaction in ma_results.interactions:
             pair = (
                 f"{interaction['aromatic_residue']}{interaction['aromatic_position']}",
                 f"MET{interaction['methionine_position']}"
@@ -46,7 +52,7 @@ class GetBridgingInteractions:
 
         return True
 
-    def isolate_connected_components(self: T, vertices: int) -> bool:
+    def isolate_connected_components(self: T, vertices: int) -> None:
 
         graph = Graph()
         graph.add_edges_from(self.f.interactions)
@@ -57,16 +63,19 @@ class GetBridgingInteractions:
 
         # Note that inverse bridges (MET-ARO-MET) not removed!
 
-        if len(self.f.bridges) == 0:
-            self.log.error('Found no bridges')
+        num_bridges = len(self.f.bridges)
 
-            self.f.OK = False
-            self.f.status = 'No bridges'
-            return False
+        if num_bridges > 0:
 
-        self.log.info('Found %i bridges', len(self.f.bridges))
+            if num_bridges == 1:
+                self.log.info('Found 1 bridge')
+            else:
+                self.log.info('Found %i bridges', num_bridges)
 
-        return True
+            return
+
+        self.log.info('Found no bridges')
+        self.f.status = 'No bridges'
 
     def get_bridging_interactions(self: T, code: str, vertices: int) -> BridgeSpace:
 
@@ -77,7 +86,5 @@ class GetBridgingInteractions:
         if not self.get_interacting_pairs(code):
             return self.f
 
-        if not self.isolate_connected_components(vertices=vertices):
-            return self.f
-
+        self.isolate_connected_components(vertices=vertices)
         return self.f

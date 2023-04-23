@@ -61,7 +61,7 @@ def test_pair_1rcy_valid_results():
     assert sum_met_phi_control == sum_met_phi_test
 
 @mark.parametrize(
-    'code, cutoff_distance, cutoff_angle, model, errmsg',
+    'code, cutoff_distance, cutoff_angle, model, status',
     [
         ('1rcy', -0.01,  109.5,  'cp', 'Invalid cutoff distance'),
         ('1rcy',  4.95,  -60.0,  'cp', 'Invalid cutoff angle'),
@@ -72,23 +72,23 @@ def test_pair_1rcy_valid_results():
         ('1rcy',  4.95,  109.5,  'pc', 'Invalid model'),
         ('1rcy', '4.95', 109.5,  'cp', 'Cutoff distance must be a valid float'),
         ('1rcy',  4.95, '109.5', 'cp', 'Cutoff angle must be a valid float'),
-        ('1rcy',  4.95,  109.5,    25,  'Model must be a valid string')
+        ('1rcy',  4.95,  109.5,    25, 'Model must be a valid string')
     ]
 )
-def test_pair_invalid_inputs(code, cutoff_distance, cutoff_angle, model, errmsg):
+def test_pair_invalid_inputs(code, cutoff_distance, cutoff_angle, model, status):
 
     results = MetAromatic(
         cutoff_angle=cutoff_angle,
         cutoff_distance=cutoff_distance,
-        chain=TEST_PARAMETERS['chain'],
+        chain='A',
         model=model
     ).get_met_aromatic_interactions(code=code)
 
     assert not results.OK
-    assert results.status == errmsg
+    assert results.status == status
 
 def test_pair_no_results_error():
     results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code='1a5r')
 
     assert results.status == 'No interactions'
-    assert not results.OK
+    assert results.OK
