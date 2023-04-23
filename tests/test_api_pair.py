@@ -63,12 +63,16 @@ def test_pair_1rcy_valid_results():
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle, model, errmsg',
     [
-        ('1rcy', 0.00, 109.5, 'cp', 'Invalid cutoff distance'),
-        ('1rcy', 4.95, 720.0, 'cp', 'Invalid cutoff angle'),
-        ('2rcy', 4.95, 109.5, 'cp', 'No MET residues'),
-        ('3nir', 4.95, 109.5, 'cp', 'No MET residues'),
-        ('abcd', 4.95, 109.5, 'cp', 'Invalid PDB entry'),
-        ('1rcy', 4.95, 109.5, 'pc', 'Invalid model')
+        ('1rcy', -0.01,  109.5,  'cp', 'Invalid cutoff distance'),
+        ('1rcy',  4.95,  -60.0,  'cp', 'Invalid cutoff angle'),
+        ('1rcy',  4.95,  720.0,  'cp', 'Invalid cutoff angle'),
+        ('2rcy',  4.95,  109.5,  'cp', 'No MET residues'),
+        ('3nir',  4.95,  109.5,  'cp', 'No MET residues'),
+        ('abcd',  4.95,  109.5,  'cp', 'Invalid PDB entry'),
+        ('1rcy',  4.95,  109.5,  'pc', 'Invalid model'),
+        ('1rcy', '4.95', 109.5,  'cp', 'Cutoff distance must be a valid float'),
+        ('1rcy',  4.95, '109.5', 'cp', 'Cutoff angle must be a valid float'),
+        ('1rcy',  4.95,  109.5,    25,  'Model must be a valid string')
     ]
 )
 def test_pair_invalid_inputs(code, cutoff_distance, cutoff_angle, model, errmsg):

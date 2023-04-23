@@ -66,7 +66,49 @@ class MetAromatic:
         self.chain = chain
         self.model = model
 
+        self.was_input_validated = False
         self.f = None
+
+    def is_input_valid(self: T) -> bool:
+
+        self.log.debug('Validating input parameters')
+
+        if not isinstance(self.cutoff_distance, float):
+            self.f.OK = False
+            self.f.status = 'Cutoff distance must be a valid float'
+            return False
+
+        if not isinstance(self.cutoff_angle, float):
+            self.f.OK = False
+            self.f.status = 'Cutoff angle must be a valid float'
+            return False
+
+        if not isinstance(self.chain, str):
+            self.f.OK = False
+            self.f.status = 'Chain must be a valid string'
+            return False
+
+        if not isinstance(self.model, str):
+            self.f.OK = False
+            self.f.status = 'Model must be a valid string'
+            return False
+
+        if self.cutoff_distance < 0:
+            self.f.OK = False
+            self.f.status = 'Invalid cutoff distance'
+            return False
+
+        if (self.cutoff_angle < 0) or (self.cutoff_angle > 360):
+            self.f.OK = False
+            self.f.status = 'Invalid cutoff angle'
+            return False
+
+        if self.model not in ('cp', 'rm'):
+            self.f.OK = False
+            self.f.status = 'Invalid model'
+            return False
+
+        return True
 
     def fetch_pdb_file(self: T) -> bool:
 
@@ -250,6 +292,10 @@ class MetAromatic:
         self.f.cutoff_angle = self.cutoff_angle
         self.f.chain = self.chain
         self.f.model = self.model
+
+        if not self.was_input_validated:
+            if not self.is_input_valid():
+                return self.f
 
         if not self.fetch_pdb_file():
             return self.f
