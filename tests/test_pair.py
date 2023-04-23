@@ -96,9 +96,9 @@ def test_metaromatic_algorithm_against_483_data(code):
     sum_norms_control = sum(float(i[6]) for i in control)
     sum_theta_control = sum(float(i[5]) for i in control)
     sum_phi_control = sum(float(i[4]) for i in control)
-    sum_norms_test = sum(float(i['norm']) for i in test_data.INTERACTIONS)
-    sum_theta_test = sum(float(i['met_theta_angle']) for i in test_data.INTERACTIONS)
-    sum_phi_test = sum(float(i['met_phi_angle']) for i in test_data.INTERACTIONS)
+    sum_norms_test = sum(float(i['norm']) for i in test_data.interactions)
+    sum_theta_test = sum(float(i['met_theta_angle']) for i in test_data.interactions)
+    sum_phi_test = sum(float(i['met_phi_angle']) for i in test_data.interactions)
 
     assert abs(sum_norms_control - sum_norms_test) < 0.01
     assert abs(sum_theta_control - sum_theta_test) < 0.01
@@ -160,8 +160,8 @@ def test_mongodb_output_valid_results():
 
     results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code='1rcy')
 
-    sum_met_theta_test = sum(i['met_theta_angle'] for i in results.INTERACTIONS)
-    sum_met_phi_test = sum(i['met_phi_angle'] for i in results.INTERACTIONS)
+    sum_met_theta_test = sum(i['met_theta_angle'] for i in results.interactions)
+    sum_met_phi_test = sum(i['met_phi_angle'] for i in results.interactions)
 
     assert sum_met_theta_control == sum_met_theta_test
     assert sum_met_phi_control == sum_met_phi_test

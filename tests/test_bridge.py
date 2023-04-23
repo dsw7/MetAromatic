@@ -56,7 +56,7 @@ def test_bridge_collector(bridges):
     except IndexError:
         skip('Skipping list index out of range error. Occurs because of missing data.')
     else:
-        assert set(bridges.get('bridge')) in results.BRIDGES
+        assert set(bridges.get('bridge')) in results.bridges
 
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle',
@@ -85,4 +85,4 @@ def test_no_bridges_response(code, cutoff_distance, cutoff_angle):
     }
 
     results = GetBridgingInteractions(params).get_bridging_interactions(code=code, vertices=NETWORK_SIZE)
-    assert len(results.BRIDGES) == 0
+    assert len(results.bridges) == 0

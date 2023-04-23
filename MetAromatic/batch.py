@@ -140,10 +140,10 @@ class ParallelProcessing:
             try:
                 fs = handle_ma.get_met_aromatic_interactions(code)
                 results = {
-                    '_id': fs.PDB_CODE,
+                    '_id': fs.pdb_code,
                     'ok': fs.OK,
-                    'status': fs.STATUS,
-                    'results': fs.INTERACTIONS
+                    'status': fs.status,
+                    'results': fs.interactions
                 }
             except Exception:
                 self.count += 1

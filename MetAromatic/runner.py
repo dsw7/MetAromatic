@@ -60,7 +60,7 @@ def pair(obj: Dict[str, Union[str, float]], code: str) -> None:
     results = MetAromatic(**obj).get_met_aromatic_interactions(code)
 
     if not results.OK:
-        sys.exit(results.STATUS)
+        sys.exit(results.status)
 
     click.echo(SEPARATOR)
 
@@ -69,7 +69,7 @@ def pair(obj: Dict[str, Union[str, float]], code: str) -> None:
 
     click.echo(SEPARATOR)
 
-    for line in results.INTERACTIONS:
+    for line in results.interactions:
         click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
 
     click.echo(SEPARATOR)
@@ -85,11 +85,11 @@ def bridge(obj: Dict[str, Union[str, float]], code: str, vertices: int) -> None:
     results = GetBridgingInteractions(obj).get_bridging_interactions(vertices=vertices, code=code)
 
     if not results.OK:
-        sys.exit(results.STATUS)
+        sys.exit(results.status)
 
     click.echo(SEPARATOR)
 
-    for line in results.BRIDGES:
+    for line in results.bridges:
         click.echo('{' + '}-{'.join(line) + '}')
 
     click.echo(SEPARATOR)

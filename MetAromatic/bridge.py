@@ -10,11 +10,11 @@ from MetAromatic.pair import MetAromatic
 @dataclass
 class BridgeSpace:
 
-    INTERACTIONS: Optional[Set[Tuple[str]]] = field(default_factory=set)
-    BRIDGES: Optional[List[Set[str]]] = field(default_factory=list)
+    interactions: Optional[Set[Tuple[str]]] = field(default_factory=set)
+    bridges: Optional[List[Set[str]]] = field(default_factory=list)
 
     OK: bool = True
-    STATUS: str = 'Success'
+    status: str = 'Success'
 
 
 class GetBridgingInteractions:
@@ -34,37 +34,37 @@ class GetBridgingInteractions:
             self.log.error('Cannot get bridging interactions as Met-aromatic algorithm failed')
 
             self.f.OK = False
-            self.f.STATUS = results.STATUS
+            self.f.status = results.status
             return False
 
-        for interaction in results.INTERACTIONS:
+        for interaction in results.interactions:
             pair = (
                 f"{interaction['aromatic_residue']}{interaction['aromatic_position']}",
                 f"MET{interaction['methionine_position']}"
             )
-            self.f.INTERACTIONS.add(pair)
+            self.f.interactions.add(pair)
 
         return True
 
     def isolate_connected_components(self: T, vertices: int) -> bool:
 
         graph = Graph()
-        graph.add_edges_from(self.f.INTERACTIONS)
+        graph.add_edges_from(self.f.interactions)
 
         for bridge in connected_components(graph):
             if len(bridge) == vertices:
-                self.f.BRIDGES.append(bridge)
+                self.f.bridges.append(bridge)
 
         # Note that inverse bridges (MET-ARO-MET) not removed!
 
-        if len(self.f.BRIDGES) == 0:
+        if len(self.f.bridges) == 0:
             self.log.error('Found no bridges')
 
             self.f.OK = False
-            self.f.STATUS = 'No bridges'
+            self.f.status = 'No bridges'
             return False
 
-        self.log.info('Found %i bridges', len(self.f.BRIDGES))
+        self.log.info('Found %i bridges', len(self.f.bridges))
 
         return True
 
