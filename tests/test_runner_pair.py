@@ -67,7 +67,7 @@ class TestRunnerPair:
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code == EX_OK
-        assert 'No interactions\n' in result.output
+        assert 'Found no Met-aromatic interactions for entry' in result.output
 
     def test_pair_bad_query_type(self):
         command = '--query foobar pair 1rcy'
