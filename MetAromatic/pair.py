@@ -297,6 +297,8 @@ class MetAromatic:
             if not self.is_input_valid():
                 return self.f
 
+            self.was_input_validated = True
+
         if not self.fetch_pdb_file():
             return self.f
 
