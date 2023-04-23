@@ -68,32 +68,54 @@ class TestParallelProcessing:
     def test_correct_count(self):
         assert len(list(self.cursor.find())) == self.num_coronavirus_entries
 
-    def test_correct_exit_code_2ca1(self):
-        assert list(self.cursor.find({'_id': '2ca1'}))[0]['ok']
+    def test_2ca1(self):
+        results = list(self.cursor.find({'_id': '2ca1'}))[0]
 
-    def test_correct_exit_code_2fyg(self):
-        assert list(self.cursor.find({'_id': '2fyg'}))[0]['ok']
+        assert len(results['results']) == 7
+        assert results['ok']
+        assert results['status'] == 'Success'
 
-    def test_correct_exit_status_2ca1(self):
-        assert list(self.cursor.find({'_id': '2ca1'}))[0]['status'] == 'Success'
+    def test_2fyg(self):
+        results = list(self.cursor.find({'_id': '2fyg'}))[0]
 
-    def test_correct_exit_status_2fyg(self):
-        assert list(self.cursor.find({'_id': '2fyg'}))[0]['status'] == 'Success'
+        assert len(results['results']) == 3
+        assert results['ok']
+        assert results['status'] == 'Success'
 
-    def test_correct_exit_code_1xak(self):
-        assert not list(self.cursor.find({'_id': '1xak'}))[0]['ok']
+    def test_1xak(self):
+        results = list(self.cursor.find({'_id': '1xak'}))[0]
 
-    def test_correct_exit_code_2fxp(self):
-        assert not list(self.cursor.find({'_id': '2fxp'}))[0]['ok']
+        assert len(results['results']) == 0
+        assert not results['ok']
+        assert results['status'] == 'No MET residues'
 
-    def test_correct_exit_code_6mwm(self):
-        assert not list(self.cursor.find({'_id': '6mwm'}))[0]['ok']
+    def test_2fxp(self):
+        results = list(self.cursor.find({'_id': '2fxp'}))[0]
 
-    def test_correct_exit_code_2cme(self):
-        assert list(self.cursor.find({'_id': '2cme'}))[0]['ok']
+        assert len(results['results']) == 0
+        assert not results['ok']
+        assert results['status'] == 'No MET residues'
 
-    def test_correct_exit_code_spam(self):
-        assert not list(self.cursor.find({'_id': 'spam'}))[0]['ok']
+    def test_6mwm(self):
+        results = list(self.cursor.find({'_id': '6mwm'}))[0]
+
+        assert len(results['results']) == 0
+        assert not results['ok']
+        assert results['status'] == 'No PHE/TYR/TRP residues'
+
+    def test_2cme(self):
+        results = list(self.cursor.find({'_id': '2cme'}))[0]
+
+        assert len(results['results']) == 0
+        assert results['ok']
+        assert results['status'] == 'No interactions'
+
+    def test_spam(self):
+        results = list(self.cursor.find({'_id': 'spam'}))[0]
+
+        assert len(results['results']) == 0
+        assert not results['ok']
+        assert results['status'] == 'Invalid PDB entry'
 
     def test_info_file_in_results(self):
         collections = self.client[DB_NAME].list_collection_names()
