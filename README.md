@@ -425,7 +425,7 @@ def main() -> None:
 
     results = MetAromatic(**arguments).get_met_aromatic_interactions('1rcy')
 
-    for interaction in results.INTERACTIONS:
+    for interaction in results.interactions:
         print(dumps(interaction, indent=4))
 
 if __name__ == '__main__':
@@ -475,7 +475,7 @@ def main() -> None:
     }
 
     results = GetBridgingInteractions(arguments).get_bridging_interactions('6lu7', 3)
-    print(results.BRIDGES[0])
+    print(results.bridges[0])
 
 if __name__ == '__main__':
     main()
