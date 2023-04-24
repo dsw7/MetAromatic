@@ -19,13 +19,6 @@ Code for the following publications:
 - [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
   - [A brief overview](#a-brief-overview)
   - [Designing a distributed mining strategy](#designing-a-distributed-mining-strategy)
-    - [Step 1: Install MongoDB](#step-1-install-mongodb)
-    - [Step 2: Enable port forwarding](#step-2-enable-port-forwarding)
-    - [Step 3: Add a user](#step-3-add-a-user)
-    - [Step 4: Enable authentication](#step-4-enable-authentication)
-    - [Step 5: Reset the bind IP](#step-5-reset-the-bind-ip)
-    - [Step 6: Restart the service](#step-6-restart-the-service)
-    - [Step 7: Run a mining job](#step-7-run-a-mining-job)
 - [Using the MetAromatic API](#using-the-metaromatic-api)
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
@@ -329,68 +322,18 @@ suffixed with `_info`. For example, the above scenario would generate the `defau
 ```
 ### Designing a distributed mining strategy
 A user may be tempted to mine data on a high performance machine and then route the results to a storage
-server. This software supports this. The steps in this section can be followed to implement such a strategy.
-**NOTE**: Users familiar with MongoDB setup and administration can safely skip to [Step 7: Run a mining
-job](#step-7-run-a-mining-job).
-#### Step 1: Install MongoDB
-Start by installing MongoDB following: [Install MongoDB Community Edition on
-Linux](https://docs.mongodb.com/master/administration/install-on-linux/).
-#### Step 2: Enable port forwarding
-This step ensures that the high performance machine can connect to the storage server.
-#### Step 3: Add a user
-Log in to the storage server and then create a script `add-user.js` with the following contents:
-```javascript
-let username = "<new-username>";
-let password = "<new-password>";
-
-use admin;
-db.createUser({
-    user: username,
-    pwd: password,
-    roles: [
-        {role: "userAdminAnyDatabase", db: username},
-        {role: "readWriteAnyDatabase", db: username},
-        {role: "dbAdminAnyDatabase", db: username}
-    ]
-});
+server. This software supports this. As mentioned before, running a batch job will export data to a MongoDB
+server listening on `localhost:27017` by default. However, the `--uri` option can be used to route results to
+another server. The `--uri` option accepts a valid MongoDB URI string and overrides both the host and port
+specified using the `--host` and `--port` options, respectively. For example, to run a batch job against a
+MongoDB listening on `localhost` and port 27018, one would pass:
 ```
-Replace the `<new-username>` and `<new-password>` definitions with a unique username and password, then run:
+runner batch --uri=mongodb://localhost:27018/ </path/to/batch.txt>
 ```
-mongo < /path/to/add-user.js
+To run a batch job against a server `ma-results.local:27017`, with MongoDB user "abc" and password "password",
+one would pass:
 ```
-#### Step 4: Enable authentication
-Open up the MongoDB configuration file `/etc/mongod.conf` and add the following lines:
-```
-security:
-  authorization: 'enabled'
-```
-This step ensures that the MongoDB server is inaccessible without the login credentials `<new-username>` and
-`<new-password>`.
-#### Step 5: Reset the bind IP
-Open up the MongoDB configuration file `/etc/mongod.conf` and edit the following lines to:
-```
-# network interfaces
-net:
-  port: 27017
-  bindIp: 0.0.0.0
-```
-**WARNING**: It is strongly recommended to follow the security measures provided here, [Security
-Checklist](https://docs.mongodb.com/manual/administration/security-checklist/),
-prior to implementing this step.
-#### Step 6: Restart the service
-Run:
-```
-sudo systemctl restart mongod
-```
-And attempt to log in as:
-```
-mongo --username "<new-username>" --password "<new-password>"
-```
-The storage server should now be ready to accept incoming connections from a machine hosting `runner.py`.
-#### Step 7: Run a mining job
-A mining job can now be run as:
-```
-./MetAromatic/runner.py batch /path/batch/file --username <new-username> --password <new-password> --host <host-or-ip-storage-server>
+runner batch --uri=mongodb://abc:password@ma-results.local:27017/ </path/to/batch.txt>
 ```
 ## Using the MetAromatic API
 One may be interested in extending the Met-aromatic project into a customized workflow. The instructions
