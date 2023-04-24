@@ -1,3 +1,5 @@
+# pylint: disable=W0201   # Disable definitions outside of __init__
+
 from os import EX_OK
 from pathlib import Path
 from pytest import exit, fail, skip
@@ -37,7 +39,8 @@ class TestParallelProcessing:
 
     def setup_class(self):
 
-        self.client = MongoClient(host=HOST_MONGODB, port=PORT_MONGODB)
+        uri = f'mongodb://{HOST_MONGODB}:{PORT_MONGODB}/'
+        self.client = MongoClient(uri)
 
         try:
             self.client.list_databases()
@@ -49,7 +52,9 @@ class TestParallelProcessing:
         self.cursor = self.client[DB_NAME][COL_NAME]
         self.threads = 3
 
-        command = f'batch {TEST_DATA} --threads={self.threads} --database={DB_NAME} --collection={COL_NAME}'
+        command = (
+            f'batch {TEST_DATA} --uri={uri} --threads={self.threads} --database={DB_NAME} --collection={COL_NAME}'
+        )
 
         runner = CliRunner()
         result = runner.invoke(cli, command.split())

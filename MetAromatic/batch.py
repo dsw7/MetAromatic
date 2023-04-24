@@ -116,7 +116,7 @@ class ParallelProcessing:
         if self.cli_args['threads'] < 1:
             sys.exit('At least 1 thread required!')
 
-        if self.cli_args['threads'] > 15:
+        if self.cli_args['threads'] > MAXIMUM_WORKERS:
             sys.exit('Maximum number of threads is 15')
 
         self.log.debug('Splitting list of pdb codes into %i chunks', self.cli_args['threads'])
@@ -197,14 +197,8 @@ class ParallelProcessing:
 
         self.set_log_filehandler()
         self.get_collection_handle()
-
-        if self.cli_args['threads'] > MAXIMUM_WORKERS:
-            self.log.warning('Number of selected workers exceeds maximum number of workers.')
-            self.log.warning('The thread pool will use a maximum of %i workers.', MAXIMUM_WORKERS)
-
         self.drop_collection_if_overwrite_enabled()
         self.ensure_collection_does_not_exist()
         self.register_ipc_signals()
         self.get_pdb_code_chunks()
-
         self.deploy_jobs()
