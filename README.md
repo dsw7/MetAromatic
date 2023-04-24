@@ -326,7 +326,7 @@ server. This software supports this. As mentioned before, running a batch job wi
 server listening on `localhost:27017` by default. However, the `--uri` option can be used to route results to
 another server. The `--uri` option accepts a valid MongoDB URI string and overrides both the host and port
 specified using the `--host` and `--port` options, respectively. For example, to run a batch job against a
-MongoDB listening on `localhost` and port 27018, one would pass:
+MongoDB server listening on `localhost` and port 27018, one would pass:
 ```
 runner batch --uri=mongodb://localhost:27018/ </path/to/batch.txt>
 ```
@@ -335,6 +335,8 @@ one would pass:
 ```
 runner batch --uri=mongodb://abc:password@ma-results.local:27017/ </path/to/batch.txt>
 ```
+More information regarding valid URI connection string formats can be found at [Connection String URI Format —
+MongoDB Manual](https://www.mongodb.com/docs/manual/reference/connection-string/)
 ## Using the MetAromatic API
 One may be interested in extending the Met-aromatic project into a customized workflow. The instructions
 provided in the [Setup](#setup) section install MetAromatic source into `site-packages`. Therefore, the API
