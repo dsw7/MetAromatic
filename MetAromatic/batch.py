@@ -47,8 +47,11 @@ class ParallelProcessing:
 
     def get_collection_handle(self: consts.T) -> None:
 
-        uri = f"mongodb://{self.cli_args['host']}:{self.cli_args['port']}/"
-        self.log.info('Handshaking with MongoDB at "%s"', uri)
+        if self.cli_args['uri'] is None:
+            uri = f"mongodb://{self.cli_args['host']}:{self.cli_args['port']}/"
+            self.log.info('Handshaking with MongoDB at "%s"', uri)
+        else:
+            uri = self.cli_args['uri']
 
         client = MongoClient(uri, serverSelectionTimeoutMS=TIMEOUT_MSEC_MONGODB)
 

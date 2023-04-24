@@ -102,6 +102,7 @@ def bridge(obj: Dict[str, Union[str, float]], code: str, vertices: int) -> None:
 @click.option('-d', '--database', default='default_ma', metavar='<database-name>', help='Specify MongoDB database to use.')
 @click.option('-c', '--collection', default='default_ma', metavar='<collection-name>', help='Specify MongoDB collection to use.')
 @click.option('-x', '--overwrite', is_flag=True, default=False, help='Specify whether to overwrite collection specified with -c.')
+@click.option('-u', '--uri', metavar='<mongodb://{username}:{password}@{host}:{port}/>', help='Specify MongoDB connection URI.')
 @click.pass_obj
 def batch(obj: Dict[str, Union[str, float]], **options: Union[str, float]) -> None:
 
