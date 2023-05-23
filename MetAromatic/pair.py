@@ -4,6 +4,7 @@ from gzip import open as gz_open
 from itertools import groupby
 from logging import getLogger
 from operator import itemgetter
+from os import path
 from re import match, compile
 from tempfile import gettempdir, NamedTemporaryFile
 from typing import Dict, Union
@@ -111,7 +112,10 @@ class MetAromaticBase(ABC):
         return True
 
     @abstractmethod
-    def load_pdb_file(self: T, code: str) -> bool:
+    def load_pdb_file(self: T, source: str) -> bool:
+        # Source can be either:
+        # 1. A PDB code
+        # 2. Path to a local PDB file
         pass
 
     def get_first_model(self: T) -> None:
@@ -255,9 +259,7 @@ class MetAromaticBase(ABC):
             self.log.info('Found no Met-aromatic interactions for entry')
             self.f.status = "No interactions"
 
-    def get_met_aromatic_interactions(self: T, code: str) -> FeatureSpace:
-
-        self.log.info('Getting Met-aromatic interactions for PDB entry %s', code)
+    def get_met_aromatic_interactions(self: T, source: str) -> FeatureSpace:
 
         self.f = FeatureSpace()
 
@@ -272,7 +274,7 @@ class MetAromaticBase(ABC):
 
             self.was_input_validated = True
 
-        if not self.load_pdb_file(code=code):
+        if not self.load_pdb_file(source=source):
             return self.f
 
         self.get_first_model()
@@ -296,11 +298,11 @@ class MetAromaticBase(ABC):
 
 class MetAromatic(MetAromaticBase):
 
-    def load_pdb_file(self: T, code: str) -> bool:
+    def load_pdb_file(self: T, source: str) -> bool:
 
-        self.log.debug('Fetching PDB file "%s"', code)
+        self.log.debug('Fetching PDB file "%s"', source)
 
-        code = code.lower()
+        code = source.lower()
 
         ent_gz = f'pdb{code}.ent.gz'
         ftp_url = f'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{code[1:3]}/{ent_gz}'
@@ -322,5 +324,21 @@ class MetAromatic(MetAromaticBase):
             with gz_open(f.name, 'rt') as gz:
                 for line in gz:
                     self.f.raw_data.append(line)
+
+        return True
+
+
+class MetAromaticLocal(MetAromaticBase):
+
+    def load_pdb_file(self: T, source: str) -> bool:
+
+        self.log.debug('Reading file "%s"', source)
+
+        if not path.exists(source):
+            self.log.error('File "%s" does not exist', source)
+            return False
+
+        for line in open(source):
+            self.f.raw_data.append(line)
 
         return True
