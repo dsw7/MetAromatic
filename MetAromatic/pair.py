@@ -335,7 +335,12 @@ class MetAromaticLocal(MetAromaticBase):
         self.log.debug('Reading file "%s"', source)
 
         if not path.exists(source):
-            self.log.error('File "%s" does not exist', source)
+            errmsg = f'File "{source}" does not exist'
+            self.log.error(errmsg)
+
+            self.f.status = errmsg
+            self.f.OK = False
+
             return False
 
         for line in open(source):
