@@ -1,4 +1,5 @@
 from os import EX_OK
+from pathlib import Path
 from click.testing import CliRunner
 from pytest import mark
 from MetAromatic.runner import cli
@@ -74,6 +75,20 @@ class TestRunnerPair:
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
+
+    def test_pair_use_local(self):
+        path_pdb_file = Path(__file__).resolve().parent / 'data_1rcy.pdb'
+        command = f'pair --read-local {path_pdb_file}'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.exit_code == EX_OK
+
+    def test_pair_use_local_missing_file(self):
+        command = 'pair --read-local /tmp/foo/bar/1rcy.pdb'
+
+        result = self.runner.invoke(cli, command.split())
+        assert result.exit_code != EX_OK
+        assert 'File "/tmp/foo/bar/1rcy.pdb" does not exist' in result.output
 
     def test_pair_enable_debug(self):
         command = '--debug pair 1rcy'
