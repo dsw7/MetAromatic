@@ -1,8 +1,10 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from gzip import open as gz_open
 from itertools import groupby
 from logging import getLogger
 from operator import itemgetter
+from os import path
 from re import match, compile
 from tempfile import gettempdir, NamedTemporaryFile
 from typing import Dict, Union
@@ -30,7 +32,6 @@ def vector_angle(u: ndarray, v: ndarray) -> float:
 @dataclass
 class FeatureSpace:
 
-    pdb_code: str = None
     cutoff_dist: float = None
     cutoff_angle: float = None
     chain: str = None
@@ -55,7 +56,7 @@ class FeatureSpace:
     status: str = 'Success'
 
 
-class MetAromatic:
+class MetAromaticBase(ABC):
 
     log = getLogger('met-aromatic')
 
@@ -110,34 +111,12 @@ class MetAromatic:
 
         return True
 
-    def fetch_pdb_file(self: T) -> bool:
-
-        self.log.debug('Fetching PDB file "%s"', self.f.pdb_code)
-
-        code = self.f.pdb_code.lower()
-
-        ent_gz = f'pdb{code}.ent.gz'
-        ftp_url = f'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{code[1:3]}/{ent_gz}'
-
-        self.log.debug('Accessing URL: "%s"', ftp_url)
-
-        with NamedTemporaryFile(dir=TMPDIR) as f:
-
-            try:
-                urlcleanup()
-                urlretrieve(ftp_url, f.name)
-            except URLError:
-                self.log.error('Invalid PDB entry "%s"', self.f.pdb_code)
-
-                self.f.status = "Invalid PDB entry"
-                self.f.OK = False
-                return False
-
-            with gz_open(f.name, 'rt') as gz:
-                for line in gz:
-                    self.f.raw_data.append(line)
-
-        return True
+    @abstractmethod
+    def load_pdb_file(self: T, source: str) -> bool:
+        # Source can be either:
+        # 1. A PDB code
+        # 2. Path to a local PDB file
+        pass
 
     def get_first_model(self: T) -> None:
 
@@ -160,7 +139,7 @@ class MetAromatic:
                 self.f.coords_met.append(line.split()[:9])
 
         if len(self.f.coords_met) == 0:
-            self.log.error('No methionine residues found for entry "%s"', self.f.pdb_code)
+            self.log.error('No methionine residues found for entry')
 
             self.f.status = "No MET residues"
             self.f.OK = False
@@ -203,7 +182,7 @@ class MetAromatic:
         self.log.debug('Ensuring that at least one aromatic residue exists in feature space')
 
         if not any([self.f.coords_phe, self.f.coords_tyr, self.f.coords_trp]):
-            self.log.error('No aromatic residues found for entry "%s"', self.f.pdb_code)
+            self.log.error('No aromatic residues found for entry')
             self.f.status = "No PHE/TYR/TRP residues"
             self.f.OK = False
             return False
@@ -277,16 +256,13 @@ class MetAromatic:
                 })
 
         if len(self.f.interactions) == 0:
-            self.log.info('Found no Met-aromatic interactions for entry "%s"', self.f.pdb_code)
+            self.log.info('Found no Met-aromatic interactions for entry')
             self.f.status = "No interactions"
 
-    def get_met_aromatic_interactions(self: T, code: str) -> FeatureSpace:
-
-        self.log.info('Getting Met-aromatic interactions for PDB entry %s', code)
+    def get_met_aromatic_interactions(self: T, source: str) -> FeatureSpace:
 
         self.f = FeatureSpace()
 
-        self.f.pdb_code = code
         self.f.cutoff_dist = self.cutoff_distance
         self.f.cutoff_angle = self.cutoff_angle
         self.f.chain = self.chain
@@ -298,7 +274,7 @@ class MetAromatic:
 
             self.was_input_validated = True
 
-        if not self.fetch_pdb_file():
+        if not self.load_pdb_file(source=source):
             return self.f
 
         self.get_first_model()
@@ -318,3 +294,56 @@ class MetAromatic:
         self.apply_met_aromatic_criteria()
 
         return self.f
+
+
+class MetAromatic(MetAromaticBase):
+
+    def load_pdb_file(self: T, source: str) -> bool:
+
+        self.log.debug('Fetching PDB file "%s"', source)
+
+        code = source.lower()
+
+        ent_gz = f'pdb{code}.ent.gz'
+        ftp_url = f'ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{code[1:3]}/{ent_gz}'
+
+        self.log.debug('Accessing URL: "%s"', ftp_url)
+
+        with NamedTemporaryFile(dir=TMPDIR) as f:
+
+            try:
+                urlcleanup()
+                urlretrieve(ftp_url, f.name)
+            except URLError:
+                self.log.error('Invalid PDB entry "%s"', code)
+
+                self.f.status = "Invalid PDB entry"
+                self.f.OK = False
+                return False
+
+            with gz_open(f.name, 'rt') as gz:
+                for line in gz:
+                    self.f.raw_data.append(line)
+
+        return True
+
+
+class MetAromaticLocal(MetAromaticBase):
+
+    def load_pdb_file(self: T, source: str) -> bool:
+
+        self.log.debug('Reading file "%s"', source)
+
+        if not path.exists(source):
+            errmsg = f'File "{source}" does not exist'
+            self.log.error(errmsg)
+
+            self.f.status = errmsg
+            self.f.OK = False
+
+            return False
+
+        for line in open(source):
+            self.f.raw_data.append(line)
+
+        return True

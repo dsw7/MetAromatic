@@ -51,13 +51,19 @@ def cli(context: click.core.Context, debug: bool, **options: Union[str, float]) 
     setup_child_logger(debug=debug)
 
 @cli.command(help='Run a Met-aromatic query on a single PDB entry.')
-@click.argument('code')
+@click.option('--read-local', is_flag=True, default=False, help='Specify whether to read a local PDB file')
+@click.argument('source')
 @click.pass_obj
-def pair(obj: Dict[str, Union[str, float]], code: str) -> None:
+def pair(obj: Dict[str, Union[str, float]], read_local: bool, source: str) -> None:
 
-    from MetAromatic.pair import MetAromatic
+    if read_local:
+        from MetAromatic.pair import MetAromaticLocal
+        ma = MetAromaticLocal
+    else:
+        from MetAromatic.pair import MetAromatic
+        ma = MetAromatic
 
-    results = MetAromatic(**obj).get_met_aromatic_interactions(code)
+    results = ma(**obj).get_met_aromatic_interactions(source)
 
     if not results.OK:
         sys.exit(results.status)

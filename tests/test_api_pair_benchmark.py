@@ -40,45 +40,6 @@ TEST_PDB_CODES = {
     '3ug7', '3g3q', '5req', '4dma', '4h5v'
 }
 
-VALID_RESULTS_1RCY = [
-    {
-        'aromatic_residue': 'TYR', 'aromatic_position': '122', 'methionine_position': '18',
-        'norm': 4.211, 'met_theta_angle': 75.766, 'met_phi_angle': 64.317
-    },
-    {
-        'aromatic_residue': 'TYR', 'aromatic_position': '122', 'methionine_position': '18',
-        'norm': 3.954, 'met_theta_angle': 60.145, 'met_phi_angle': 68.352
-    },
-    {
-        'aromatic_residue': 'TYR', 'aromatic_position': '122', 'methionine_position': '18',
-        'norm': 4.051, 'met_theta_angle': 47.198, 'met_phi_angle': 85.151
-    },
-    {
-        'aromatic_residue': 'TYR', 'aromatic_position': '122', 'methionine_position': '18',
-        'norm': 4.39, 'met_theta_angle': 53.4, 'met_phi_angle': 95.487
-    },
-    {
-        'aromatic_residue': 'TYR', 'aromatic_position': '122', 'methionine_position': '18',
-        'norm': 4.62, 'met_theta_angle': 68.452, 'met_phi_angle': 90.771
-    },
-    {
-        'aromatic_residue': 'TYR', 'aromatic_position': '122', 'methionine_position': '18',
-        'norm': 4.537, 'met_theta_angle': 78.568, 'met_phi_angle': 76.406
-    },
-    {
-        'aromatic_residue': 'PHE', 'aromatic_position': '54', 'methionine_position': '148',
-        'norm': 4.777, 'met_theta_angle': 105.947, 'met_phi_angle': 143.022
-    },
-    {
-        'aromatic_residue': 'PHE', 'aromatic_position': '54', 'methionine_position': '148',
-        'norm': 4.61, 'met_theta_angle': 93.382, 'met_phi_angle': 156.922
-    },
-    {
-        'aromatic_residue': 'PHE', 'aromatic_position': '54', 'methionine_position': '148',
-        'norm': 4.756, 'met_theta_angle': 93.287, 'met_phi_angle': 154.63
-    }
-]
-
 @mark.parametrize('code', TEST_PDB_CODES)
 def test_pair_against_483_data(code):
 
@@ -88,7 +49,7 @@ def test_pair_against_483_data(code):
             control.append(row)
 
     try:
-        test_data = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code=code)
+        test_data = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code)
 
     except IndexError:
         skip('Skipping list index out of range error. Occurs because of missing data.')
