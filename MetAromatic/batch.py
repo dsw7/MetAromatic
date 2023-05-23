@@ -143,7 +143,7 @@ class ParallelProcessing:
             try:
                 fs = handle_ma.get_met_aromatic_interactions(code)
                 results = {
-                    '_id': fs.pdb_code,
+                    '_id': code,
                     'ok': fs.OK,
                     'status': fs.status,
                     'results': fs.interactions
