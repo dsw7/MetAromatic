@@ -3,7 +3,6 @@ from logging import getLogger
 from typing import Optional, Set, Tuple
 from typing import Dict, Union, List
 from networkx import Graph, connected_components
-from MetAromatic.consts import T
 from MetAromatic.pair import MetAromatic
 
 
@@ -21,12 +20,12 @@ class GetBridgingInteractions:
 
     log = getLogger('met-aromatic')
 
-    def __init__(self: T, cli_opts: Dict[str, Union[str, float]]) -> T:
+    def __init__(self, cli_opts: Dict[str, Union[str, float]]) -> None:
 
         self.cli_opts = cli_opts
         self.f = None
 
-    def get_interacting_pairs(self: T, code: str) -> bool:
+    def get_interacting_pairs(self, code: str) -> bool:
 
         ma_results = MetAromatic(**self.cli_opts).get_met_aromatic_interactions(code)
 
@@ -52,7 +51,7 @@ class GetBridgingInteractions:
 
         return True
 
-    def isolate_connected_components(self: T, vertices: int) -> None:
+    def isolate_connected_components(self, vertices: int) -> None:
 
         graph = Graph()
         graph.add_edges_from(self.f.interactions)
@@ -77,7 +76,7 @@ class GetBridgingInteractions:
         self.log.info('Found no bridges')
         self.f.status = 'No bridges'
 
-    def get_bridging_interactions(self: T, code: str, vertices: int) -> BridgeSpace:
+    def get_bridging_interactions(self, code: str, vertices: int) -> BridgeSpace:
 
         self.log.info('Locating bridging interactions for entry "%s"', code)
 

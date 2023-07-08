@@ -21,7 +21,7 @@ class ParallelProcessing:
 
     log = logging.getLogger('met-aromatic')
 
-    def __init__(self: consts.T, cli_args: Dict[str, Union[int, bool, str]]) -> consts.T:
+    def __init__(self, cli_args: Dict[str, Union[int, bool, str]]) -> None:
 
         self.cli_args = cli_args
         self.collection = None
@@ -31,7 +31,7 @@ class ParallelProcessing:
         self.count = 0
         self.bool_disable_workers = False
 
-    def set_log_filehandler(self: consts.T) -> None:
+    def set_log_filehandler(self) -> None:
 
         self.log.debug('Setting up additional logger')
 
@@ -45,7 +45,7 @@ class ParallelProcessing:
 
         self.log.addHandler(channel)
 
-    def get_collection_handle(self: consts.T) -> None:
+    def get_collection_handle(self) -> None:
 
         if self.cli_args['uri'] is None:
             uri = f"mongodb://{self.cli_args['host']}:{self.cli_args['port']}/"
@@ -66,7 +66,7 @@ class ParallelProcessing:
 
         self.collection = client[self.cli_args['database']][self.cli_args['collection']]
 
-    def drop_collection_if_overwrite_enabled(self: consts.T) -> None:
+    def drop_collection_if_overwrite_enabled(self) -> None:
 
         if not self.cli_args['overwrite']:
             return
@@ -79,7 +79,7 @@ class ParallelProcessing:
         self.log.debug('Will overwrite collection "%s" if exists', info_collection)
         self.collection.database.drop_collection(info_collection)
 
-    def ensure_collection_does_not_exist(self: consts.T) -> None:
+    def ensure_collection_does_not_exist(self) -> None:
 
         collections = self.collection.database.list_collection_names()
 
@@ -87,21 +87,21 @@ class ParallelProcessing:
             self.log.error('Collection "%s" exists! Cannot proceed', self.cli_args['collection'])
             sys.exit('Batch job failed')
 
-    def disable_all_workers(self: consts.T, *args) -> None:
+    def disable_all_workers(self, *args) -> None:
 
         self.log.info('Detected SIGINT!')
         self.log.info('Attempting to stop all workers!')
 
         self.bool_disable_workers = True
 
-    def register_ipc_signals(self: consts.T) -> None:
+    def register_ipc_signals(self) -> None:
 
         self.log.debug('Registering SIGINT to thread terminator')
 
         self.bool_disable_workers = False
         signal(SIGINT, self.disable_all_workers)
 
-    def get_pdb_code_chunks(self: consts.T) -> None:
+    def get_pdb_code_chunks(self) -> None:
 
         self.log.info('Imported pdb codes from file %s', self.cli_args['path_batch_file'])
 
@@ -125,7 +125,7 @@ class ParallelProcessing:
             self.pdb_codes[i::self.cli_args['threads']] for i in range(self.cli_args['threads'])
         ]
 
-    def worker_met_aromatic(self: consts.T, chunk: List[str]) -> None:
+    def worker_met_aromatic(self, chunk: List[str]) -> None:
 
         handle_ma = MetAromatic(
             self.cli_args['cutoff_distance'],
@@ -156,7 +156,7 @@ class ParallelProcessing:
                 self.log.info('Processed %s. Count: %i', code, self.count)
                 self.collection.insert_one(results)
 
-    def deploy_jobs(self: consts.T) -> None:
+    def deploy_jobs(self) -> None:
 
         self.log.debug('Deploying %i workers!', self.cli_args['threads'])
 
@@ -193,7 +193,7 @@ class ParallelProcessing:
                 batch_job_metadata['number_of_entries'] = self.num_codes
                 collection_info.insert_one(batch_job_metadata)
 
-    def main(self: consts.T) -> None:
+    def main(self) -> None:
 
         self.set_log_filehandler()
         self.get_collection_handle()

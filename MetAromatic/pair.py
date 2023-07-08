@@ -13,7 +13,6 @@ from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 
 from numpy import ndarray, array, dot, linalg, degrees, arccos
-from MetAromatic.consts import T
 from MetAromatic.get_aromatic_midpoints import get_phe_midpoints
 from MetAromatic.get_aromatic_midpoints import get_trp_midpoints
 from MetAromatic.get_aromatic_midpoints import get_tyr_midpoints
@@ -60,7 +59,7 @@ class MetAromaticBase(ABC):
 
     log = getLogger('met-aromatic')
 
-    def __init__(self: T, cutoff_distance: float, cutoff_angle: float, chain: str, model: str) -> T:
+    def __init__(self, cutoff_distance: float, cutoff_angle: float, chain: str, model: str) -> None:
 
         self.cutoff_distance = cutoff_distance
         self.cutoff_angle = cutoff_angle
@@ -70,7 +69,7 @@ class MetAromaticBase(ABC):
         self.was_input_validated = False
         self.f = None
 
-    def is_input_valid(self: T) -> bool:
+    def is_input_valid(self) -> bool:
 
         self.log.debug('Validating input parameters')
 
@@ -112,13 +111,13 @@ class MetAromaticBase(ABC):
         return True
 
     @abstractmethod
-    def load_pdb_file(self: T, source: str) -> bool:
+    def load_pdb_file(self, source: str) -> bool:
         # Source can be either:
         # 1. A PDB code
         # 2. Path to a local PDB file
         pass
 
-    def get_first_model(self: T) -> None:
+    def get_first_model(self) -> None:
 
         self.log.debug('Stripping feature space down to only first model')
 
@@ -128,7 +127,7 @@ class MetAromaticBase(ABC):
 
             self.f.first_model.append(line)
 
-    def get_met_coordinates(self: T) -> bool:
+    def get_met_coordinates(self) -> bool:
 
         self.log.debug('Isolating MET coordinates from feature space')
 
@@ -147,7 +146,7 @@ class MetAromaticBase(ABC):
 
         return True
 
-    def get_phe_coordinates(self: T) -> None:
+    def get_phe_coordinates(self) -> None:
 
         self.log.debug('Isolating PHE coordinates from feature space')
 
@@ -157,7 +156,7 @@ class MetAromaticBase(ABC):
             if match(pattern, line):
                 self.f.coords_phe.append(line.split()[:9])
 
-    def get_tyr_coordinates(self: T) -> None:
+    def get_tyr_coordinates(self) -> None:
 
         self.log.debug('Isolating TYR coordinates from feature space')
 
@@ -167,7 +166,7 @@ class MetAromaticBase(ABC):
             if match(pattern, line):
                 self.f.coords_tyr.append(line.split()[:9])
 
-    def get_trp_coordinates(self: T) -> None:
+    def get_trp_coordinates(self) -> None:
 
         self.log.debug('Isolating TRP coordinates from feature space')
 
@@ -177,7 +176,7 @@ class MetAromaticBase(ABC):
             if match(pattern, line):
                 self.f.coords_trp.append(line.split()[:9])
 
-    def check_if_not_coordinates(self: T) -> bool:
+    def check_if_not_coordinates(self) -> bool:
 
         self.log.debug('Ensuring that at least one aromatic residue exists in feature space')
 
@@ -189,7 +188,7 @@ class MetAromaticBase(ABC):
 
         return True
 
-    def get_met_lone_pairs(self: T) -> None:
+    def get_met_lone_pairs(self) -> None:
 
         self.log.debug('Computing MET lone pair positions using "%s" model', self.model)
 
@@ -214,7 +213,7 @@ class MetAromaticBase(ABC):
                 'position': position
             })
 
-    def get_midpoints(self: T) -> None:
+    def get_midpoints(self) -> None:
 
         self.log.debug('Computing midpoints between PHE aromatic carbon atoms')
         self.f.midpoints_phe = get_phe_midpoints(self.f.coords_phe)
@@ -225,7 +224,7 @@ class MetAromaticBase(ABC):
         self.log.debug('Computing midpoints between TRP aromatic carbon atoms')
         self.f.midpoints_trp = get_trp_midpoints(self.f.coords_trp)
 
-    def apply_met_aromatic_criteria(self: T) -> None:
+    def apply_met_aromatic_criteria(self) -> None:
 
         self.log.debug('Finding pairs meeting Met-aromatic algorithm criteria in feature space')
 
@@ -259,7 +258,7 @@ class MetAromaticBase(ABC):
             self.log.info('Found no Met-aromatic interactions for entry')
             self.f.status = "No interactions"
 
-    def get_met_aromatic_interactions(self: T, source: str) -> FeatureSpace:
+    def get_met_aromatic_interactions(self, source: str) -> FeatureSpace:
 
         self.f = FeatureSpace()
 
@@ -298,7 +297,7 @@ class MetAromaticBase(ABC):
 
 class MetAromatic(MetAromaticBase):
 
-    def load_pdb_file(self: T, source: str) -> bool:
+    def load_pdb_file(self, source: str) -> bool:
 
         self.log.debug('Fetching PDB file "%s"', source)
 
@@ -330,7 +329,7 @@ class MetAromatic(MetAromaticBase):
 
 class MetAromaticLocal(MetAromaticBase):
 
-    def load_pdb_file(self: T, source: str) -> bool:
+    def load_pdb_file(self, source: str) -> bool:
 
         self.log.debug('Reading file "%s"', source)
 
