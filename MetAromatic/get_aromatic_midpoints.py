@@ -1,5 +1,4 @@
-from typing import List, Tuple
-from typing import Dict, Union
+from typing import Union
 from itertools import groupby
 from copy import deepcopy
 from operator import itemgetter
@@ -20,7 +19,7 @@ DICT_ATOMS_TRP = {
     'CH2': 'D', 'CZ2': 'E', 'CE2': 'F'
 }
 
-def get_hexagon_midpoints(x: List[int], y: List[int], z: List[int]) -> Tuple[List[int]]:
+def get_hexagon_midpoints(x: list[int], y: list[int], z: list[int]) -> tuple[list[int]]:
 
     """
     Function for computing midpoints between vertices in a hexagon
@@ -40,7 +39,7 @@ def get_hexagon_midpoints(x: List[int], y: List[int], z: List[int]) -> Tuple[Lis
 
     return x_mid, y_mid, z_mid
 
-def get_aromatic_midpoints(aromatics: List[List[str]], keys: Dict[str, str]) -> List[List[Union[str, ndarray]]]:
+def get_aromatic_midpoints(aromatics: list[list[str]], keys: dict[str, str]) -> list[list[Union[str, ndarray]]]:
 
     aromatics = [
         list(group) for _, group in groupby(aromatics, lambda entry: entry[5])
@@ -68,11 +67,11 @@ def get_aromatic_midpoints(aromatics: List[List[str]], keys: Dict[str, str]) -> 
 
     return midpoints
 
-def get_phe_midpoints(phe_coords: List[List[str]]) -> List[List[Union[str, ndarray]]]:
+def get_phe_midpoints(phe_coords: list[list[str]]) -> list[list[Union[str, ndarray]]]:
     return get_aromatic_midpoints(phe_coords, DICT_ATOMS_PHE)
 
-def get_tyr_midpoints(tyr_coords: List[List[str]]) -> List[List[Union[str, ndarray]]]:
+def get_tyr_midpoints(tyr_coords: list[list[str]]) -> list[list[Union[str, ndarray]]]:
     return get_aromatic_midpoints(tyr_coords, DICT_ATOMS_TYR)
 
-def get_trp_midpoints(trp_coords: List[List[str]]) -> List[List[Union[str, ndarray]]]:
+def get_trp_midpoints(trp_coords: list[list[str]]) -> list[list[Union[str, ndarray]]]:
     return get_aromatic_midpoints(trp_coords, DICT_ATOMS_TRP)

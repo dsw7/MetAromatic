@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import List, Dict, Union
+from typing import Union
 from re import split
 from os import path
 from tempfile import gettempdir
@@ -21,7 +21,7 @@ class ParallelProcessing:
 
     log = logging.getLogger('met-aromatic')
 
-    def __init__(self, cli_args: Dict[str, Union[int, bool, str]]) -> None:
+    def __init__(self, cli_args: dict[str, Union[int, bool, str]]) -> None:
 
         self.cli_args = cli_args
         self.collection = None
@@ -125,7 +125,7 @@ class ParallelProcessing:
             self.pdb_codes[i::self.cli_args['threads']] for i in range(self.cli_args['threads'])
         ]
 
-    def worker_met_aromatic(self, chunk: List[str]) -> None:
+    def worker_met_aromatic(self, chunk: list[str]) -> None:
 
         handle_ma = MetAromatic(
             self.cli_args['cutoff_distance'],

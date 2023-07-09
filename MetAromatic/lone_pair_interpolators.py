@@ -1,6 +1,5 @@
 # pylint: disable=C0103 # Disable "Argument name "u" doesn't conform to snake_case naming style"
 
-from typing import List
 import numpy as np
 
 SCAL1 = np.sin(np.pi / 2)
@@ -84,8 +83,8 @@ class RodriguesMethod:
         self.rodrigues_rotation_matrix = np.array(np.eye(3)) + (SCAL1 * W) + (SCAL2 * np.matmul(W, W))
 
     # Note that I flipped these methods to match previous algorithm
-    def get_vector_g(self) -> List[float]:
+    def get_vector_g(self) -> list[float]:
         return np.matmul(self.rodrigues_rotation_matrix, self.u).tolist()
 
-    def get_vector_a(self) -> List[float]:
+    def get_vector_a(self) -> list[float]:
         return np.matmul(self.rodrigues_rotation_matrix, self.v).tolist()

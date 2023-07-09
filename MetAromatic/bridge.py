@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from logging import getLogger
-from typing import Optional, Set, Tuple
-from typing import Dict, Union, List
+from typing import Optional, Union
 from networkx import Graph, connected_components
 from MetAromatic.pair import MetAromatic
 
@@ -9,8 +8,8 @@ from MetAromatic.pair import MetAromatic
 @dataclass
 class BridgeSpace:
 
-    interactions: Optional[Set[Tuple[str]]] = field(default_factory=set)
-    bridges: Optional[List[Set[str]]] = field(default_factory=list)
+    interactions: Optional[set[tuple[str]]] = field(default_factory=set)
+    bridges: Optional[list[set[str]]] = field(default_factory=list)
 
     OK: bool = True
     status: str = 'Success'
@@ -20,7 +19,7 @@ class GetBridgingInteractions:
 
     log = getLogger('met-aromatic')
 
-    def __init__(self, cli_opts: Dict[str, Union[str, float]]) -> None:
+    def __init__(self, cli_opts: dict[str, Union[str, float]]) -> None:
 
         self.cli_opts = cli_opts
         self.f = None

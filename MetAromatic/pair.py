@@ -7,7 +7,7 @@ from operator import itemgetter
 from os import path
 from re import match, compile
 from tempfile import gettempdir, NamedTemporaryFile
-from typing import Dict, Union, List
+from typing import Union
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 
@@ -35,20 +35,20 @@ class FeatureSpace:
     chain: str = 'A'
     model: str = 'cp'
 
-    raw_data: List[str] = field(default_factory=list)
-    first_model: List[str] = field(default_factory=list)
+    raw_data: list[str] = field(default_factory=list)
+    first_model: list[str] = field(default_factory=list)
 
-    coords_met: List[List[str]] = field(default_factory=list)
-    coords_phe: List[List[str]] = field(default_factory=list)
-    coords_tyr: List[List[str]] = field(default_factory=list)
-    coords_trp: List[List[str]] = field(default_factory=list)
+    coords_met: list[list[str]] = field(default_factory=list)
+    coords_phe: list[list[str]] = field(default_factory=list)
+    coords_tyr: list[list[str]] = field(default_factory=list)
+    coords_trp: list[list[str]] = field(default_factory=list)
 
-    lone_pairs_met: List[Dict[str, ndarray]] = field(default_factory=list)
-    midpoints_phe: List[List[Union[str, ndarray]]] = field(default_factory=list)
-    midpoints_tyr: List[List[Union[str, ndarray]]] = field(default_factory=list)
-    midpoints_trp: List[List[Union[str, ndarray]]] = field(default_factory=list)
+    lone_pairs_met: list[dict[str, ndarray]] = field(default_factory=list)
+    midpoints_phe: list[list[Union[str, ndarray]]] = field(default_factory=list)
+    midpoints_tyr: list[list[Union[str, ndarray]]] = field(default_factory=list)
+    midpoints_trp: list[list[Union[str, ndarray]]] = field(default_factory=list)
 
-    interactions: List[Dict[str, Union[int, float, str]]] = field(default_factory=list)
+    interactions: list[dict[str, Union[int, float, str]]] = field(default_factory=list)
 
     OK: bool = True
     status: str = 'Success'
