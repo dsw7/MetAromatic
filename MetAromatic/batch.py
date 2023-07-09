@@ -8,7 +8,7 @@ from time import time
 from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
-from pymongo import MongoClient, errors
+from pymongo import MongoClient, errors, collection
 from MetAromatic import consts
 from MetAromatic.pair import MetAromatic
 
@@ -24,7 +24,7 @@ class ParallelProcessing:
     def __init__(self, cli_args: dict[str, Union[int, bool, str]]) -> None:
 
         self.cli_args = cli_args
-        self.collection = None
+        self.collection: collection.Collection
 
         self.pdb_codes = []
         self.num_codes = 0
@@ -53,7 +53,7 @@ class ParallelProcessing:
         else:
             uri = self.cli_args['uri']
 
-        client = MongoClient(uri, serverSelectionTimeoutMS=TIMEOUT_MSEC_MONGODB)
+        client = MongoClient(uri, serverSelectionTimeoutMS=TIMEOUT_MSEC_MONGODB) # type: ignore
 
         try:
             client.list_databases()
