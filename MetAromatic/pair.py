@@ -7,13 +7,13 @@ from operator import itemgetter
 from os import path
 from re import match, compile
 from tempfile import gettempdir, NamedTemporaryFile
-from typing import Union
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 
 from numpy import ndarray, array, dot, linalg, degrees, arccos
-from MetAromatic.complex_types import TYPE_LONE_PAIRS_MET
 from MetAromatic.complex_types import TYPE_INTERACTIONS
+from MetAromatic.complex_types import TYPE_LONE_PAIRS_MET
+from MetAromatic.complex_types import TYPE_MIDPOINTS
 from MetAromatic.get_aromatic_midpoints import get_phe_midpoints
 from MetAromatic.get_aromatic_midpoints import get_trp_midpoints
 from MetAromatic.get_aromatic_midpoints import get_tyr_midpoints
@@ -47,9 +47,9 @@ class FeatureSpace:
     coords_trp: list[list[str]] = field(default_factory=list)
 
     lone_pairs_met: list[TYPE_LONE_PAIRS_MET] = field(default_factory=list)
-    midpoints_phe: list[list[Union[str, ndarray]]] = field(default_factory=list)
-    midpoints_tyr: list[list[Union[str, ndarray]]] = field(default_factory=list)
-    midpoints_trp: list[list[Union[str, ndarray]]] = field(default_factory=list)
+    midpoints_phe: list[TYPE_MIDPOINTS] = field(default_factory=list)
+    midpoints_tyr: list[TYPE_MIDPOINTS] = field(default_factory=list)
+    midpoints_trp: list[TYPE_MIDPOINTS] = field(default_factory=list)
 
     interactions: list[TYPE_INTERACTIONS] = field(default_factory=list)
 

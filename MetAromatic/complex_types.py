@@ -1,6 +1,8 @@
 from typing import TypedDict
 from numpy import ndarray
 
+TYPE_MIDPOINTS = tuple[str, str, ndarray]
+
 TYPE_LONE_PAIRS_MET = TypedDict(
     'TYPE_LONE_PAIRS_MET',
     {

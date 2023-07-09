@@ -1,8 +1,8 @@
-from typing import Union
 from itertools import groupby
 from copy import deepcopy
 from operator import itemgetter
-from numpy import array, ndarray
+from numpy import array
+from MetAromatic.complex_types import TYPE_MIDPOINTS
 
 DICT_ATOMS_PHE = {
     'CG': 'A', 'CD2': 'B', 'CE2': 'C',
@@ -25,7 +25,7 @@ def get_midpoints(c: list[float]) -> list[float]:
 
     return [0.5 * (a + b) for a, b in zip(c, c_f)]
 
-def get_aromatic_midpoints(aromatics: list[list[str]], keys: dict[str, str]) -> list[list[Union[str, ndarray]]]:
+def get_aromatic_midpoints(aromatics: list[list[str]], keys: dict[str, str]) -> list[TYPE_MIDPOINTS]:
 
     aromatics = [
         list(group) for _, group in groupby(aromatics, lambda entry: entry[5])
@@ -55,11 +55,11 @@ def get_aromatic_midpoints(aromatics: list[list[str]], keys: dict[str, str]) -> 
 
     return midpoints
 
-def get_phe_midpoints(phe_coords: list[list[str]]) -> list[list[Union[str, ndarray]]]:
+def get_phe_midpoints(phe_coords: list[list[str]]) -> list[TYPE_MIDPOINTS]:
     return get_aromatic_midpoints(phe_coords, DICT_ATOMS_PHE)
 
-def get_tyr_midpoints(tyr_coords: list[list[str]]) -> list[list[Union[str, ndarray]]]:
+def get_tyr_midpoints(tyr_coords: list[list[str]]) -> list[TYPE_MIDPOINTS]:
     return get_aromatic_midpoints(tyr_coords, DICT_ATOMS_TYR)
 
-def get_trp_midpoints(trp_coords: list[list[str]]) -> list[list[Union[str, ndarray]]]:
+def get_trp_midpoints(trp_coords: list[list[str]]) -> list[TYPE_MIDPOINTS]:
     return get_aromatic_midpoints(trp_coords, DICT_ATOMS_TRP)
