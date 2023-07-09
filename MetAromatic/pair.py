@@ -7,8 +7,7 @@ from operator import itemgetter
 from os import path
 from re import match, compile
 from tempfile import gettempdir, NamedTemporaryFile
-from typing import Dict, Union
-from typing import Optional, List
+from typing import Dict, Union, List
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 
@@ -31,25 +30,25 @@ def vector_angle(u: ndarray, v: ndarray) -> float:
 @dataclass
 class FeatureSpace:
 
-    cutoff_dist: float = None
-    cutoff_angle: float = None
-    chain: str = None
-    model: str = None
+    cutoff_dist: float = 4.9
+    cutoff_angle: float = 109.5
+    chain: str = 'A'
+    model: str = 'cp'
 
-    raw_data: Optional[List[str]] = field(default_factory=list)
-    first_model: Optional[List[str]] = field(default_factory=list)
+    raw_data: List[str] = field(default_factory=list)
+    first_model: List[str] = field(default_factory=list)
 
-    coords_met: Optional[List[List[str]]] = field(default_factory=list)
-    coords_phe: Optional[List[List[str]]] = field(default_factory=list)
-    coords_tyr: Optional[List[List[str]]] = field(default_factory=list)
-    coords_trp: Optional[List[List[str]]] = field(default_factory=list)
+    coords_met: List[List[str]] = field(default_factory=list)
+    coords_phe: List[List[str]] = field(default_factory=list)
+    coords_tyr: List[List[str]] = field(default_factory=list)
+    coords_trp: List[List[str]] = field(default_factory=list)
 
-    lone_pairs_met: Optional[List[Dict[str, ndarray]]] = field(default_factory=list)
-    midpoints_phe: Optional[List[List[Union[str, ndarray]]]] = field(default_factory=list)
-    midpoints_tyr: Optional[List[List[Union[str, ndarray]]]] = field(default_factory=list)
-    midpoints_trp: Optional[List[List[Union[str, ndarray]]]] = field(default_factory=list)
+    lone_pairs_met: List[Dict[str, ndarray]] = field(default_factory=list)
+    midpoints_phe: List[List[Union[str, ndarray]]] = field(default_factory=list)
+    midpoints_tyr: List[List[Union[str, ndarray]]] = field(default_factory=list)
+    midpoints_trp: List[List[Union[str, ndarray]]] = field(default_factory=list)
 
-    interactions: Optional[List[Dict[str, Union[int, float, str]]]] = field(default_factory=list)
+    interactions: List[Dict[str, Union[int, float, str]]] = field(default_factory=list)
 
     OK: bool = True
     status: str = 'Success'
@@ -67,7 +66,7 @@ class MetAromaticBase(ABC):
         self.model = model
 
         self.was_input_validated = False
-        self.f = None
+        self.f: FeatureSpace
 
     def is_input_valid(self) -> bool:
 
