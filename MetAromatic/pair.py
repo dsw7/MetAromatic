@@ -13,6 +13,7 @@ from urllib.request import urlretrieve, urlcleanup
 
 from numpy import ndarray, array, dot, linalg, degrees, arccos
 from MetAromatic.complex_types import TYPE_LONE_PAIRS_MET
+from MetAromatic.complex_types import TYPE_INTERACTIONS
 from MetAromatic.get_aromatic_midpoints import get_phe_midpoints
 from MetAromatic.get_aromatic_midpoints import get_trp_midpoints
 from MetAromatic.get_aromatic_midpoints import get_tyr_midpoints
@@ -50,7 +51,7 @@ class FeatureSpace:
     midpoints_tyr: list[list[Union[str, ndarray]]] = field(default_factory=list)
     midpoints_trp: list[list[Union[str, ndarray]]] = field(default_factory=list)
 
-    interactions: list[dict[str, Union[int, float, str]]] = field(default_factory=list)
+    interactions: list[TYPE_INTERACTIONS] = field(default_factory=list)
 
     OK: bool = True
     status: str = 'Success'
