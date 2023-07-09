@@ -83,8 +83,8 @@ class RodriguesMethod:
         self.rodrigues_rotation_matrix = np.array(np.eye(3)) + (SCAL1 * W) + (SCAL2 * np.matmul(W, W))
 
     # Note that I flipped these methods to match previous algorithm
-    def get_vector_g(self) -> list[float]:
-        return np.matmul(self.rodrigues_rotation_matrix, self.u).tolist()
+    def get_vector_g(self) -> np.ndarray:
+        return np.matmul(self.rodrigues_rotation_matrix, self.u)
 
-    def get_vector_a(self) -> list[float]:
-        return np.matmul(self.rodrigues_rotation_matrix, self.v).tolist()
+    def get_vector_a(self) -> np.ndarray:
+        return np.matmul(self.rodrigues_rotation_matrix, self.v)

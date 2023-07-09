@@ -12,10 +12,12 @@ from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 
 from numpy import ndarray, array, dot, linalg, degrees, arccos
+from MetAromatic.complex_types import TYPE_LONE_PAIRS_MET
 from MetAromatic.get_aromatic_midpoints import get_phe_midpoints
 from MetAromatic.get_aromatic_midpoints import get_trp_midpoints
 from MetAromatic.get_aromatic_midpoints import get_tyr_midpoints
-from MetAromatic.lone_pair_interpolators import RodriguesMethod, CrossProductMethod
+from MetAromatic.lone_pair_interpolators import CrossProductMethod
+from MetAromatic.lone_pair_interpolators import RodriguesMethod
 
 TMPDIR = gettempdir()
 
@@ -43,7 +45,7 @@ class FeatureSpace:
     coords_tyr: list[list[str]] = field(default_factory=list)
     coords_trp: list[list[str]] = field(default_factory=list)
 
-    lone_pairs_met: list[dict[str, ndarray]] = field(default_factory=list)
+    lone_pairs_met: list[TYPE_LONE_PAIRS_MET] = field(default_factory=list)
     midpoints_phe: list[list[Union[str, ndarray]]] = field(default_factory=list)
     midpoints_tyr: list[list[Union[str, ndarray]]] = field(default_factory=list)
     midpoints_trp: list[list[Union[str, ndarray]]] = field(default_factory=list)
