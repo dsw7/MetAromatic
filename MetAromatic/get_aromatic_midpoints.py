@@ -19,25 +19,11 @@ DICT_ATOMS_TRP = {
     'CH2': 'D', 'CZ2': 'E', 'CE2': 'F'
 }
 
-def get_hexagon_midpoints(x: list[float], y: list[float], z: list[float]) -> tuple[list[float], list[float], list[float]]:
+def get_midpoints(c: list[float]) -> list[float]:
 
-    """
-    Function for computing midpoints between vertices in a hexagon
-    Parameters:
-        x, y, z -> list objects of x, y, and z hexagon coordinates
-    Returns:
-        x_mid, y_mid, z_mid -> a list of x, y, and z hexagon midpoint coordinates
-    """
+    c_f = c[1:] + [c[0]]
 
-    x_f = x[1:] + [x[0]]
-    y_f = y[1:] + [y[0]]
-    z_f = z[1:] + [z[0]]
-
-    x_mid = [0.5 * (a + b) for a, b in zip(x, x_f)]
-    y_mid = [0.5 * (a + b) for a, b in zip(y, y_f)]
-    z_mid = [0.5 * (a + b) for a, b in zip(z, z_f)]
-
-    return x_mid, y_mid, z_mid
+    return [0.5 * (a + b) for a, b in zip(c, c_f)]
 
 def get_aromatic_midpoints(aromatics: list[list[str]], keys: dict[str, str]) -> list[list[Union[str, ndarray]]]:
 
@@ -60,7 +46,9 @@ def get_aromatic_midpoints(aromatics: list[list[str]], keys: dict[str, str]) -> 
         y_coord = [float(i[7]) for i in ordered]
         z_coord = [float(i[8]) for i in ordered]
 
-        x_mid, y_mid, z_mid = get_hexagon_midpoints(x_coord, y_coord, z_coord)
+        x_mid = get_midpoints(x_coord)
+        y_mid = get_midpoints(y_coord)
+        z_mid = get_midpoints(z_coord)
 
         for a, b, c in zip(x_mid, y_mid, z_mid):
             midpoints.append([ordered[0][5], ordered[0][3], array([a, b, c])])
