@@ -22,7 +22,7 @@ class GetBridgingInteractions:
     def __init__(self, cli_opts: dict[str, Union[str, float]]) -> None:
 
         self.cli_opts = cli_opts
-        self.f = None
+        self.f: BridgeSpace
 
     def get_interacting_pairs(self, code: str) -> bool:
 

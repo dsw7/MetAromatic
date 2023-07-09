@@ -19,7 +19,7 @@ DICT_ATOMS_TRP = {
     'CH2': 'D', 'CZ2': 'E', 'CE2': 'F'
 }
 
-def get_hexagon_midpoints(x: list[int], y: list[int], z: list[int]) -> tuple[list[int]]:
+def get_hexagon_midpoints(x: list[float], y: list[float], z: list[float]) -> tuple[list[float], list[float], list[float]]:
 
     """
     Function for computing midpoints between vertices in a hexagon
