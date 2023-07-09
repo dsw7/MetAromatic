@@ -187,14 +187,7 @@ class MetAromaticBase(ABC):
 
         return True
 
-    def get_met_lone_pairs(self) -> None:
-
-        self.log.debug('Computing MET lone pair positions using "%s" model', self.model)
-
-        if self.model == 'cp':
-            model_lp = CrossProductMethod
-        else:
-            model_lp = RodriguesMethod
+    def get_met_lone_pairs_cp(self) -> None:
 
         for position, groups in groupby(self.f.coords_met, lambda entry: entry[5]):
             ordered = sorted(list(groups), key=itemgetter(2))
@@ -203,7 +196,25 @@ class MetAromaticBase(ABC):
             coords_cg = array(ordered[1][6:9]).astype(float)
             coords_sd = array(ordered[2][6:9]).astype(float)
 
-            lp = model_lp(coords_cg, coords_sd, coords_ce)
+            lp = CrossProductMethod(coords_cg, coords_sd, coords_ce)
+
+            self.f.lone_pairs_met.append({
+                'vector_a': lp.get_vector_a(),
+                'vector_g': lp.get_vector_g(),
+                'coords_sd': coords_sd,
+                'position': position
+            })
+
+    def get_met_lone_pairs_rm(self) -> None:
+
+        for position, groups in groupby(self.f.coords_met, lambda entry: entry[5]):
+            ordered = sorted(list(groups), key=itemgetter(2))
+
+            coords_ce = array(ordered[0][6:9]).astype(float)
+            coords_cg = array(ordered[1][6:9]).astype(float)
+            coords_sd = array(ordered[2][6:9]).astype(float)
+
+            lp = RodriguesMethod(coords_cg, coords_sd, coords_ce)
 
             self.f.lone_pairs_met.append({
                 'vector_a': lp.get_vector_a(),
@@ -287,7 +298,12 @@ class MetAromaticBase(ABC):
         if not self.check_if_not_coordinates():
             return self.f
 
-        self.get_met_lone_pairs()
+        self.log.debug('Computing MET lone pair positions using "%s" model', self.model)
+        if self.model == 'cp':
+            self.get_met_lone_pairs_cp()
+        else:
+            self.get_met_lone_pairs_rm()
+
         self.get_midpoints()
         self.apply_met_aromatic_criteria()
 
