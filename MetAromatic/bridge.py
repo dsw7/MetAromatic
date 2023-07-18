@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from logging import getLogger
-from typing import Union
 from networkx import Graph, connected_components
 from MetAromatic.pair import MetAromatic
+from MetAromatic.complex_types import TYPE_MA_PARAMS
 
 
 @dataclass
@@ -19,7 +19,7 @@ class GetBridgingInteractions:
 
     log = getLogger('met-aromatic')
 
-    def __init__(self, cli_opts: dict[str, Union[str, float]]) -> None:
+    def __init__(self, cli_opts: TYPE_MA_PARAMS) -> None:
 
         self.cli_opts = cli_opts
         self.f: BridgeSpace

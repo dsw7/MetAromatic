@@ -12,7 +12,8 @@ from typing import Union
 import sys
 import logging
 import click
-from MetAromatic import consts
+from MetAromatic.consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
+from MetAromatic.complex_types import TYPE_MA_PARAMS
 
 try:
     SEPARATOR = get_terminal_size()[0] * '-'
@@ -34,7 +35,7 @@ def setup_child_logger(debug: bool) -> None:
         logger.setLevel(logging.INFO)
 
     channel = logging.StreamHandler()
-    formatter = logging.Formatter(fmt=consts.LOGRECORD_FORMAT, datefmt=consts.ISO_8601_DATE_FORMAT)
+    formatter = logging.Formatter(fmt=LOGRECORD_FORMAT, datefmt=ISO_8601_DATE_FORMAT)
     channel.setFormatter(formatter)
     logger.addHandler(channel)
 
@@ -54,7 +55,7 @@ def cli(context: click.core.Context, debug: bool, **options: Union[str, float]) 
 @click.option('--read-local', is_flag=True, default=False, help='Specify whether to read a local PDB file')
 @click.argument('source')
 @click.pass_obj
-def pair(obj: dict[str, Union[str, float]], read_local: bool, source: str) -> None:
+def pair(obj: TYPE_MA_PARAMS, read_local: bool, source: str) -> None:
 
     if read_local:
         from MetAromatic.pair import MetAromaticLocal
@@ -84,7 +85,7 @@ def pair(obj: dict[str, Union[str, float]], read_local: bool, source: str) -> No
 @click.argument('code')
 @click.option('--vertices', default=3, type=click.IntRange(min=3), metavar='<vertices>')
 @click.pass_obj
-def bridge(obj: dict[str, Union[str, float]], code: str, vertices: int) -> None:
+def bridge(obj: TYPE_MA_PARAMS, code: str, vertices: int) -> None:
 
     from MetAromatic.bridge import GetBridgingInteractions
 
@@ -110,7 +111,7 @@ def bridge(obj: dict[str, Union[str, float]], code: str, vertices: int) -> None:
 @click.option('-x', '--overwrite', is_flag=True, default=False, help='Specify whether to overwrite collection specified with -c.')
 @click.option('-u', '--uri', metavar='<mongodb://{username}:{password}@{host}:{port}/>', help='Specify MongoDB connection URI.')
 @click.pass_obj
-def batch(obj: dict[str, Union[str, float]], **options: Union[str, float]) -> None:
+def batch(obj: TYPE_MA_PARAMS, **options: Union[str, float]) -> None:
 
     from MetAromatic.batch import ParallelProcessing
     ParallelProcessing({**options, **obj}).main()
