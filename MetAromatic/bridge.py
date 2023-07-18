@@ -19,14 +19,14 @@ class GetBridgingInteractions:
 
     log = getLogger('met-aromatic')
 
-    def __init__(self, cli_opts: TYPE_MA_PARAMS) -> None:
+    def __init__(self, ma_params: TYPE_MA_PARAMS) -> None:
 
-        self.cli_opts = cli_opts
+        self.ma_params = ma_params
         self.f: BridgeSpace
 
     def get_interacting_pairs(self, code: str) -> bool:
 
-        ma_results = MetAromatic(**self.cli_opts).get_met_aromatic_interactions(code)
+        ma_results = MetAromatic(self.ma_params).get_met_aromatic_interactions(code)
 
         if not ma_results.OK:
             self.log.error('Cannot get bridging interactions as Met-aromatic algorithm failed')

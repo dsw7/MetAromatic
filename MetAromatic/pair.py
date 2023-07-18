@@ -11,9 +11,7 @@ from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 
 from numpy import ndarray, array, dot, linalg, degrees, arccos
-from MetAromatic.complex_types import TYPE_INTERACTIONS
-from MetAromatic.complex_types import TYPE_LONE_PAIRS_MET
-from MetAromatic.complex_types import TYPE_MIDPOINTS
+from MetAromatic import complex_types
 from MetAromatic.get_aromatic_midpoints import get_phe_midpoints
 from MetAromatic.get_aromatic_midpoints import get_trp_midpoints
 from MetAromatic.get_aromatic_midpoints import get_tyr_midpoints
@@ -46,12 +44,12 @@ class FeatureSpace:
     coords_tyr: list[list[str]] = field(default_factory=list)
     coords_trp: list[list[str]] = field(default_factory=list)
 
-    lone_pairs_met: list[TYPE_LONE_PAIRS_MET] = field(default_factory=list)
-    midpoints_phe: list[TYPE_MIDPOINTS] = field(default_factory=list)
-    midpoints_tyr: list[TYPE_MIDPOINTS] = field(default_factory=list)
-    midpoints_trp: list[TYPE_MIDPOINTS] = field(default_factory=list)
+    lone_pairs_met: list[complex_types.TYPE_LONE_PAIRS_MET] = field(default_factory=list)
+    midpoints_phe: list[complex_types.TYPE_MIDPOINTS] = field(default_factory=list)
+    midpoints_tyr: list[complex_types.TYPE_MIDPOINTS] = field(default_factory=list)
+    midpoints_trp: list[complex_types.TYPE_MIDPOINTS] = field(default_factory=list)
 
-    interactions: list[TYPE_INTERACTIONS] = field(default_factory=list)
+    interactions: list[complex_types.TYPE_INTERACTIONS] = field(default_factory=list)
 
     OK: bool = True
     status: str = 'Success'
@@ -61,12 +59,12 @@ class MetAromaticBase(ABC):
 
     log = getLogger('met-aromatic')
 
-    def __init__(self, cutoff_distance: float, cutoff_angle: float, chain: str, model: str) -> None:
+    def __init__(self, ma_params: complex_types.TYPE_MA_PARAMS) -> None:
 
-        self.cutoff_distance = cutoff_distance
-        self.cutoff_angle = cutoff_angle
-        self.chain = chain
-        self.model = model
+        self.cutoff_distance = ma_params['cutoff_distance']
+        self.cutoff_angle = ma_params['cutoff_angle']
+        self.chain = ma_params['chain']
+        self.model = ma_params['model']
 
         self.was_input_validated = False
         self.f: FeatureSpace

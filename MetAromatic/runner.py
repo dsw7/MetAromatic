@@ -59,12 +59,10 @@ def pair(obj: TYPE_MA_PARAMS, read_local: bool, source: str) -> None:
 
     if read_local:
         from MetAromatic.pair import MetAromaticLocal
-        ma = MetAromaticLocal
+        results = MetAromaticLocal(obj).get_met_aromatic_interactions(source)
     else:
         from MetAromatic.pair import MetAromatic
-        ma = MetAromatic
-
-    results = ma(**obj).get_met_aromatic_interactions(source)
+        results = MetAromatic(obj).get_met_aromatic_interactions(source)
 
     if not results.OK:
         sys.exit(results.status)
