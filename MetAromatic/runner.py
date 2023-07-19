@@ -12,8 +12,9 @@ from typing import Union
 import sys
 import logging
 import click
+from typing_extensions import Unpack
 from MetAromatic.consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
-from MetAromatic.complex_types import TYPE_MA_PARAMS
+from MetAromatic.complex_types import TYPE_MA_PARAMS, TYPE_BATCH_PARAMS
 
 try:
     SEPARATOR = get_terminal_size()[0] * '-'
@@ -109,7 +110,7 @@ def bridge(obj: TYPE_MA_PARAMS, code: str, vertices: int) -> None:
 @click.option('-x', '--overwrite', is_flag=True, default=False, help='Specify whether to overwrite collection specified with -c.')
 @click.option('-u', '--uri', metavar='<mongodb://{username}:{password}@{host}:{port}/>', help='Specify MongoDB connection URI.')
 @click.pass_obj
-def batch(obj: TYPE_MA_PARAMS, **batch_params: Union[str, float]) -> None:
+def batch(obj: TYPE_MA_PARAMS, **batch_params: Unpack[TYPE_BATCH_PARAMS]) -> None:
 
     from MetAromatic.batch import ParallelProcessing
     ParallelProcessing(obj, batch_params).main()
