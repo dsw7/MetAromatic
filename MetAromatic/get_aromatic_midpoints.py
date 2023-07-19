@@ -27,20 +27,20 @@ def get_midpoints(c: list[float]) -> list[float]:
 
 def get_aromatic_midpoints(aromatics: list[list[str]], keys: dict[str, str]) -> list[TYPE_MIDPOINTS]:
 
-    aromatics = [
-        list(group) for _, group in groupby(aromatics, lambda entry: entry[5])
+    aromatics_grouped = [
+        list(group) for _, group in groupby(aromatics, lambda e: e[5])
     ]
 
     midpoints = []
 
-    for grouped in deepcopy(aromatics):
+    for group in deepcopy(aromatics_grouped):
 
         # Map unique values to atomic label keys
-        for row in grouped:
-            row[2] = keys.get(row[2])
+        for row in group:
+            row[2] = keys[row[2]]
 
         # Sort based on these values which are just A, B, C, D, E, F
-        ordered = sorted(grouped, key=itemgetter(2))
+        ordered = sorted(group, key=itemgetter(2))
 
         x_coord = [float(i[6]) for i in ordered]
         y_coord = [float(i[7]) for i in ordered]
@@ -51,7 +51,9 @@ def get_aromatic_midpoints(aromatics: list[list[str]], keys: dict[str, str]) -> 
         z_mid = get_midpoints(z_coord)
 
         for a, b, c in zip(x_mid, y_mid, z_mid):
-            midpoints.append([ordered[0][5], ordered[0][3], array([a, b, c])])
+            midpoints.append(
+                (ordered[0][5], ordered[0][3], array([a, b, c]))
+            )
 
     return midpoints
 
