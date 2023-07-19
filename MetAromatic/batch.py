@@ -106,6 +106,9 @@ class ParallelProcessing:
 
         self.log.info('Imported pdb codes from file %s', self.batch_params['path_batch_file'])
 
+        if not path.exists(self.batch_params['path_batch_file']):
+            sys.exit("Path {self.batch_params['path_batch_file'] does not exist")
+
         with open(self.batch_params['path_batch_file']) as f:
             for line in f:
                 for row in split(r'(;|,|\s)\s*', line):

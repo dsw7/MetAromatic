@@ -100,7 +100,7 @@ def bridge(obj: TYPE_MA_PARAMS, code: str, vertices: int) -> None:
     click.echo(SEPARATOR)
 
 @cli.command(help='Run a Met-aromatic query batch job.')
-@click.argument('path_batch_file', type=click.Path('rb'))
+@click.argument('path_batch_file')
 @click.option('--threads', default=5, type=int, metavar='<number-threads>', help='Specify number of workers to use.')
 @click.option('--host', default='localhost', metavar='<hostname>', help='Specify host name.')
 @click.option('--port', type=int, default=27017, metavar='<tcp-port>', help='Specify MongoDB TCP connection port.')

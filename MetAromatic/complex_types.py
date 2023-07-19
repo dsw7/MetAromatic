@@ -1,5 +1,4 @@
 from typing import TypedDict
-from click import Path
 from numpy import ndarray
 
 TYPE_MA_PARAMS = TypedDict(
@@ -15,7 +14,7 @@ TYPE_MA_PARAMS = TypedDict(
 TYPE_BATCH_PARAMS = TypedDict(
     'TYPE_BATCH_PARAMS',
     {
-        'path_batch_file': Path,
+        'path_batch_file': str,
         'threads': int,
         'host': str,
         'port': int,
