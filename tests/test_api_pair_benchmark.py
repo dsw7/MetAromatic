@@ -49,7 +49,7 @@ def test_pair_against_483_data(code):
             control.append(row)
 
     try:
-        test_data = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions(code)
+        test_data = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions(code)
 
     except IndexError:
         skip('Skipping list index out of range error. Occurs because of missing data.')

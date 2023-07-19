@@ -50,7 +50,7 @@ VALID_RESULTS_1RCY = [
 ]
 
 def test_pair_1rcy_valid_results():
-    results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions('1rcy')
+    results = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions('1rcy')
 
     tc = TestCase()
     tc.maxDiff = None
@@ -64,7 +64,7 @@ def test_pair_1rcy_valid_results_use_local():
     if not path_pdb_file.exists():
         exit(f'File {path_pdb_file} is missing')
 
-    results = MetAromaticLocal(**TEST_PARAMETERS).get_met_aromatic_interactions(path_pdb_file)
+    results = MetAromaticLocal(TEST_PARAMETERS).get_met_aromatic_interactions(path_pdb_file)
 
     tc = TestCase()
     tc.maxDiff = None
@@ -78,7 +78,7 @@ def test_pair_1rcy_valid_results_use_local_invalid_file():
     if not path_pdb_file.exists():
         exit(f'File {path_pdb_file} is missing')
 
-    results = MetAromaticLocal(**TEST_PARAMETERS).get_met_aromatic_interactions(path_pdb_file)
+    results = MetAromaticLocal(TEST_PARAMETERS).get_met_aromatic_interactions(path_pdb_file)
 
     assert results.status != 'Success'
     assert not results.OK
@@ -101,18 +101,19 @@ def test_pair_1rcy_valid_results_use_local_invalid_file():
 )
 def test_pair_invalid_inputs(code, cutoff_distance, cutoff_angle, model, status):
 
-    results = MetAromatic(
-        cutoff_angle=cutoff_angle,
-        cutoff_distance=cutoff_distance,
-        chain='A',
-        model=model
-    ).get_met_aromatic_interactions(code)
+    params = {
+        'cutoff_angle': cutoff_angle,
+        'cutoff_distance': cutoff_distance,
+        'chain': 'A',
+        'model': model
+    }
 
+    results = MetAromatic(params).get_met_aromatic_interactions(code)
     assert not results.OK
     assert results.status == status
 
 def test_pair_no_results_error():
-    results = MetAromatic(**TEST_PARAMETERS).get_met_aromatic_interactions('1a5r')
+    results = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions('1a5r')
 
     assert results.status == 'No interactions'
     assert results.OK
