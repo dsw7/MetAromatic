@@ -8,7 +8,7 @@ from MetAromatic.complex_types import TYPE_MA_PARAMS
 @dataclass
 class BridgeSpace:
 
-    interactions: set[tuple[str]] = field(default_factory=set)
+    interactions: set[tuple[str, str]] = field(default_factory=set)
     bridges: list[set[str]] = field(default_factory=list)
 
     OK: bool = True

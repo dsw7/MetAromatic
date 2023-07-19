@@ -28,6 +28,7 @@ class ParallelProcessing:
         self.collection: collection.Collection
 
         self.pdb_codes: list[str] = []
+        self.pdb_codes_chunked: list[list[str]] = []
         self.num_codes = 0
         self.count = 0
         self.bool_disable_workers = False
@@ -58,11 +59,8 @@ class ParallelProcessing:
 
         try:
             client.list_databases()
-        except errors.ServerSelectionTimeoutError:
-            self.log.error('Could not connect to MongoDB')
-            sys.exit('Batch job failed')
-        except errors.OperationFailure as exception:
-            self.log.error(exception.details['errmsg'])
+        except (errors.ServerSelectionTimeoutError, errors.OperationFailure):
+            self.log.exception('A MongoDB exception occurred')
             sys.exit('Batch job failed')
 
         self.collection = client[self.batch_params['database']][self.batch_params['collection']]
@@ -125,9 +123,8 @@ class ParallelProcessing:
 
         self.log.debug('Splitting list of pdb codes into %i chunks', self.batch_params['threads'])
 
-        self.pdb_codes = [
-            self.pdb_codes[i::self.batch_params['threads']] for i in range(self.batch_params['threads'])
-        ]
+        for i in range(self.batch_params['threads']):
+            self.pdb_codes_chunked.append(self.pdb_codes[i::self.batch_params['threads']])
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
 
@@ -176,7 +173,7 @@ class ParallelProcessing:
             start_time = time()
 
             workers = [
-                executor.submit(self.worker_met_aromatic, chunk) for chunk in self.pdb_codes
+                executor.submit(self.worker_met_aromatic, chunk) for chunk in self.pdb_codes_chunked
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
