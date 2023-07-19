@@ -19,6 +19,6 @@ def met_aromatic_tests(session: sessions.Session) -> None:
 
     session.install(whl[0], '--force-reinstall')
 
-    session.install('pytest')
+    session.install('pytest', 'typing_extensions')
     command = f'pytest -vs {PATH_TESTS}'
     session.run(*command.split())
