@@ -1,7 +1,7 @@
 from json import loads
 from pathlib import Path
 from pytest import mark, exit, skip
-from MetAromatic.bridge import GetBridgingInteractions
+from MetAromatic import GetBridgingInteractions
 
 NETWORK_SIZE = 4
 NUM_BRIDGES = 100

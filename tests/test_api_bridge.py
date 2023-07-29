@@ -1,5 +1,5 @@
 from pytest import mark
-from MetAromatic.bridge import GetBridgingInteractions
+from MetAromatic import GetBridgingInteractions
 
 @mark.parametrize(
     'code, cutoff_distance, cutoff_angle, model, status',

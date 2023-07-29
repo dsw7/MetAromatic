@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest import TestCase
 from pytest import mark, exit
-from MetAromatic.pair import MetAromatic, MetAromaticLocal
+from MetAromatic import MetAromatic, MetAromaticLocal
 
 TEST_PARAMETERS = {
     'cutoff_distance': 4.9,
