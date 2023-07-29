@@ -17,20 +17,20 @@ class GetBridgingInteractions:
 
         ma_results = MetAromatic(self.ma_params).get_met_aromatic_interactions(code)
 
-        if not ma_results.OK:
+        if not ma_results['OK']:
             self.log.error('Cannot get bridging interactions as Met-aromatic algorithm failed')
 
             self.f['OK'] = False
-            self.f['status'] = ma_results.status
+            self.f['status'] = ma_results['status']
             return False
 
-        if len(ma_results.interactions) < 1:
+        if len(ma_results['interactions']) < 1:
             self.log.info('No Met-aromatic interactions were found therefore cannot find bridges')
 
             self.f['status'] = 'No Met-aromatic interactions were found'
             return False
 
-        for interaction in ma_results.interactions:
+        for interaction in ma_results['interactions']:
             pair = (
                 f"{interaction['aromatic_residue']}{interaction['aromatic_position']}",
                 f"MET{interaction['methionine_position']}"
