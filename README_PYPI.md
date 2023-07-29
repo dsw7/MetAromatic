@@ -5,4 +5,5 @@ Code for the following publications:
 * Weber, D. S.; Warren, J. J. A Survey of Methionine-Aromatic Interaction Geometries in the Oxidoreductase
   Class of Enzymes: What Could Met-Aromatic Interactions be Doing Near Metal Sites? _J. Inorg. Biochem._
 **2018**, _186_, 34-41.
+
 See [MetAromatic](https://github.com/dsw7/MetAromatic) for more information.
