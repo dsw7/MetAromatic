@@ -1,4 +1,4 @@
-.PHONY = help wheel setup test dockertest clean
+.PHONY = help wheel setup test dockertest clean test-pypi pypi
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -13,6 +13,10 @@ define HELP_LIST_TARGETS
         $$ make dockertest
     To remove build, dist and other setuo.py directories:
         $$ make clean
+    To upload package to TestPyPI:
+        $$ make test-pypi
+    To upload package to PyPI:
+        $$ make pypi
 
 endef
 
@@ -41,3 +45,11 @@ dockertest:
 
 clean:
 	@rm -rfv dist/ *.egg-info/
+
+test-pypi: wheel
+	@pip3 install --upgrade twine
+	@python3 -m twine upload --repository testpypi dist/*
+
+pypi: wheel
+	@pip3 install --upgrade twine
+	@python3 -m twine upload dist/*
