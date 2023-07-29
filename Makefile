@@ -1,4 +1,4 @@
-.PHONY = help wheel setup test dockertest clean test-pypi pypi
+.PHONY = help wheel setup test clean test-pypi pypi
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -9,8 +9,6 @@ define HELP_LIST_TARGETS
         $$ make setup
     To test the project:
         $$ make test
-    To run tests with Docker
-        $$ make dockertest
     To remove build, dist and other setuo.py directories:
         $$ make clean
     To upload package to TestPyPI:
@@ -21,9 +19,6 @@ define HELP_LIST_TARGETS
 endef
 
 export HELP_LIST_TARGETS
-
-ROOT_DIRECTORY := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-DOCKER_TAG = ma
 
 help:
 	@echo "$$HELP_LIST_TARGETS"
@@ -38,10 +33,6 @@ setup: wheel
 test:
 	@pip3 install nox
 	@nox --envdir=/tmp
-
-dockertest:
-	@docker build --tag $(DOCKER_TAG) $(ROOT_DIRECTORY)/
-	@docker run --interactive --tty --rm $(DOCKER_TAG)
 
 clean:
 	@rm -rfv dist/ *.egg-info/
