@@ -339,7 +339,7 @@ def main() -> None:
         'model': 'cp'
     }
 
-    results = MetAromatic(**arguments).get_met_aromatic_interactions('1rcy')
+    results = MetAromatic(arguments).get_met_aromatic_interactions('1rcy')
 
     for interaction in results.interactions:
         print(dumps(interaction, indent=4))
