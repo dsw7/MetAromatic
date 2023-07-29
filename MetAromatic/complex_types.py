@@ -49,6 +49,29 @@ TYPE_INTERACTIONS = TypedDict(
     }
 )
 
+TYPE_FEATURE_SPACE = TypedDict(
+    'TYPE_FEATURE_SPACE',
+    {
+        'cutoff_dist': float,
+        'cutoff_angle': float,
+        'chain': str,
+        'model': str,
+        'raw_data': list[str],
+        'first_model': list[str],
+        'coords_met': list[list[str]],
+        'coords_phe': list[list[str]],
+        'coords_tyr': list[list[str]],
+        'coords_trp': list[list[str]],
+        'lone_pairs_met': list[TYPE_LONE_PAIRS_MET],
+        'midpoints_phe': list[TYPE_MIDPOINTS],
+        'midpoints_tyr': list[TYPE_MIDPOINTS],
+        'midpoints_trp': list[TYPE_MIDPOINTS],
+        'interactions': list[TYPE_INTERACTIONS],
+        'OK': bool,
+        'status': str,
+    }
+)
+
 TYPE_BRIDGE_SPACE = TypedDict(
     'TYPE_BRIDGE_SPACE',
     {
