@@ -1,10 +1,10 @@
-.PHONY = help tarball setup test dockertest clean
+.PHONY = help wheel setup test dockertest clean
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
 
-    To build tarball:
-        $$ make tarball
+    To build wheel:
+        $$ make wheel
     To set up the project:
         $$ make setup
     To test the project:
@@ -24,11 +24,11 @@ DOCKER_TAG = ma
 help:
 	@echo "$$HELP_LIST_TARGETS"
 
-tarball:
-	@pip3 install wheel
-	@python3 setup.py clean --all bdist_wheel
+wheel:
+	@pip3 install --upgrade build
+	@python3 -m build
 
-setup: tarball
+setup: wheel
 	@pip3 install dist/*whl --force-reinstall
 
 test:
@@ -40,4 +40,4 @@ dockertest:
 	@docker run --interactive --tty --rm $(DOCKER_TAG)
 
 clean:
-	@rm -rfv build/ dist/ *.egg-info/
+	@rm -rfv dist/ *.egg-info/
