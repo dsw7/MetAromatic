@@ -7,12 +7,12 @@ Code for the following publications:
 **2018**, _186_, 34-41.
 ## Table of Contents
 - [Synopsis](#synopsis)
+- [Setup](#setup)
 - [How it works](#how-it-works)
   - [Step 1: Data preprocessing](#step-1-data-preprocessing)
   - [Step 2: The distance condition](#step-2-the-distance-condition)
   - [Step 3: The angular condition](#step-3-the-angular-condition)
   - [Summary](#summary)
-- [Setup](#setup)
 - [Basic usage](#basic-usage)
   - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
   - [Finding "bridging interactions"](#finding-bridging-interactions)
@@ -28,6 +28,13 @@ Code for the following publications:
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein
 Data Bank](https://www.rcsb.org/) (PDB). The program supports running queries on single PDB entries or large
 scale multithreaded batch jobs consisting of hundreds of thousands of queries.
+
+## Setup
+Simply run:
+```
+pip install MetAromatic
+```
+
 ## How it works
 ### Step 1: Data preprocessing
 Files in the PDB are organized using the SMCRA hierarchy: _Structure_, _Model_, _Chain_, _Residue_ and _Atom_.
@@ -110,11 +117,6 @@ A representative figure is shown below:
   <img width="336" height="300" src=./pngs/pair-met18-tyr122.png>
 </p>
 
-## Setup
-Simply run:
-```
-pip install MetAromatic
-```
 ## Basic usage
 ### Finding Met-aromatic pairs
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest
