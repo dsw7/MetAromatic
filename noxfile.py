@@ -8,8 +8,8 @@ PATH_TESTS = Path(__file__).resolve().parent / 'tests'
 @session(python='3.9')
 def met_aromatic_tests(session: sessions.Session) -> None:
 
-    session.install('wheel')
-    command = 'python3 setup.py clean --all bdist_wheel'
+    session.install('build')
+    command = 'python3 -m build'
     session.run(*command.split())
 
     whl = glob(str(PATH_WHL))
