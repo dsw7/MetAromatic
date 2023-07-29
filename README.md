@@ -107,7 +107,7 @@ pairs are pointing into or near the region of highest electron density on the co
 A representative figure is shown below:
 
 <p align="center">
-  <img width="336" height="300" src="https://github.com/dsw7/MetAromatic/blob/master/pngs/pair-met18-tyr122.png">
+  <img width="336" height="300" src=./pngs/pair-met18-tyr122.png>
 </p>
 
 ## Setup
@@ -202,7 +202,7 @@ In this case, no results are returned because the PDB entry 1rcy does not contai
 Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the
 Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 <p align="center">
-  <img width="399" height="300" src="https://github.com/dsw7/MetAromatic/blob/master/pngs/bridge-tyr-phe-6c8a.png">
+  <img width="399" height="300" src=./pngs/bridge-tyr-phe-6c8a.png>
 </p>
 
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the
