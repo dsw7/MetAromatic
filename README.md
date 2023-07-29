@@ -107,42 +107,13 @@ pairs are pointing into or near the region of highest electron density on the co
 A representative figure is shown below:
 
 <p align="center">
-  <img width="336" height="300" src=./pngs/pair-met18-tyr122.png>
+  <img width="336" height="300" src="https://github.com/dsw7/MetAromatic/blob/master/pngs/pair-met18-tyr122.png">
 </p>
 
 ## Setup
-Start by selecting a directory to run the project from. For example, `foo`:
+Simply run:
 ```
-mkdir /path/to/foo
-```
-Change directories into `foo` and set up a virtual environment:
-```
-python3 -m venv ma
-```
-Activate the environment:
-```
-source ma/bin/activate
-```
-Then clone the project:
-```
-git clone https://github.com/dsw7/MetAromatic.git
-```
-Change directories into the newly created `MetAromatic` directory and run:
-```
-make setup
-```
-A `runner` binary should exist in `$PATH` if the installation succeeded. Run:
-```
-runner --help
-```
-Which should return a help menu. Now, clean any artifacts left over during the
-build process:
-```
-make clean
-```
-Upon completion, the virtual environment can be deactivated by running:
-```
-deactivate
+pip install MetAromatic
 ```
 ## Basic usage
 ### Finding Met-aromatic pairs
@@ -231,7 +202,7 @@ In this case, no results are returned because the PDB entry 1rcy does not contai
 Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the
 Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 <p align="center">
-  <img width="399" height="300" src=./pngs/bridge-tyr-phe-6c8a.png>
+  <img width="399" height="300" src="https://github.com/dsw7/MetAromatic/blob/master/pngs/bridge-tyr-phe-6c8a.png">
 </p>
 
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the
@@ -358,7 +329,7 @@ TYR        122        18         4.051      47.198     85.151
 To programmatically emulate this command, the following script applies:
 ```python3
 from json import dumps
-from MetAromatic.pair import MetAromatic
+from MetAromatic import MetAromatic
 
 def main() -> None:
     arguments = {
@@ -409,7 +380,7 @@ Will return:
 ```
 To programmatically emulate this command, the following script applies:
 ```python3
-from MetAromatic.bridge import GetBridgingInteractions
+from MetAromatic import GetBridgingInteractions
 
 def main() -> None:
     arguments = {
