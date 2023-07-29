@@ -90,12 +90,12 @@ def bridge(obj: TYPE_MA_PARAMS, code: str, vertices: int) -> None:
 
     results = GetBridgingInteractions(obj).get_bridging_interactions(vertices=vertices, code=code)
 
-    if not results.OK:
-        sys.exit(results.status)
+    if not results['OK']:
+        sys.exit(results['status'])
 
     click.echo(SEPARATOR)
 
-    for line in results.bridges:
+    for line in results['bridges']:
         click.echo('{' + '}-{'.join(line) + '}')
 
     click.echo(SEPARATOR)

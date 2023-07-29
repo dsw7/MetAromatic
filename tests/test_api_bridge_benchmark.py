@@ -56,4 +56,4 @@ def test_bridge_benchmark(bridges):
     except IndexError:
         skip('Skipping list index out of range error. Occurs because of missing data.')
     else:
-        assert set(bridges.get('bridge')) in results.bridges
+        assert set(bridges.get('bridge')) in results['bridges']

@@ -48,3 +48,13 @@ TYPE_INTERACTIONS = TypedDict(
         'norm': float
     }
 )
+
+TYPE_BRIDGE_SPACE = TypedDict(
+    'TYPE_BRIDGE_SPACE',
+    {
+        'interactions': set[tuple[str, str]],
+        'bridges': list[set[str]],
+        'OK': bool,
+        'status': str,
+    }
+)

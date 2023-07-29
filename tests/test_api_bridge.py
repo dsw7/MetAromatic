@@ -28,8 +28,8 @@ def test_bridge_invalid_inputs(code, cutoff_distance, cutoff_angle, model, statu
 
     results = GetBridgingInteractions(params).get_bridging_interactions(code=code, vertices=4)
 
-    assert not results.OK
-    assert results.status == status
+    assert not results['OK']
+    assert results['status'] == status
 
 @mark.parametrize(
     'code, message',
@@ -49,5 +49,5 @@ def test_no_results(code, message):
 
     results = GetBridgingInteractions(params).get_bridging_interactions(code=code, vertices=4)
 
-    assert results.OK
-    assert results.status == message
+    assert results['OK']
+    assert results['status'] == message
