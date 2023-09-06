@@ -1,4 +1,4 @@
-.PHONY = help wheel setup test clean test-pypi pypi
+.PHONY = help wheel setup test clean test-pypi pypi black
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -15,6 +15,8 @@ define HELP_LIST_TARGETS
         $$ make test-pypi
     To upload package to PyPI:
         $$ make pypi
+    To run black over Python code
+        $$ make black
 
 endef
 
@@ -44,3 +46,6 @@ test-pypi: wheel
 pypi: wheel
 	@pip3 install --upgrade twine
 	@python3 -m twine upload dist/*
+
+black:
+	@black MetAromatic tests
