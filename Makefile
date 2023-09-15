@@ -15,9 +15,9 @@ define HELP_LIST_TARGETS
         $$ make test-pypi
     To upload package to PyPI:
         $$ make pypi
-	To run black over Python code:
+    To run black over Python code:
         $$ make black
-	To run mypy over Python code:
+    To run mypy over Python code:
         $$ make mypy
 
 endef
