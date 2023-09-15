@@ -1,4 +1,4 @@
-.PHONY = help wheel setup test clean test-pypi pypi black
+.PHONY = help wheel setup test clean test-pypi pypi black mypy
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -15,8 +15,10 @@ define HELP_LIST_TARGETS
         $$ make test-pypi
     To upload package to PyPI:
         $$ make pypi
-    To run black over Python code
+	To run black over Python code:
         $$ make black
+	To run mypy over Python code:
+        $$ make mypy
 
 endef
 
@@ -49,3 +51,6 @@ pypi: wheel
 
 black:
 	@black MetAromatic tests
+
+mypy:
+	@mypy --cache-dir=/tmp/mypy_cache_metaromatic MetAromatic tests
