@@ -18,8 +18,9 @@ dependencies = [
     "click",
     "networkx",
     "numpy",
+    "pydantic",
     "pymongo",
-    "typing_extensions"
+    "typing_extensions",
 ]
 
 [project.scripts]
