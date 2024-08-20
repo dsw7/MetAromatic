@@ -86,8 +86,8 @@ def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
 
         results = MetAromatic(obj).get_met_aromatic_interactions(source)
 
-    if not results["OK"]:
-        sys.exit(results["status"])
+    if not results.OK:
+        sys.exit(results.status)
 
     print_separator()
 
@@ -96,7 +96,7 @@ def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
 
     print_separator()
 
-    for line in results["interactions"]:
+    for line in results.interactions:
         click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
 
     print_separator()

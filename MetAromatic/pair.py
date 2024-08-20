@@ -9,13 +9,12 @@ from tempfile import gettempdir, NamedTemporaryFile
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 from numpy import array, linalg
-from MetAromatic.complex_types import TYPE_FEATURE_SPACE
 from MetAromatic.get_aromatic_midpoints import get_phe_midpoints
 from MetAromatic.get_aromatic_midpoints import get_trp_midpoints
 from MetAromatic.get_aromatic_midpoints import get_tyr_midpoints
 from MetAromatic.lone_pair_interpolators import CrossProductMethod
 from MetAromatic.lone_pair_interpolators import RodriguesMethod
-from .models import MetAromaticParams
+from .models import MetAromaticParams, FeatureSpace
 from .utils import get_angle_between_vecs
 
 TMPDIR = gettempdir()
@@ -26,7 +25,7 @@ class MetAromaticBase(ABC):
 
     def __init__(self, params: MetAromaticParams) -> None:
         self.params = params
-        self.f: TYPE_FEATURE_SPACE
+        self.f: FeatureSpace
 
     @abstractmethod
     def load_pdb_file(self, source: str) -> bool:
@@ -35,26 +34,26 @@ class MetAromaticBase(ABC):
     def get_first_model(self) -> None:
         self.log.debug("Stripping feature space down to only first model")
 
-        for line in self.f["raw_data"]:
+        for line in self.f.raw_data:
             if "ENDMDL" in line:
                 break
 
-            self.f["first_model"].append(line)
+            self.f.first_model.append(line)
 
     def get_met_coordinates(self) -> bool:
         self.log.debug("Isolating MET coordinates from feature space")
 
         pattern = compile(rf"(ATOM.*(CE|SD|CG)\s+MET\s+{self.params.chain}\s)")
 
-        for line in self.f["first_model"]:
+        for line in self.f.first_model:
             if match(pattern, line):
-                self.f["coords_met"].append(line.split()[:9])
+                self.f.coords_met.append(line.split()[:9])
 
-        if len(self.f["coords_met"]) == 0:
+        if len(self.f.coords_met) == 0:
             self.log.error("No methionine residues found for entry")
 
-            self.f["status"] = "No MET residues"
-            self.f["OK"] = False
+            self.f.status = "No MET residues"
+            self.f.OK = False
             return False
 
         return True
@@ -66,9 +65,9 @@ class MetAromaticBase(ABC):
             rf"(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+PHE\s+{self.params.chain}\s)"
         )
 
-        for line in self.f["first_model"]:
+        for line in self.f.first_model:
             if match(pattern, line):
-                self.f["coords_phe"].append(line.split()[:9])
+                self.f.coords_phe.append(line.split()[:9])
 
     def get_tyr_coordinates(self) -> None:
         self.log.debug("Isolating TYR coordinates from feature space")
@@ -77,9 +76,9 @@ class MetAromaticBase(ABC):
             rf"(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+TYR\s+{self.params.chain}\s)"
         )
 
-        for line in self.f["first_model"]:
+        for line in self.f.first_model:
             if match(pattern, line):
-                self.f["coords_tyr"].append(line.split()[:9])
+                self.f.coords_tyr.append(line.split()[:9])
 
     def get_trp_coordinates(self) -> None:
         self.log.debug("Isolating TRP coordinates from feature space")
@@ -88,25 +87,25 @@ class MetAromaticBase(ABC):
             rf"(ATOM.*(CD2|CE3|CZ2|CH2|CZ3|CE2)\s+TRP\s+{self.params.chain}\s)"
         )
 
-        for line in self.f["first_model"]:
+        for line in self.f.first_model:
             if match(pattern, line):
-                self.f["coords_trp"].append(line.split()[:9])
+                self.f.coords_trp.append(line.split()[:9])
 
     def check_if_not_coordinates(self) -> bool:
         self.log.debug(
             "Ensuring that at least one aromatic residue exists in feature space"
         )
 
-        if not any([self.f["coords_phe"], self.f["coords_tyr"], self.f["coords_trp"]]):
+        if not any([self.f.coords_phe, self.f.coords_tyr, self.f.coords_trp]):
             self.log.error("No aromatic residues found for entry")
-            self.f["status"] = "No PHE/TYR/TRP residues"
-            self.f["OK"] = False
+            self.f.status = "No PHE/TYR/TRP residues"
+            self.f.OK = False
             return False
 
         return True
 
     def get_met_lone_pairs_cp(self) -> None:
-        for position, groups in groupby(self.f["coords_met"], lambda entry: entry[5]):
+        for position, groups in groupby(self.f.coords_met, lambda entry: entry[5]):
             ordered = sorted(list(groups), key=itemgetter(2))
 
             coords_ce = array(ordered[0][6:9]).astype(float)
@@ -115,7 +114,7 @@ class MetAromaticBase(ABC):
 
             lp = CrossProductMethod(coords_cg, coords_sd, coords_ce)
 
-            self.f["lone_pairs_met"].append(
+            self.f.lone_pairs_met.append(
                 {
                     "vector_a": lp.get_vector_a(),
                     "vector_g": lp.get_vector_g(),
@@ -125,7 +124,7 @@ class MetAromaticBase(ABC):
             )
 
     def get_met_lone_pairs_rm(self) -> None:
-        for position, groups in groupby(self.f["coords_met"], lambda entry: entry[5]):
+        for position, groups in groupby(self.f.coords_met, lambda entry: entry[5]):
             ordered = sorted(list(groups), key=itemgetter(2))
 
             coords_ce = array(ordered[0][6:9]).astype(float)
@@ -134,7 +133,7 @@ class MetAromaticBase(ABC):
 
             lp = RodriguesMethod(coords_cg, coords_sd, coords_ce)
 
-            self.f["lone_pairs_met"].append(
+            self.f.lone_pairs_met.append(
                 {
                     "vector_a": lp.get_vector_a(),
                     "vector_g": lp.get_vector_g(),
@@ -145,24 +144,22 @@ class MetAromaticBase(ABC):
 
     def get_midpoints(self) -> None:
         self.log.debug("Computing midpoints between PHE aromatic carbon atoms")
-        self.f["midpoints_phe"] = get_phe_midpoints(self.f["coords_phe"])
+        self.f.midpoints_phe = get_phe_midpoints(self.f.coords_phe)
 
         self.log.debug("Computing midpoints between TYR aromatic carbon atoms")
-        self.f["midpoints_tyr"] = get_tyr_midpoints(self.f["coords_tyr"])
+        self.f.midpoints_tyr = get_tyr_midpoints(self.f.coords_tyr)
 
         self.log.debug("Computing midpoints between TRP aromatic carbon atoms")
-        self.f["midpoints_trp"] = get_trp_midpoints(self.f["coords_trp"])
+        self.f.midpoints_trp = get_trp_midpoints(self.f.coords_trp)
 
     def apply_met_aromatic_criteria(self) -> None:
         self.log.debug(
             "Finding pairs meeting Met-aromatic algorithm criteria in feature space"
         )
 
-        midpoints = (
-            self.f["midpoints_phe"] + self.f["midpoints_tyr"] + self.f["midpoints_trp"]
-        )
+        midpoints = self.f.midpoints_phe + self.f.midpoints_tyr + self.f.midpoints_trp
 
-        for lone_pair in self.f["lone_pairs_met"]:
+        for lone_pair in self.f.lone_pairs_met:
             for midpoint in midpoints:
                 v = midpoint[2] - lone_pair["coords_sd"]
                 norm_v = linalg.norm(v)
@@ -178,7 +175,7 @@ class MetAromaticBase(ABC):
                 ):
                     continue
 
-                self.f["interactions"].append(
+                self.f.interactions.append(
                     {
                         "aromatic_position": int(midpoint[0]),
                         "aromatic_residue": midpoint[1],
@@ -191,30 +188,12 @@ class MetAromaticBase(ABC):
                     }
                 )
 
-        if len(self.f["interactions"]) == 0:
+        if len(self.f.interactions) == 0:
             self.log.info("Found no Met-aromatic interactions for entry")
-            self.f["status"] = "No interactions"
+            self.f.status = "No interactions"
 
-    def get_met_aromatic_interactions(self, source: str) -> TYPE_FEATURE_SPACE:
-        self.f = {
-            "cutoff_dist": self.params.cutoff_distance,
-            "cutoff_angle": self.params.cutoff_angle,
-            "chain": self.params.chain,
-            "model": self.params.model,
-            "raw_data": [],
-            "first_model": [],
-            "coords_met": [],
-            "coords_phe": [],
-            "coords_tyr": [],
-            "coords_trp": [],
-            "lone_pairs_met": [],
-            "midpoints_phe": [],
-            "midpoints_tyr": [],
-            "midpoints_trp": [],
-            "interactions": [],
-            "OK": True,
-            "status": "Success",
-        }
+    def get_met_aromatic_interactions(self, source: str) -> FeatureSpace:
+        self.f = FeatureSpace()
 
         if not self.load_pdb_file(source=source):
             return self.f
@@ -263,13 +242,13 @@ class MetAromatic(MetAromaticBase):
             except URLError:
                 self.log.error('Invalid PDB entry "%s"', code)
 
-                self.f["status"] = "Invalid PDB entry"
-                self.f["OK"] = False
+                self.f.status = "Invalid PDB entry"
+                self.f.OK = False
                 return False
 
             with gz_open(f.name, "rt") as gz:
                 for line in gz:
-                    self.f["raw_data"].append(line)
+                    self.f.raw_data.append(line)
 
         return True
 
@@ -282,12 +261,12 @@ class MetAromaticLocal(MetAromaticBase):
             errmsg = f'File "{source}" does not exist'
             self.log.error(errmsg)
 
-            self.f["status"] = errmsg
-            self.f["OK"] = False
+            self.f.status = errmsg
+            self.f.OK = False
 
             return False
 
         for line in open(source):
-            self.f["raw_data"].append(line)
+            self.f.raw_data.append(line)
 
         return True
