@@ -1,11 +1,6 @@
-# All Met-aromatic/pytest code is imported lazily within
-# each click subcommand for significant performance improvements.
-# Therefore disable C0415:
-
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
 # pylint: disable=C0301   # Disable "Line too long"
 
-from os import get_terminal_size
 from typing import Union
 import sys
 import logging
@@ -13,11 +8,7 @@ import click
 from typing_extensions import Unpack
 from MetAromatic.consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from MetAromatic.complex_types import TYPE_MA_PARAMS, TYPE_BATCH_PARAMS
-
-try:
-    SEPARATOR = get_terminal_size()[0] * "-"
-except OSError:
-    SEPARATOR = 25 * "-"
+from .utils import print_separator
 
 
 def setup_child_logger(debug: bool) -> None:
@@ -85,17 +76,17 @@ def pair(obj: TYPE_MA_PARAMS, read_local: bool, source: str) -> None:
     if not results["OK"]:
         sys.exit(results["status"])
 
-    click.echo(SEPARATOR)
+    print_separator()
 
     header_success = ["ARO", "POS", "MET POS", "NORM", "MET-THETA", "MET-PHI"]
     click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*header_success))
 
-    click.echo(SEPARATOR)
+    print_separator()
 
     for line in results["interactions"]:
         click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
 
-    click.echo(SEPARATOR)
+    print_separator()
 
 
 @cli.command(help="Run a bridging interaction query on a single PDB entry.")  # type: ignore
@@ -112,12 +103,12 @@ def bridge(obj: TYPE_MA_PARAMS, code: str, vertices: int) -> None:
     if not results["OK"]:
         sys.exit(results["status"])
 
-    click.echo(SEPARATOR)
+    print_separator()
 
     for line in results["bridges"]:
         click.echo("{" + "}-{".join(line) + "}")
 
-    click.echo(SEPARATOR)
+    print_separator()
 
 
 @cli.command(help="Run a Met-aromatic query batch job.")  # type: ignore
