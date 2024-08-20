@@ -1,26 +1,17 @@
-from numpy import sin, cos, pi, ndarray, array, cross, matmul
+from numpy import ndarray, array, cross, matmul
+from .consts import SCAL1, SCAL2, ROOT_2
 from .utils import get_unit_vector, get_3x3_identity_matrix
-
-SCAL1 = sin(pi / 2)
-SCAL2 = 1 - cos(pi / 2)
-ROOT_2 = 2**0.5
 
 
 class CrossProductMethod:
     """
-    A class for computing the vectors parallel to MET SD lone pairs Methods
+    A class for computing the vectors parallel to MET SD lone pairs. Methods
     associated with the class complete the vertices of a tetrahedron
     """
 
-    def __init__(
-        self, terminal_a: ndarray, midpoint: ndarray, terminal_b: ndarray
-    ) -> None:
-        self.terminal_a = terminal_a
-        self.midpoint = midpoint
-        self.terminal_b = terminal_b
-
-        self.u = self.terminal_a - self.midpoint
-        self.v = self.terminal_b - self.midpoint
+    def __init__(self, vertex_a: ndarray, origin: ndarray, vertex_b: ndarray) -> None:
+        self.u = vertex_a - origin
+        self.v = vertex_b - origin
 
         self.anti_parallel_vec = get_unit_vector(
             -0.5 * (get_unit_vector(self.v) + get_unit_vector(self.u))
