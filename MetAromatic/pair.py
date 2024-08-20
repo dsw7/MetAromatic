@@ -9,12 +9,13 @@ from tempfile import gettempdir, NamedTemporaryFile
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 from numpy import array, linalg
-from MetAromatic.complex_types import TYPE_MA_PARAMS, TYPE_FEATURE_SPACE
+from MetAromatic.complex_types import TYPE_FEATURE_SPACE
 from MetAromatic.get_aromatic_midpoints import get_phe_midpoints
 from MetAromatic.get_aromatic_midpoints import get_trp_midpoints
 from MetAromatic.get_aromatic_midpoints import get_tyr_midpoints
 from MetAromatic.lone_pair_interpolators import CrossProductMethod
 from MetAromatic.lone_pair_interpolators import RodriguesMethod
+from .models import MetAromaticParams
 from .utils import get_angle_between_vecs
 
 TMPDIR = gettempdir()
@@ -23,60 +24,12 @@ TMPDIR = gettempdir()
 class MetAromaticBase(ABC):
     log = getLogger("met-aromatic")
 
-    def __init__(self, ma_params: TYPE_MA_PARAMS) -> None:
-        self.cutoff_distance = ma_params["cutoff_distance"]
-        self.cutoff_angle = ma_params["cutoff_angle"]
-        self.chain = ma_params["chain"]
-        self.model = ma_params["model"]
-
-        self.was_input_validated = False
+    def __init__(self, params: MetAromaticParams) -> None:
+        self.params = params
         self.f: TYPE_FEATURE_SPACE
-
-    def is_input_valid(self) -> bool:
-        self.log.debug("Validating input parameters")
-
-        if not isinstance(self.cutoff_distance, float):
-            self.f["OK"] = False
-            self.f["status"] = "Cutoff distance must be a valid float"
-            return False
-
-        if not isinstance(self.cutoff_angle, float):
-            self.f["OK"] = False
-            self.f["status"] = "Cutoff angle must be a valid float"
-            return False
-
-        if not isinstance(self.chain, str):
-            self.f["OK"] = False
-            self.f["status"] = "Chain must be a valid string"
-            return False
-
-        if not isinstance(self.model, str):
-            self.f["OK"] = False
-            self.f["status"] = "Model must be a valid string"
-            return False
-
-        if self.cutoff_distance < 0:
-            self.f["OK"] = False
-            self.f["status"] = "Invalid cutoff distance"
-            return False
-
-        if (self.cutoff_angle < 0) or (self.cutoff_angle > 360):
-            self.f["OK"] = False
-            self.f["status"] = "Invalid cutoff angle"
-            return False
-
-        if self.model not in ("cp", "rm"):
-            self.f["OK"] = False
-            self.f["status"] = "Invalid model"
-            return False
-
-        return True
 
     @abstractmethod
     def load_pdb_file(self, source: str) -> bool:
-        # Source can be either:
-        # 1. A PDB code
-        # 2. Path to a local PDB file
         pass
 
     def get_first_model(self) -> None:
@@ -91,7 +44,7 @@ class MetAromaticBase(ABC):
     def get_met_coordinates(self) -> bool:
         self.log.debug("Isolating MET coordinates from feature space")
 
-        pattern = compile(rf"(ATOM.*(CE|SD|CG)\s+MET\s+{self.chain}\s)")
+        pattern = compile(rf"(ATOM.*(CE|SD|CG)\s+MET\s+{self.params.chain}\s)")
 
         for line in self.f["first_model"]:
             if match(pattern, line):
@@ -109,7 +62,9 @@ class MetAromaticBase(ABC):
     def get_phe_coordinates(self) -> None:
         self.log.debug("Isolating PHE coordinates from feature space")
 
-        pattern = compile(rf"(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+PHE\s+{self.chain}\s)")
+        pattern = compile(
+            rf"(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+PHE\s+{self.params.chain}\s)"
+        )
 
         for line in self.f["first_model"]:
             if match(pattern, line):
@@ -118,7 +73,9 @@ class MetAromaticBase(ABC):
     def get_tyr_coordinates(self) -> None:
         self.log.debug("Isolating TYR coordinates from feature space")
 
-        pattern = compile(rf"(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+TYR\s+{self.chain}\s)")
+        pattern = compile(
+            rf"(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+TYR\s+{self.params.chain}\s)"
+        )
 
         for line in self.f["first_model"]:
             if match(pattern, line):
@@ -127,7 +84,9 @@ class MetAromaticBase(ABC):
     def get_trp_coordinates(self) -> None:
         self.log.debug("Isolating TRP coordinates from feature space")
 
-        pattern = compile(rf"(ATOM.*(CD2|CE3|CZ2|CH2|CZ3|CE2)\s+TRP\s+{self.chain}\s)")
+        pattern = compile(
+            rf"(ATOM.*(CD2|CE3|CZ2|CH2|CZ3|CE2)\s+TRP\s+{self.params.chain}\s)"
+        )
 
         for line in self.f["first_model"]:
             if match(pattern, line):
@@ -208,14 +167,14 @@ class MetAromaticBase(ABC):
                 v = midpoint[2] - lone_pair["coords_sd"]
                 norm_v = linalg.norm(v)
 
-                if norm_v > self.cutoff_distance:
+                if norm_v > self.params.cutoff_distance:
                     continue
 
                 met_theta_angle = get_angle_between_vecs(v, lone_pair["vector_a"])
                 met_phi_angle = get_angle_between_vecs(v, lone_pair["vector_g"])
 
-                if (met_theta_angle > self.cutoff_angle) and (
-                    met_phi_angle > self.cutoff_angle
+                if (met_theta_angle > self.params.cutoff_angle) and (
+                    met_phi_angle > self.params.cutoff_angle
                 ):
                     continue
 
@@ -238,10 +197,10 @@ class MetAromaticBase(ABC):
 
     def get_met_aromatic_interactions(self, source: str) -> TYPE_FEATURE_SPACE:
         self.f = {
-            "cutoff_dist": self.cutoff_distance,
-            "cutoff_angle": self.cutoff_angle,
-            "chain": self.chain,
-            "model": self.model,
+            "cutoff_dist": self.params.cutoff_distance,
+            "cutoff_angle": self.params.cutoff_angle,
+            "chain": self.params.chain,
+            "model": self.params.model,
             "raw_data": [],
             "first_model": [],
             "coords_met": [],
@@ -256,12 +215,6 @@ class MetAromaticBase(ABC):
             "OK": True,
             "status": "Success",
         }
-
-        if not self.was_input_validated:
-            if not self.is_input_valid():
-                return self.f
-
-            self.was_input_validated = True
 
         if not self.load_pdb_file(source=source):
             return self.f
@@ -278,8 +231,10 @@ class MetAromaticBase(ABC):
         if not self.check_if_not_coordinates():
             return self.f
 
-        self.log.debug('Computing MET lone pair positions using "%s" model', self.model)
-        if self.model == "cp":
+        self.log.debug(
+            'Computing MET lone pair positions using "%s" model', self.params.model
+        )
+        if self.params.model == "cp":
             self.get_met_lone_pairs_cp()
         else:
             self.get_met_lone_pairs_rm()
@@ -321,7 +276,7 @@ class MetAromatic(MetAromaticBase):
 
 class MetAromaticLocal(MetAromaticBase):
     def load_pdb_file(self, source: str) -> bool:
-        self.log.debug('Reading file "%s"', source)
+        self.log.debug('Reading local file "%s"', source)
 
         if not path.exists(source):
             errmsg = f'File "{source}" does not exist'

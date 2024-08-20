@@ -1,18 +1,19 @@
 from logging import getLogger
 from networkx import Graph, connected_components
 from MetAromatic.pair import MetAromatic
-from MetAromatic.complex_types import TYPE_MA_PARAMS, TYPE_BRIDGE_SPACE
+from MetAromatic.complex_types import TYPE_BRIDGE_SPACE
+from .models import MetAromaticParams
 
 
 class GetBridgingInteractions:
     log = getLogger("met-aromatic")
 
-    def __init__(self, ma_params: TYPE_MA_PARAMS) -> None:
-        self.ma_params = ma_params
+    def __init__(self, params: MetAromaticParams) -> None:
+        self.params = params
         self.f: TYPE_BRIDGE_SPACE
 
     def get_interacting_pairs(self, code: str) -> bool:
-        ma_results = MetAromatic(self.ma_params).get_met_aromatic_interactions(code)
+        ma_results = MetAromatic(self.params).get_met_aromatic_interactions(code)
 
         if not ma_results["OK"]:
             self.log.error(

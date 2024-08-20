@@ -1,13 +1,14 @@
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
 # pylint: disable=C0301   # Disable "Line too long"
 
-from typing import Union
+from typing import Literal
 import sys
 import logging
 import click
 from typing_extensions import Unpack
 from MetAromatic.consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
-from MetAromatic.complex_types import TYPE_MA_PARAMS, TYPE_BATCH_PARAMS
+from MetAromatic.complex_types import TYPE_BATCH_PARAMS
+from .models import MetAromaticParams
 from .utils import print_separator
 
 
@@ -49,12 +50,24 @@ def setup_child_logger(debug: bool) -> None:
     "--model", type=click.Choice(["cp", "rm"]), default="cp", metavar="<cp|rm>"
 )
 @click.pass_context
-def cli(context: click.core.Context, debug: bool, **options: Union[str, float]) -> None:
-    context.obj = options
+def cli(
+    context: click.core.Context,
+    debug: bool,
+    chain: str,
+    cutoff_angle: float,
+    cutoff_distance: float,
+    model: Literal["cp", "rm"],
+) -> None:
+    context.obj = MetAromaticParams(
+        chain=chain,
+        cutoff_angle=cutoff_angle,
+        cutoff_distance=cutoff_distance,
+        model=model,
+    )
     setup_child_logger(debug=debug)
 
 
-@cli.command(help="Run a Met-aromatic query on a single PDB entry.")  # type: ignore
+@cli.command(help="Run a Met-aromatic query on a single PDB entry.")
 @click.option(
     "--read-local",
     is_flag=True,
@@ -63,7 +76,7 @@ def cli(context: click.core.Context, debug: bool, **options: Union[str, float]) 
 )
 @click.argument("source")
 @click.pass_obj
-def pair(obj: TYPE_MA_PARAMS, read_local: bool, source: str) -> None:
+def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
     if read_local:
         from MetAromatic.pair import MetAromaticLocal
 
@@ -89,11 +102,11 @@ def pair(obj: TYPE_MA_PARAMS, read_local: bool, source: str) -> None:
     print_separator()
 
 
-@cli.command(help="Run a bridging interaction query on a single PDB entry.")  # type: ignore
+@cli.command(help="Run a bridging interaction query on a single PDB entry.")
 @click.argument("code")
 @click.option("--vertices", default=3, type=click.IntRange(min=3), metavar="<vertices>")
 @click.pass_obj
-def bridge(obj: TYPE_MA_PARAMS, code: str, vertices: int) -> None:
+def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
     from MetAromatic.bridge import GetBridgingInteractions
 
     results = GetBridgingInteractions(obj).get_bridging_interactions(
@@ -111,7 +124,7 @@ def bridge(obj: TYPE_MA_PARAMS, code: str, vertices: int) -> None:
     print_separator()
 
 
-@cli.command(help="Run a Met-aromatic query batch job.")  # type: ignore
+@cli.command(help="Run a Met-aromatic query batch job.")
 @click.argument("path_batch_file")
 @click.option(
     "--threads",
@@ -158,11 +171,11 @@ def bridge(obj: TYPE_MA_PARAMS, code: str, vertices: int) -> None:
     help="Specify MongoDB connection URI.",
 )
 @click.pass_obj
-def batch(obj: TYPE_MA_PARAMS, **batch_params: Unpack[TYPE_BATCH_PARAMS]) -> None:
+def batch(obj: MetAromaticParams, **batch_params: Unpack[TYPE_BATCH_PARAMS]) -> None:
     from MetAromatic.batch import ParallelProcessing
 
     ParallelProcessing(obj, batch_params).main()
 
 
 if __name__ == "__main__":
-    cli()  # type: ignore
+    cli()

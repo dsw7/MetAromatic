@@ -10,7 +10,8 @@ from signal import signal, SIGINT
 from pymongo import MongoClient, errors, collection
 from MetAromatic import consts
 from MetAromatic.pair import MetAromatic
-from MetAromatic.complex_types import TYPE_MA_PARAMS, TYPE_BATCH_PARAMS
+from MetAromatic.complex_types import TYPE_BATCH_PARAMS
+from .models import MetAromaticParams
 
 LEN_PDB_CODE = 4
 MAXIMUM_WORKERS = 15
@@ -21,9 +22,9 @@ class ParallelProcessing:
     log = logging.getLogger("met-aromatic")
 
     def __init__(
-        self, ma_params: TYPE_MA_PARAMS, batch_params: TYPE_BATCH_PARAMS
+        self, params: MetAromaticParams, batch_params: TYPE_BATCH_PARAMS
     ) -> None:
-        self.ma_params = ma_params
+        self.params = params
         self.batch_params = batch_params
         self.collection: collection.Collection
 
@@ -135,7 +136,7 @@ class ParallelProcessing:
             )
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
-        handle_ma = MetAromatic(self.ma_params)
+        handle_ma = MetAromatic(self.params)
 
         for code in chunk:
             if self.bool_disable_workers:
@@ -165,11 +166,8 @@ class ParallelProcessing:
 
         batch_job_metadata = {
             "num_workers": self.batch_params["threads"],
-            "cutoff_distance": self.ma_params["cutoff_distance"],
-            "cutoff_angle": self.ma_params["cutoff_angle"],
-            "chain": self.ma_params["chain"],
-            "model": self.ma_params["model"],
             "data_acquisition_date": datetime.now(),
+            **self.params.dict(),
         }
 
         name_collection_info = f"{self.batch_params['collection']}_info"

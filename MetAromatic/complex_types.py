@@ -1,11 +1,6 @@
 from typing import TypedDict
 from numpy import ndarray
 
-TYPE_MA_PARAMS = TypedDict(
-    "TYPE_MA_PARAMS",
-    {"cutoff_distance": float, "cutoff_angle": float, "chain": str, "model": str},
-)
-
 TYPE_BATCH_PARAMS = TypedDict(
     "TYPE_BATCH_PARAMS",
     {
