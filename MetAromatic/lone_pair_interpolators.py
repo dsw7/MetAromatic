@@ -12,7 +12,6 @@ def get_unit_vector(v: np.ndarray) -> np.ndarray:
 
 
 class CrossProductMethod:
-
     """
     A class for computing the vectors parallel to MET SD lone pairs Methods associated with the class complete
     the vertices of a tetrahedron
@@ -42,7 +41,6 @@ class CrossProductMethod:
 
 
 class RodriguesMethod:
-
     """
     Here I use Rodrigues' rotation formula for completing the vertices of a regular tetrahedron. To start, we
     know two vertices of a tetrahedron, A and B, in addition to knowing the origin O. So we map A and B to the
