@@ -1,4 +1,4 @@
-.PHONY = help wheel setup test clean test-pypi pypi black mypy
+.PHONY = help wheel setup test clean test-pypi pypi black mypy lint
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -18,6 +18,8 @@ To run black over Python code:
   $$ make black
 To run mypy over Python code:
   $$ make mypy
+To run pylint over Python code:
+  $$ make lint
 endef
 
 export HELP_LIST_TARGETS
@@ -52,3 +54,6 @@ black:
 
 mypy:
 	@mypy --cache-dir=/tmp/mypy_cache_metaromatic MetAromatic tests
+
+lint:
+	@pylint MetAromatic

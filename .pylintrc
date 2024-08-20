@@ -1,0 +1,9 @@
+[MAIN]
+exit-zero=yes
+
+[MESSAGES CONTROL]
+disable=
+  missing-docstring
+
+[REPORTS]
+output-format=colorized
