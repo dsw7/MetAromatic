@@ -8,23 +8,16 @@ from re import match, compile
 from tempfile import gettempdir, NamedTemporaryFile
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
-
-from numpy import ndarray, array, dot, linalg, degrees, arccos
+from numpy import array, linalg
 from MetAromatic.complex_types import TYPE_MA_PARAMS, TYPE_FEATURE_SPACE
 from MetAromatic.get_aromatic_midpoints import get_phe_midpoints
 from MetAromatic.get_aromatic_midpoints import get_trp_midpoints
 from MetAromatic.get_aromatic_midpoints import get_tyr_midpoints
 from MetAromatic.lone_pair_interpolators import CrossProductMethod
 from MetAromatic.lone_pair_interpolators import RodriguesMethod
+from .utils import get_angle_between_vecs
 
 TMPDIR = gettempdir()
-
-
-def vector_angle(u: ndarray, v: ndarray) -> float:
-    dot_prod = dot(u, v)
-    prod_mag = linalg.norm(v) * linalg.norm(u)
-
-    return degrees(arccos(dot_prod / prod_mag))
 
 
 class MetAromaticBase(ABC):
@@ -218,8 +211,8 @@ class MetAromaticBase(ABC):
                 if norm_v > self.cutoff_distance:
                     continue
 
-                met_theta_angle = vector_angle(v, lone_pair["vector_a"])
-                met_phi_angle = vector_angle(v, lone_pair["vector_g"])
+                met_theta_angle = get_angle_between_vecs(v, lone_pair["vector_a"])
+                met_phi_angle = get_angle_between_vecs(v, lone_pair["vector_g"])
 
                 if (met_theta_angle > self.cutoff_angle) and (
                     met_phi_angle > self.cutoff_angle
