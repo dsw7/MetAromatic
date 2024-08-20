@@ -2,17 +2,16 @@ from json import loads
 from pathlib import Path
 from pytest import mark, exit, skip
 from MetAromatic import GetBridgingInteractions
+from MetAromatic.models import MetAromaticParams
 
 NETWORK_SIZE = 4
 NUM_BRIDGES = 100
-
-TEST_PARAMETERS = {
-    "cutoff_distance": 6.0,
-    "cutoff_angle": 360.0,
-    "chain": "A",
-    "model": "cp",
-}
-
+PARAMS = MetAromaticParams(
+    cutoff_distance=6.0,
+    cutoff_angle=360.0,
+    chain="A",
+    model="cp",
+)
 PATH_TEST_DATA = (
     Path(__file__).resolve().parent / "data_n_3_bridges_no_ang_limit_6_angstroms.json"
 )
@@ -47,7 +46,7 @@ def get_control_bridge_test_ids():
 @mark.parametrize("bridges", get_control_bridges(), ids=get_control_bridge_test_ids())
 def test_bridge_benchmark(bridges):
     try:
-        results = GetBridgingInteractions(TEST_PARAMETERS).get_bridging_interactions(
+        results = GetBridgingInteractions(PARAMS).get_bridging_interactions(
             vertices=NETWORK_SIZE, code=bridges.get("pdb_code")
         )
     except IndexError:

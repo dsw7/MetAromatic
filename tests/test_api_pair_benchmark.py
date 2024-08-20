@@ -1,13 +1,14 @@
 from pathlib import Path
 from pytest import mark, exit, skip
 from MetAromatic import MetAromatic
+from MetAromatic.models import MetAromaticParams
 
-TEST_PARAMETERS = {
-    "cutoff_distance": 4.9,
-    "cutoff_angle": 109.5,
-    "chain": "A",
-    "model": "cp",
-}
+TEST_PARAMETERS = MetAromaticParams(
+    cutoff_distance=4.9,
+    cutoff_angle=109.5,
+    chain="A",
+    model="cp",
+)
 
 PATH_TEST_DATA = Path(__file__).resolve().parent / "data_483_output_a3_3_m.csv"
 
@@ -181,17 +182,18 @@ def test_pair_against_483_data(code):
             control.append(row)
 
     try:
-        test_data = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions(code)
-
+        results = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions(code)
     except IndexError:
         skip("Skipping list index out of range error. Occurs because of missing data.")
+
+    interactions = results.interactions
 
     sum_norms_control = sum(float(i[6]) for i in control)
     sum_theta_control = sum(float(i[5]) for i in control)
     sum_phi_control = sum(float(i[4]) for i in control)
-    sum_norms_test = sum(float(i["norm"]) for i in test_data["interactions"])
-    sum_theta_test = sum(float(i["met_theta_angle"]) for i in test_data["interactions"])
-    sum_phi_test = sum(float(i["met_phi_angle"]) for i in test_data["interactions"])
+    sum_norms_test = sum(float(i["norm"]) for i in interactions)
+    sum_theta_test = sum(float(i["met_theta_angle"]) for i in interactions)
+    sum_phi_test = sum(float(i["met_phi_angle"]) for i in interactions)
 
     assert abs(sum_norms_control - sum_norms_test) < 0.01
     assert abs(sum_theta_control - sum_theta_test) < 0.01

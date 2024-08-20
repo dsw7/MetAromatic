@@ -1,5 +1,6 @@
 from pytest import mark
 from MetAromatic import GetBridgingInteractions
+from MetAromatic.models import MetAromaticParams
 
 
 @mark.parametrize(
@@ -26,9 +27,9 @@ def test_bridge_invalid_inputs(code, cutoff_distance, cutoff_angle, model, statu
         "chain": "A",
     }
 
-    results = GetBridgingInteractions(params).get_bridging_interactions(
-        code=code, vertices=4
-    )
+    results = GetBridgingInteractions(
+        MetAromaticParams(**params)
+    ).get_bridging_interactions(code=code, vertices=4)
 
     assert not results["OK"]
     assert results["status"] == status
@@ -46,9 +47,9 @@ def test_no_results(code, message):
         "model": "cp",
     }
 
-    results = GetBridgingInteractions(params).get_bridging_interactions(
-        code=code, vertices=4
-    )
+    results = GetBridgingInteractions(
+        MetAromaticParams(**params)
+    ).get_bridging_interactions(code=code, vertices=4)
 
     assert results["OK"]
     assert results["status"] == message
