@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # All Met-aromatic/pytest code is imported lazily within
 # each click subcommand for significant performance improvements.
 # Therefore disable C0415:
