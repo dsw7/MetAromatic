@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest import TestCase
 from pytest import mark, exit
 from MetAromatic import MetAromatic, MetAromaticLocal
+from MetAromatic.models import MetAromaticParams
 
 TEST_PARAMETERS = {
     "cutoff_distance": 4.9,
@@ -87,11 +88,13 @@ VALID_RESULTS_1RCY = [
 
 
 def test_pair_1rcy_valid_results():
-    results = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions("1rcy")
+    results = MetAromatic(
+        MetAromaticParams(**TEST_PARAMETERS)
+    ).get_met_aromatic_interactions("1rcy")
 
     tc = TestCase()
     tc.maxDiff = None
-    tc.assertCountEqual(results["interactions"], VALID_RESULTS_1RCY)
+    tc.assertCountEqual(results.interactions, VALID_RESULTS_1RCY)
 
 
 def test_pair_1rcy_valid_results_use_local():
@@ -101,13 +104,13 @@ def test_pair_1rcy_valid_results_use_local():
     if not path_pdb_file.exists():
         exit(f"File {path_pdb_file} is missing")
 
-    results = MetAromaticLocal(TEST_PARAMETERS).get_met_aromatic_interactions(
-        path_pdb_file
-    )
+    results = MetAromaticLocal(
+        MetAromaticParams(**TEST_PARAMETERS)
+    ).get_met_aromatic_interactions(path_pdb_file)
 
     tc = TestCase()
     tc.maxDiff = None
-    tc.assertCountEqual(results["interactions"], VALID_RESULTS_1RCY)
+    tc.assertCountEqual(results.interactions, VALID_RESULTS_1RCY)
 
 
 def test_pair_1rcy_valid_results_use_local_invalid_file():
@@ -117,12 +120,12 @@ def test_pair_1rcy_valid_results_use_local_invalid_file():
     if not path_pdb_file.exists():
         exit(f"File {path_pdb_file} is missing")
 
-    results = MetAromaticLocal(TEST_PARAMETERS).get_met_aromatic_interactions(
-        path_pdb_file
-    )
+    results = MetAromaticLocal(
+        MetAromaticParams(**TEST_PARAMETERS)
+    ).get_met_aromatic_interactions(path_pdb_file)
 
-    assert results["status"] != "Success"
-    assert not results["OK"]
+    assert results.status != "Success"
+    assert not results.OK
 
 
 @mark.parametrize(
@@ -148,14 +151,17 @@ def test_pair_invalid_inputs(code, cutoff_distance, cutoff_angle, model, status)
         "chain": "A",
         "model": model,
     }
-
-    results = MetAromatic(params).get_met_aromatic_interactions(code)
-    assert not results["OK"]
-    assert results["status"] == status
+    results = MetAromatic(MetAromaticParams(**params)).get_met_aromatic_interactions(
+        code
+    )
+    assert not results.OK
+    assert results.status == status
 
 
 def test_pair_no_results_error():
-    results = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions("1a5r")
+    results = MetAromatic(
+        MetAromaticParams(**TEST_PARAMETERS)
+    ).get_met_aromatic_interactions("1a5r")
 
-    assert results["status"] == "No interactions"
-    assert results["OK"]
+    assert results.status == "No interactions"
+    assert results.OK
