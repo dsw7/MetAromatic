@@ -33,7 +33,7 @@ scale multithreaded batch jobs consisting of hundreds of thousands of queries.
 
 ## Setup
 Simply run:
-```
+```console
 pip install MetAromatic
 ```
 
@@ -123,7 +123,7 @@ A representative figure is shown below:
 ### Finding Met-aromatic pairs
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest
 query follows:
-```
+```console
 runner pair 1rcy
 ```
 Here, the `pair` argument specifies that we want to run a single aromatic interaction calculation. The query
@@ -149,7 +149,7 @@ order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the
 $\overset{\circ}{\mathrm {A}}$) between the MET residue and one of the midpoints between two carbon atoms in
 an aromatic ring, or $\lVert v \rVert$. The default cutoff $c$ was applied in the above example, at 4.9
 $\overset{\circ}{\mathrm {A}}$. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
-```
+```console
 runner --cutoff-distance 4.0 pair 1rcy
 ```
 Reducing the cutoff distance yields an order I interaction between TYR 122 and MET 18.
@@ -163,7 +163,7 @@ TYR        122        18         3.954      60.145     68.352
 `MET-THETA` and `MET-PHI` refer to $\theta$ and $\phi$, respectively. In the above example, the default cutoff
 angle $\delta$ is used ( $109.5^\circ$ ). The cutoff angle can be adjusted by using the `--cutoff-angle`
 option:
-```
+```console
 runner --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
 The `--cutoff-angle` option ensures that **at least one of** $\theta$ or $\phi$ angles fall below the cutoff
@@ -181,7 +181,7 @@ master's thesis: [Applications of numerical linear algebra to protein structural
 methionine-aromatic motifs](https://summit.sfu.ca/item/18741)). There exists another model, `rm` or Rodrigues
 Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The
 model type can be passed as follows:
-```
+```console
 runner --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
 ```
 Which yields similar results:
@@ -198,7 +198,7 @@ Note that the Euclidean distances between TYR aromatic carbon atoms and MET rema
 program searches for "A" delimited chains. Some researchers may, however, be interested in searching for
 aromatic interactions in a different chain within a multichain protein. The `--chain` option can be used to
 specify the chain:
-```
+```console
 runner --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B pair 1rcy
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain.
@@ -212,7 +212,7 @@ Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the
 `bridge` argument. For example, to search for bridging interactions with a 7.0 $\overset{\circ}{\mathrm {A}}$
 $\lVert v \rVert$ cutoff in 6LU7:
-```
+```console
 runner --cutoff-distance 7.0 bridge 6lu7
 ```
 Which will return a list as follows:
@@ -226,7 +226,7 @@ Which will return a list as follows:
 Where each row corresponds to a bridge. This program treats bridging interactions as networks with a defined
 set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The
 `--vertices` option can be passed to search for n-bridges:
-```
+```console
 runner --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
 ## Batch jobs and MongoDB integration
@@ -241,7 +241,7 @@ PDB codes:
 2cme, 6mwm, spam
 ```
 The command follows:
-```
+```console
 runner batch </path/batch/file> --threads <num-threads> --database <db> --collection <collection>
 ```
 The MongoDB dump database is specified using the `--database` option. The collection is specified with the
@@ -302,12 +302,12 @@ server listening on `localhost:27017` by default. However, the `--uri` option ca
 another server. The `--uri` option accepts a valid MongoDB URI string and overrides both the host and port
 specified using the `--host` and `--port` options, respectively. For example, to run a batch job against a
 MongoDB server listening on `localhost` and port 27018, one would pass:
-```
+```console
 runner batch --uri=mongodb://localhost:27018/ </path/to/batch.txt>
 ```
 To run a batch job against a server `ma-results.local:27017`, with MongoDB user "abc" and password "password,"
 one would pass:
-```
+```console
 runner batch --uri=mongodb://abc:password@ma-results.local:27017/ </path/to/batch.txt>
 ```
 More information regarding valid URI connection string formats can be found at [Connection String URI Format —
@@ -318,7 +318,7 @@ provided in the [Setup](#setup) section install MetAromatic source into `site-pa
 can be exposed for use in a custom script.
 ### Example: programmatically obtaining Met-aromatic pairs
 The command:
-```
+```console
 runner --cutoff-distance=4.1 pair 1rcy
 ```
 Will return:
@@ -373,7 +373,7 @@ Which will print to `stdout`:
 This output roughly matches that of the aforementioned `runner` invocation.
 ### Example: programmatically obtaining bridging interactions
 The command:
-```
+```console
 runner bridge 6lu7
 ```
 Will return:
@@ -407,7 +407,7 @@ Running this script will return:
 Which roughly matches the output of the aforementioned `runner` invocation.
 ## Tests and automation
 To test the program, run the following target:
-```
+```console
 make test
 ```
 This target will run all unit tests within a `nox` generated virtual environment.
