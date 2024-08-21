@@ -2,15 +2,14 @@ import logging
 import sys
 from re import split
 from os import path
-from tempfile import gettempdir
 from time import time
 from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient, errors, collection
-from MetAromatic import consts
 from MetAromatic.pair import MetAromatic
 from MetAromatic.complex_types import TYPE_BATCH_PARAMS
+from .consts import TMPDIR, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .models import MetAromaticParams
 
 LEN_PDB_CODE = 4
@@ -37,13 +36,12 @@ class ParallelProcessing:
     def set_log_filehandler(self) -> None:
         self.log.debug("Setting up additional logger")
 
-        logfile_name = path.join(gettempdir(), "met_aromatic.log")
+        logfile_name = path.join(TMPDIR, "met_aromatic.log")
         self.log.info('Will log to file "%s"', logfile_name)
 
         channel = logging.FileHandler(logfile_name)
-
         formatter = logging.Formatter(
-            fmt=consts.LOGRECORD_FORMAT, datefmt=consts.ISO_8601_DATE_FORMAT
+            fmt=LOGRECORD_FORMAT, datefmt=ISO_8601_DATE_FORMAT
         )
         channel.setFormatter(formatter)
 
