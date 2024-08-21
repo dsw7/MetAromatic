@@ -8,7 +8,7 @@ import click
 from typing_extensions import Unpack
 from MetAromatic.consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from MetAromatic.complex_types import TYPE_BATCH_PARAMS
-from .models import MetAromaticParams, FeatureSpace
+from .models import MetAromaticParams, FeatureSpace, BridgeSpace
 from .utils import print_separator
 
 
@@ -103,18 +103,15 @@ def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
 def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
     from MetAromatic.bridge import GetBridgingInteractions
 
-    results = GetBridgingInteractions(obj).get_bridging_interactions(
+    bs: BridgeSpace = GetBridgingInteractions(obj).get_bridging_interactions(
         vertices=vertices, code=code
     )
 
-    if not results["OK"]:
-        sys.exit(results["status"])
+    if not bs.OK:
+        sys.exit(bs.status)
 
     print_separator()
-
-    for line in results["bridges"]:
-        click.echo("{" + "}-{".join(line) + "}")
-
+    bs.print_bridges()
     print_separator()
 
 
