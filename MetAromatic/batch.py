@@ -8,9 +8,8 @@ from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient, errors, collection
 from MetAromatic.pair import MetAromatic
-from MetAromatic.complex_types import TYPE_BATCH_PARAMS
 from .consts import TMPDIR, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
-from .models import MetAromaticParams
+from .models import MetAromaticParams, BatchParams
 
 LEN_PDB_CODE = 4
 MAXIMUM_WORKERS = 15
@@ -20,11 +19,9 @@ TIMEOUT_MSEC_MONGODB = 1000
 class ParallelProcessing:
     log = logging.getLogger("met-aromatic")
 
-    def __init__(
-        self, params: MetAromaticParams, batch_params: TYPE_BATCH_PARAMS
-    ) -> None:
+    def __init__(self, params: MetAromaticParams, bp: BatchParams) -> None:
         self.params = params
-        self.batch_params = batch_params
+        self.bp = bp
         self.collection: collection.Collection
 
         self.pdb_codes: list[str] = []
@@ -48,13 +45,15 @@ class ParallelProcessing:
         self.log.addHandler(channel)
 
     def get_collection_handle(self) -> None:
-        if self.batch_params["uri"] is None:
-            uri = f"mongodb://{self.batch_params['host']}:{self.batch_params['port']}/"
+        if self.bp.uri is None:
+            uri = f"mongodb://{self.bp.host}:{self.bp.port}/"
             self.log.info('Handshaking with MongoDB at "%s"', uri)
         else:
-            uri = self.batch_params["uri"]
+            uri = self.bp.uri
 
-        client = MongoClient(uri, serverSelectionTimeoutMS=TIMEOUT_MSEC_MONGODB)  # type: ignore
+        client: MongoClient = MongoClient(
+            uri, serverSelectionTimeoutMS=TIMEOUT_MSEC_MONGODB
+        )
 
         try:
             client.list_databases()
@@ -62,20 +61,16 @@ class ParallelProcessing:
             self.log.exception("A MongoDB exception occurred")
             sys.exit("Batch job failed")
 
-        self.collection = client[self.batch_params["database"]][
-            self.batch_params["collection"]
-        ]
+        self.collection = client[self.bp.database][self.bp.collection]
 
     def drop_collection_if_overwrite_enabled(self) -> None:
-        if not self.batch_params["overwrite"]:
+        if not self.bp.overwrite:
             return
 
-        self.log.debug(
-            'Will overwrite collection "%s" if exists', self.batch_params["collection"]
-        )
-        self.collection.database.drop_collection(self.batch_params["collection"])
+        self.log.debug('Will overwrite collection "%s" if exists', self.bp.collection)
+        self.collection.database.drop_collection(self.bp.collection)
 
-        info_collection = f"{self.batch_params['collection']}_info"
+        info_collection = f"{self.bp.collection}_info"
 
         self.log.debug('Will overwrite collection "%s" if exists', info_collection)
         self.collection.database.drop_collection(info_collection)
@@ -83,11 +78,8 @@ class ParallelProcessing:
     def ensure_collection_does_not_exist(self) -> None:
         collections = self.collection.database.list_collection_names()
 
-        if self.batch_params["collection"] in collections:
-            self.log.error(
-                'Collection "%s" exists! Cannot proceed',
-                self.batch_params["collection"],
-            )
+        if self.bp.collection in collections:
+            self.log.error('Collection "%s" exists! Cannot proceed', self.bp.collection)
             sys.exit("Batch job failed")
 
     def disable_all_workers(self, *args) -> None:
@@ -103,14 +95,12 @@ class ParallelProcessing:
         signal(SIGINT, self.disable_all_workers)
 
     def get_pdb_code_chunks(self) -> None:
-        self.log.info(
-            "Imported pdb codes from file %s", self.batch_params["path_batch_file"]
-        )
+        self.log.info("Imported pdb codes from file %s", self.bp.path_batch_file)
 
-        if not path.exists(self.batch_params["path_batch_file"]):
-            sys.exit("Path {self.batch_params['path_batch_file'] does not exist")
+        if not path.exists(self.bp.path_batch_file):
+            sys.exit(f"Path {self.bp.path_batch_file} does not exist")
 
-        with open(self.batch_params["path_batch_file"]) as f:
+        with open(self.bp.path_batch_file) as f:
             for line in f:
                 for row in split(r"(;|,|\s)\s*", line):
                     if len(row) == LEN_PDB_CODE:
@@ -118,20 +108,10 @@ class ParallelProcessing:
 
         self.num_codes = len(self.pdb_codes)
 
-        if self.batch_params["threads"] < 1:
-            sys.exit("At least 1 thread required!")
+        self.log.debug("Splitting list of pdb codes into %i chunks", self.bp.threads)
 
-        if self.batch_params["threads"] > MAXIMUM_WORKERS:
-            sys.exit("Maximum number of threads is 15")
-
-        self.log.debug(
-            "Splitting list of pdb codes into %i chunks", self.batch_params["threads"]
-        )
-
-        for i in range(self.batch_params["threads"]):
-            self.pdb_codes_chunked.append(
-                self.pdb_codes[i :: self.batch_params["threads"]]
-            )
+        for i in range(self.bp.threads):
+            self.pdb_codes_chunked.append(self.pdb_codes[i :: self.bp.threads])
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
         handle_ma = MetAromatic(self.params)
@@ -160,15 +140,15 @@ class ParallelProcessing:
                 self.collection.insert_one(results)
 
     def deploy_jobs(self) -> None:
-        self.log.debug("Deploying %i workers!", self.batch_params["threads"])
+        self.log.debug("Deploying %i workers!", self.bp.threads)
 
         batch_job_metadata = {
-            "num_workers": self.batch_params["threads"],
+            "num_workers": self.bp.threads,
             "data_acquisition_date": datetime.now(),
             **self.params.dict(),
         }
 
-        name_collection_info = f"{self.batch_params['collection']}_info"
+        name_collection_info = f"{self.bp.collection}_info"
         collection_info = self.collection.database[name_collection_info]
 
         with futures.ThreadPoolExecutor(
@@ -185,13 +165,8 @@ class ParallelProcessing:
                 execution_time = round(time() - start_time, 3)
 
                 self.log.info("Batch job complete!")
-                self.log.info(
-                    "Results loaded into database: %s", self.batch_params["database"]
-                )
-                self.log.info(
-                    "Results loaded into collection: %s",
-                    self.batch_params["collection"],
-                )
+                self.log.info("Results loaded into database: %s", self.bp.database)
+                self.log.info("Results loaded into collection: %s", self.bp.collection)
                 self.log.info(
                     "Batch job statistics loaded into collection: %s",
                     name_collection_info,

@@ -12,6 +12,17 @@ class MetAromaticParams(BaseModel):
     model: Literal["cp", "rm"]
 
 
+class BatchParams(BaseModel):
+    collection: str
+    database: str
+    host: str
+    overwrite: bool
+    path_batch_file: str
+    port: int
+    threads: int
+    uri: str
+
+
 @dataclass
 class LonePairs:
     coords_sd: ndarray

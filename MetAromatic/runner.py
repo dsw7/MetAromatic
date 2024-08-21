@@ -5,10 +5,8 @@ from typing import Literal
 import sys
 import logging
 import click
-from typing_extensions import Unpack
 from MetAromatic.consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
-from MetAromatic.complex_types import TYPE_BATCH_PARAMS
-from .models import MetAromaticParams, FeatureSpace, BridgeSpace
+from .models import MetAromaticParams, BatchParams, FeatureSpace, BridgeSpace
 from .utils import print_separator
 
 
@@ -120,32 +118,20 @@ def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
 @click.option(
     "--threads",
     default=5,
-    type=int,
-    metavar="<number-threads>",
+    type=click.IntRange(min=1, max=15),
     help="Specify number of workers to use.",
 )
+@click.option("--host", default="localhost", help="Specify host name.")
 @click.option(
-    "--host", default="localhost", metavar="<hostname>", help="Specify host name."
+    "--port", type=int, default=27017, help="Specify MongoDB TCP connection port."
 )
 @click.option(
-    "--port",
-    type=int,
-    default=27017,
-    metavar="<tcp-port>",
-    help="Specify MongoDB TCP connection port.",
-)
-@click.option(
-    "-d",
-    "--database",
-    default="default_ma",
-    metavar="<database-name>",
-    help="Specify MongoDB database to use.",
+    "-d", "--database", default="default_ma", help="Specify MongoDB database to use."
 )
 @click.option(
     "-c",
     "--collection",
     default="default_ma",
-    metavar="<collection-name>",
     help="Specify MongoDB collection to use.",
 )
 @click.option(
@@ -162,10 +148,30 @@ def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
     help="Specify MongoDB connection URI.",
 )
 @click.pass_obj
-def batch(obj: MetAromaticParams, **batch_params: Unpack[TYPE_BATCH_PARAMS]) -> None:
+def batch(
+    obj: MetAromaticParams,
+    collection: str,
+    database: str,
+    host: str,
+    overwrite: bool,
+    path_batch_file: str,
+    port: int,
+    threads: int,
+    uri: str,
+) -> None:
     from MetAromatic.batch import ParallelProcessing
 
-    ParallelProcessing(obj, batch_params).main()
+    params = BatchParams(
+        collection=collection,
+        database=database,
+        host=host,
+        overwrite=overwrite,
+        path_batch_file=path_batch_file,
+        port=port,
+        threads=threads,
+        uri=uri,
+    )
+    ParallelProcessing(obj, params).main()
 
 
 if __name__ == "__main__":
