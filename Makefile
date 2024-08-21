@@ -56,4 +56,4 @@ mypy:
 	@mypy --cache-dir=/tmp/mypy_cache_metaromatic MetAromatic tests
 
 lint:
-	@pylint MetAromatic
+	@pylint MetAromatic tests
