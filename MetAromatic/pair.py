@@ -16,7 +16,7 @@ from .get_aromatic_midpoints import (
     get_tyr_midpoints,
 )
 from .lone_pair_interpolators import CrossProductMethod, RodriguesMethod
-from .models import MetAromaticParams, FeatureSpace
+from .models import MetAromaticParams, FeatureSpace, LonePairs
 from .utils import get_angle_between_vecs
 
 
@@ -115,12 +115,12 @@ class MetAromaticBase(ABC):
             lp = CrossProductMethod(coords_cg, coords_sd, coords_ce)
 
             self.f.lone_pairs_met.append(
-                {
-                    "vector_a": lp.get_vector_a(),
-                    "vector_g": lp.get_vector_g(),
-                    "coords_sd": coords_sd,
-                    "position": position,
-                }
+                LonePairs(
+                    coords_sd=coords_sd,
+                    position=position,
+                    vector_a=lp.get_vector_a(),
+                    vector_g=lp.get_vector_g(),
+                )
             )
 
     def get_met_lone_pairs_rm(self) -> None:
@@ -134,12 +134,12 @@ class MetAromaticBase(ABC):
             lp = RodriguesMethod(coords_cg, coords_sd, coords_ce)
 
             self.f.lone_pairs_met.append(
-                {
-                    "vector_a": lp.get_vector_a(),
-                    "vector_g": lp.get_vector_g(),
-                    "coords_sd": coords_sd,
-                    "position": position,
-                }
+                LonePairs(
+                    coords_sd=coords_sd,
+                    position=position,
+                    vector_a=lp.get_vector_a(),
+                    vector_g=lp.get_vector_g(),
+                )
             )
 
     def get_midpoints(self) -> None:
@@ -161,14 +161,14 @@ class MetAromaticBase(ABC):
 
         for lone_pair in self.f.lone_pairs_met:
             for midpoint in midpoints:
-                v = midpoint[2] - lone_pair["coords_sd"]
-                norm_v = linalg.norm(v)
+                vector_v = midpoint[2] - lone_pair.coords_sd
+                norm_vector_v = linalg.norm(vector_v)
 
-                if norm_v > self.params.cutoff_distance:
+                if norm_vector_v > self.params.cutoff_distance:
                     continue
 
-                met_theta_angle = get_angle_between_vecs(v, lone_pair["vector_a"])
-                met_phi_angle = get_angle_between_vecs(v, lone_pair["vector_g"])
+                met_theta_angle = get_angle_between_vecs(vector_v, lone_pair.vector_a)
+                met_phi_angle = get_angle_between_vecs(vector_v, lone_pair.vector_g)
 
                 if (met_theta_angle > self.params.cutoff_angle) and (
                     met_phi_angle > self.params.cutoff_angle
@@ -181,10 +181,10 @@ class MetAromaticBase(ABC):
                         "aromatic_residue": midpoint[1],
                         "met_phi_angle": round(met_phi_angle, 3),
                         "met_theta_angle": round(met_theta_angle, 3),
-                        "methionine_position": int(lone_pair["position"]),
-                        # Variable norm_v is of type numpy.float64 and so round() returns a numpy.float64
-                        # which causes mypy to complain. So cast norm_v to float
-                        "norm": round(float(norm_v), 3),
+                        "methionine_position": int(lone_pair.position),
+                        # Variable norm_vector_v is of type numpy.float64 and so round() returns a numpy.float64
+                        # which causes mypy to complain. So cast norm_vector_v to float
+                        "norm": round(float(norm_vector_v), 3),
                     }
                 )
 
