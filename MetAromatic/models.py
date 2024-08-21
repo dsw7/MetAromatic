@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Literal, TypedDict
 from numpy import ndarray
 from pydantic import BaseModel
-from .complex_types import Midpoints
+from .complex_types import Midpoints, Coordinates
 
 
 class MetAromaticParams(BaseModel):
@@ -34,14 +34,14 @@ TYPE_INTERACTIONS = TypedDict(
 class FeatureSpace:
     raw_data: list[str] = field(default_factory=list)
     first_model: list[str] = field(default_factory=list)
-    coords_met: list[list[str]] = field(default_factory=list)
-    coords_phe: list[list[str]] = field(default_factory=list)
-    coords_tyr: list[list[str]] = field(default_factory=list)
-    coords_trp: list[list[str]] = field(default_factory=list)
+    coords_met: Coordinates = field(default_factory=list)
+    coords_phe: Coordinates = field(default_factory=list)
+    coords_tyr: Coordinates = field(default_factory=list)
+    coords_trp: Coordinates = field(default_factory=list)
     lone_pairs_met: list[TYPE_LONE_PAIRS_MET] = field(default_factory=list)
-    midpoints_phe: list[Midpoints] = field(default_factory=list)
-    midpoints_tyr: list[Midpoints] = field(default_factory=list)
-    midpoints_trp: list[Midpoints] = field(default_factory=list)
+    midpoints_phe: Midpoints = field(default_factory=list)
+    midpoints_tyr: Midpoints = field(default_factory=list)
+    midpoints_trp: Midpoints = field(default_factory=list)
     interactions: list[TYPE_INTERACTIONS] = field(default_factory=list)
     OK: bool = True
     status: str = "Success"

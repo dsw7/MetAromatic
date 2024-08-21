@@ -1,6 +1,9 @@
 from typing import TypedDict, TypeAlias
 from numpy import ndarray
 
+Coordinates: TypeAlias = list[list[str]]
+Midpoints: TypeAlias = list[tuple[str, str, ndarray]]
+
 TYPE_BATCH_PARAMS = TypedDict(
     "TYPE_BATCH_PARAMS",
     {
@@ -14,8 +17,6 @@ TYPE_BATCH_PARAMS = TypedDict(
         "uri": str,
     },
 )
-
-Midpoints: TypeAlias = tuple[str, str, ndarray]
 
 
 TYPE_BRIDGE_SPACE = TypedDict(
