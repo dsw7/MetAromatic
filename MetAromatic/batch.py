@@ -15,13 +15,35 @@ LEN_PDB_CODE = 4
 MAXIMUM_WORKERS = 15
 
 
+def get_collection_handle(bp: BatchParams) -> collection.Collection:
+    client: MongoClient = MongoClient(
+        host=bp.host,
+        password=bp.password,
+        port=bp.port,
+        serverSelectionTimeoutMS=1000,
+        username=bp.username,
+    )
+
+    try:
+        client[bp.database].list_collection_names()
+    except errors.ServerSelectionTimeoutError:
+        sys.exit("Failed to connect to MongoDB")
+    except errors.OperationFailure as error:
+        if error.details is None:
+            sys.exit("Unknown error occurred when connecting to MongoDB")
+        else:
+            sys.exit(error.details["errmsg"])
+
+    return client[bp.database][bp.collection]
+
+
 class ParallelProcessing:
     log = logging.getLogger("met-aromatic")
 
     def __init__(self, params: MetAromaticParams, bp: BatchParams) -> None:
         self.params = params
         self.bp = bp
-        self.collection: collection.Collection
+        self.collection = get_collection_handle(bp)
 
         self.pdb_codes: list[str] = []
         self.pdb_codes_chunked: list[list[str]] = []
@@ -42,23 +64,6 @@ class ParallelProcessing:
         channel.setFormatter(formatter)
 
         self.log.addHandler(channel)
-
-    def get_collection_handle(self) -> None:
-        client: MongoClient = MongoClient(
-            host=self.bp.host,
-            password=self.bp.password,
-            port=self.bp.port,
-            serverSelectionTimeoutMS=1000,
-            username=self.bp.username,
-        )
-
-        try:
-            client.list_databases()
-        except (errors.ServerSelectionTimeoutError, errors.OperationFailure):
-            self.log.exception("A MongoDB exception occurred")
-            sys.exit("Batch job failed")
-
-        self.collection = client[self.bp.database][self.bp.collection]
 
     def drop_collection_if_overwrite_enabled(self) -> None:
         if not self.bp.overwrite:
@@ -176,7 +181,6 @@ class ParallelProcessing:
 
     def main(self) -> None:
         self.set_log_filehandler()
-        self.get_collection_handle()
         self.drop_collection_if_overwrite_enabled()
         self.ensure_collection_does_not_exist()
         self.register_ipc_signals()
