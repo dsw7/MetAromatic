@@ -1,5 +1,5 @@
 from pathlib import Path
-from pytest import mark, exit, skip
+import pytest
 from MetAromatic import MetAromatic
 from MetAromatic.models import MetAromaticParams, FeatureSpace, Interactions
 
@@ -13,7 +13,7 @@ TEST_PARAMETERS = MetAromaticParams(
 PATH_TEST_DATA = Path(__file__).resolve().parent / "data_483_output_a3_3_m.csv"
 
 if not PATH_TEST_DATA.exists():
-    exit(f"File {PATH_TEST_DATA} is missing")
+    pytest.exit(f"File {PATH_TEST_DATA} is missing")
 
 TEST_DATA = []
 
@@ -174,7 +174,7 @@ TEST_PDB_CODES = {
 }
 
 
-@mark.parametrize("code", TEST_PDB_CODES)
+@pytest.mark.parametrize("code", TEST_PDB_CODES)
 def test_pair_against_483_data(code: str) -> None:
     control = []
     for row in TEST_DATA:
@@ -186,7 +186,9 @@ def test_pair_against_483_data(code: str) -> None:
             code
         )
     except IndexError:
-        skip("Skipping list index out of range error. Occurs because of missing data.")
+        pytest.skip(
+            "Skipping list index out of range error. Occurs because of missing data."
+        )
 
     interactions: list[Interactions] = fs.interactions
 

@@ -1,6 +1,6 @@
 from pathlib import Path
 from unittest import TestCase
-from pytest import mark, exit
+import pytest
 from MetAromatic import MetAromatic, MetAromaticLocal
 from MetAromatic.models import MetAromaticParams
 
@@ -102,7 +102,7 @@ def test_pair_1rcy_valid_results_use_local():
     path_pdb_file = Path(__file__).resolve().parent / "data_1rcy.pdb"
 
     if not path_pdb_file.exists():
-        exit(f"File {path_pdb_file} is missing")
+        pytest.exit(f"File {path_pdb_file} is missing")
 
     results = MetAromaticLocal(
         MetAromaticParams(**TEST_PARAMETERS)
@@ -118,7 +118,7 @@ def test_pair_1rcy_valid_results_use_local_invalid_file():
     path_pdb_file = Path(__file__).resolve().parent / "data_lorem_ipsum.pdb"
 
     if not path_pdb_file.exists():
-        exit(f"File {path_pdb_file} is missing")
+        pytest.exit(f"File {path_pdb_file} is missing")
 
     results = MetAromaticLocal(
         MetAromaticParams(**TEST_PARAMETERS)
@@ -128,7 +128,7 @@ def test_pair_1rcy_valid_results_use_local_invalid_file():
     assert not results.OK
 
 
-@mark.parametrize(
+@pytest.mark.parametrize(
     "code, cutoff_distance, cutoff_angle, model, status",
     [
         ("1rcy", -0.01, 109.5, "cp", "Invalid cutoff distance"),

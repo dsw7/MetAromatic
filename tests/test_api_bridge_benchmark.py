@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from json import loads
 from pathlib import Path
-from pytest import mark, exit, skip
+import pytest
 from MetAromatic import GetBridgingInteractions
 from MetAromatic.models import MetAromaticParams, BridgeSpace
 
@@ -18,7 +18,7 @@ PATH_TEST_DATA = (
 )
 
 if not PATH_TEST_DATA.exists():
-    exit(f"File {PATH_TEST_DATA} is missing")
+    pytest.exit(f"File {PATH_TEST_DATA} is missing")
 
 
 @dataclass
@@ -50,13 +50,17 @@ def get_control_bridge_test_ids() -> list[str]:
     return pdb_codes
 
 
-@mark.parametrize("bridge", get_control_bridges(), ids=get_control_bridge_test_ids())
+@pytest.mark.parametrize(
+    "bridge", get_control_bridges(), ids=get_control_bridge_test_ids()
+)
 def test_bridge_benchmark(bridge: ControlBridge) -> None:
     try:
         bs: BridgeSpace = GetBridgingInteractions(PARAMS).get_bridging_interactions(
             vertices=NETWORK_SIZE, code=bridge.pdb_code
         )
     except IndexError:
-        skip("Skipping list index out of range error. Occurs because of missing data.")
+        pytest.skip(
+            "Skipping list index out of range error. Occurs because of missing data."
+        )
     else:
         assert set(bridge.bridge) in bs.bridges

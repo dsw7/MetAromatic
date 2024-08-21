@@ -2,7 +2,7 @@
 
 from os import EX_OK
 from pathlib import Path
-from pytest import exit, fail, skip
+import pytest
 from click.testing import CliRunner
 from pymongo import MongoClient, errors
 from MetAromatic.runner import cli
@@ -14,7 +14,7 @@ COL_NAME = "collection_coronavirus"
 TEST_DATA = Path(__file__).resolve().parent / "data_coronavirus_entries.txt"
 
 if not TEST_DATA.exists():
-    exit(f"File {TEST_DATA} is missing")
+    pytest.exit(f"File {TEST_DATA} is missing")
 
 
 class TestRunnerBatch:
@@ -42,20 +42,23 @@ class TestParallelProcessing:
         try:
             self.client.list_databases()
         except errors.OperationFailure as e:
-            skip(str(e))
+            pytest.skip(str(e))
         except errors.ServerSelectionTimeoutError as e:
-            exit(str(e))
+            pytest.exit(str(e))
 
         self.cursor = self.client[DB_NAME][COL_NAME]
         self.threads = 3
 
-        command = f"batch {TEST_DATA} --uri={uri} --threads={self.threads} --database={DB_NAME} --collection={COL_NAME}"
+        command = (
+            f"batch {TEST_DATA} --uri={uri} --threads={self.threads} "
+            f"--database={DB_NAME} --collection={COL_NAME}"
+        )
 
         runner = CliRunner()
         result = runner.invoke(cli, command.split())
 
         if result.exit_code != EX_OK:
-            fail("Batch job exited with non-zero exit code")
+            pytest.fail("Batch job exited with non-zero exit code")
 
         self.num_coronavirus_entries = 9
 

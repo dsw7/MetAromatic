@@ -172,7 +172,8 @@ class MetAromaticBase(ABC):
                         met_phi_angle=round(met_phi_angle, 3),
                         met_theta_angle=round(met_theta_angle, 3),
                         methionine_position=int(lone_pair.position),
-                        # Variable norm_vector_v is of type numpy.float64 and so round() returns a numpy.float64
+                        # Variable norm_vector_v is of type numpy.float64
+                        # and so round() returns a numpy.float64
                         # which causes mypy to complain. So cast norm_vector_v to float
                         norm=round(float(norm_vector_v), 3),
                     )

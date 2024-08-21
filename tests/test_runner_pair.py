@@ -1,3 +1,5 @@
+# pylint: disable=W0201   # Disable definitions outside of __init__
+
 from os import EX_OK
 from pathlib import Path
 from click.testing import CliRunner
