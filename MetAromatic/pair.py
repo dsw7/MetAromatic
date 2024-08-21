@@ -4,7 +4,7 @@ from itertools import groupby
 from logging import getLogger
 from operator import itemgetter
 from os import path
-from re import match, compile
+from re import match
 from tempfile import NamedTemporaryFile
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
@@ -17,7 +17,7 @@ from .get_aromatic_midpoints import (
 )
 from .lone_pair_interpolators import CrossProductMethod, RodriguesMethod
 from .models import MetAromaticParams, FeatureSpace, LonePairs, Interactions
-from .utils import get_angle_between_vecs
+from .utils import get_angle_between_vecs, get_search_pattern
 
 
 class MetAromaticBase(ABC):
@@ -42,8 +42,7 @@ class MetAromaticBase(ABC):
 
     def get_met_coordinates(self) -> bool:
         self.log.debug("Isolating MET coordinates from feature space")
-
-        pattern = compile(rf"(ATOM.*(CE|SD|CG)\s+MET\s+{self.params.chain}\s)")
+        pattern = get_search_pattern(res="met", chain=self.params.chain)
 
         for line in self.f.first_model:
             if match(pattern, line):
@@ -60,10 +59,7 @@ class MetAromaticBase(ABC):
 
     def get_phe_coordinates(self) -> None:
         self.log.debug("Isolating PHE coordinates from feature space")
-
-        pattern = compile(
-            rf"(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+PHE\s+{self.params.chain}\s)"
-        )
+        pattern = get_search_pattern(res="phe", chain=self.params.chain)
 
         for line in self.f.first_model:
             if match(pattern, line):
@@ -71,10 +67,7 @@ class MetAromaticBase(ABC):
 
     def get_tyr_coordinates(self) -> None:
         self.log.debug("Isolating TYR coordinates from feature space")
-
-        pattern = compile(
-            rf"(ATOM.*(CD1|CE1|CZ|CG|CD2|CE2)\s+TYR\s+{self.params.chain}\s)"
-        )
+        pattern = get_search_pattern(res="tyr", chain=self.params.chain)
 
         for line in self.f.first_model:
             if match(pattern, line):
@@ -82,10 +75,7 @@ class MetAromaticBase(ABC):
 
     def get_trp_coordinates(self) -> None:
         self.log.debug("Isolating TRP coordinates from feature space")
-
-        pattern = compile(
-            rf"(ATOM.*(CD2|CE3|CZ2|CH2|CZ3|CE2)\s+TRP\s+{self.params.chain}\s)"
-        )
+        pattern = get_search_pattern(res="trp", chain=self.params.chain)
 
         for line in self.f.first_model:
             if match(pattern, line):
