@@ -143,9 +143,16 @@ def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
 )
 @click.option(
     "-u",
-    "--uri",
-    metavar="<mongodb://{username}:{password}@{host}:{port}/>",
-    help="Specify MongoDB connection URI.",
+    "--username",
+    prompt=True,
+    help="Specify MongoDB username if authentication is enabled.",
+)
+@click.option(
+    "-p",
+    "--password",
+    prompt=True,
+    hide_input=True,
+    help="Specify MongoDB password if authentication is enabled.",
 )
 @click.pass_obj
 def batch(
@@ -154,10 +161,11 @@ def batch(
     database: str,
     host: str,
     overwrite: bool,
+    password: str,
     path_batch_file: str,
     port: int,
     threads: int,
-    uri: str,
+    username: str,
 ) -> None:
     from MetAromatic.batch import ParallelProcessing
 
@@ -166,10 +174,11 @@ def batch(
         database=database,
         host=host,
         overwrite=overwrite,
+        password=password,
         path_batch_file=path_batch_file,
         port=port,
         threads=threads,
-        uri=uri,
+        username=username,
     )
     ParallelProcessing(obj, params).main()
 

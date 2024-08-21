@@ -13,7 +13,6 @@ from .models import MetAromaticParams, BatchParams
 
 LEN_PDB_CODE = 4
 MAXIMUM_WORKERS = 15
-TIMEOUT_MSEC_MONGODB = 1000
 
 
 class ParallelProcessing:
@@ -45,14 +44,12 @@ class ParallelProcessing:
         self.log.addHandler(channel)
 
     def get_collection_handle(self) -> None:
-        if self.bp.uri is None:
-            uri = f"mongodb://{self.bp.host}:{self.bp.port}/"
-            self.log.info('Handshaking with MongoDB at "%s"', uri)
-        else:
-            uri = self.bp.uri
-
         client: MongoClient = MongoClient(
-            uri, serverSelectionTimeoutMS=TIMEOUT_MSEC_MONGODB
+            host=self.bp.host,
+            password=self.bp.password,
+            port=self.bp.port,
+            serverSelectionTimeoutMS=1000,
+            username=self.bp.username,
         )
 
         try:

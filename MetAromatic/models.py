@@ -17,10 +17,11 @@ class BatchParams(BaseModel):
     database: str
     host: str
     overwrite: bool
+    password: str
     path_batch_file: str
     port: int
     threads: int
-    uri: str
+    username: str
 
 
 @dataclass
