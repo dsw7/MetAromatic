@@ -175,7 +175,7 @@ TEST_PDB_CODES = {
 
 
 @mark.parametrize("code", TEST_PDB_CODES)
-def test_pair_against_483_data(code):
+def test_pair_against_483_data(code: str) -> None:
     control = []
     for row in TEST_DATA:
         if row[7] == code:
@@ -188,7 +188,7 @@ def test_pair_against_483_data(code):
     except IndexError:
         skip("Skipping list index out of range error. Occurs because of missing data.")
 
-    interactions: Interactions = fs.interactions
+    interactions: list[Interactions] = fs.interactions
 
     sum_norms_control = sum(float(i[6]) for i in control)
     sum_theta_control = sum(float(i[5]) for i in control)
