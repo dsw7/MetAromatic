@@ -1,7 +1,7 @@
 from pathlib import Path
 from pytest import mark, exit, skip
 from MetAromatic import MetAromatic
-from MetAromatic.models import MetAromaticParams
+from MetAromatic.models import MetAromaticParams, FeatureSpace, Interactions
 
 TEST_PARAMETERS = MetAromaticParams(
     cutoff_distance=4.9,
@@ -182,18 +182,20 @@ def test_pair_against_483_data(code):
             control.append(row)
 
     try:
-        results = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions(code)
+        fs: FeatureSpace = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions(
+            code
+        )
     except IndexError:
         skip("Skipping list index out of range error. Occurs because of missing data.")
 
-    interactions = results.interactions
+    interactions: Interactions = fs.interactions
 
     sum_norms_control = sum(float(i[6]) for i in control)
     sum_theta_control = sum(float(i[5]) for i in control)
     sum_phi_control = sum(float(i[4]) for i in control)
-    sum_norms_test = sum(float(i["norm"]) for i in interactions)
-    sum_theta_test = sum(float(i["met_theta_angle"]) for i in interactions)
-    sum_phi_test = sum(float(i["met_phi_angle"]) for i in interactions)
+    sum_norms_test = sum(i.norm for i in interactions)
+    sum_theta_test = sum(i.met_theta_angle for i in interactions)
+    sum_phi_test = sum(i.met_phi_angle for i in interactions)
 
     assert abs(sum_norms_control - sum_norms_test) < 0.01
     assert abs(sum_theta_control - sum_theta_test) < 0.01
