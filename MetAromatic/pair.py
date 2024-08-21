@@ -5,19 +5,19 @@ from logging import getLogger
 from operator import itemgetter
 from os import path
 from re import match, compile
-from tempfile import gettempdir, NamedTemporaryFile
+from tempfile import NamedTemporaryFile
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 from numpy import array, linalg
-from MetAromatic.get_aromatic_midpoints import get_phe_midpoints
-from MetAromatic.get_aromatic_midpoints import get_trp_midpoints
-from MetAromatic.get_aromatic_midpoints import get_tyr_midpoints
-from MetAromatic.lone_pair_interpolators import CrossProductMethod
-from MetAromatic.lone_pair_interpolators import RodriguesMethod
+from .consts import TMPDIR
+from .get_aromatic_midpoints import (
+    get_phe_midpoints,
+    get_trp_midpoints,
+    get_tyr_midpoints,
+)
+from .lone_pair_interpolators import CrossProductMethod, RodriguesMethod
 from .models import MetAromaticParams, FeatureSpace
 from .utils import get_angle_between_vecs
-
-TMPDIR = gettempdir()
 
 
 class MetAromaticBase(ABC):

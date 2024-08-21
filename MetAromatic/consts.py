@@ -1,3 +1,4 @@
+from tempfile import gettempdir
 from numpy import sin, cos, pi
 
 # Logging
@@ -21,3 +22,6 @@ DICT_ATOMS_TRP = {
     "CZ2": "E",
     "CE2": "F",
 }
+
+# General
+TMPDIR = gettempdir()
