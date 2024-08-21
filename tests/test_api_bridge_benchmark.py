@@ -1,8 +1,9 @@
+from dataclasses import dataclass
 from json import loads
 from pathlib import Path
 from pytest import mark, exit, skip
 from MetAromatic import GetBridgingInteractions
-from MetAromatic.models import MetAromaticParams
+from MetAromatic.models import MetAromaticParams, BridgeSpace
 
 NETWORK_SIZE = 4
 NUM_BRIDGES = 100
@@ -20,19 +21,25 @@ if not PATH_TEST_DATA.exists():
     exit(f"File {PATH_TEST_DATA} is missing")
 
 
-def get_control_bridges():
+@dataclass
+class ControlBridge:
+    bridge: list[str]
+    pdb_code: str
+
+
+def get_control_bridges() -> list[ControlBridge]:
     with PATH_TEST_DATA.open() as f:
         data = [loads(line) for line in f]
 
     bridges = []
 
     for datum in data[0:NUM_BRIDGES]:
-        bridges.append({"pdb_code": datum.get("code"), "bridge": datum.get("bridge")})
+        bridges.append(ControlBridge(pdb_code=datum["code"], bridge=datum["bridge"]))
 
     return bridges
 
 
-def get_control_bridge_test_ids():
+def get_control_bridge_test_ids() -> list[str]:
     with PATH_TEST_DATA.open() as f:
         data = [loads(line) for line in f]
 
@@ -43,13 +50,13 @@ def get_control_bridge_test_ids():
     return pdb_codes
 
 
-@mark.parametrize("bridges", get_control_bridges(), ids=get_control_bridge_test_ids())
-def test_bridge_benchmark(bridges):
+@mark.parametrize("bridge", get_control_bridges(), ids=get_control_bridge_test_ids())
+def test_bridge_benchmark(bridge: ControlBridge) -> None:
     try:
-        results = GetBridgingInteractions(PARAMS).get_bridging_interactions(
-            vertices=NETWORK_SIZE, code=bridges.get("pdb_code")
+        bs: BridgeSpace = GetBridgingInteractions(PARAMS).get_bridging_interactions(
+            vertices=NETWORK_SIZE, code=bridge.pdb_code
         )
     except IndexError:
         skip("Skipping list index out of range error. Occurs because of missing data.")
     else:
-        assert set(bridges.get("bridge")) in results["bridges"]
+        assert set(bridge.bridge) in bs.bridges
