@@ -16,7 +16,7 @@ from .get_aromatic_midpoints import (
     get_tyr_midpoints,
 )
 from .lone_pair_interpolators import CrossProductMethod, RodriguesMethod
-from .models import MetAromaticParams, FeatureSpace, LonePairs
+from .models import MetAromaticParams, FeatureSpace, LonePairs, Interactions
 from .utils import get_angle_between_vecs
 
 
@@ -176,16 +176,16 @@ class MetAromaticBase(ABC):
                     continue
 
                 self.f.interactions.append(
-                    {
-                        "aromatic_position": int(midpoint[0]),
-                        "aromatic_residue": midpoint[1],
-                        "met_phi_angle": round(met_phi_angle, 3),
-                        "met_theta_angle": round(met_theta_angle, 3),
-                        "methionine_position": int(lone_pair.position),
+                    Interactions(
+                        aromatic_position=int(midpoint[0]),
+                        aromatic_residue=midpoint[1],
+                        met_phi_angle=round(met_phi_angle, 3),
+                        met_theta_angle=round(met_theta_angle, 3),
+                        methionine_position=int(lone_pair.position),
                         # Variable norm_vector_v is of type numpy.float64 and so round() returns a numpy.float64
                         # which causes mypy to complain. So cast norm_vector_v to float
-                        "norm": round(float(norm_vector_v), 3),
-                    }
+                        norm=round(float(norm_vector_v), 3),
+                    )
                 )
 
         if len(self.f.interactions) == 0:

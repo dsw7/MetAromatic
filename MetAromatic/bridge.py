@@ -2,7 +2,7 @@ from logging import getLogger
 from networkx import Graph, connected_components
 from MetAromatic.pair import MetAromatic
 from MetAromatic.complex_types import TYPE_BRIDGE_SPACE
-from .models import MetAromaticParams
+from .models import MetAromaticParams, FeatureSpace
 
 
 class GetBridgingInteractions:
@@ -13,18 +13,18 @@ class GetBridgingInteractions:
         self.f: TYPE_BRIDGE_SPACE
 
     def get_interacting_pairs(self, code: str) -> bool:
-        results = MetAromatic(self.params).get_met_aromatic_interactions(code)
+        fs: FeatureSpace = MetAromatic(self.params).get_met_aromatic_interactions(code)
 
-        if not results.OK:
+        if not fs.OK:
             self.log.error(
                 "Cannot get bridging interactions as Met-aromatic algorithm failed"
             )
 
             self.f["OK"] = False
-            self.f["status"] = results.status
+            self.f["status"] = fs.status
             return False
 
-        if len(results.interactions) < 1:
+        if len(fs.interactions) < 1:
             self.log.info(
                 "No Met-aromatic interactions were found therefore cannot find bridges"
             )
@@ -32,10 +32,10 @@ class GetBridgingInteractions:
             self.f["status"] = "No Met-aromatic interactions were found"
             return False
 
-        for interaction in results.interactions:
+        for interaction in fs.interactions:
             pair = (
-                f"{interaction['aromatic_residue']}{interaction['aromatic_position']}",
-                f"MET{interaction['methionine_position']}",
+                f"{interaction.aromatic_residue}{interaction.aromatic_position}",
+                f"MET{interaction.methionine_position}",
             )
             self.f["interactions"].add(pair)
 

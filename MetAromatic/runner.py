@@ -8,7 +8,7 @@ import click
 from typing_extensions import Unpack
 from MetAromatic.consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from MetAromatic.complex_types import TYPE_BATCH_PARAMS
-from .models import MetAromaticParams
+from .models import MetAromaticParams, FeatureSpace
 from .utils import print_separator
 
 
@@ -77,28 +77,22 @@ def cli(
 @click.argument("source")
 @click.pass_obj
 def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
+    fs: FeatureSpace
+
     if read_local:
         from MetAromatic.pair import MetAromaticLocal
 
-        results = MetAromaticLocal(obj).get_met_aromatic_interactions(source)
+        fs = MetAromaticLocal(obj).get_met_aromatic_interactions(source)
     else:
         from MetAromatic.pair import MetAromatic
 
-        results = MetAromatic(obj).get_met_aromatic_interactions(source)
+        fs = MetAromatic(obj).get_met_aromatic_interactions(source)
 
-    if not results.OK:
-        sys.exit(results.status)
-
-    print_separator()
-
-    header_success = ["ARO", "POS", "MET POS", "NORM", "MET-THETA", "MET-PHI"]
-    click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*header_success))
+    if not fs.OK:
+        sys.exit(fs.status)
 
     print_separator()
-
-    for line in results.interactions:
-        click.echo("{:<10} {:<10} {:<10} {:<10} {:<10} {:<10}".format(*line.values()))
-
+    fs.print_interactions()
     print_separator()
 
 

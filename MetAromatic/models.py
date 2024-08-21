@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Literal, TypedDict
+from typing import Literal
 from numpy import ndarray
 from pydantic import BaseModel
 from .complex_types import Midpoints, Coordinates
@@ -12,25 +12,32 @@ class MetAromaticParams(BaseModel):
     model: Literal["cp", "rm"]
 
 
-TYPE_INTERACTIONS = TypedDict(
-    "TYPE_INTERACTIONS",
-    {
-        "aromatic_position": int,
-        "aromatic_residue": str,
-        "met_phi_angle": float,
-        "met_theta_angle": float,
-        "methionine_position": int,
-        "norm": float,
-    },
-)
-
-
 @dataclass
 class LonePairs:
     coords_sd: ndarray
     position: str
     vector_a: ndarray
     vector_g: ndarray
+
+
+@dataclass
+class Interactions:
+    aromatic_position: int
+    aromatic_residue: str
+    met_phi_angle: float
+    met_theta_angle: float
+    methionine_position: int
+    norm: float
+
+    def print_interaction(self) -> None:
+        print(
+            f"{self.aromatic_residue:<10} "
+            f"{self.aromatic_position:<10} "
+            f"{self.methionine_position:<10} "
+            f"{self.norm:<10} "
+            f"{self.met_theta_angle:<10} "
+            f"{self.met_phi_angle:<10}"
+        )
 
 
 @dataclass
@@ -45,6 +52,12 @@ class FeatureSpace:
     midpoints_phe: Midpoints = field(default_factory=list)
     midpoints_tyr: Midpoints = field(default_factory=list)
     midpoints_trp: Midpoints = field(default_factory=list)
-    interactions: list[TYPE_INTERACTIONS] = field(default_factory=list)
+    interactions: list[Interactions] = field(default_factory=list)
     OK: bool = True
     status: str = "Success"
+
+    def print_interactions(self) -> None:
+        print("ARO        POS        MET POS    NORM       MET-THETA  MET-PHI")
+
+        for i in self.interactions:
+            i.print_interaction()
