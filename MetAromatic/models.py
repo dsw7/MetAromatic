@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 from numpy import ndarray
 from pydantic import BaseModel
-from .complex_types import Midpoints, Coordinates
+from .aliases import Midpoints, Coordinates
 
 
 class MetAromaticParams(BaseModel):

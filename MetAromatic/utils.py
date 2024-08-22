@@ -2,7 +2,7 @@ from functools import cache
 from os import get_terminal_size
 from re import compile, Pattern  # pylint: disable=redefined-builtin
 from numpy import ndarray, linalg, eye, dot, degrees, arccos
-from .complex_types import Residues
+from .aliases import Residues
 
 
 @cache

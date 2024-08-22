@@ -2,7 +2,7 @@ from itertools import groupby
 from copy import deepcopy
 from operator import itemgetter
 from numpy import array
-from .complex_types import Midpoints, Coordinates
+from .aliases import Midpoints, Coordinates
 from .consts import DICT_ATOMS_PHE, DICT_ATOMS_TYR, DICT_ATOMS_TRP
 
 
