@@ -188,7 +188,11 @@ def batch(
         threads=threads,
         username=username,
     )
-    ParallelProcessing(obj, params).main()
+
+    try:
+        ParallelProcessing(obj, params).main()
+    except SearchError:
+        sys.exit("Search failed!")
 
 
 if __name__ == "__main__":

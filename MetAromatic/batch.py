@@ -27,13 +27,14 @@ def get_collection_handle(bp: BatchParams) -> collection.Collection:
 
     try:
         client[bp.database].list_collection_names()
-    except errors.ServerSelectionTimeoutError:
-        sys.exit("Failed to connect to MongoDB")
+    except errors.ServerSelectionTimeoutError as error:
+        raise SearchError("Failed to connect to MongoDB") from error
     except errors.OperationFailure as error:
         if error.details is None:
-            sys.exit("Unknown error occurred when connecting to MongoDB")
+            errmsg = "Unknown error occurred when connecting to MongoDB"
         else:
-            sys.exit(error.details["errmsg"])
+            errmsg = error.details["errmsg"]
+        raise SearchError(errmsg) from error
 
     return client[bp.database][bp.collection]
 
