@@ -8,7 +8,6 @@ import click
 from .consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .errors import SearchError
 from .models import MetAromaticParams, BatchParams, FeatureSpace, BridgeSpace
-from .utils import print_separator
 
 
 def setup_child_logger(debug: bool) -> None:
@@ -115,16 +114,13 @@ def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
 def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
     from MetAromatic.bridge import GetBridgingInteractions
 
-    bs: BridgeSpace = GetBridgingInteractions(obj).get_bridging_interactions(
-        vertices=vertices, code=code
-    )
-
-    if not bs.OK:
-        sys.exit(bs.status)
-
-    print_separator()
-    bs.print_bridges()
-    print_separator()
+    try:
+        bs: BridgeSpace = GetBridgingInteractions(obj).get_bridging_interactions(
+            vertices=vertices, code=code
+        )
+        bs.print_bridges()
+    except SearchError:
+        sys.exit("Search failed!")
 
 
 @cli.command(help="Run a Met-aromatic query batch job.")

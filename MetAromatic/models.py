@@ -83,9 +83,11 @@ class FeatureSpace:
 class BridgeSpace:
     interactions: set[tuple[str, str]] = field(default_factory=set)
     bridges: list[set[str]] = field(default_factory=list)
-    OK: bool = True
-    status: str = "Success"
 
     def print_bridges(self) -> None:
+        print_separator()
+
         for bridge in self.bridges:
             print("{" + "}-{".join(bridge) + "}")
+
+        print_separator()
