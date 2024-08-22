@@ -10,6 +10,7 @@ from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 from numpy import array, linalg
 from .consts import TMPDIR
+from .errors import SearchError
 from .get_aromatic_midpoints import (
     get_phe_midpoints,
     get_trp_midpoints,
@@ -40,8 +41,9 @@ class MetAromaticBase(ABC):
 
             self.f.first_model.append(line)
 
-    def get_met_coordinates(self) -> bool:
+    def get_met_coordinates(self) -> None:
         self.log.debug("Isolating MET coordinates from feature space")
+
         pattern = get_search_pattern(res="met", chain=self.params.chain)
 
         for line in self.f.first_model:
@@ -49,13 +51,7 @@ class MetAromaticBase(ABC):
                 self.f.coords_met.append(line.split()[:9])
 
         if len(self.f.coords_met) == 0:
-            self.log.error("No methionine residues found for entry")
-
-            self.f.status = "No MET residues"
-            self.f.OK = False
-            return False
-
-        return True
+            raise SearchError("No MET residues")
 
     def get_phe_coordinates(self) -> None:
         self.log.debug("Isolating PHE coordinates from feature space")
@@ -190,9 +186,7 @@ class MetAromaticBase(ABC):
             return self.f
 
         self.get_first_model()
-
-        if not self.get_met_coordinates():
-            return self.f
+        self.get_met_coordinates()
 
         self.get_phe_coordinates()
         self.get_tyr_coordinates()

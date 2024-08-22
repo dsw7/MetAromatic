@@ -5,7 +5,8 @@ from typing import Literal
 import sys
 import logging
 import click
-from MetAromatic.consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
+from .consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
+from .errors import SearchError
 from .models import MetAromaticParams, BatchParams, FeatureSpace, BridgeSpace
 from .utils import print_separator
 
@@ -68,33 +69,38 @@ def cli(
     setup_child_logger(debug=debug)
 
 
+def get_pairs_from_local_file(source: str, params: MetAromaticParams) -> FeatureSpace:
+    from .pair import MetAromaticLocal
+
+    return MetAromaticLocal(params).get_met_aromatic_interactions(source)
+
+
+def get_pairs_from_pdb(source: str, params: MetAromaticParams) -> FeatureSpace:
+    from .pair import MetAromatic
+
+    return MetAromatic(params).get_met_aromatic_interactions(source)
+
+
 @cli.command(help="Run a Met-aromatic query on a single PDB entry.")
 @click.option(
     "--read-local",
     is_flag=True,
     default=False,
-    help="Specify whether to read a local PDB file",
+    help="Specify whether to read a local PDB file.",
 )
 @click.argument("source")
 @click.pass_obj
 def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
-    fs: FeatureSpace
+    try:
+        fs: FeatureSpace
+        if read_local:
+            fs = get_pairs_from_local_file(source, obj)
+        else:
+            fs = get_pairs_from_pdb(source, obj)
 
-    if read_local:
-        from MetAromatic.pair import MetAromaticLocal
-
-        fs = MetAromaticLocal(obj).get_met_aromatic_interactions(source)
-    else:
-        from MetAromatic.pair import MetAromatic
-
-        fs = MetAromatic(obj).get_met_aromatic_interactions(source)
-
-    if not fs.OK:
-        sys.exit(fs.status)
-
-    print_separator()
-    fs.print_interactions()
-    print_separator()
+        fs.print_interactions()
+    except SearchError:
+        sys.exit("Search failed!")
 
 
 @cli.command(help="Run a bridging interaction query on a single PDB entry.")

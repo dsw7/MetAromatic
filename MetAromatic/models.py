@@ -3,6 +3,7 @@ from typing import Literal
 from numpy import ndarray
 from pydantic import BaseModel
 from .aliases import Midpoints, Coordinates
+from .utils import print_separator
 
 
 class MetAromaticParams(BaseModel):
@@ -69,10 +70,15 @@ class FeatureSpace:
     status: str = "Success"
 
     def print_interactions(self) -> None:
+        print_separator()
+
         print("ARO        POS        MET POS    NORM       MET-THETA  MET-PHI")
+        print_separator()
 
         for i in self.interactions:
             i.print_interaction()
+
+        print_separator()
 
 
 @dataclass
