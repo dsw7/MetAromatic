@@ -1,10 +1,11 @@
-from pytest import mark
-from MetAromatic import GetBridgingInteractions
-from MetAromatic.models import MetAromaticParams
+import pytest
+from MetAromatic import get_bridges
+from MetAromatic.errors import SearchError
+from MetAromatic.models import MetAromaticParams, BridgeSpace
 
 
-@mark.parametrize(
-    "code, cutoff_distance, cutoff_angle, model, status",
+@pytest.mark.parametrize(
+    "code, distance, angle, model, status",
     [
         ("1rcy", -0.01, 109.5, "cp", "Invalid cutoff distance"),
         ("1rcy", 4.95, -60.0, "cp", "Invalid cutoff angle"),
@@ -19,37 +20,36 @@ from MetAromatic.models import MetAromaticParams
         ("1rcy", 4.95, 109.5, 25, "Model must be a valid string"),
     ],
 )
-def test_bridge_invalid_inputs(code, cutoff_distance, cutoff_angle, model, status):
-    params = {
-        "cutoff_angle": cutoff_angle,
-        "cutoff_distance": cutoff_distance,
-        "model": model,
-        "chain": "A",
-    }
+def test_invalid_inputs(
+    code: str, distance: float, angle: float, model: str, status: str
+) -> None:
+    with pytest.raises(SearchError, match=status):
+        get_bridges(
+            code=code,
+            params=MetAromaticParams(
+                chain="A",
+                cutoff_angle=angle,
+                cutoff_distance=distance,
+                # Ignore cp | rm string literal check for testing purposes
+                model=model,  # type: ignore
+            ),
+            vertices=4,
+        )
 
-    results = GetBridgingInteractions(
-        MetAromaticParams(**params)
-    ).get_bridging_interactions(code=code, vertices=4)
 
-    assert not results["OK"]
-    assert results["status"] == status
-
-
-@mark.parametrize(
+@pytest.mark.parametrize(
     "code, message",
-    [("1a5r", "No Met-aromatic interactions were found"), ("1rcy", "No bridges")],
+    [("1a5r", "No Met-aromatic interactions"), ("1rcy", "Found no bridges")],
 )
-def test_no_results(code, message):
-    params = {
-        "cutoff_distance": 4.9,
-        "cutoff_angle": 109.5,
-        "chain": "A",
-        "model": "cp",
-    }
-
-    results = GetBridgingInteractions(
-        MetAromaticParams(**params)
-    ).get_bridging_interactions(code=code, vertices=4)
-
-    assert results["OK"]
-    assert results["status"] == message
+def test_no_results(code: str, message: str) -> None:
+    with pytest.raises(SearchError, match=message):
+        get_bridges(
+            code=code,
+            params=MetAromaticParams(
+                chain="A",
+                cutoff_angle=109.5,
+                cutoff_distance=4.9,
+                model="cp",
+            ),
+            vertices=4,
+        )
