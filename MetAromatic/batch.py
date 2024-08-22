@@ -7,9 +7,10 @@ from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient, errors, collection
-from MetAromatic.pair import MetAromatic
 from .consts import TMPDIR, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
+from .errors import SearchError
 from .models import MetAromaticParams, BatchParams
+from .pair import MetAromatic
 
 LEN_PDB_CODE = 4
 MAXIMUM_WORKERS = 15
@@ -116,30 +117,32 @@ class ParallelProcessing:
             self.pdb_codes_chunked.append(self.pdb_codes[i :: self.bp.threads])
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
-        handle_ma = MetAromatic(self.params)
+        ma = MetAromatic(self.params)
 
         for code in chunk:
             if self.bool_disable_workers:
                 self.log.debug("Received interrupt signal - stopping worker thread...")
                 break
 
+            status = "Success"
+            self.count += 1
+
             try:
-                fs = handle_ma.get_met_aromatic_interactions(code)
-                results = {
-                    "_id": code,
-                    "ok": fs.OK,
-                    "status": fs.status,
-                    "results": fs.interactions,
-                }
-            except Exception:
-                self.count += 1
-                self.log.exception(
+                fs = ma.get_met_aromatic_interactions(code)
+            except SearchError as error:
+                status = str(error)
+                self.log.error(
                     "Could not process code: %s. Count: %i", code, self.count
                 )
             else:
-                self.count += 1
                 self.log.info("Processed %s. Count: %i", code, self.count)
-                self.collection.insert_one(results)
+                self.collection.insert_one(
+                    {
+                        "_id": code,
+                        "status": status,
+                        "results": fs.interactions,
+                    }
+                )
 
     def deploy_jobs(self) -> None:
         self.log.debug("Deploying %i workers!", self.bp.threads)
