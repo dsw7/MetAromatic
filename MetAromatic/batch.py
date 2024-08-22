@@ -132,6 +132,8 @@ class ParallelProcessing:
                 )
             else:
                 self.log.info("Processed %s. Count: %i", code, self.count)
+
+                # XXX cannot insert Interactions object into MongoDB
                 self.collection.insert_one(
                     {
                         "_id": code,
