@@ -7,7 +7,7 @@ from datetime import datetime
 from concurrent import futures
 from signal import signal, SIGINT
 from pymongo import MongoClient, errors, collection
-from .consts import TMPDIR, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
+from .consts import PATH_BATCH_LOG, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .errors import SearchError
 from .models import MetAromaticParams, BatchParams
 from .pair import MetAromatic
@@ -54,16 +54,12 @@ class ParallelProcessing:
         self.bool_disable_workers = False
 
     def set_log_filehandler(self) -> None:
-        self.log.debug("Setting up additional logger")
+        self.log.info('Will log to file "%s"', PATH_BATCH_LOG)
 
-        logfile_name = path.join(TMPDIR, "met_aromatic.log")
-        self.log.info('Will log to file "%s"', logfile_name)
-
-        channel = logging.FileHandler(logfile_name)
-        formatter = logging.Formatter(
-            fmt=LOGRECORD_FORMAT, datefmt=ISO_8601_DATE_FORMAT
+        channel = logging.FileHandler(PATH_BATCH_LOG)
+        channel.setFormatter(
+            logging.Formatter(fmt=LOGRECORD_FORMAT, datefmt=ISO_8601_DATE_FORMAT)
         )
-        channel.setFormatter(formatter)
 
         self.log.addHandler(channel)
 

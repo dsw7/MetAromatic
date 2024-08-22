@@ -1,9 +1,14 @@
+from pathlib import Path
 from tempfile import gettempdir
 from numpy import sin, cos, pi
 
+# General
+TMPDIR = Path(gettempdir())
+PATH_BATCH_LOG = TMPDIR / "met_aromatic.log"
+
 # Logging
-LOGRECORD_FORMAT = "%(asctime)s %(threadName)s %(levelname)s %(message)s"
 ISO_8601_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+LOGRECORD_FORMAT = "%(asctime)s %(threadName)s %(levelname)s %(message)s"
 
 # Linear algebra
 # See https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula "Matrix notation" section
@@ -22,6 +27,3 @@ DICT_ATOMS_TRP = {
     "CZ2": "E",
     "CE2": "F",
 }
-
-# General
-TMPDIR = gettempdir()
