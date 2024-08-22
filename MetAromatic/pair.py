@@ -29,7 +29,7 @@ class MetAromaticBase(ABC):
         self.f: FeatureSpace
 
     @abstractmethod
-    def load_pdb_file(self, source: str) -> bool:
+    def load_pdb_file(self, source: str) -> None:
         pass
 
     def get_first_model(self) -> None:
@@ -55,6 +55,7 @@ class MetAromaticBase(ABC):
 
     def get_phe_coordinates(self) -> None:
         self.log.debug("Isolating PHE coordinates from feature space")
+
         pattern = get_search_pattern(res="phe", chain=self.params.chain)
 
         for line in self.f.first_model:
@@ -63,6 +64,7 @@ class MetAromaticBase(ABC):
 
     def get_tyr_coordinates(self) -> None:
         self.log.debug("Isolating TYR coordinates from feature space")
+
         pattern = get_search_pattern(res="tyr", chain=self.params.chain)
 
         for line in self.f.first_model:
@@ -71,24 +73,12 @@ class MetAromaticBase(ABC):
 
     def get_trp_coordinates(self) -> None:
         self.log.debug("Isolating TRP coordinates from feature space")
+
         pattern = get_search_pattern(res="trp", chain=self.params.chain)
 
         for line in self.f.first_model:
             if match(pattern, line):
                 self.f.coords_trp.append(line.split()[:9])
-
-    def check_if_not_coordinates(self) -> bool:
-        self.log.debug(
-            "Ensuring that at least one aromatic residue exists in feature space"
-        )
-
-        if not any([self.f.coords_phe, self.f.coords_tyr, self.f.coords_trp]):
-            self.log.error("No aromatic residues found for entry")
-            self.f.status = "No PHE/TYR/TRP residues"
-            self.f.OK = False
-            return False
-
-        return True
 
     def get_met_lone_pairs_cp(self) -> None:
         for position, groups in groupby(self.f.coords_met, lambda entry: entry[5]):
@@ -176,24 +166,20 @@ class MetAromaticBase(ABC):
                 )
 
         if len(self.f.interactions) == 0:
-            self.log.info("Found no Met-aromatic interactions for entry")
-            self.f.status = "No interactions"
+            raise SearchError("No interactions")
 
     def get_met_aromatic_interactions(self, source: str) -> FeatureSpace:
         self.f = FeatureSpace()
 
-        if not self.load_pdb_file(source=source):
-            return self.f
-
+        self.load_pdb_file(source=source)
         self.get_first_model()
         self.get_met_coordinates()
-
         self.get_phe_coordinates()
         self.get_tyr_coordinates()
         self.get_trp_coordinates()
 
-        if not self.check_if_not_coordinates():
-            return self.f
+        if len(self.f.coords_phe + self.f.coords_tyr + self.f.coords_trp) == 0:
+            raise SearchError("No PHE/TYR/TRP residues")
 
         self.log.debug(
             'Computing MET lone pair positions using "%s" model', self.params.model
@@ -210,7 +196,7 @@ class MetAromaticBase(ABC):
 
 
 class MetAromatic(MetAromaticBase):
-    def load_pdb_file(self, source: str) -> bool:
+    def load_pdb_file(self, source: str) -> None:
         self.log.debug('Fetching PDB file "%s"', source)
 
         code = source.lower()
@@ -224,34 +210,20 @@ class MetAromatic(MetAromaticBase):
             try:
                 urlcleanup()
                 urlretrieve(ftp_url, f.name)
-            except URLError:
-                self.log.error('Invalid PDB entry "%s"', code)
-
-                self.f.status = "Invalid PDB entry"
-                self.f.OK = False
-                return False
+            except URLError as error:
+                raise SearchError(f"Invalid PDB entry '{code}'") from error
 
             with gz_open(f.name, "rt") as gz:
                 for line in gz:
                     self.f.raw_data.append(line)
 
-        return True
-
 
 class MetAromaticLocal(MetAromaticBase):
-    def load_pdb_file(self, source: str) -> bool:
+    def load_pdb_file(self, source: str) -> None:
         self.log.debug('Reading local file "%s"', source)
 
         if not path.exists(source):
-            errmsg = f'File "{source}" does not exist'
-            self.log.error(errmsg)
-
-            self.f.status = errmsg
-            self.f.OK = False
-
-            return False
+            raise SearchError(f'File "{source}" does not exist')
 
         for line in open(source):
             self.f.raw_data.append(line)
-
-        return True
