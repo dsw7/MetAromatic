@@ -112,12 +112,10 @@ def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
 )
 @click.pass_obj
 def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
-    from MetAromatic.bridge import GetBridgingInteractions
+    from .bridge import get_bridges
 
     try:
-        bs: BridgeSpace = GetBridgingInteractions(obj).get_bridging_interactions(
-            vertices=vertices, code=code
-        )
+        bs: BridgeSpace = get_bridges(params=obj, code=code, vertices=vertices)
         bs.print_bridges()
     except SearchError:
         sys.exit("Search failed!")

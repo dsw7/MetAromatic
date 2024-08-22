@@ -1,4 +1,3 @@
-from MetAromatic.pair import MetAromaticLocal
-from MetAromatic.pair import MetAromatic
-from MetAromatic.bridge import GetBridgingInteractions
+from MetAromatic.pair import MetAromaticLocal, MetAromatic
+from MetAromatic.bridge import get_bridges
 from MetAromatic.batch import ParallelProcessing
