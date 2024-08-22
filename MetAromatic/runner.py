@@ -33,19 +33,22 @@ def setup_child_logger(debug: bool) -> None:
 @click.option("--debug", is_flag=True, default=False, help="Enable debug logging")
 @click.option(
     "--cutoff-distance",
-    type=click.FloatRange(min=0),
     default=4.9,
-    metavar="<Angstroms>",
+    help="Specify a cutoff distance in Angstroms",
+    type=click.FloatRange(min=0),
 )
 @click.option(
     "--cutoff-angle",
-    type=click.FloatRange(min=0, max=360),
     default=109.5,
-    metavar="<degrees>",
+    help="Specify a cutoff angle in degrees",
+    type=click.FloatRange(min=0, max=360),
 )
-@click.option("--chain", default="A", metavar="<[A-Z]>")
+@click.option("--chain", default="A", help="Specify a chain ID")
 @click.option(
-    "--model", type=click.Choice(["cp", "rm"]), default="cp", metavar="<cp|rm>"
+    "--model",
+    default="cp",
+    help="Specify a lone pair interpolation model",
+    type=click.Choice(["cp", "rm"]),
 )
 @click.pass_context
 def cli(
@@ -96,7 +99,12 @@ def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
 
 @cli.command(help="Run a bridging interaction query on a single PDB entry.")
 @click.argument("code")
-@click.option("--vertices", default=3, type=click.IntRange(min=3), metavar="<vertices>")
+@click.option(
+    "--vertices",
+    default=3,
+    type=click.IntRange(min=3),
+    help="Specify number of vertices",
+)
 @click.pass_obj
 def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
     from MetAromatic.bridge import GetBridgingInteractions
