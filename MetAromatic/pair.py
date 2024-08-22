@@ -165,9 +165,6 @@ class MetAromaticBase(ABC):
                     )
                 )
 
-        if len(self.f.interactions) == 0:
-            raise SearchError("No interactions")
-
     def get_met_aromatic_interactions(self, source: str) -> FeatureSpace:
         self.f = FeatureSpace()
 
@@ -191,6 +188,9 @@ class MetAromaticBase(ABC):
 
         self.get_midpoints()
         self.apply_met_aromatic_criteria()
+
+        if len(self.f.interactions) == 0:
+            raise SearchError("No Met-aromatic interactions")
 
         return self.f
 
