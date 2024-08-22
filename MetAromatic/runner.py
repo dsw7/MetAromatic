@@ -1,6 +1,7 @@
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
 # pylint: disable=C0301   # Disable "Line too long"
 
+from pathlib import Path
 from typing import Literal
 import sys
 import logging
@@ -183,7 +184,7 @@ def batch(
         host=host,
         overwrite=overwrite,
         password=password,
-        path_batch_file=path_batch_file,
+        path_batch_file=Path(path_batch_file),
         port=port,
         threads=threads,
         username=username,

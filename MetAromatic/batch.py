@@ -1,7 +1,5 @@
 import logging
-import sys
 from re import split
-from os import path
 from time import time
 from datetime import datetime
 from concurrent import futures
@@ -67,20 +65,21 @@ class ParallelProcessing:
         if not self.bp.overwrite:
             return
 
-        self.log.debug('Will overwrite collection "%s" if exists', self.bp.collection)
+        self.log.info('Will overwrite collection "%s" if exists', self.bp.collection)
         self.collection.database.drop_collection(self.bp.collection)
 
         info_collection = f"{self.bp.collection}_info"
 
-        self.log.debug('Will overwrite collection "%s" if exists', info_collection)
+        self.log.info('Will overwrite collection "%s" if exists', info_collection)
         self.collection.database.drop_collection(info_collection)
 
     def ensure_collection_does_not_exist(self) -> None:
         collections = self.collection.database.list_collection_names()
 
         if self.bp.collection in collections:
-            self.log.error('Collection "%s" exists! Cannot proceed', self.bp.collection)
-            sys.exit("Batch job failed")
+            raise SearchError(
+                'Collection "{self.bp.collection}" exists! Cannot proceed'
+            )
 
     def disable_all_workers(self, *args) -> None:
         self.log.info("Detected SIGINT!")
@@ -89,7 +88,7 @@ class ParallelProcessing:
         self.bool_disable_workers = True
 
     def register_ipc_signals(self) -> None:
-        self.log.debug("Registering SIGINT to thread terminator")
+        self.log.info("Registering SIGINT to thread terminator")
 
         self.bool_disable_workers = False
         signal(SIGINT, self.disable_all_workers)
@@ -97,8 +96,8 @@ class ParallelProcessing:
     def get_pdb_code_chunks(self) -> None:
         self.log.info("Imported pdb codes from file %s", self.bp.path_batch_file)
 
-        if not path.exists(self.bp.path_batch_file):
-            sys.exit(f"Path {self.bp.path_batch_file} does not exist")
+        if not self.bp.path_batch_file.exists():
+            raise SearchError(f"Path {self.bp.path_batch_file} does not exist")
 
         with open(self.bp.path_batch_file) as f:
             for line in f:
@@ -108,7 +107,7 @@ class ParallelProcessing:
 
         self.num_codes = len(self.pdb_codes)
 
-        self.log.debug("Splitting list of pdb codes into %i chunks", self.bp.threads)
+        self.log.info("Splitting list of pdb codes into %i chunks", self.bp.threads)
 
         for i in range(self.bp.threads):
             self.pdb_codes_chunked.append(self.pdb_codes[i :: self.bp.threads])
@@ -118,7 +117,7 @@ class ParallelProcessing:
 
         for code in chunk:
             if self.bool_disable_workers:
-                self.log.debug("Received interrupt signal - stopping worker thread...")
+                self.log.info("Received interrupt signal - stopping worker thread...")
                 break
 
             status = "Success"
@@ -142,7 +141,7 @@ class ParallelProcessing:
                 )
 
     def deploy_jobs(self) -> None:
-        self.log.debug("Deploying %i workers!", self.bp.threads)
+        self.log.info("Deploying %i workers!", self.bp.threads)
 
         batch_job_metadata = {
             "num_workers": self.bp.threads,

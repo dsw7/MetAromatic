@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Literal
 from numpy import ndarray
 from pydantic import BaseModel
@@ -19,7 +20,7 @@ class BatchParams(BaseModel):
     host: str
     overwrite: bool
     password: str
-    path_batch_file: str
+    path_batch_file: Path
     port: int
     threads: int
     username: str
