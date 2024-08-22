@@ -66,8 +66,6 @@ class FeatureSpace:
     midpoints_tyr: Midpoints = field(default_factory=list)
     midpoints_trp: Midpoints = field(default_factory=list)
     interactions: list[Interactions] = field(default_factory=list)
-    OK: bool = True
-    status: str = "Success"
 
     def print_interactions(self) -> None:
         print_separator()
