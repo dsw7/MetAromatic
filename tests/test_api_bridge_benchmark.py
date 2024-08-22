@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from json import loads
 from pathlib import Path
 import pytest
-from MetAromatic import GetBridgingInteractions
+from MetAromatic import get_bridges
 from MetAromatic.models import MetAromaticParams, BridgeSpace
 
 NETWORK_SIZE = 4
@@ -55,8 +55,8 @@ def get_control_bridge_test_ids() -> list[str]:
 )
 def test_bridge_benchmark(bridge: ControlBridge) -> None:
     try:
-        bs: BridgeSpace = GetBridgingInteractions(PARAMS).get_bridging_interactions(
-            vertices=NETWORK_SIZE, code=bridge.pdb_code
+        bs: BridgeSpace = get_bridges(
+            code=bridge.pdb_code, params=PARAMS, vertices=NETWORK_SIZE
         )
     except IndexError:
         pytest.skip(

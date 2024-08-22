@@ -1,7 +1,7 @@
 import pytest
 from MetAromatic import get_bridges
 from MetAromatic.errors import SearchError
-from MetAromatic.models import MetAromaticParams, BridgeSpace
+from MetAromatic.models import MetAromaticParams
 
 
 @pytest.mark.parametrize(
