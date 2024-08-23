@@ -8,7 +8,7 @@ from time import time
 from pymongo import MongoClient, errors, collection
 from .consts import PATH_BATCH_LOG, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .errors import SearchError
-from .models import MetAromaticParams, BatchParams
+from .models import MetAromaticParams, FeatureSpace, BatchParams
 from .pair import MetAromatic
 
 MAXIMUM_WORKERS = 15
@@ -136,7 +136,7 @@ class ParallelProcessing:
             self.count += 1
 
             try:
-                fs = ma.get_met_aromatic_interactions(code)
+                fs: FeatureSpace = ma.get_met_aromatic_interactions(code)
             except SearchError as error:
                 status = str(error)
                 self.log.error(
@@ -144,13 +144,11 @@ class ParallelProcessing:
                 )
             else:
                 self.log.info("Processed %s. Count: %i", code, self.count)
-
-                # XXX cannot insert Interactions object into MongoDB
                 self.collection.insert_one(
                     {
                         "_id": code,
                         "status": status,
-                        "results": fs.interactions,
+                        "results": fs.serialize_interactions(),
                     }
                 )
 

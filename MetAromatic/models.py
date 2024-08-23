@@ -1,10 +1,19 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from typing import Literal, TypedDict
 from numpy import ndarray
 from pydantic import BaseModel
 from .aliases import Midpoints, Coordinates
 from .utils import print_separator
+
+
+class DictInteractions(TypedDict):
+    aromatic_position: int
+    aromatic_residue: str
+    met_phi_angle: float
+    met_theta_angle: float
+    methionine_position: int
+    norm: float
 
 
 class MetAromaticParams(BaseModel):
@@ -43,6 +52,17 @@ class Interactions:
     methionine_position: int
     norm: float
 
+    def to_dict(self) -> DictInteractions:
+        # __dict__ will throw mypy error since the type is dict[str, Any]
+        return DictInteractions(
+            aromatic_position=self.aromatic_position,
+            aromatic_residue=self.aromatic_residue,
+            met_phi_angle=self.met_phi_angle,
+            met_theta_angle=self.met_theta_angle,
+            methionine_position=self.methionine_position,
+            norm=self.norm,
+        )
+
     def print_interaction(self) -> None:
         print(
             f"{self.aromatic_residue:<10} "
@@ -67,6 +87,9 @@ class FeatureSpace:
     midpoints_tyr: Midpoints = field(default_factory=list)
     midpoints_trp: Midpoints = field(default_factory=list)
     interactions: list[Interactions] = field(default_factory=list)
+
+    def serialize_interactions(self) -> list[DictInteractions]:
+        return [i.to_dict() for i in self.interactions]
 
     def print_interactions(self) -> None:
         print_separator()
