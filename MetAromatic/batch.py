@@ -139,21 +139,12 @@ class ParallelProcessing:
             except SearchError as error:
                 doc["errmsg"] = str(error)
             else:
-                doc["results"] = fs.serialize_interactions()
+                doc["results"] = fs.serialize_interactions()  # type: ignore
 
             collection.insert_one(doc)
 
     def deploy_jobs(self) -> None:
         self.log.info("Deploying %i workers!", self.bp.threads)
-
-        batch_job_metadata = {
-            "num_workers": self.bp.threads,
-            "data_acquisition_date": datetime.now(),
-            **self.params.dict(),
-        }
-
-        info_collection = f"{self.bp.collection}_info"
-        collection_info = self.database[info_collection]
 
         with ThreadPoolExecutor(max_workers=15, thread_name_prefix="Batch") as executor:
             start_time = time()
@@ -164,20 +155,27 @@ class ParallelProcessing:
             ]
 
             if wait(workers, return_when=ALL_COMPLETED):
-                execution_time = round(time() - start_time, 3)
+                exec_time = round(time() - start_time, 3)
 
                 self.log.info("Batch job complete!")
                 self.log.info("Results loaded into database: %s", self.bp.database)
                 self.log.info("Results loaded into collection: %s", self.bp.collection)
-                self.log.info(
-                    "Batch job statistics loaded into collection: %s",
-                    info_collection,
-                )
-                self.log.info("Batch job execution time: %f s", execution_time)
+                self.log.info("Batch job execution time: %f s", exec_time)
+                self.insert_summary_doc(exec_time)
 
-                batch_job_metadata["batch_job_execution_time"] = execution_time
-                batch_job_metadata["number_of_entries"] = self.num_codes
-                collection_info.insert_one(batch_job_metadata)
+    def insert_summary_doc(self, exec_time: float) -> None:
+        info_collection = f"{self.bp.collection}_info"
+
+        batch_job_metadata = {
+            "batch_job_execution_time": exec_time,
+            "data_acquisition_date": datetime.now(),
+            "num_workers": self.bp.threads,
+            "number_of_entries": self.num_codes,
+            **self.params.dict(),
+        }
+
+        self.database[info_collection].insert_one(batch_job_metadata)
+        self.log.info("Statistics loaded into collection: %s", info_collection)
 
     def main(self) -> None:
         self.set_log_filehandler()
