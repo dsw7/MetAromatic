@@ -1,20 +1,18 @@
 import logging
-from concurrent import futures
+from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 from datetime import datetime
 from pathlib import Path
 from re import split
 from signal import signal, SIGINT
 from time import time
-from pymongo import MongoClient, errors, collection
+from pymongo import MongoClient, errors, database
 from .consts import PATH_BATCH_LOG, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .errors import SearchError
 from .models import MetAromaticParams, FeatureSpace, BatchParams
 from .pair import MetAromatic
 
-MAXIMUM_WORKERS = 15
 
-
-def _get_collection_handle(bp: BatchParams) -> collection.Collection:
+def _get_database_handle(bp: BatchParams) -> database.Database:
     client: MongoClient = MongoClient(
         host=bp.host,
         password=bp.password,
@@ -34,7 +32,7 @@ def _get_collection_handle(bp: BatchParams) -> collection.Collection:
             errmsg = error.details["errmsg"]
         raise SearchError(errmsg) from error
 
-    return client[bp.database][bp.collection]
+    return client[bp.database]
 
 
 def _load_pdb_codes(batch_file: Path) -> list[str]:
@@ -66,7 +64,7 @@ class ParallelProcessing:
     def __init__(self, params: MetAromaticParams, bp: BatchParams) -> None:
         self.params = params
         self.bp = bp
-        self.collection = _get_collection_handle(bp)
+        self.database = _get_database_handle(bp)
 
         self.chunks: list[list[str]] = []
         self.num_codes = 0
@@ -88,19 +86,17 @@ class ParallelProcessing:
             return
 
         self.log.info('Will overwrite collection "%s" if exists', self.bp.collection)
-        self.collection.database.drop_collection(self.bp.collection)
+        self.database.drop_collection(self.bp.collection)
 
         info_collection = f"{self.bp.collection}_info"
 
         self.log.info('Will overwrite collection "%s" if exists', info_collection)
-        self.collection.database.drop_collection(info_collection)
+        self.database.drop_collection(info_collection)
 
     def ensure_collection_does_not_exist(self) -> None:
-        collections = self.collection.database.list_collection_names()
-
-        if self.bp.collection in collections:
+        if self.bp.collection in self.database.list_collection_names():
             raise SearchError(
-                'Collection "{self.bp.collection}" exists! Cannot proceed'
+                f'Collection "{self.bp.collection}" exists! Cannot proceed'
             )
 
     def disable_all_workers(self, *args) -> None:
@@ -126,6 +122,7 @@ class ParallelProcessing:
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
         ma = MetAromatic(self.params)
+        collection = self.database[self.bp.collection]
 
         for code in chunk:
             if self.bool_disable_workers:
@@ -144,7 +141,7 @@ class ParallelProcessing:
                 )
             else:
                 self.log.info("Processed %s. Count: %i", code, self.count)
-                self.collection.insert_one(
+                collection.insert_one(
                     {
                         "_id": code,
                         "status": status,
@@ -161,12 +158,10 @@ class ParallelProcessing:
             **self.params.dict(),
         }
 
-        name_collection_info = f"{self.bp.collection}_info"
-        collection_info = self.collection.database[name_collection_info]
+        info_collection = f"{self.bp.collection}_info"
+        collection_info = self.database[info_collection]
 
-        with futures.ThreadPoolExecutor(
-            max_workers=MAXIMUM_WORKERS, thread_name_prefix="Batch"
-        ) as executor:
+        with ThreadPoolExecutor(max_workers=15, thread_name_prefix="Batch") as executor:
             start_time = time()
 
             workers = [
@@ -174,7 +169,7 @@ class ParallelProcessing:
                 for chunk in self.chunks
             ]
 
-            if futures.wait(workers, return_when=futures.ALL_COMPLETED):
+            if wait(workers, return_when=ALL_COMPLETED):
                 execution_time = round(time() - start_time, 3)
 
                 self.log.info("Batch job complete!")
@@ -182,7 +177,7 @@ class ParallelProcessing:
                 self.log.info("Results loaded into collection: %s", self.bp.collection)
                 self.log.info(
                     "Batch job statistics loaded into collection: %s",
-                    name_collection_info,
+                    info_collection,
                 )
                 self.log.info("Batch job execution time: %f s", execution_time)
 
