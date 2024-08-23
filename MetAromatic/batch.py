@@ -68,8 +68,7 @@ class ParallelProcessing:
         self.bp = bp
         self.collection = _get_collection_handle(bp)
 
-        self.pdb_codes: list[str] = []
-        self.pdb_codes_chunked: list[list[str]] = []
+        self.chunks: list[list[str]] = []
         self.num_codes = 0
         self.count = 0
         self.bool_disable_workers = False
@@ -119,11 +118,11 @@ class ParallelProcessing:
     def get_pdb_code_chunks(self) -> None:
         self.log.info("Imported pdb codes from file %s", self.bp.path_batch_file)
 
-        self.pdb_codes = _load_pdb_codes(self.bp.path_batch_file)
-        self.num_codes = len(self.pdb_codes)
+        pdb_codes = _load_pdb_codes(self.bp.path_batch_file)
+        self.num_codes = len(pdb_codes)
 
         self.log.info("Splitting list of pdb codes into %i chunks", self.bp.threads)
-        self.pdb_codes_chunked = _chunk_pdb_codes(self.bp.threads, self.pdb_codes)
+        self.chunks = _chunk_pdb_codes(self.bp.threads, pdb_codes)
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
         ma = MetAromatic(self.params)
@@ -174,7 +173,7 @@ class ParallelProcessing:
 
             workers = [
                 executor.submit(self.worker_met_aromatic, chunk)
-                for chunk in self.pdb_codes_chunked
+                for chunk in self.chunks
             ]
 
             if futures.wait(workers, return_when=futures.ALL_COMPLETED):
