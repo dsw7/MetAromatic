@@ -51,6 +51,15 @@ def _load_pdb_codes(batch_file: Path) -> list[str]:
     return pdb_codes
 
 
+def _chunk_pdb_codes(num_chunks: int, pdb_codes: list[str]) -> list[list[str]]:
+    chunks = []
+
+    for i in range(num_chunks):
+        chunks.append(pdb_codes[i::num_chunks])
+
+    return chunks
+
+
 class ParallelProcessing:
     log = logging.getLogger("met-aromatic")
 
@@ -114,9 +123,7 @@ class ParallelProcessing:
         self.num_codes = len(self.pdb_codes)
 
         self.log.info("Splitting list of pdb codes into %i chunks", self.bp.threads)
-
-        for i in range(self.bp.threads):
-            self.pdb_codes_chunked.append(self.pdb_codes[i :: self.bp.threads])
+        self.pdb_codes_chunked = _chunk_pdb_codes(self.bp.threads, self.pdb_codes)
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
         ma = MetAromatic(self.params)
