@@ -1,20 +1,20 @@
 import logging
-from re import split
-from time import time
-from datetime import datetime
 from concurrent import futures
+from datetime import datetime
+from pathlib import Path
+from re import split
 from signal import signal, SIGINT
+from time import time
 from pymongo import MongoClient, errors, collection
 from .consts import PATH_BATCH_LOG, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .errors import SearchError
 from .models import MetAromaticParams, BatchParams
 from .pair import MetAromatic
 
-LEN_PDB_CODE = 4
 MAXIMUM_WORKERS = 15
 
 
-def get_collection_handle(bp: BatchParams) -> collection.Collection:
+def _get_collection_handle(bp: BatchParams) -> collection.Collection:
     client: MongoClient = MongoClient(
         host=bp.host,
         password=bp.password,
@@ -37,13 +37,27 @@ def get_collection_handle(bp: BatchParams) -> collection.Collection:
     return client[bp.database][bp.collection]
 
 
+def _load_pdb_codes(batch_file: Path) -> list[str]:
+    if not batch_file.exists():
+        raise SearchError(f"Path {batch_file} does not exist")
+
+    pdb_codes = []
+
+    for line in batch_file.read_text().splitlines():
+        for code in split(r"(;|,|\s)\s*", line):
+            if len(code) == 4:
+                pdb_codes.append(code)
+
+    return pdb_codes
+
+
 class ParallelProcessing:
     log = logging.getLogger("met-aromatic")
 
     def __init__(self, params: MetAromaticParams, bp: BatchParams) -> None:
         self.params = params
         self.bp = bp
-        self.collection = get_collection_handle(bp)
+        self.collection = _get_collection_handle(bp)
 
         self.pdb_codes: list[str] = []
         self.pdb_codes_chunked: list[list[str]] = []
@@ -96,15 +110,7 @@ class ParallelProcessing:
     def get_pdb_code_chunks(self) -> None:
         self.log.info("Imported pdb codes from file %s", self.bp.path_batch_file)
 
-        if not self.bp.path_batch_file.exists():
-            raise SearchError(f"Path {self.bp.path_batch_file} does not exist")
-
-        with open(self.bp.path_batch_file) as f:
-            for line in f:
-                for row in split(r"(;|,|\s)\s*", line):
-                    if len(row) == LEN_PDB_CODE:
-                        self.pdb_codes.append(row)
-
+        self.pdb_codes = _load_pdb_codes(self.bp.path_batch_file)
         self.num_codes = len(self.pdb_codes)
 
         self.log.info("Splitting list of pdb codes into %i chunks", self.bp.threads)
