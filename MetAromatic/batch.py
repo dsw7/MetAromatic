@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from re import split
 from signal import signal, SIGINT
+from threading import Lock
 from time import time
 from pymongo import MongoClient, errors, database
 from .consts import PATH_BATCH_LOG, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
@@ -60,6 +61,7 @@ def _chunk_pdb_codes(num_chunks: int, pdb_codes: list[str]) -> list[list[str]]:
 
 class ParallelProcessing:
     log = logging.getLogger("met-aromatic")
+    lock = Lock()
 
     def __init__(self, params: MetAromaticParams, bp: BatchParams) -> None:
         self.params = params
@@ -129,9 +131,10 @@ class ParallelProcessing:
                 self.log.info("Received interrupt signal - stopping worker thread...")
                 break
 
-            self.count += 1
-            self.log.info("Processing %s. Count: %i", code, self.count)
+            with self.lock:
+                self.count += 1
 
+            self.log.info("Processing %s. Count: %i", code, self.count)
             doc = {"_id": code}
 
             try:
