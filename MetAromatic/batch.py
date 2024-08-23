@@ -129,25 +129,19 @@ class ParallelProcessing:
                 self.log.info("Received interrupt signal - stopping worker thread...")
                 break
 
-            status = "Success"
             self.count += 1
+            self.log.info("Processing %s. Count: %i", code, self.count)
+
+            doc = {"_id": code}
 
             try:
                 fs: FeatureSpace = ma.get_met_aromatic_interactions(code)
             except SearchError as error:
-                status = str(error)
-                self.log.error(
-                    "Could not process code: %s. Count: %i", code, self.count
-                )
+                doc["errmsg"] = str(error)
             else:
-                self.log.info("Processed %s. Count: %i", code, self.count)
-                collection.insert_one(
-                    {
-                        "_id": code,
-                        "status": status,
-                        "results": fs.serialize_interactions(),
-                    }
-                )
+                doc["results"] = fs.serialize_interactions()
+
+            collection.insert_one(doc)
 
     def deploy_jobs(self) -> None:
         self.log.info("Deploying %i workers!", self.bp.threads)
