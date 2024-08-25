@@ -8,7 +8,7 @@ import logging
 import click
 from .consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .errors import SearchError
-from .models import MetAromaticParams, BatchParams, FeatureSpace, BridgeSpace
+from .models import MetAromaticParams, BatchParams
 
 
 def setup_child_logger(debug: bool) -> None:
@@ -69,36 +69,26 @@ def cli(
     setup_child_logger(debug=debug)
 
 
-def get_pairs_from_local_file(source: str, params: MetAromaticParams) -> FeatureSpace:
-    from .pair import MetAromaticLocal
-
-    return MetAromaticLocal(params).get_met_aromatic_interactions(source)
-
-
-def get_pairs_from_pdb(source: str, params: MetAromaticParams) -> FeatureSpace:
-    from .pair import MetAromatic
-
-    return MetAromatic(params).get_met_aromatic_interactions(source)
-
-
-@cli.command(help="Run a Met-aromatic query on a single PDB entry.")
-@click.option(
-    "--read-local",
-    is_flag=True,
-    default=False,
-    help="Specify whether to read a local PDB file.",
-)
-@click.argument("source")
+@cli.command(help="Run a Met-aromatic query against a single PDB entry.")
+@click.argument("pdb_code")
 @click.pass_obj
-def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
-    try:
-        fs: FeatureSpace
-        if read_local:
-            fs = get_pairs_from_local_file(source, obj)
-        else:
-            fs = get_pairs_from_pdb(source, obj)
+def pair(obj: MetAromaticParams, pdb_code: str) -> None:
+    from .command_pair import get_pairs_from_pdb
 
-        fs.print_interactions()
+    try:
+        get_pairs_from_pdb(pdb_code=pdb_code, params=obj)
+    except SearchError:
+        sys.exit("Search failed!")
+
+
+@cli.command(help="Run a Met-aromatic query against a local PDB file.")
+@click.argument("pdb_file", type=click.Path(exists=True, path_type=Path))
+@click.pass_obj
+def read_local(obj: MetAromaticParams, pdb_file: Path) -> None:
+    from .command_pair import get_pairs_from_file
+
+    try:
+        get_pairs_from_file(filepath=pdb_file, params=obj)
     except SearchError:
         sys.exit("Search failed!")
 
@@ -113,11 +103,10 @@ def pair(obj: MetAromaticParams, read_local: bool, source: str) -> None:
 )
 @click.pass_obj
 def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
-    from .bridge import get_bridges
+    from .command_bridge import get_bridges
 
     try:
-        bs: BridgeSpace = get_bridges(params=obj, code=code, vertices=vertices)
-        bs.print_bridges()
+        get_bridges(params=obj, code=code, vertices=vertices)
     except SearchError:
         sys.exit("Search failed!")
 
