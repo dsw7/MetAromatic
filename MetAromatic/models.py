@@ -76,7 +76,6 @@ class Interactions:
 
 @dataclass
 class FeatureSpace:
-    raw_data: list[str] = field(default_factory=list)
     first_model: list[str] = field(default_factory=list)
     coords_met: Coordinates = field(default_factory=list)
     coords_phe: Coordinates = field(default_factory=list)
