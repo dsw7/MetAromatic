@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 from datetime import datetime
+from json import dumps
 from logging import getLogger
 from pathlib import Path
 from re import split
@@ -157,9 +158,14 @@ class ParallelProcessing:
         }
 
         info_collection = _get_info_collection(self.bp.collection)
-        self.db[info_collection].insert_one(batch_job_metadata)
 
-        LOGGER.info("Statistics loaded into collection: %s", info_collection)
+        LOGGER.info(
+            "Loading:\n%s\nInto collection: %s",
+            dumps(batch_job_metadata, indent=4, default=str),
+            info_collection,
+        )
+
+        self.db[info_collection].insert_one(batch_job_metadata)
 
     def deploy_jobs(self) -> None:
         LOGGER.info("Deploying %i workers!", self.bp.threads)
