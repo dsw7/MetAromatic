@@ -3,7 +3,7 @@ from datetime import datetime
 from logging import getLogger
 from pathlib import Path
 from re import split
-from signal import signal, SIGINT
+from signal import signal, SIGINT, SIG_DFL
 from threading import Lock
 from time import time
 from pymongo import MongoClient, errors, database
@@ -109,12 +109,17 @@ class ParallelProcessing:
         LOGGER.info("Attempting to stop all workers!")
 
         self.bool_disable_workers = True
+        self._unregister_sigint()
 
-    def _register_ipc_signals(self) -> None:
+    def _register_sigint(self) -> None:
         LOGGER.info("Registering SIGINT to thread terminator")
 
         self.bool_disable_workers = False
         signal(SIGINT, self._disable_all_workers)
+
+    def _unregister_sigint(self) -> None:
+        LOGGER.info("Unregistering SIGINT from thread terminator")
+        signal(SIGINT, SIG_DFL)
 
     def _loop_over_chunk(self, chunk: PdbCodes) -> None:
         collection = self.db[self.bp.collection]
@@ -159,7 +164,7 @@ class ParallelProcessing:
     def deploy_jobs(self) -> None:
         LOGGER.info("Deploying %i workers!", self.bp.threads)
 
-        self._register_ipc_signals()
+        self._register_sigint()
 
         with ThreadPoolExecutor(max_workers=15, thread_name_prefix="Batch") as executor:
             start_time = time()
@@ -176,6 +181,8 @@ class ParallelProcessing:
                 LOGGER.info("Results loaded into collection: %s", self.bp.collection)
                 LOGGER.info("Batch job execution time: %f s", exec_time)
                 self._insert_summary_doc(exec_time)
+
+        self._unregister_sigint()
 
 
 def run_batch_job(params: MetAromaticParams, bp: BatchParams) -> None:
