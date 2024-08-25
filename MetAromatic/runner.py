@@ -1,6 +1,7 @@
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
 # pylint: disable=C0301   # Disable "Line too long"
 
+from logging import getLogger
 from pathlib import Path
 from typing import Literal
 import sys
@@ -39,6 +40,9 @@ def cli(
     cutoff_distance: float,
     model: Literal["cp", "rm"],
 ) -> None:
+    if debug:
+        getLogger("met-aromatic").setLevel("DEBUG")
+
     context.obj = MetAromaticParams(
         chain=chain,
         cutoff_angle=cutoff_angle,

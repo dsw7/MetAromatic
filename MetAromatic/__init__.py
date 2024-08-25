@@ -32,7 +32,7 @@ dictConfig(
         "loggers": {
             "met-aromatic": {
                 "handlers": ["stream", "file"],
-                "level": "DEBUG",
+                "level": "INFO",
             },
         },
     }
