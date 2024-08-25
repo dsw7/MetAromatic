@@ -5,3 +5,6 @@ Coordinates: TypeAlias = list[list[str]]
 Midpoints: TypeAlias = list[tuple[str, str, ndarray]]
 RawData: TypeAlias = list[str]
 Residues: TypeAlias = Literal["phe", "tyr", "trp", "met"]
+
+PdbCodes: TypeAlias = list[str]
+Chunks: TypeAlias = list[PdbCodes]

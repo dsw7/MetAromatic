@@ -8,7 +8,7 @@ from threading import Lock
 from time import time
 from pymongo import MongoClient, errors, database
 from .algorithm import MetAromatic
-from .aliases import RawData
+from .aliases import RawData, PdbCodes, Chunks
 from .consts import PATH_BATCH_LOG, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .errors import SearchError
 from .load_resources import load_pdb_file_from_rscb
@@ -26,6 +26,33 @@ def _add_filehandler_to_log() -> None:
     )
 
     LOGGER.addHandler(channel)
+
+
+def _load_pdb_codes(batch_file: Path) -> PdbCodes:
+    LOGGER.info("Importing pdb codes from file %s", batch_file)
+
+    if not batch_file.exists():
+        raise SearchError(f"Path {batch_file} does not exist")
+
+    pdb_codes = []
+
+    for line in batch_file.read_text().splitlines():
+        for code in split(r"(;|,|\s)\s*", line):
+            if len(code) == 4:
+                pdb_codes.append(code)
+
+    return pdb_codes
+
+
+def _chunk_pdb_codes(num_chunks: int, pdb_codes: PdbCodes) -> Chunks:
+    LOGGER.info("Splitting list of PDB codes into %i chunks", num_chunks)
+
+    chunks = []
+
+    for i in range(num_chunks):
+        chunks.append(pdb_codes[i::num_chunks])
+
+    return chunks
 
 
 def _get_database_handle(bp: BatchParams) -> database.Database:
@@ -51,11 +78,15 @@ def _get_database_handle(bp: BatchParams) -> database.Database:
     return client[bp.database]
 
 
+def _get_info_collection(base_collection: str) -> str:
+    return f"{base_collection}_info"
+
+
 def _overwrite_collection_if_enabled(db: database.Database, coll: str) -> None:
     LOGGER.info('Will overwrite collection "%s" if exists', coll)
     db.drop_collection(coll)
 
-    info_collection = f"{coll}_info"
+    info_collection = _get_info_collection(coll)
     LOGGER.info('Will overwrite collection "%s" if exists', info_collection)
 
     db.drop_collection(info_collection)
@@ -66,66 +97,37 @@ def _ensure_collection_does_not_exist(db: database.Database, coll: str) -> None:
         raise SearchError(f'Collection "{coll}" exists! Cannot proceed')
 
 
-def _load_pdb_codes(batch_file: Path) -> list[str]:
-    if not batch_file.exists():
-        raise SearchError(f"Path {batch_file} does not exist")
-
-    pdb_codes = []
-
-    for line in batch_file.read_text().splitlines():
-        for code in split(r"(;|,|\s)\s*", line):
-            if len(code) == 4:
-                pdb_codes.append(code)
-
-    return pdb_codes
-
-
-def _chunk_pdb_codes(num_chunks: int, pdb_codes: list[str]) -> list[list[str]]:
-    chunks = []
-
-    for i in range(num_chunks):
-        chunks.append(pdb_codes[i::num_chunks])
-
-    return chunks
-
-
 class ParallelProcessing:
     mutex = Lock()
 
     def __init__(
-        self, params: MetAromaticParams, bp: BatchParams, db: database.Database
+        self,
+        params: MetAromaticParams,
+        bp: BatchParams,
+        db: database.Database,
+        chunks: Chunks,
     ) -> None:
         self.params = params
         self.bp = bp
         self.db = db
+        self.chunks = chunks
 
-        self.chunks: list[list[str]] = []
-        self.num_codes = 0
         self.count = 0
         self.bool_disable_workers = False
 
-    def disable_all_workers(self, *args) -> None:
+    def _disable_all_workers(self, *args) -> None:
         LOGGER.info("Detected SIGINT!")
         LOGGER.info("Attempting to stop all workers!")
 
         self.bool_disable_workers = True
 
-    def register_ipc_signals(self) -> None:
+    def _register_ipc_signals(self) -> None:
         LOGGER.info("Registering SIGINT to thread terminator")
 
         self.bool_disable_workers = False
-        signal(SIGINT, self.disable_all_workers)
+        signal(SIGINT, self._disable_all_workers)
 
-    def get_pdb_code_chunks(self) -> None:
-        LOGGER.info("Imported pdb codes from file %s", self.bp.path_batch_file)
-
-        pdb_codes = _load_pdb_codes(self.bp.path_batch_file)
-        self.num_codes = len(pdb_codes)
-
-        LOGGER.info("Splitting list of pdb codes into %i chunks", self.bp.threads)
-        self.chunks = _chunk_pdb_codes(self.bp.threads, pdb_codes)
-
-    def worker_met_aromatic(self, chunk: list[str]) -> None:
+    def _loop_over_chunk(self, chunk: PdbCodes) -> None:
         collection = self.db[self.bp.collection]
 
         for code in chunk:
@@ -151,15 +153,30 @@ class ParallelProcessing:
 
             collection.insert_one(doc)
 
+    def _insert_summary_doc(self, exec_time: float) -> None:
+        batch_job_metadata = {
+            "batch_job_execution_time": exec_time,
+            "data_acquisition_date": datetime.now(),
+            "num_workers": self.bp.threads,
+            "number_of_entries": self.count,
+            **self.params.dict(),
+        }
+
+        info_collection = _get_info_collection(self.bp.collection)
+        self.db[info_collection].insert_one(batch_job_metadata)
+
+        LOGGER.info("Statistics loaded into collection: %s", info_collection)
+
     def deploy_jobs(self) -> None:
         LOGGER.info("Deploying %i workers!", self.bp.threads)
+
+        self._register_ipc_signals()
 
         with ThreadPoolExecutor(max_workers=15, thread_name_prefix="Batch") as executor:
             start_time = time()
 
             workers = [
-                executor.submit(self.worker_met_aromatic, chunk)
-                for chunk in self.chunks
+                executor.submit(self._loop_over_chunk, chunk) for chunk in self.chunks
             ]
 
             if wait(workers, return_when=ALL_COMPLETED):
@@ -169,30 +186,14 @@ class ParallelProcessing:
                 LOGGER.info("Results loaded into database: %s", self.bp.database)
                 LOGGER.info("Results loaded into collection: %s", self.bp.collection)
                 LOGGER.info("Batch job execution time: %f s", exec_time)
-                self.insert_summary_doc(exec_time)
-
-    def insert_summary_doc(self, exec_time: float) -> None:
-        info_collection = f"{self.bp.collection}_info"
-
-        batch_job_metadata = {
-            "batch_job_execution_time": exec_time,
-            "data_acquisition_date": datetime.now(),
-            "num_workers": self.bp.threads,
-            "number_of_entries": self.num_codes,
-            **self.params.dict(),
-        }
-
-        self.db[info_collection].insert_one(batch_job_metadata)
-        LOGGER.info("Statistics loaded into collection: %s", info_collection)
-
-    def main(self) -> None:
-        self.register_ipc_signals()
-        self.get_pdb_code_chunks()
-        self.deploy_jobs()
+                self._insert_summary_doc(exec_time)
 
 
 def run_batch_job(params: MetAromaticParams, bp: BatchParams) -> None:
     _add_filehandler_to_log()
+
+    pdb_codes = _load_pdb_codes(bp.path_batch_file)
+    chunks = _chunk_pdb_codes(num_chunks=bp.threads, pdb_codes=pdb_codes)
 
     db = _get_database_handle(bp)
 
@@ -201,4 +202,4 @@ def run_batch_job(params: MetAromaticParams, bp: BatchParams) -> None:
 
     _ensure_collection_does_not_exist(db=db, coll=bp.collection)
 
-    ParallelProcessing(params=params, bp=bp, db=db).main()
+    ParallelProcessing(params=params, bp=bp, db=db, chunks=chunks).deploy_jobs()
