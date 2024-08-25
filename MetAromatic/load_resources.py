@@ -14,9 +14,6 @@ LOGGER = getLogger("met-aromatic")
 def load_local_pdb_file(pdb_file: Path) -> RawData:
     LOGGER.debug('Reading local file "%s"', pdb_file)
 
-    if not pdb_file.exists():
-        raise SearchError(f'File "{pdb_file}" does not exist')
-
     return pdb_file.read_text().splitlines()
 
 

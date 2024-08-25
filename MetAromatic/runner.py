@@ -82,7 +82,9 @@ def pair(obj: MetAromaticParams, pdb_code: str) -> None:
 
 
 @cli.command(help="Run a Met-aromatic query against a local PDB file.")
-@click.argument("pdb_file", type=click.Path(exists=True, path_type=Path))
+@click.argument(
+    "pdb_file", type=click.Path(exists=True, dir_okay=False, path_type=Path)
+)
 @click.pass_obj
 def read_local(obj: MetAromaticParams, pdb_file: Path) -> None:
     from .command_pair import get_pairs_from_file
@@ -165,7 +167,7 @@ def batch(
     threads: int,
     username: str,
 ) -> None:
-    from MetAromatic.batch import ParallelProcessing
+    from .command_batch import ParallelProcessing
 
     params = BatchParams(
         collection=collection,
