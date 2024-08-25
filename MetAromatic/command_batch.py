@@ -14,6 +14,19 @@ from .errors import SearchError
 from .load_resources import load_pdb_file_from_rscb
 from .models import MetAromaticParams, FeatureSpace, BatchParams
 
+LOGGER = logging.getLogger("met-aromatic")
+
+
+def _add_filehandler_to_log() -> None:
+    LOGGER.info('Will log to file "%s"', PATH_BATCH_LOG)
+
+    channel = logging.FileHandler(PATH_BATCH_LOG)
+    channel.setFormatter(
+        logging.Formatter(fmt=LOGRECORD_FORMAT, datefmt=ISO_8601_DATE_FORMAT)
+    )
+
+    LOGGER.addHandler(channel)
+
 
 def _get_database_handle(bp: BatchParams) -> database.Database:
     client: MongoClient = MongoClient(
@@ -36,6 +49,21 @@ def _get_database_handle(bp: BatchParams) -> database.Database:
         raise SearchError(errmsg) from error
 
     return client[bp.database]
+
+
+def _overwrite_collection_if_enabled(db: database.Database, coll: str) -> None:
+    LOGGER.info('Will overwrite collection "%s" if exists', coll)
+    db.drop_collection(coll)
+
+    info_collection = f"{coll}_info"
+    LOGGER.info('Will overwrite collection "%s" if exists', info_collection)
+
+    db.drop_collection(info_collection)
+
+
+def _ensure_collection_does_not_exist(db: database.Database, coll: str) -> None:
+    if coll in db.list_collection_names():
+        raise SearchError(f'Collection "{coll}" exists! Cannot proceed')
 
 
 def _load_pdb_codes(batch_file: Path) -> list[str]:
@@ -62,7 +90,6 @@ def _chunk_pdb_codes(num_chunks: int, pdb_codes: list[str]) -> list[list[str]]:
 
 
 class ParallelProcessing:
-    log = logging.getLogger("met-aromatic")
     mutex = Lock()
 
     def __init__(
@@ -77,53 +104,25 @@ class ParallelProcessing:
         self.count = 0
         self.bool_disable_workers = False
 
-    def set_log_filehandler(self) -> None:
-        self.log.info('Will log to file "%s"', PATH_BATCH_LOG)
-
-        channel = logging.FileHandler(PATH_BATCH_LOG)
-        channel.setFormatter(
-            logging.Formatter(fmt=LOGRECORD_FORMAT, datefmt=ISO_8601_DATE_FORMAT)
-        )
-
-        self.log.addHandler(channel)
-
-    def drop_collection_if_overwrite_enabled(self) -> None:
-        if not self.bp.overwrite:
-            return
-
-        self.log.info('Will overwrite collection "%s" if exists', self.bp.collection)
-        self.db.drop_collection(self.bp.collection)
-
-        info_collection = f"{self.bp.collection}_info"
-
-        self.log.info('Will overwrite collection "%s" if exists', info_collection)
-        self.db.drop_collection(info_collection)
-
-    def ensure_collection_does_not_exist(self) -> None:
-        if self.bp.collection in self.db.list_collection_names():
-            raise SearchError(
-                f'Collection "{self.bp.collection}" exists! Cannot proceed'
-            )
-
     def disable_all_workers(self, *args) -> None:
-        self.log.info("Detected SIGINT!")
-        self.log.info("Attempting to stop all workers!")
+        LOGGER.info("Detected SIGINT!")
+        LOGGER.info("Attempting to stop all workers!")
 
         self.bool_disable_workers = True
 
     def register_ipc_signals(self) -> None:
-        self.log.info("Registering SIGINT to thread terminator")
+        LOGGER.info("Registering SIGINT to thread terminator")
 
         self.bool_disable_workers = False
         signal(SIGINT, self.disable_all_workers)
 
     def get_pdb_code_chunks(self) -> None:
-        self.log.info("Imported pdb codes from file %s", self.bp.path_batch_file)
+        LOGGER.info("Imported pdb codes from file %s", self.bp.path_batch_file)
 
         pdb_codes = _load_pdb_codes(self.bp.path_batch_file)
         self.num_codes = len(pdb_codes)
 
-        self.log.info("Splitting list of pdb codes into %i chunks", self.bp.threads)
+        LOGGER.info("Splitting list of pdb codes into %i chunks", self.bp.threads)
         self.chunks = _chunk_pdb_codes(self.bp.threads, pdb_codes)
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
@@ -131,13 +130,13 @@ class ParallelProcessing:
 
         for code in chunk:
             if self.bool_disable_workers:
-                self.log.info("Received interrupt signal - stopping worker thread...")
+                LOGGER.info("Received interrupt signal - stopping worker thread...")
                 break
 
             with self.mutex:
                 self.count += 1
 
-            self.log.info("Processing %s. Count: %i", code, self.count)
+            LOGGER.info("Processing %s. Count: %i", code, self.count)
             doc = {"_id": code}
 
             try:
@@ -153,7 +152,7 @@ class ParallelProcessing:
             collection.insert_one(doc)
 
     def deploy_jobs(self) -> None:
-        self.log.info("Deploying %i workers!", self.bp.threads)
+        LOGGER.info("Deploying %i workers!", self.bp.threads)
 
         with ThreadPoolExecutor(max_workers=15, thread_name_prefix="Batch") as executor:
             start_time = time()
@@ -166,10 +165,10 @@ class ParallelProcessing:
             if wait(workers, return_when=ALL_COMPLETED):
                 exec_time = round(time() - start_time, 3)
 
-                self.log.info("Batch job complete!")
-                self.log.info("Results loaded into database: %s", self.bp.database)
-                self.log.info("Results loaded into collection: %s", self.bp.collection)
-                self.log.info("Batch job execution time: %f s", exec_time)
+                LOGGER.info("Batch job complete!")
+                LOGGER.info("Results loaded into database: %s", self.bp.database)
+                LOGGER.info("Results loaded into collection: %s", self.bp.collection)
+                LOGGER.info("Batch job execution time: %f s", exec_time)
                 self.insert_summary_doc(exec_time)
 
     def insert_summary_doc(self, exec_time: float) -> None:
@@ -184,17 +183,22 @@ class ParallelProcessing:
         }
 
         self.db[info_collection].insert_one(batch_job_metadata)
-        self.log.info("Statistics loaded into collection: %s", info_collection)
+        LOGGER.info("Statistics loaded into collection: %s", info_collection)
 
     def main(self) -> None:
-        self.set_log_filehandler()
-        self.drop_collection_if_overwrite_enabled()
-        self.ensure_collection_does_not_exist()
         self.register_ipc_signals()
         self.get_pdb_code_chunks()
         self.deploy_jobs()
 
 
 def run_batch_job(params: MetAromaticParams, bp: BatchParams) -> None:
+    _add_filehandler_to_log()
+
     db = _get_database_handle(bp)
+
+    if bp.overwrite:
+        _overwrite_collection_if_enabled(db=db, coll=bp.collection)
+
+    _ensure_collection_does_not_exist(db=db, coll=bp.collection)
+
     ParallelProcessing(params=params, bp=bp, db=db).main()
