@@ -191,3 +191,7 @@ class ParallelProcessing:
         self.register_ipc_signals()
         self.get_pdb_code_chunks()
         self.deploy_jobs()
+
+
+def run_batch_job(params: MetAromaticParams, batch_params: BatchParams) -> None:
+    ParallelProcessing(params, batch_params).main()

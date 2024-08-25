@@ -114,7 +114,9 @@ def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
 
 
 @cli.command(help="Run a Met-aromatic query batch job.")
-@click.argument("path_batch_file")
+@click.argument(
+    "batch_file", type=click.Path(exists=True, dir_okay=False, path_type=Path)
+)
 @click.option(
     "--threads",
     default=5,
@@ -157,32 +159,31 @@ def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
 @click.pass_obj
 def batch(
     obj: MetAromaticParams,
+    batch_file: Path,
     collection: str,
     database: str,
     host: str,
     overwrite: bool,
     password: str,
-    path_batch_file: str,
     port: int,
     threads: int,
     username: str,
 ) -> None:
-    from .command_batch import ParallelProcessing
+    from .command_batch import run_batch_job
 
-    params = BatchParams(
+    batch_params = BatchParams(
         collection=collection,
         database=database,
         host=host,
         overwrite=overwrite,
         password=password,
-        path_batch_file=Path(path_batch_file),
+        path_batch_file=batch_file,
         port=port,
         threads=threads,
         username=username,
     )
-
     try:
-        ParallelProcessing(obj, params).main()
+        run_batch_job(params=obj, batch_params=batch_params)
     except SearchError:
         sys.exit("Search failed!")
 
