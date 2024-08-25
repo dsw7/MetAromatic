@@ -1,1 +1,0 @@
-from MetAromatic.batch import ParallelProcessing

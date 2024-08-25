@@ -7,10 +7,12 @@ from signal import signal, SIGINT
 from threading import Lock
 from time import time
 from pymongo import MongoClient, errors, database
+from .algorithm import MetAromatic
+from .aliases import RawData
 from .consts import PATH_BATCH_LOG, LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .errors import SearchError
+from .load_resources import load_pdb_file_from_rscb
 from .models import MetAromaticParams, FeatureSpace, BatchParams
-from .pair import MetAromatic
 
 
 def _get_database_handle(bp: BatchParams) -> database.Database:
@@ -123,7 +125,6 @@ class ParallelProcessing:
         self.chunks = _chunk_pdb_codes(self.bp.threads, pdb_codes)
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
-        ma = MetAromatic(self.params)
         collection = self.database[self.bp.collection]
 
         for code in chunk:
@@ -138,7 +139,10 @@ class ParallelProcessing:
             doc = {"_id": code}
 
             try:
-                fs: FeatureSpace = ma.get_met_aromatic_interactions(code)
+                raw_data: RawData = load_pdb_file_from_rscb(code)
+                fs: FeatureSpace = MetAromatic(
+                    params=self.params, raw_data=raw_data
+                ).get_interactions()
             except SearchError as error:
                 doc["errmsg"] = str(error)
             else:
