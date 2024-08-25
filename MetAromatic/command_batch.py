@@ -14,7 +14,7 @@ from .errors import SearchError
 from .load_resources import load_pdb_file_from_rscb
 from .models import MetAromaticParams, FeatureSpace, BatchParams
 
-LOGGER = getLogger("met-aromatic.batch")
+LOGGER = getLogger("met-aromatic")
 
 
 def _load_pdb_codes(batch_file: Path) -> PdbCodes:

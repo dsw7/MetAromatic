@@ -31,11 +31,7 @@ dictConfig(
         },
         "loggers": {
             "met-aromatic": {
-                "handlers": ["stream"],
-                "level": "DEBUG",
-            },
-            "met-aromatic.batch": {
-                "handlers": ["file"],
+                "handlers": ["stream", "file"],
                 "level": "DEBUG",
             },
         },
