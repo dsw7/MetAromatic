@@ -171,7 +171,7 @@ def batch(
 ) -> None:
     from .command_batch import run_batch_job
 
-    batch_params = BatchParams(
+    bp = BatchParams(
         collection=collection,
         database=database,
         host=host,
@@ -183,7 +183,7 @@ def batch(
         username=username,
     )
     try:
-        run_batch_job(params=obj, batch_params=batch_params)
+        run_batch_job(params=obj, bp=bp)
     except SearchError:
         sys.exit("Search failed!")
 

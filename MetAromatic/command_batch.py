@@ -65,10 +65,12 @@ class ParallelProcessing:
     log = logging.getLogger("met-aromatic")
     mutex = Lock()
 
-    def __init__(self, params: MetAromaticParams, bp: BatchParams) -> None:
+    def __init__(
+        self, params: MetAromaticParams, bp: BatchParams, db: database.Database
+    ) -> None:
         self.params = params
         self.bp = bp
-        self.database = _get_database_handle(bp)
+        self.db = db
 
         self.chunks: list[list[str]] = []
         self.num_codes = 0
@@ -90,15 +92,15 @@ class ParallelProcessing:
             return
 
         self.log.info('Will overwrite collection "%s" if exists', self.bp.collection)
-        self.database.drop_collection(self.bp.collection)
+        self.db.drop_collection(self.bp.collection)
 
         info_collection = f"{self.bp.collection}_info"
 
         self.log.info('Will overwrite collection "%s" if exists', info_collection)
-        self.database.drop_collection(info_collection)
+        self.db.drop_collection(info_collection)
 
     def ensure_collection_does_not_exist(self) -> None:
-        if self.bp.collection in self.database.list_collection_names():
+        if self.bp.collection in self.db.list_collection_names():
             raise SearchError(
                 f'Collection "{self.bp.collection}" exists! Cannot proceed'
             )
@@ -125,7 +127,7 @@ class ParallelProcessing:
         self.chunks = _chunk_pdb_codes(self.bp.threads, pdb_codes)
 
     def worker_met_aromatic(self, chunk: list[str]) -> None:
-        collection = self.database[self.bp.collection]
+        collection = self.db[self.bp.collection]
 
         for code in chunk:
             if self.bool_disable_workers:
@@ -181,7 +183,7 @@ class ParallelProcessing:
             **self.params.dict(),
         }
 
-        self.database[info_collection].insert_one(batch_job_metadata)
+        self.db[info_collection].insert_one(batch_job_metadata)
         self.log.info("Statistics loaded into collection: %s", info_collection)
 
     def main(self) -> None:
@@ -193,5 +195,6 @@ class ParallelProcessing:
         self.deploy_jobs()
 
 
-def run_batch_job(params: MetAromaticParams, batch_params: BatchParams) -> None:
-    ParallelProcessing(params, batch_params).main()
+def run_batch_job(params: MetAromaticParams, bp: BatchParams) -> None:
+    db = _get_database_handle(bp)
+    ParallelProcessing(params=params, bp=bp, db=db).main()
