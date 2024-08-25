@@ -4,30 +4,9 @@
 from pathlib import Path
 from typing import Literal
 import sys
-import logging
 import click
-from .consts import LOGRECORD_FORMAT, ISO_8601_DATE_FORMAT
 from .errors import SearchError
 from .models import MetAromaticParams, BatchParams
-
-
-def setup_child_logger(debug: bool) -> None:
-    logging.addLevelName(logging.ERROR, "E")
-    logging.addLevelName(logging.WARNING, "W")
-    logging.addLevelName(logging.INFO, "I")
-    logging.addLevelName(logging.DEBUG, "D")
-
-    logger = logging.getLogger("met-aromatic")
-
-    if debug:
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
-
-    channel = logging.StreamHandler()
-    formatter = logging.Formatter(fmt=LOGRECORD_FORMAT, datefmt=ISO_8601_DATE_FORMAT)
-    channel.setFormatter(formatter)
-    logger.addHandler(channel)
 
 
 @click.group()
@@ -66,7 +45,6 @@ def cli(
         cutoff_distance=cutoff_distance,
         model=model,
     )
-    setup_child_logger(debug=debug)
 
 
 @cli.command(help="Run a Met-aromatic query against a single PDB entry.")

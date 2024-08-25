@@ -6,10 +6,6 @@ from numpy import sin, cos, pi
 TMPDIR = Path(gettempdir())
 PATH_BATCH_LOG = TMPDIR / "met_aromatic.log"
 
-# Logging
-ISO_8601_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
-LOGRECORD_FORMAT = "%(asctime)s %(threadName)s %(levelname)s %(message)s"
-
 # Linear algebra
 # See https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula "Matrix notation" section
 SCAL1 = sin(pi / 2)
