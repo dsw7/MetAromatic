@@ -55,10 +55,10 @@ def cli(
 @click.argument("pdb_code")
 @click.pass_obj
 def pair(obj: MetAromaticParams, pdb_code: str) -> None:
-    from .command_pair import get_pairs_from_pdb
+    from .get_pair import get_pairs_from_pdb, print_interactions
 
     try:
-        get_pairs_from_pdb(pdb_code=pdb_code, params=obj)
+        print_interactions(get_pairs_from_pdb(pdb_code=pdb_code, params=obj))
     except SearchError:
         sys.exit("Search failed!")
 
@@ -69,10 +69,10 @@ def pair(obj: MetAromaticParams, pdb_code: str) -> None:
 )
 @click.pass_obj
 def read_local(obj: MetAromaticParams, pdb_file: Path) -> None:
-    from .command_pair import get_pairs_from_file
+    from .get_pair import get_pairs_from_file, print_interactions
 
     try:
-        get_pairs_from_file(filepath=pdb_file, params=obj)
+        print_interactions(get_pairs_from_file(filepath=pdb_file, params=obj))
     except SearchError:
         sys.exit("Search failed!")
 

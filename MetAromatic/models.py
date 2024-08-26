@@ -63,16 +63,6 @@ class Interactions:
             norm=self.norm,
         )
 
-    def print_interaction(self) -> None:
-        print(
-            f"{self.aromatic_residue:<10} "
-            f"{self.aromatic_position:<10} "
-            f"{self.methionine_position:<10} "
-            f"{self.norm:<10} "
-            f"{self.met_theta_angle:<10} "
-            f"{self.met_phi_angle:<10}"
-        )
-
 
 @dataclass
 class FeatureSpace:
@@ -89,17 +79,6 @@ class FeatureSpace:
 
     def serialize_interactions(self) -> list[DictInteractions]:
         return [i.to_dict() for i in self.interactions]
-
-    def print_interactions(self) -> None:
-        print_separator()
-
-        print("ARO        POS        MET POS    NORM       MET-THETA  MET-PHI")
-        print_separator()
-
-        for i in self.interactions:
-            i.print_interaction()
-
-        print_separator()
 
 
 @dataclass
