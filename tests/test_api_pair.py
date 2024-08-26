@@ -31,12 +31,11 @@ def test_pair_1rcy_valid_results(
 
 
 def test_pair_1rcy_valid_results_use_local(
-    ma_params: MetAromaticParams, valid_results_1rcy: list[DictInteractions]
+    ma_params: MetAromaticParams,
+    valid_results_1rcy: list[DictInteractions],
+    pdb_file_1rcy: Path,
 ) -> None:
-    # File downloaded from RSCB PDB
-    path_pdb_file = Path(__file__).resolve().parent / "data_1rcy.pdb"
-
-    fs: FeatureSpace = get_pairs_from_file(params=ma_params, filepath=path_pdb_file)
+    fs: FeatureSpace = get_pairs_from_file(params=ma_params, filepath=pdb_file_1rcy)
 
     tc = TestCase()
     tc.maxDiff = None
@@ -44,13 +43,10 @@ def test_pair_1rcy_valid_results_use_local(
 
 
 def test_pair_1rcy_valid_results_use_local_invalid_file(
-    ma_params: MetAromaticParams,
+    ma_params: MetAromaticParams, pdb_file_invalid
 ) -> None:
-    # Simulating someone passing a non-PDB formatted file into program
-    path_pdb_file = Path(__file__).resolve().parent / "data_lorem_ipsum.pdb"
-
     with pytest.raises(SearchError, match="Not a valid PDB file"):
-        get_pairs_from_file(params=ma_params, filepath=path_pdb_file)
+        get_pairs_from_file(params=ma_params, filepath=pdb_file_invalid)
 
 
 @pytest.mark.parametrize(
