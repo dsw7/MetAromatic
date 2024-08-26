@@ -13,7 +13,7 @@ def valid_results_1rcy(resources: Path) -> list[DictInteractions]:
     return loads((resources / "expected_results_1rcy.json").read_text())
 
 
-@fixture
+@pytest.fixture
 def pdb_file_invalid(resources: Path) -> Path:
     # An invalid PDB file
     return resources / "data_lorem_ipsum.pdb"

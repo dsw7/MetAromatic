@@ -5,7 +5,7 @@ from MetAromatic.models import MetAromaticParams, FeatureSpace, Interactions
 
 
 @pytest.fixture
-def data_chem_483(resources: Path) -> list[str]:
+def data_chem_483(resources: Path) -> list[list[str]]:
     path_data = resources / "data_483_output_a3_3_m.csv"
 
     test_data = []
@@ -172,7 +172,7 @@ TEST_PDB_CODES = {
 
 @pytest.mark.parametrize("code", TEST_PDB_CODES)
 def test_pair_against_483_data(
-    code: str, ma_params: MetAromaticParams, data_chem_483: list[str]
+    code: str, ma_params: MetAromaticParams, data_chem_483: list[list[str]]
 ) -> None:
     control = []
     for row in data_chem_483:
