@@ -1,123 +1,58 @@
+from json import loads
 from pathlib import Path
-from typing import Literal
 from unittest import TestCase
 import pytest
 from MetAromatic import get_pairs_from_pdb, get_pairs_from_file
 from MetAromatic.aliases import Models
 from MetAromatic.errors import SearchError
-from MetAromatic.models import MetAromaticParams, FeatureSpace
+from MetAromatic.models import MetAromaticParams, FeatureSpace, DictInteractions
 
 
 @pytest.fixture
-def test_params() -> MetAromaticParams:
+def ma_params() -> MetAromaticParams:
     return MetAromaticParams(
         cutoff_distance=4.9, cutoff_angle=109.5, chain="A", model="cp"
     )
 
 
-VALID_RESULTS_1RCY = [
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.211,
-        "met_theta_angle": 75.766,
-        "met_phi_angle": 64.317,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 3.954,
-        "met_theta_angle": 60.145,
-        "met_phi_angle": 68.352,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.051,
-        "met_theta_angle": 47.198,
-        "met_phi_angle": 85.151,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.39,
-        "met_theta_angle": 53.4,
-        "met_phi_angle": 95.487,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.62,
-        "met_theta_angle": 68.452,
-        "met_phi_angle": 90.771,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.537,
-        "met_theta_angle": 78.568,
-        "met_phi_angle": 76.406,
-    },
-    {
-        "aromatic_residue": "PHE",
-        "aromatic_position": 54,
-        "methionine_position": 148,
-        "norm": 4.777,
-        "met_theta_angle": 105.947,
-        "met_phi_angle": 143.022,
-    },
-    {
-        "aromatic_residue": "PHE",
-        "aromatic_position": 54,
-        "methionine_position": 148,
-        "norm": 4.61,
-        "met_theta_angle": 93.382,
-        "met_phi_angle": 156.922,
-    },
-    {
-        "aromatic_residue": "PHE",
-        "aromatic_position": 54,
-        "methionine_position": 148,
-        "norm": 4.756,
-        "met_theta_angle": 93.287,
-        "met_phi_angle": 154.63,
-    },
-]
+@pytest.fixture
+def valid_results_1rcy() -> list[DictInteractions]:
+    json_file = Path(__file__).resolve().parent / "expected_results_1rcy.json"
+
+    return loads(json_file.read_text())
 
 
-def test_pair_1rcy_valid_results(test_params: MetAromaticParams) -> None:
-    fs: FeatureSpace = get_pairs_from_pdb(params=test_params, pdb_code="1rcy")
+def test_pair_1rcy_valid_results(
+    ma_params: MetAromaticParams, valid_results_1rcy: list[DictInteractions]
+) -> None:
+    fs: FeatureSpace = get_pairs_from_pdb(params=ma_params, pdb_code="1rcy")
 
     tc = TestCase()
     tc.maxDiff = None
-    tc.assertCountEqual(fs.serialize_interactions(), VALID_RESULTS_1RCY)
+    tc.assertCountEqual(fs.serialize_interactions(), valid_results_1rcy)
 
 
-def test_pair_1rcy_valid_results_use_local(test_params: MetAromaticParams) -> None:
+def test_pair_1rcy_valid_results_use_local(
+    ma_params: MetAromaticParams, valid_results_1rcy: list[DictInteractions]
+) -> None:
     # File downloaded from RSCB PDB
     path_pdb_file = Path(__file__).resolve().parent / "data_1rcy.pdb"
 
-    fs: FeatureSpace = get_pairs_from_file(params=test_params, filepath=path_pdb_file)
+    fs: FeatureSpace = get_pairs_from_file(params=ma_params, filepath=path_pdb_file)
 
     tc = TestCase()
     tc.maxDiff = None
-    tc.assertCountEqual(fs.serialize_interactions(), VALID_RESULTS_1RCY)
+    tc.assertCountEqual(fs.serialize_interactions(), valid_results_1rcy)
 
 
 def test_pair_1rcy_valid_results_use_local_invalid_file(
-    test_params: MetAromaticParams,
+    ma_params: MetAromaticParams,
 ) -> None:
     # Simulating someone passing a non-PDB formatted file into program
     path_pdb_file = Path(__file__).resolve().parent / "data_lorem_ipsum.pdb"
 
     with pytest.raises(SearchError, match="Not a valid PDB file"):
-        get_pairs_from_file(params=test_params, filepath=path_pdb_file)
+        get_pairs_from_file(params=ma_params, filepath=path_pdb_file)
 
 
 @pytest.mark.parametrize(
@@ -155,6 +90,6 @@ def test_pair_invalid_inputs(
         )
 
 
-def test_pair_no_results_error(test_params: MetAromaticParams) -> None:
+def test_pair_no_results_error(ma_params: MetAromaticParams) -> None:
     with pytest.raises(SearchError, match="No Met-aromatic interactions"):
-        get_pairs_from_pdb(params=test_params, pdb_code="1a5r")
+        get_pairs_from_pdb(params=ma_params, pdb_code="1a5r")
