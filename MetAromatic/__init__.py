@@ -1,6 +1,7 @@
 import logging
 from logging.config import dictConfig
 from .consts import PATH_BATCH_LOG
+from .get_bridge import get_bridges
 from .get_pair import get_pairs_from_pdb, get_pairs_from_file
 
 logging.addLevelName(logging.ERROR, "E")
