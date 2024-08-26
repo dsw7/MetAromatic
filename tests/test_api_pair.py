@@ -3,6 +3,7 @@ from typing import Literal
 from unittest import TestCase
 import pytest
 from MetAromatic import get_pairs_from_pdb, get_pairs_from_file
+from MetAromatic.aliases import Models
 from MetAromatic.errors import SearchError
 from MetAromatic.models import MetAromaticParams, FeatureSpace
 
@@ -139,9 +140,7 @@ def test_pair_invalid_inputs(
     code: str,
     cutoff_distance: float,
     cutoff_angle: float,
-    model: Literal[
-        "cp", "rm"
-    ],  # Note the 'pc' passed above would technically fail type checker
+    model: Models,  # Note the 'pc' passed above would technically fail type checker
     error: str,
 ) -> None:
     params = MetAromaticParams(

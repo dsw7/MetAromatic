@@ -3,6 +3,7 @@ from numpy import ndarray
 
 Coordinates: TypeAlias = list[list[str]]
 Midpoints: TypeAlias = list[tuple[str, str, ndarray]]
+Models: TypeAlias = Literal["cp", "rm"]
 RawData: TypeAlias = list[str]
 Residues: TypeAlias = Literal["phe", "tyr", "trp", "met"]
 

@@ -3,9 +3,9 @@
 
 from logging import getLogger
 from pathlib import Path
-from typing import Literal
 import sys
 import click
+from .aliases import Models
 from .errors import SearchError
 from .models import MetAromaticParams, BatchParams
 
@@ -38,7 +38,7 @@ def cli(
     chain: str,
     cutoff_angle: float,
     cutoff_distance: float,
-    model: Literal["cp", "rm"],
+    model: Models,
 ) -> None:
     if debug:
         getLogger("met-aromatic").setLevel("DEBUG")

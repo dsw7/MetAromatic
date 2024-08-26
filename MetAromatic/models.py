@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal, TypedDict
+from typing import TypedDict
 from numpy import ndarray
 from pydantic import BaseModel
-from .aliases import Midpoints, Coordinates
+from .aliases import Midpoints, Coordinates, Models
 from .utils import print_separator
 
 
@@ -20,7 +20,7 @@ class MetAromaticParams(BaseModel):
     chain: str
     cutoff_angle: float
     cutoff_distance: float
-    model: Literal["cp", "rm"]
+    model: Models
 
 
 class BatchParams(BaseModel):
