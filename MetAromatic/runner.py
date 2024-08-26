@@ -87,10 +87,10 @@ def read_local(obj: MetAromaticParams, pdb_file: Path) -> None:
 )
 @click.pass_obj
 def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
-    from .command_bridge import get_bridges
+    from .get_bridge import get_bridges, print_bridges
 
     try:
-        get_bridges(params=obj, code=code, vertices=vertices)
+        print_bridges(get_bridges(params=obj, code=code, vertices=vertices))
     except SearchError:
         sys.exit("Search failed!")
 

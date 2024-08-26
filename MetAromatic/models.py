@@ -4,7 +4,6 @@ from typing import TypedDict
 from numpy import ndarray
 from pydantic import BaseModel
 from .aliases import Midpoints, Coordinates, Models
-from .utils import print_separator
 
 
 class DictInteractions(TypedDict):
@@ -85,11 +84,3 @@ class FeatureSpace:
 class BridgeSpace:
     interactions: set[tuple[str, str]] = field(default_factory=set)
     bridges: list[set[str]] = field(default_factory=list)
-
-    def print_bridges(self) -> None:
-        print_separator()
-
-        for bridge in self.bridges:
-            print("{" + "}-{".join(bridge) + "}")
-
-        print_separator()

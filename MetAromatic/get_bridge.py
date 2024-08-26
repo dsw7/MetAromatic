@@ -4,6 +4,7 @@ from .algorithm import MetAromatic
 from .aliases import RawData
 from .load_resources import load_pdb_file_from_rscb
 from .models import MetAromaticParams, FeatureSpace, BridgeSpace
+from .utils import print_separator
 
 LOGGER = getLogger("met-aromatic")
 
@@ -38,12 +39,18 @@ def _isolate_bridges(fs: FeatureSpace, vertices: int) -> BridgeSpace:
     return bs
 
 
-def get_bridges(params: MetAromaticParams, code: str, vertices: int) -> None:
+def get_bridges(params: MetAromaticParams, code: str, vertices: int) -> BridgeSpace:
     LOGGER.info('Locating bridging interactions for entry "%s"', code)
-
     raw_data: RawData = load_pdb_file_from_rscb(code)
 
     fs: FeatureSpace = MetAromatic(params=params, raw_data=raw_data).get_interactions()
-    bs: BridgeSpace = _isolate_bridges(fs, vertices)
+    return _isolate_bridges(fs, vertices)
 
-    bs.print_bridges()
+
+def print_bridges(bs: BridgeSpace) -> None:
+    print_separator()
+
+    for bridge in bs.bridges:
+        print("{" + "}-{".join(bridge) + "}")
+
+    print_separator()
