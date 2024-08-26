@@ -59,8 +59,8 @@ def pair(obj: MetAromaticParams, pdb_code: str) -> None:
 
     try:
         print_interactions(get_pairs_from_pdb(pdb_code=pdb_code, params=obj))
-    except SearchError:
-        sys.exit("Search failed!")
+    except SearchError as error:
+        sys.exit(str(error))
 
 
 @cli.command(help="Run a Met-aromatic query against a local PDB file.")
