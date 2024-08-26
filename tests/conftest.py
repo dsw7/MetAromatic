@@ -1,4 +1,5 @@
 from pathlib import Path
+from click.testing import CliRunner
 from pytest import fixture
 from MetAromatic.models import MetAromaticParams
 
@@ -8,6 +9,11 @@ def ma_params() -> MetAromaticParams:
     return MetAromaticParams(
         cutoff_distance=4.9, cutoff_angle=109.5, chain="A", model="cp"
     )
+
+
+@fixture(scope="session")
+def cli_runner() -> CliRunner:
+    return CliRunner()
 
 
 @fixture
