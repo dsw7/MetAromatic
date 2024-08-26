@@ -1,11 +1,12 @@
 import pytest
 from MetAromatic import get_bridges
+from MetAromatic.aliases import Models
 from MetAromatic.errors import SearchError
 from MetAromatic.models import MetAromaticParams
 
 
 @pytest.mark.parametrize(
-    "code, distance, angle, model, status",
+    "code, distance, angle, model, error",
     [
         ("1rcy", -0.01, 109.5, "cp", "Invalid cutoff distance"),
         ("1rcy", 4.95, -60.0, "cp", "Invalid cutoff angle"),
@@ -21,28 +22,31 @@ from MetAromatic.models import MetAromaticParams
     ],
 )
 def test_invalid_inputs(
-    code: str, distance: float, angle: float, model: str, status: str
+    code: str,
+    distance: float,
+    angle: float,
+    model: Models,  # Note the 'pc' passed above would technically fail type checker
+    error: str,
 ) -> None:
-    with pytest.raises(SearchError, match=status):
+    with pytest.raises(SearchError, match=error):
         get_bridges(
             code=code,
             params=MetAromaticParams(
                 chain="A",
                 cutoff_angle=angle,
                 cutoff_distance=distance,
-                # Ignore cp | rm string literal check for testing purposes
-                model=model,  # type: ignore
+                model=model,
             ),
             vertices=4,
         )
 
 
 @pytest.mark.parametrize(
-    "code, message",
+    "code, error",
     [("1a5r", "No Met-aromatic interactions"), ("1rcy", "Found no bridges")],
 )
-def test_no_results(code: str, message: str) -> None:
-    with pytest.raises(SearchError, match=message):
+def test_no_results(code: str, error: str) -> None:
+    with pytest.raises(SearchError, match=error):
         get_bridges(
             code=code,
             params=MetAromaticParams(

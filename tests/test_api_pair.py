@@ -143,14 +143,16 @@ def test_pair_invalid_inputs(
     model: Models,  # Note the 'pc' passed above would technically fail type checker
     error: str,
 ) -> None:
-    params = MetAromaticParams(
-        cutoff_angle=cutoff_angle,
-        cutoff_distance=cutoff_distance,
-        chain="A",
-        model=model,
-    )
     with pytest.raises(SearchError, match=error):
-        get_pairs_from_pdb(params=params, pdb_code=code)
+        get_pairs_from_pdb(
+            pdb_code=code,
+            params=MetAromaticParams(
+                cutoff_angle=cutoff_angle,
+                cutoff_distance=cutoff_distance,
+                chain="A",
+                model=model,
+            ),
+        )
 
 
 def test_pair_no_results_error(test_params: MetAromaticParams) -> None:
