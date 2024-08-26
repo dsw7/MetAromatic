@@ -11,10 +11,37 @@ from .errors import SearchError
 LOGGER = getLogger("met-aromatic")
 
 
+def _is_valid_pdb_file(file_content: list[str]) -> bool:
+    tags = {
+        "HEADER": False,
+        "TITLE": False,
+        "REMARK": False,
+        "ATOM": False,
+        "HETATM": False,
+        "END": False,
+    }
+
+    for line in file_content:
+        tag = line[:6].strip()
+
+        if tag in tags:
+            tags[tag] = True
+
+        if all(tags.values()):
+            return True
+
+    return False
+
+
 def load_local_pdb_file(pdb_file: Path) -> RawData:
     LOGGER.debug('Reading local file "%s"', pdb_file)
 
-    return pdb_file.read_text().splitlines()
+    contents = pdb_file.read_text().splitlines()
+
+    if not _is_valid_pdb_file(contents):
+        raise SearchError("Not a valid PDB file")
+
+    return contents
 
 
 def _get_ftp_url(pdb_code: str) -> str:
