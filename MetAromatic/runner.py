@@ -151,7 +151,7 @@ def batch(
     threads: int,
     username: str,
 ) -> None:
-    from .command_batch import run_batch_job
+    from .get_batch import run_batch_job
 
     bp = BatchParams(
         collection=collection,
