@@ -45,15 +45,6 @@ def test_invalid_inputs(
     "code, error",
     [("1a5r", "No Met-aromatic interactions"), ("1rcy", "Found no bridges")],
 )
-def test_no_results(code: str, error: str) -> None:
+def test_no_results(code: str, error: str, ma_params: MetAromaticParams) -> None:
     with pytest.raises(SearchError, match=error):
-        get_bridges(
-            code=code,
-            params=MetAromaticParams(
-                chain="A",
-                cutoff_angle=109.5,
-                cutoff_distance=4.9,
-                model="cp",
-            ),
-            vertices=4,
-        )
+        get_bridges(code=code, params=ma_params, vertices=4)
