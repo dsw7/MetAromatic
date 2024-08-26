@@ -16,10 +16,8 @@ def ma_params() -> MetAromaticParams:
 
 
 @pytest.fixture
-def valid_results_1rcy() -> list[DictInteractions]:
-    json_file = Path(__file__).resolve().parent / "expected_results_1rcy.json"
-
-    return loads(json_file.read_text())
+def valid_results_1rcy(resources: Path) -> list[DictInteractions]:
+    return loads((resources / "expected_results_1rcy.json").read_text())
 
 
 def test_pair_1rcy_valid_results(
