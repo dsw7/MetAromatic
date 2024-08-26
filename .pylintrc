@@ -3,7 +3,8 @@ exit-zero=yes
 
 [MESSAGES CONTROL]
 disable=
-  missing-docstring
+  missing-docstring,
+  redefined-outer-name
 
 [REPORTS]
 output-format=colorized

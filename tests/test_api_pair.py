@@ -6,12 +6,13 @@ from MetAromatic import get_pairs_from_pdb, get_pairs_from_file
 from MetAromatic.errors import SearchError
 from MetAromatic.models import MetAromaticParams, FeatureSpace
 
-TestParams = MetAromaticParams(
-    cutoff_distance=4.9,
-    cutoff_angle=109.5,
-    chain="A",
-    model="cp",
-)
+
+@pytest.fixture
+def test_params() -> MetAromaticParams:
+    return MetAromaticParams(
+        cutoff_distance=4.9, cutoff_angle=109.5, chain="A", model="cp"
+    )
+
 
 VALID_RESULTS_1RCY = [
     {
@@ -89,37 +90,33 @@ VALID_RESULTS_1RCY = [
 ]
 
 
-def test_pair_1rcy_valid_results() -> None:
-    fs: FeatureSpace = get_pairs_from_pdb(params=TestParams, pdb_code="1rcy")
+def test_pair_1rcy_valid_results(test_params: MetAromaticParams) -> None:
+    fs: FeatureSpace = get_pairs_from_pdb(params=test_params, pdb_code="1rcy")
 
     tc = TestCase()
     tc.maxDiff = None
     tc.assertCountEqual(fs.serialize_interactions(), VALID_RESULTS_1RCY)
 
 
-def test_pair_1rcy_valid_results_use_local() -> None:
+def test_pair_1rcy_valid_results_use_local(test_params: MetAromaticParams) -> None:
     # File downloaded from RSCB PDB
     path_pdb_file = Path(__file__).resolve().parent / "data_1rcy.pdb"
 
-    if not path_pdb_file.exists():
-        pytest.exit(f"File {path_pdb_file} is missing")
-
-    fs: FeatureSpace = get_pairs_from_file(params=TestParams, filepath=path_pdb_file)
+    fs: FeatureSpace = get_pairs_from_file(params=test_params, filepath=path_pdb_file)
 
     tc = TestCase()
     tc.maxDiff = None
     tc.assertCountEqual(fs.serialize_interactions(), VALID_RESULTS_1RCY)
 
 
-def test_pair_1rcy_valid_results_use_local_invalid_file() -> None:
+def test_pair_1rcy_valid_results_use_local_invalid_file(
+    test_params: MetAromaticParams,
+) -> None:
     # Simulating someone passing a non-PDB formatted file into program
     path_pdb_file = Path(__file__).resolve().parent / "data_lorem_ipsum.pdb"
 
-    if not path_pdb_file.exists():
-        pytest.exit(f"File {path_pdb_file} is missing")
-
     with pytest.raises(SearchError, match="Not a valid PDB file"):
-        get_pairs_from_file(params=TestParams, filepath=path_pdb_file)
+        get_pairs_from_file(params=test_params, filepath=path_pdb_file)
 
 
 @pytest.mark.parametrize(
@@ -142,7 +139,9 @@ def test_pair_invalid_inputs(
     code: str,
     cutoff_distance: float,
     cutoff_angle: float,
-    model: Literal["cp", "rm"],
+    model: Literal[
+        "cp", "rm"
+    ],  # Note the 'pc' passed above would technically fail type checker
     error: str,
 ) -> None:
     params = MetAromaticParams(
@@ -155,6 +154,6 @@ def test_pair_invalid_inputs(
         get_pairs_from_pdb(params=params, pdb_code=code)
 
 
-def test_pair_no_results_error() -> None:
+def test_pair_no_results_error(test_params: MetAromaticParams) -> None:
     with pytest.raises(SearchError, match="No Met-aromatic interactions"):
-        get_pairs_from_pdb(params=TestParams, pdb_code="1a5r")
+        get_pairs_from_pdb(params=test_params, pdb_code="1a5r")
