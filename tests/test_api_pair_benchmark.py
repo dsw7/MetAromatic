@@ -1,25 +1,21 @@
 from pathlib import Path
 import pytest
-from MetAromatic import MetAromatic
+from MetAromatic import get_pairs_from_pdb
 from MetAromatic.models import MetAromaticParams, FeatureSpace, Interactions
 
-TEST_PARAMETERS = MetAromaticParams(
-    cutoff_distance=4.9,
-    cutoff_angle=109.5,
-    chain="A",
-    model="cp",
-)
 
-PATH_TEST_DATA = Path(__file__).resolve().parent / "data_483_output_a3_3_m.csv"
+@pytest.fixture
+def data_chem_483(resources: Path) -> list[str]:
+    path_data = resources / "data_483_output_a3_3_m.csv"
 
-if not PATH_TEST_DATA.exists():
-    pytest.exit(f"File {PATH_TEST_DATA} is missing")
+    test_data = []
 
-TEST_DATA = []
+    with path_data.open() as f:
+        for line in f.readlines():
+            test_data.append(line.strip("\n").split(","))
 
-with PATH_TEST_DATA.open() as f:
-    for line in f.readlines():
-        TEST_DATA.append(line.strip("\n").split(","))
+    return test_data
+
 
 TEST_PDB_CODES = {
     "1l5l",
@@ -175,16 +171,16 @@ TEST_PDB_CODES = {
 
 
 @pytest.mark.parametrize("code", TEST_PDB_CODES)
-def test_pair_against_483_data(code: str) -> None:
+def test_pair_against_483_data(
+    code: str, ma_params: MetAromaticParams, data_chem_483: list[str]
+) -> None:
     control = []
-    for row in TEST_DATA:
+    for row in data_chem_483:
         if row[7] == code:
             control.append(row)
 
     try:
-        fs: FeatureSpace = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions(
-            code
-        )
+        fs: FeatureSpace = get_pairs_from_pdb(params=ma_params, pdb_code=code)
     except IndexError:
         pytest.skip(
             "Skipping list index out of range error. Occurs because of missing data."

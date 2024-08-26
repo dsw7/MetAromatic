@@ -1,5 +1,13 @@
 from pathlib import Path
 from pytest import fixture
+from MetAromatic.models import MetAromaticParams
+
+
+@fixture
+def ma_params() -> MetAromaticParams:
+    return MetAromaticParams(
+        cutoff_distance=4.9, cutoff_angle=109.5, chain="A", model="cp"
+    )
 
 
 @fixture
@@ -11,9 +19,3 @@ def resources() -> Path:
 def pdb_file_1rcy(resources: Path) -> Path:
     # A valid PDB file
     return resources / "data_1rcy.pdb"
-
-
-@fixture
-def pdb_file_invalid(resources: Path) -> Path:
-    # An invalid PDB file
-    return resources / "data_lorem_ipsum.pdb"
