@@ -19,14 +19,19 @@ def pdb_file_invalid(resources: Path) -> Path:
     return resources / "data_lorem_ipsum.pdb"
 
 
+def compare_interactions(
+    left: list[DictInteractions], right: list[DictInteractions]
+) -> None:
+    tc = TestCase()
+    tc.maxDiff = None
+    tc.assertCountEqual(left, right)
+
+
 def test_pair_1rcy_valid_results(
     ma_params: MetAromaticParams, valid_results_1rcy: list[DictInteractions]
 ) -> None:
     fs: FeatureSpace = get_pairs_from_pdb(params=ma_params, pdb_code="1rcy")
-
-    tc = TestCase()
-    tc.maxDiff = None
-    tc.assertCountEqual(fs.serialize_interactions(), valid_results_1rcy)
+    compare_interactions(fs.serialize_interactions(), valid_results_1rcy)
 
 
 def test_pair_1rcy_valid_results_use_local(
@@ -35,10 +40,7 @@ def test_pair_1rcy_valid_results_use_local(
     pdb_file_1rcy: Path,
 ) -> None:
     fs: FeatureSpace = get_pairs_from_file(params=ma_params, filepath=pdb_file_1rcy)
-
-    tc = TestCase()
-    tc.maxDiff = None
-    tc.assertCountEqual(fs.serialize_interactions(), valid_results_1rcy)
+    compare_interactions(fs.serialize_interactions(), valid_results_1rcy)
 
 
 def test_pair_1rcy_valid_results_use_local_invalid_file(
