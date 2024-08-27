@@ -1,5 +1,4 @@
 from os import EX_OK
-from pathlib import Path
 from click.testing import CliRunner
 from pytest import mark
 from MetAromatic.runner import cli
