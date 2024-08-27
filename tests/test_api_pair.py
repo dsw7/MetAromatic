@@ -1,7 +1,7 @@
 from json import loads
 from pathlib import Path
-from unittest import TestCase
 import pytest
+from utils import compare_interactions
 from MetAromatic import get_pairs_from_pdb, get_pairs_from_file
 from MetAromatic.aliases import Models
 from MetAromatic.errors import SearchError
@@ -17,14 +17,6 @@ def valid_results_1rcy(resources: Path) -> list[DictInteractions]:
 def pdb_file_invalid(resources: Path) -> Path:
     # An invalid PDB file
     return resources / "data_lorem_ipsum.pdb"
-
-
-def compare_interactions(
-    left: list[DictInteractions], right: list[DictInteractions]
-) -> None:
-    tc = TestCase()
-    tc.maxDiff = None
-    tc.assertCountEqual(left, right)
 
 
 def test_pair_1rcy_valid_results(

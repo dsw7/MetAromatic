@@ -2,13 +2,9 @@ from json import loads
 from pathlib import Path
 from typing import TypeAlias
 import pytest
+from utils import compare_interactions
 from MetAromatic import get_pairs_from_pdb
-from MetAromatic.models import (
-    MetAromaticParams,
-    FeatureSpace,
-    Interactions,
-    DictInteractions,
-)
+from MetAromatic.models import MetAromaticParams, FeatureSpace, DictInteractions
 
 ControlData: TypeAlias = dict[str, list[DictInteractions]]
 
@@ -183,16 +179,4 @@ def test_pair_against_483_data(
             "Skipping list index out of range error. Occurs because of missing data."
         )
 
-    control = data_chem_483[code]
-    interactions: list[Interactions] = fs.interactions
-
-    sum_norms_control = sum(i["norm"] for i in control)
-    sum_theta_control = sum(i["met_theta_angle"] for i in control)
-    sum_phi_control = sum(i["met_phi_angle"] for i in control)
-    sum_norms_test = sum(i.norm for i in interactions)
-    sum_theta_test = sum(i.met_theta_angle for i in interactions)
-    sum_phi_test = sum(i.met_phi_angle for i in interactions)
-
-    assert abs(sum_norms_control - sum_norms_test) < 0.01
-    assert abs(sum_theta_control - sum_theta_test) < 0.01
-    assert abs(sum_phi_control - sum_phi_test) < 0.01
+    compare_interactions(fs.serialize_interactions(), data_chem_483[code])
