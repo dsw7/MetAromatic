@@ -1,20 +1,21 @@
+from json import loads
 from pathlib import Path
+from typing import TypeAlias
 import pytest
 from MetAromatic import get_pairs_from_pdb
-from MetAromatic.models import MetAromaticParams, FeatureSpace, Interactions
+from MetAromatic.models import (
+    MetAromaticParams,
+    FeatureSpace,
+    Interactions,
+    DictInteractions,
+)
+
+ControlData: TypeAlias = dict[str, list[DictInteractions]]
 
 
-@pytest.fixture
-def data_chem_483(resources: Path) -> list[list[str]]:
-    path_data = resources / "data_483_output_a3_3_m.csv"
-
-    test_data = []
-
-    with path_data.open() as f:
-        for line in f.readlines():
-            test_data.append(line.strip("\n").split(","))
-
-    return test_data
+@pytest.fixture(scope="module")
+def data_chem_483(resources: Path) -> ControlData:
+    return loads((resources / "data_483_output_a3_3_m.json").read_text())
 
 
 TEST_PDB_CODES = {
@@ -172,12 +173,8 @@ TEST_PDB_CODES = {
 
 @pytest.mark.parametrize("code", TEST_PDB_CODES)
 def test_pair_against_483_data(
-    code: str, ma_params: MetAromaticParams, data_chem_483: list[list[str]]
+    code: str, ma_params: MetAromaticParams, data_chem_483: ControlData
 ) -> None:
-    control = []
-    for row in data_chem_483:
-        if row[7] == code:
-            control.append(row)
 
     try:
         fs: FeatureSpace = get_pairs_from_pdb(params=ma_params, pdb_code=code)
@@ -186,11 +183,12 @@ def test_pair_against_483_data(
             "Skipping list index out of range error. Occurs because of missing data."
         )
 
+    control = data_chem_483[code]
     interactions: list[Interactions] = fs.interactions
 
-    sum_norms_control = sum(float(i[6]) for i in control)
-    sum_theta_control = sum(float(i[5]) for i in control)
-    sum_phi_control = sum(float(i[4]) for i in control)
+    sum_norms_control = sum(i["norm"] for i in control)
+    sum_theta_control = sum(i["met_theta_angle"] for i in control)
+    sum_phi_control = sum(i["met_phi_angle"] for i in control)
     sum_norms_test = sum(i.norm for i in interactions)
     sum_theta_test = sum(i.met_theta_angle for i in interactions)
     sum_phi_test = sum(i.met_phi_angle for i in interactions)
