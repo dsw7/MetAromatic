@@ -8,7 +8,7 @@ from MetAromatic.errors import SearchError
 from MetAromatic.models import MetAromaticParams, FeatureSpace, DictInteractions
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def valid_results_1rcy(resources: Path) -> list[DictInteractions]:
     return loads((resources / "expected_results_1rcy.json").read_text())
 
