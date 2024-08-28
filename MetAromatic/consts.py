@@ -1,9 +1,4 @@
-from pathlib import Path
-from tempfile import gettempdir
 from numpy import sin, cos, pi
-
-# General
-TMPDIR = Path(gettempdir())
 
 # Linear algebra
 # See https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula "Matrix notation" section

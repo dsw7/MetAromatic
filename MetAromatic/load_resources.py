@@ -1,11 +1,12 @@
 from gzip import open as gz_open
 from pathlib import Path
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, gettempdir
 from urllib.error import URLError
 from urllib.request import urlretrieve, urlcleanup
 from .aliases import RawData
-from .consts import TMPDIR
 from .errors import SearchError
+
+TMPDIR = Path(gettempdir())
 
 
 def _is_valid_pdb_file(file_content: list[str]) -> bool:
