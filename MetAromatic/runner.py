@@ -1,7 +1,6 @@
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
 # pylint: disable=C0301   # Disable "Line too long"
 
-from logging import getLogger
 from pathlib import Path
 import sys
 import click
@@ -11,7 +10,6 @@ from .models import MetAromaticParams, BatchParams
 
 
 @click.group()
-@click.option("--debug", is_flag=True, default=False, help="Enable debug logging")
 @click.option(
     "--cutoff-distance",
     default=4.9,
@@ -34,15 +32,11 @@ from .models import MetAromaticParams, BatchParams
 @click.pass_context
 def cli(
     context: click.core.Context,
-    debug: bool,
     chain: str,
     cutoff_angle: float,
     cutoff_distance: float,
     model: Models,
 ) -> None:
-    if debug:
-        getLogger("met-aromatic").setLevel("DEBUG")
-
     context.obj = MetAromaticParams(
         chain=chain,
         cutoff_angle=cutoff_angle,
