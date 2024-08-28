@@ -25,6 +25,8 @@ def get_unit_vector(v: FloatArray) -> FloatArray:
 
 @cache
 def get_3x3_identity_matrix() -> ndarray:
+    # No good way to type hint this yet
+    # See https://github.com/numpy/numpy/issues/16544#issuecomment-1058675773
     return eye(3)
 
 
