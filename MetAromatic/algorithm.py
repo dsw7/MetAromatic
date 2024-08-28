@@ -11,7 +11,7 @@ from .get_aromatic_midpoints import (
 from .lone_pair_interpolators import CrossProductMethod, RodriguesMethod
 from .models import MetAromaticParams, FeatureSpace, LonePairs, Interactions
 from .utils import get_angle_between_vecs, get_search_pattern
-from .aliases import RawData
+from .aliases import RawData, FloatArray
 
 
 class MetAromatic:
@@ -63,9 +63,9 @@ class MetAromatic:
         for position, groups in groupby(self.f.coords_met, lambda entry: entry[5]):
             ordered = sorted(list(groups), key=itemgetter(2))
 
-            coords_ce = array(ordered[0][6:9]).astype(float)
-            coords_cg = array(ordered[1][6:9]).astype(float)
-            coords_sd = array(ordered[2][6:9]).astype(float)
+            coords_ce: FloatArray = array(ordered[0][6:9]).astype(float)
+            coords_cg: FloatArray = array(ordered[1][6:9]).astype(float)
+            coords_sd: FloatArray = array(ordered[2][6:9]).astype(float)
 
             lp = CrossProductMethod(coords_cg, coords_sd, coords_ce)
 
@@ -82,9 +82,9 @@ class MetAromatic:
         for position, groups in groupby(self.f.coords_met, lambda entry: entry[5]):
             ordered = sorted(list(groups), key=itemgetter(2))
 
-            coords_ce = array(ordered[0][6:9]).astype(float)
-            coords_cg = array(ordered[1][6:9]).astype(float)
-            coords_sd = array(ordered[2][6:9]).astype(float)
+            coords_ce: FloatArray = array(ordered[0][6:9]).astype(float)
+            coords_cg: FloatArray = array(ordered[1][6:9]).astype(float)
+            coords_sd: FloatArray = array(ordered[2][6:9]).astype(float)
 
             lp = RodriguesMethod(coords_cg, coords_sd, coords_ce)
 
@@ -128,10 +128,7 @@ class MetAromatic:
                         met_phi_angle=round(met_phi_angle, 3),
                         met_theta_angle=round(met_theta_angle, 3),
                         methionine_position=int(lone_pair.position),
-                        # Variable norm_vector_v is of type numpy.float64
-                        # and so round() returns a numpy.float64
-                        # which causes mypy to complain. So cast norm_vector_v to float
-                        norm=round(float(norm_vector_v), 3),
+                        norm=round(norm_vector_v, 3),
                     )
                 )
 

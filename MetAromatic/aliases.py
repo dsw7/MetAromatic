@@ -1,5 +1,8 @@
 from typing import TypeAlias, Literal
-from numpy import ndarray
+from numpy import ndarray, float64
+from numpy.typing import NDArray
+
+FloatArray: TypeAlias = NDArray[float64]
 
 Coordinates: TypeAlias = list[list[str]]
 Midpoints: TypeAlias = list[tuple[str, str, ndarray]]

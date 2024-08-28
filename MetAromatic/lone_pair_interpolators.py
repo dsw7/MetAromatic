@@ -1,4 +1,5 @@
-from numpy import ndarray, array, cross, matmul
+from numpy import array, cross, matmul
+from .aliases import FloatArray
 from .consts import SCAL1, SCAL2, ROOT_2
 from .utils import get_unit_vector, get_3x3_identity_matrix
 
@@ -9,7 +10,7 @@ class CrossProductMethod:
     associated with the class complete the vertices of a tetrahedron
     """
 
-    def __init__(self, vertex_a: ndarray, origin: ndarray, vertex_b: ndarray) -> None:
+    def __init__(self, vertex_a: FloatArray, origin: FloatArray, vertex_b: FloatArray) -> None:
         self.u = vertex_a - origin
         self.v = vertex_b - origin
 
@@ -17,11 +18,11 @@ class CrossProductMethod:
             -0.5 * (get_unit_vector(self.v) + get_unit_vector(self.u))
         )
 
-    def get_vector_a(self) -> ndarray:
+    def get_vector_a(self) -> FloatArray:
         cross_vec = cross(self.u, self.v)
         return self.anti_parallel_vec + ROOT_2 * get_unit_vector(cross_vec)
 
-    def get_vector_g(self) -> ndarray:
+    def get_vector_g(self) -> FloatArray:
         cross_vec = cross(self.v, self.u)
         return self.anti_parallel_vec + ROOT_2 * get_unit_vector(cross_vec)
 
@@ -39,7 +40,7 @@ class RodriguesMethod:
     tetrahedron with vertices A, B, C, D and the origin O.
     """
 
-    def __init__(self, vertex_a: ndarray, origin: ndarray, vertex_b: ndarray) -> None:
+    def __init__(self, vertex_a: FloatArray, origin: FloatArray, vertex_b: FloatArray) -> None:
         # Map to origin
         u = vertex_a - origin
         v = vertex_b - origin
@@ -72,8 +73,8 @@ class RodriguesMethod:
         )
 
     # Note that I flipped these methods to match previous algorithm
-    def get_vector_g(self) -> ndarray:
+    def get_vector_g(self) -> FloatArray:
         return matmul(self.rodrigues_rotation_matrix, self.u)
 
-    def get_vector_a(self) -> ndarray:
+    def get_vector_a(self) -> FloatArray:
         return matmul(self.rodrigues_rotation_matrix, self.v)
