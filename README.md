@@ -25,7 +25,6 @@ Code for the following publications:
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
 - [Tests and automation](#tests-and-automation)
-- [References](#references)
 
 ## Synopsis
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein
@@ -412,6 +411,6 @@ make test
 This target will run all unit tests within a `nox` generated virtual environment.
 
 <!-- footnotes will always be placed at the bottom of a markdown file so place here -->
-## References
+
 [^1]: See [Applications of numerical linear algebra to protein structural analysis: the case of
 methionine-aromatic motifs](https://summit.sfu.ca/item/18741)).
