@@ -177,7 +177,7 @@ TYR        122        18         4.39       53.4       95.487
 -------------------------------------------------------------------
 ```
 The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in my
-master's thesis[^1]. There exists another model, `rm` or Rodrigues Method for predicting the positions of
+master's thesis. [^1] There exists another model, `rm` or Rodrigues Method for predicting the positions of
 lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
 ```console
 runner --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
@@ -230,7 +230,7 @@ runner --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ## Batch jobs and MongoDB integration
 ### A brief overview
 This software is normally used for large scale Protein Data Bank mining efforts and stores the results in a
-MongoDB database (https://www.mongodb.com/).  To start a batch job, ensure that the host is running a valid
+MongoDB database (https://www.mongodb.com/). To start a batch job, ensure that the host is running a valid
 MongoDB installation then supply a batch file. A batch file can be a regular text file consisting of delimited
 PDB codes:
 ```
@@ -244,7 +244,7 @@ runner batch </path/batch/file> --threads <num-threads> --database <db> --collec
 ```
 The MongoDB dump database is specified using the `--database` option. The collection is specified with the
 `--collection` option. The `--threads` option specifies how many threads to use for processing the batch. The
-recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.  By default, mining
+recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle. By default, mining
 jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
 ```
 1970-01-01T00:00:00 MainThread I Handshaking with MongoDB at "mongodb://localhost:27017/"
@@ -412,5 +412,5 @@ This target will run all unit tests within a `nox` generated virtual environment
 
 <!-- footnotes will always be placed at the bottom of a markdown file so place here -->
 
-[^1]. See [Applications of numerical linear algebra to protein structural analysis: the case of
+[^1]: See [Applications of numerical linear algebra to protein structural analysis: the case of
 methionine-aromatic motifs](https://summit.sfu.ca/item/18741)).
