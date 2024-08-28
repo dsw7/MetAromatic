@@ -2,7 +2,7 @@ from itertools import groupby
 from copy import deepcopy
 from operator import itemgetter
 from numpy import array
-from .aliases import Midpoints, Coordinates
+from .aliases import Midpoints, Coordinates, FloatArray
 from .consts import DICT_ATOMS_PHE, DICT_ATOMS_TYR, DICT_ATOMS_TRP
 
 
@@ -33,8 +33,12 @@ def _get_aromatic_midpoints(aromatics: Coordinates, keys: dict[str, str]) -> Mid
         y_mid = get_midpoints(y_coord)
         z_mid = get_midpoints(z_coord)
 
-        for a, b, c in zip(x_mid, y_mid, z_mid):
-            midpoints.append((ordered[0][5], ordered[0][3], array([a, b, c])))
+        for x, y, z in zip(x_mid, y_mid, z_mid):
+            residue_pos: str = ordered[0][5]
+            residue_name: str = ordered[0][3]
+            coords: FloatArray = array([x, y, z])
+
+            midpoints.append((residue_pos, residue_name, coords))
 
     return midpoints
 

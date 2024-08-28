@@ -10,7 +10,9 @@ class CrossProductMethod:
     associated with the class complete the vertices of a tetrahedron
     """
 
-    def __init__(self, vertex_a: FloatArray, origin: FloatArray, vertex_b: FloatArray) -> None:
+    def __init__(
+        self, vertex_a: FloatArray, origin: FloatArray, vertex_b: FloatArray
+    ) -> None:
         self.u = vertex_a - origin
         self.v = vertex_b - origin
 
@@ -40,7 +42,9 @@ class RodriguesMethod:
     tetrahedron with vertices A, B, C, D and the origin O.
     """
 
-    def __init__(self, vertex_a: FloatArray, origin: FloatArray, vertex_b: FloatArray) -> None:
+    def __init__(
+        self, vertex_a: FloatArray, origin: FloatArray, vertex_b: FloatArray
+    ) -> None:
         # Map to origin
         u = vertex_a - origin
         v = vertex_b - origin
