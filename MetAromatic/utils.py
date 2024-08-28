@@ -6,7 +6,7 @@ from .aliases import Residues, FloatArray
 
 
 @cache
-def get_separator() -> str:
+def _get_separator() -> str:
     try:
         separator = get_terminal_size()[0] * "-"
     except OSError:
@@ -16,7 +16,7 @@ def get_separator() -> str:
 
 
 def print_separator() -> None:
-    print(get_separator())
+    print(_get_separator())
 
 
 def get_unit_vector(v: FloatArray) -> FloatArray:
