@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TypedDict
-from numpy import ndarray
 from pydantic import BaseModel
-from .aliases import Midpoints, Coordinates, Models
+from .aliases import Midpoints, Coordinates, Models, FloatArray
 
 
 class DictInteractions(TypedDict):
@@ -36,10 +35,10 @@ class BatchParams(BaseModel):
 
 @dataclass
 class LonePairs:
-    coords_sd: ndarray
+    coords_sd: FloatArray
     position: str
-    vector_a: ndarray
-    vector_g: ndarray
+    vector_a: FloatArray
+    vector_g: FloatArray
 
 
 @dataclass
