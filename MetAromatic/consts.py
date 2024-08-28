@@ -4,7 +4,6 @@ from numpy import sin, cos, pi
 
 # General
 TMPDIR = Path(gettempdir())
-PATH_BATCH_LOG = TMPDIR / "met_aromatic.log"
 
 # Linear algebra
 # See https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula "Matrix notation" section

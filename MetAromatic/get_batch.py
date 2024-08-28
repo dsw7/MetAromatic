@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 from datetime import datetime
 from json import dumps
-from logging import getLogger
+from logging import getLogger, config
 from pathlib import Path
 from re import split
 from signal import signal, SIGINT, SIG_DFL
@@ -10,12 +10,38 @@ from time import time
 from pymongo import MongoClient, errors, database
 from .algorithm import MetAromatic
 from .aliases import RawData, PdbCodes, Chunks
-from .consts import PATH_BATCH_LOG
 from .errors import SearchError
 from .load_resources import load_pdb_file_from_rscb
 from .models import MetAromaticParams, FeatureSpace, BatchParams
 
 LOGGER = getLogger("met-aromatic")
+
+
+def _configure_logger() -> None:
+    config.dictConfig(
+        {
+            "version": 1,
+            "formatters": {
+                "default": {
+                    "datefmt": "%Y-%m-%dT%H:%M:%S",
+                    "format": "%(asctime)s %(threadName)s %(levelname)s %(message)s",
+                }
+            },
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "default",
+                    "stream": "ext://sys.stdout",
+                },
+            },
+            "loggers": {
+                "met-aromatic": {
+                    "handlers": ["console"],
+                    "level": "INFO",
+                },
+            },
+        }
+    )
 
 
 def _load_pdb_codes(batch_file: Path) -> PdbCodes:
@@ -192,7 +218,7 @@ class ParallelProcessing:
 
 
 def run_batch_job(params: MetAromaticParams, bp: BatchParams) -> None:
-    LOGGER.info('Will log to file "%s"', PATH_BATCH_LOG)
+    _configure_logger()
 
     pdb_codes = _load_pdb_codes(bp.path_batch_file)
     chunks = _chunk_pdb_codes(num_chunks=bp.threads, pdb_codes=pdb_codes)
