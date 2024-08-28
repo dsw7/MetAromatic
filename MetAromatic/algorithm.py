@@ -107,8 +107,8 @@ class MetAromatic:
 
         for lone_pair in self.f.lone_pairs_met:
             for midpoint in midpoints:
-                vector_v = midpoint[2] - lone_pair.coords_sd
-                norm_vector_v = linalg.norm(vector_v)
+                vector_v: FloatArray = midpoint[2] - lone_pair.coords_sd
+                norm_vector_v: float = linalg.norm(vector_v).item()
 
                 if norm_vector_v > self.params.cutoff_distance:
                     continue
