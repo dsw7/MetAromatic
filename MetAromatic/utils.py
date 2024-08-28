@@ -2,7 +2,7 @@ from functools import cache
 from os import get_terminal_size
 from re import compile, Pattern  # pylint: disable=redefined-builtin
 from numpy import ndarray, linalg, eye, dot, degrees, arccos
-from .aliases import Residues
+from .aliases import Residues, FloatArray
 
 
 @cache
@@ -28,11 +28,11 @@ def get_3x3_identity_matrix() -> ndarray:
     return eye(3)
 
 
-def get_angle_between_vecs(u: ndarray, v: ndarray) -> float:
+def get_angle_between_vecs(u: FloatArray, v: FloatArray) -> float:
     dot_product = dot(u, v)
     cross_product = linalg.norm(v) * linalg.norm(u)
 
-    return degrees(arccos(dot_product / cross_product))
+    return degrees(arccos(dot_product / cross_product)).item()
 
 
 def _get_met_search_pattern(chain: str) -> Pattern[str]:
