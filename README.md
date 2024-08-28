@@ -177,7 +177,7 @@ TYR        122        18         4.39       53.4       95.487
 -------------------------------------------------------------------
 ```
 The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in my
-master's thesis. [^1] There exists another model, `rm` or Rodrigues Method for predicting the positions of
+master's thesis[^1]. There exists another model, `rm` or Rodrigues Method for predicting the positions of
 lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
 ```console
 runner --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
