@@ -19,7 +19,7 @@ def print_separator() -> None:
     print(get_separator())
 
 
-def get_unit_vector(v: ndarray) -> ndarray:
+def get_unit_vector(v: FloatArray) -> FloatArray:
     return v / linalg.norm(v)
 
 
