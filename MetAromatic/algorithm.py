@@ -1,5 +1,4 @@
 from itertools import groupby
-from logging import getLogger
 from operator import itemgetter
 from re import match
 from numpy import array, linalg
@@ -16,7 +15,6 @@ from .aliases import RawData
 
 
 class MetAromatic:
-    log = getLogger("met-aromatic")
 
     def __init__(self, params: MetAromaticParams, raw_data: RawData) -> None:
         self.params = params
@@ -24,8 +22,6 @@ class MetAromatic:
         self.f: FeatureSpace
 
     def get_first_model(self) -> None:
-        self.log.debug("Stripping feature space down to only first model")
-
         for line in self.raw_data:
             if "ENDMDL" in line:
                 break
@@ -33,8 +29,6 @@ class MetAromatic:
             self.f.first_model.append(line)
 
     def get_met_coordinates(self) -> None:
-        self.log.debug("Isolating MET coordinates from feature space")
-
         pattern = get_search_pattern(res="met", chain=self.params.chain)
 
         for line in self.f.first_model:
@@ -45,8 +39,6 @@ class MetAromatic:
             raise SearchError("No MET residues")
 
     def get_phe_coordinates(self) -> None:
-        self.log.debug("Isolating PHE coordinates from feature space")
-
         pattern = get_search_pattern(res="phe", chain=self.params.chain)
 
         for line in self.f.first_model:
@@ -54,8 +46,6 @@ class MetAromatic:
                 self.f.coords_phe.append(line.split()[:9])
 
     def get_tyr_coordinates(self) -> None:
-        self.log.debug("Isolating TYR coordinates from feature space")
-
         pattern = get_search_pattern(res="tyr", chain=self.params.chain)
 
         for line in self.f.first_model:
@@ -63,8 +53,6 @@ class MetAromatic:
                 self.f.coords_tyr.append(line.split()[:9])
 
     def get_trp_coordinates(self) -> None:
-        self.log.debug("Isolating TRP coordinates from feature space")
-
         pattern = get_search_pattern(res="trp", chain=self.params.chain)
 
         for line in self.f.first_model:
@@ -110,20 +98,11 @@ class MetAromatic:
             )
 
     def get_midpoints(self) -> None:
-        self.log.debug("Computing midpoints between PHE aromatic carbon atoms")
         self.f.midpoints_phe = get_phe_midpoints(self.f.coords_phe)
-
-        self.log.debug("Computing midpoints between TYR aromatic carbon atoms")
         self.f.midpoints_tyr = get_tyr_midpoints(self.f.coords_tyr)
-
-        self.log.debug("Computing midpoints between TRP aromatic carbon atoms")
         self.f.midpoints_trp = get_trp_midpoints(self.f.coords_trp)
 
     def apply_met_aromatic_criteria(self) -> None:
-        self.log.debug(
-            "Finding pairs meeting Met-aromatic algorithm criteria in feature space"
-        )
-
         midpoints = self.f.midpoints_phe + self.f.midpoints_tyr + self.f.midpoints_trp
 
         for lone_pair in self.f.lone_pairs_met:
@@ -168,9 +147,6 @@ class MetAromatic:
         if len(self.f.coords_phe + self.f.coords_tyr + self.f.coords_trp) == 0:
             raise SearchError("No PHE/TYR/TRP residues")
 
-        self.log.debug(
-            'Computing MET lone pair positions using "%s" model', self.params.model
-        )
         if self.params.model == "cp":
             self.get_met_lone_pairs_cp()
         else:

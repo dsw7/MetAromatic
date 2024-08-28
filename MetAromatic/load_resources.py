@@ -1,5 +1,4 @@
 from gzip import open as gz_open
-from logging import getLogger
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from urllib.error import URLError
@@ -7,8 +6,6 @@ from urllib.request import urlretrieve, urlcleanup
 from .aliases import RawData
 from .consts import TMPDIR
 from .errors import SearchError
-
-LOGGER = getLogger("met-aromatic")
 
 
 def _is_valid_pdb_file(file_content: list[str]) -> bool:
@@ -34,8 +31,6 @@ def _is_valid_pdb_file(file_content: list[str]) -> bool:
 
 
 def load_local_pdb_file(pdb_file: Path) -> RawData:
-    LOGGER.debug('Reading local file "%s"', pdb_file)
-
     contents = pdb_file.read_text().splitlines()
 
     if not _is_valid_pdb_file(contents):
@@ -51,10 +46,7 @@ def _get_ftp_url(pdb_code: str) -> str:
 
 
 def load_pdb_file_from_rscb(pdb_code: str) -> RawData:
-    LOGGER.debug('Fetching PDB file "%s"', pdb_code)
-
     ftp_url = _get_ftp_url(pdb_code.lower())
-    LOGGER.debug('Accessing URL: "%s"', ftp_url)
 
     raw_data: RawData = []
     with NamedTemporaryFile(dir=TMPDIR) as f:

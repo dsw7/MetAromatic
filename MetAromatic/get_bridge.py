@@ -1,12 +1,9 @@
-from logging import getLogger
 from networkx import Graph, connected_components
 from .algorithm import MetAromatic
 from .aliases import RawData
 from .load_resources import load_pdb_file_from_rscb
 from .models import MetAromaticParams, FeatureSpace, BridgeSpace
 from .utils import print_separator
-
-LOGGER = getLogger("met-aromatic")
 
 
 def _isolate_bridges(fs: FeatureSpace, vertices: int) -> BridgeSpace:
@@ -28,19 +25,10 @@ def _isolate_bridges(fs: FeatureSpace, vertices: int) -> BridgeSpace:
 
     # Note that inverse bridges (MET-ARO-MET) not removed!
 
-    match len(bs.bridges):
-        case 0:
-            LOGGER.info("Found 0 bridges")
-        case 1:
-            LOGGER.info("Found 1 bridge")
-        case _:
-            LOGGER.info("Found %i bridges", len(bs.bridges))
-
     return bs
 
 
 def get_bridges(params: MetAromaticParams, code: str, vertices: int) -> BridgeSpace:
-    LOGGER.info('Locating bridging interactions for entry "%s"', code)
     raw_data: RawData = load_pdb_file_from_rscb(code)
 
     fs: FeatureSpace = MetAromatic(params=params, raw_data=raw_data).get_interactions()
@@ -50,7 +38,10 @@ def get_bridges(params: MetAromaticParams, code: str, vertices: int) -> BridgeSp
 def print_bridges(bs: BridgeSpace) -> None:
     print_separator()
 
-    for bridge in bs.bridges:
-        print("{" + "}-{".join(bridge) + "}")
+    if len(bs.bridges) > 0:
+        for bridge in bs.bridges:
+            print("{" + "}-{".join(bridge) + "}")
+    else:
+        print("Found 0 bridges")
 
     print_separator()
