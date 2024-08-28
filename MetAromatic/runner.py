@@ -67,8 +67,8 @@ def read_local(obj: MetAromaticParams, pdb_file: Path) -> None:
 
     try:
         print_interactions(get_pairs_from_file(filepath=pdb_file, params=obj))
-    except SearchError:
-        sys.exit("Search failed!")
+    except SearchError as error:
+        sys.exit(str(error))
 
 
 @cli.command(help="Run a bridging interaction query on a single PDB entry.")
@@ -85,8 +85,8 @@ def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
 
     try:
         print_bridges(get_bridges(params=obj, code=code, vertices=vertices))
-    except SearchError:
-        sys.exit("Search failed!")
+    except SearchError as error:
+        sys.exit(str(error))
 
 
 @cli.command(help="Run a Met-aromatic query batch job.")
@@ -160,8 +160,8 @@ def batch(
     )
     try:
         run_batch_job(params=obj, bp=bp)
-    except SearchError:
-        sys.exit("Search failed!")
+    except SearchError as error:
+        sys.exit(str(error))
 
 
 if __name__ == "__main__":
