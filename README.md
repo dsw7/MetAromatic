@@ -38,6 +38,8 @@ pip install MetAromatic
 ```
 
 ## How it works
+> [!NOTE]
+> See my master's thesis [^1] for a more indepth discussion surrounding the "Met-aromatic" algorithm.
 ### Step 1: Data preprocessing
 Files in the PDB are organized using the SMCRA hierarchy: _Structure_, _Model_, _Chain_, _Residue_ and _Atom_.
 For example, here is the fifth line for the entry 1RCY:
