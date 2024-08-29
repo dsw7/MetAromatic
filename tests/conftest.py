@@ -1,8 +1,9 @@
+from json import loads
 from pathlib import Path
 from click.testing import CliRunner
 from pytest import fixture
 from utils import Defaults
-from MetAromatic.models import MetAromaticParams
+from MetAromatic.models import MetAromaticParams, DictInteractions
 
 
 @fixture(scope="session")
@@ -31,3 +32,8 @@ def resources() -> Path:
 def pdb_file_1rcy(resources: Path) -> Path:
     # A valid PDB file
     return resources / "data_1rcy.pdb"
+
+
+@fixture(scope="session")
+def valid_results_1rcy(resources: Path) -> list[DictInteractions]:
+    return loads((resources / "expected_results_1rcy.json").read_text())

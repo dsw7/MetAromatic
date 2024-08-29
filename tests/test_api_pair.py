@@ -1,22 +1,9 @@
-from json import loads
-from pathlib import Path
 import pytest
 from utils import compare_interactions, Defaults
-from MetAromatic import get_pairs_from_pdb, get_pairs_from_file
+from MetAromatic import get_pairs_from_pdb
 from MetAromatic.aliases import Models
 from MetAromatic.errors import SearchError
-from MetAromatic.models import MetAromaticParams, FeatureSpace, DictInteractions
-
-
-@pytest.fixture(scope="module")
-def valid_results_1rcy(resources: Path) -> list[DictInteractions]:
-    return loads((resources / "expected_results_1rcy.json").read_text())
-
-
-@pytest.fixture
-def pdb_file_invalid(resources: Path) -> Path:
-    # An invalid PDB file
-    return resources / "data_lorem_ipsum.pdb"
+from MetAromatic.models import FeatureSpace, DictInteractions
 
 
 def test_pair_1rcy_valid_results(
@@ -24,22 +11,6 @@ def test_pair_1rcy_valid_results(
 ) -> None:
     fs: FeatureSpace = get_pairs_from_pdb(pdb_code="1rcy", **defaults)
     compare_interactions(fs.serialize_interactions(), valid_results_1rcy)
-
-
-def test_pair_1rcy_valid_results_use_local(
-    ma_params: MetAromaticParams,
-    valid_results_1rcy: list[DictInteractions],
-    pdb_file_1rcy: Path,
-) -> None:
-    fs: FeatureSpace = get_pairs_from_file(params=ma_params, filepath=pdb_file_1rcy)
-    compare_interactions(fs.serialize_interactions(), valid_results_1rcy)
-
-
-def test_pair_1rcy_valid_results_use_local_invalid_file(
-    ma_params: MetAromaticParams, pdb_file_invalid
-) -> None:
-    with pytest.raises(SearchError, match="Not a valid PDB file"):
-        get_pairs_from_file(params=ma_params, filepath=pdb_file_invalid)
 
 
 @pytest.mark.parametrize(
