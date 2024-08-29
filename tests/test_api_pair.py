@@ -60,13 +60,17 @@ def test_pair_no_results_error(defaults: Defaults) -> None:
         get_pairs_from_pdb(pdb_code="1a5r", **defaults)
 
 
+def test_pair_invalid_pdb_code(defaults: Defaults) -> None:
+    with pytest.raises(SearchError, match="Invalid PDB entry"):
+        get_pairs_from_pdb(pdb_code="abcd", **defaults)
+
+
 @pytest.mark.parametrize(
     "code, cutoff_distance, cutoff_angle, model, error",
     [
         ("1rcy", -0.01, 109.5, "cp", "cutoff_distance: Input should be greater than 0"),
         ("1rcy", 4.95, -60.0, "cp", "cutoff_angle: Input should be greater than 0"),
         ("1rcy", 4.95, 720.0, "cp", "cutoff_angle: Input should be less than 360"),
-        ("abcd", 4.95, 109.5, "cp", "Invalid PDB entry"),
         ("1rcy", 4.95, 109.5, "pc", "Invalid model"),
         ("1rcy", "4.95", 109.5, "cp", "Cutoff distance must be a valid float"),
         ("1rcy", 4.95, "109.5", "cp", "Cutoff angle must be a valid float"),
