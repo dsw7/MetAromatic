@@ -19,7 +19,7 @@ class DictInteractions(TypedDict):
 
 class MetAromaticParams(BaseModel):
     chain: str
-    cutoff_angle: float
+    cutoff_angle: Annotated[float, Field(strict=True, gt=0, lt=360)]
     cutoff_distance: Annotated[float, Field(strict=True, gt=0)]
     model: Models
 
