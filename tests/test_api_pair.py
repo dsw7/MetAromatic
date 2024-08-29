@@ -64,8 +64,8 @@ def test_pair_no_results_error(defaults: Defaults) -> None:
     "code, cutoff_distance, cutoff_angle, model, error",
     [
         ("1rcy", -0.01, 109.5, "cp", "cutoff_distance: Input should be greater than 0"),
-        ("1rcy", 4.95, -60.0, "cp", "Invalid cutoff angle"),
-        ("1rcy", 4.95, 720.0, "cp", "Invalid cutoff angle"),
+        ("1rcy", 4.95, -60.0, "cp", "cutoff_angle: Input should be greater than 0"),
+        ("1rcy", 4.95, 720.0, "cp", "cutoff_angle: Input should be less than 360"),
         ("abcd", 4.95, 109.5, "cp", "Invalid PDB entry"),
         ("1rcy", 4.95, 109.5, "pc", "Invalid model"),
         ("1rcy", "4.95", 109.5, "cp", "Cutoff distance must be a valid float"),
