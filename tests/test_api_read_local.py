@@ -4,7 +4,7 @@ from utils import compare_interactions, Defaults
 from MetAromatic import get_pairs_from_file
 from MetAromatic.aliases import Models
 from MetAromatic.errors import SearchError
-from MetAromatic.models import MetAromaticParams, FeatureSpace, DictInteractions
+from MetAromatic.models import FeatureSpace, DictInteractions
 
 
 @pytest.fixture
@@ -13,23 +13,23 @@ def pdb_file_invalid(resources: Path) -> Path:
 
 
 def test_pair_1rcy_valid_results_use_local(
-    ma_params: MetAromaticParams,
+    defaults: Defaults,
     valid_results_1rcy: list[DictInteractions],
     pdb_file_1rcy: Path,
 ) -> None:
-    fs: FeatureSpace = get_pairs_from_file(params=ma_params, filepath=pdb_file_1rcy)
+    fs: FeatureSpace = get_pairs_from_file(filepath=pdb_file_1rcy, **defaults)
     compare_interactions(fs.serialize_interactions(), valid_results_1rcy)
 
 
 def test_pair_1rcy_valid_results_use_local_invalid_file(
-    ma_params: MetAromaticParams, pdb_file_invalid
+    defaults: Defaults, pdb_file_invalid: Path
 ) -> None:
     with pytest.raises(SearchError, match="Not a valid PDB file"):
-        get_pairs_from_file(params=ma_params, filepath=pdb_file_invalid)
+        get_pairs_from_file(filepath=pdb_file_invalid, **defaults)
 
 
 @pytest.mark.parametrize(
-    "code, cutoff_distance, cutoff_angle, model, error",
+    "cutoff_distance, cutoff_angle, model, error",
     [
         (-0.01, 109.5, "cp", "cutoff_distance: Input should be greater than 0"),
         (4.95, -60.0, "cp", "cutoff_angle: Input should be greater than 0"),
