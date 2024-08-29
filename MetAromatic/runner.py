@@ -74,7 +74,15 @@ def read_local(obj: MetAromaticParams, pdb_file: Path) -> None:
     from .get_pair import get_pairs_from_file, print_interactions
 
     try:
-        print_interactions(get_pairs_from_file(filepath=pdb_file, params=obj))
+        print_interactions(
+            get_pairs_from_file(
+                filepath=pdb_file,
+                chain=obj.chain,
+                cutoff_angle=obj.cutoff_angle,
+                cutoff_distance=obj.cutoff_distance,
+                model=obj.model,
+            )
+        )
     except SearchError as error:
         sys.exit(str(error))
 

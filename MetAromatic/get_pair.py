@@ -2,11 +2,24 @@ from pathlib import Path
 from .algorithm import MetAromatic
 from .aliases import RawData
 from .load_resources import load_local_pdb_file, load_pdb_file_from_rscb
-from .models import MetAromaticParams, FeatureSpace, Models, get_params
+from .models import FeatureSpace, Models, get_params
 from .utils import print_separator
 
 
-def get_pairs_from_file(params: MetAromaticParams, filepath: Path) -> FeatureSpace:
+def get_pairs_from_file(
+    filepath: Path,
+    chain: str,
+    cutoff_angle: float,
+    cutoff_distance: float,
+    model: Models,
+) -> FeatureSpace:
+    params = get_params(
+        chain=chain,
+        cutoff_angle=cutoff_angle,
+        cutoff_distance=cutoff_distance,
+        model=model,
+    )
+
     raw_data: RawData = load_local_pdb_file(filepath)
     return MetAromatic(params=params, raw_data=raw_data).get_interactions()
 
