@@ -1,7 +1,7 @@
 from json import loads
 from pathlib import Path
 import pytest
-from utils import compare_interactions
+from utils import compare_interactions, Defaults
 from MetAromatic import get_pairs_from_pdb, get_pairs_from_file
 from MetAromatic.aliases import Models
 from MetAromatic.errors import SearchError
@@ -20,9 +20,9 @@ def pdb_file_invalid(resources: Path) -> Path:
 
 
 def test_pair_1rcy_valid_results(
-    ma_params: MetAromaticParams, valid_results_1rcy: list[DictInteractions]
+    defaults: Defaults, valid_results_1rcy: list[DictInteractions]
 ) -> None:
-    fs: FeatureSpace = get_pairs_from_pdb(params=ma_params, pdb_code="1rcy")
+    fs: FeatureSpace = get_pairs_from_pdb(pdb_code="1rcy", **defaults)
     compare_interactions(fs.serialize_interactions(), valid_results_1rcy)
 
 
@@ -50,16 +50,14 @@ def test_pair_1rcy_valid_results_use_local_invalid_file(
         ("6mwm", "No PHE/TYR/TRP residues"),
     ],
 )
-def test_pair_missing_residues(
-    code: str, error: str, ma_params: MetAromaticParams
-) -> None:
+def test_pair_missing_residues(code: str, error: str, defaults: Defaults) -> None:
     with pytest.raises(SearchError, match=error):
-        get_pairs_from_pdb(params=ma_params, pdb_code=code)
+        get_pairs_from_pdb(pdb_code=code, **defaults)
 
 
-def test_pair_no_results_error(ma_params: MetAromaticParams) -> None:
+def test_pair_no_results_error(defaults: Defaults) -> None:
     with pytest.raises(SearchError, match="No Met-aromatic interactions"):
-        get_pairs_from_pdb(params=ma_params, pdb_code="1a5r")
+        get_pairs_from_pdb(pdb_code="1a5r", **defaults)
 
 
 @pytest.mark.parametrize(
@@ -85,10 +83,8 @@ def test_pair_invalid_inputs(
     with pytest.raises(SearchError, match=error):
         get_pairs_from_pdb(
             pdb_code=code,
-            params=MetAromaticParams(
-                cutoff_angle=cutoff_angle,
-                cutoff_distance=cutoff_distance,
-                chain="A",
-                model=model,
-            ),
+            cutoff_angle=cutoff_angle,
+            cutoff_distance=cutoff_distance,
+            chain="A",
+            model=model,
         )

@@ -2,9 +2,9 @@ from json import loads
 from pathlib import Path
 from typing import TypeAlias
 import pytest
-from utils import compare_interactions
+from utils import compare_interactions, Defaults
 from MetAromatic import get_pairs_from_pdb
-from MetAromatic.models import MetAromaticParams, FeatureSpace, DictInteractions
+from MetAromatic.models import FeatureSpace, DictInteractions
 
 ControlData: TypeAlias = dict[str, list[DictInteractions]]
 
@@ -169,11 +169,11 @@ TEST_PDB_CODES = {
 
 @pytest.mark.parametrize("code", TEST_PDB_CODES)
 def test_pair_against_483_data(
-    code: str, ma_params: MetAromaticParams, data_chem_483: ControlData
+    code: str, defaults: Defaults, data_chem_483: ControlData
 ) -> None:
 
     try:
-        fs: FeatureSpace = get_pairs_from_pdb(params=ma_params, pdb_code=code)
+        fs: FeatureSpace = get_pairs_from_pdb(pdb_code=code, **defaults)
     except IndexError:
         pytest.skip(
             "Skipping list index out of range error. Occurs because of missing data."
