@@ -52,7 +52,15 @@ def pair(obj: MetAromaticParams, pdb_code: str) -> None:
     from .get_pair import get_pairs_from_pdb, print_interactions
 
     try:
-        print_interactions(get_pairs_from_pdb(pdb_code=pdb_code, params=obj))
+        print_interactions(
+            get_pairs_from_pdb(
+                pdb_code=pdb_code,
+                chain=obj.chain,
+                cutoff_angle=obj.cutoff_angle,
+                cutoff_distance=obj.cutoff_distance,
+                model=obj.model,
+            )
+        )
     except SearchError as error:
         sys.exit(str(error))
 
