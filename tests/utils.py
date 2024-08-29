@@ -1,5 +1,13 @@
+from typing import TypedDict
 from unittest import TestCase
-from MetAromatic.models import DictInteractions
+from MetAromatic.models import DictInteractions, Models
+
+
+class Defaults(TypedDict):
+    chain: str
+    cutoff_angle: float
+    cutoff_distance: float
+    model: Models
 
 
 def compare_interactions(
