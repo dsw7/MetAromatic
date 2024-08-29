@@ -43,14 +43,31 @@ def test_pair_1rcy_valid_results_use_local_invalid_file(
 
 
 @pytest.mark.parametrize(
+    "code, error",
+    [
+        ("2rcy", "No MET residues"),
+        ("3nir", "No MET residues"),
+        ("6mwm", "No PHE/TYR/TRP residues"),
+    ],
+)
+def test_pair_missing_residues(
+    code: str, error: str, ma_params: MetAromaticParams
+) -> None:
+    with pytest.raises(SearchError, match=error):
+        get_pairs_from_pdb(params=ma_params, pdb_code=code)
+
+
+def test_pair_no_results_error(ma_params: MetAromaticParams) -> None:
+    with pytest.raises(SearchError, match="No Met-aromatic interactions"):
+        get_pairs_from_pdb(params=ma_params, pdb_code="1a5r")
+
+
+@pytest.mark.parametrize(
     "code, cutoff_distance, cutoff_angle, model, error",
     [
         ("1rcy", -0.01, 109.5, "cp", "Invalid cutoff distance"),
         ("1rcy", 4.95, -60.0, "cp", "Invalid cutoff angle"),
         ("1rcy", 4.95, 720.0, "cp", "Invalid cutoff angle"),
-        ("2rcy", 4.95, 109.5, "cp", "No MET residues"),
-        ("3nir", 4.95, 109.5, "cp", "No MET residues"),
-        ("6mwm", 4.95, 109.5, "cp", "No PHE/TYR/TRP residues"),
         ("abcd", 4.95, 109.5, "cp", "Invalid PDB entry"),
         ("1rcy", 4.95, 109.5, "pc", "Invalid model"),
         ("1rcy", "4.95", 109.5, "cp", "Cutoff distance must be a valid float"),
@@ -75,8 +92,3 @@ def test_pair_invalid_inputs(
                 model=model,
             ),
         )
-
-
-def test_pair_no_results_error(ma_params: MetAromaticParams) -> None:
-    with pytest.raises(SearchError, match="No Met-aromatic interactions"):
-        get_pairs_from_pdb(params=ma_params, pdb_code="1a5r")
