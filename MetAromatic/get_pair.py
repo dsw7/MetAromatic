@@ -2,7 +2,7 @@ from pathlib import Path
 from .algorithm import MetAromatic
 from .aliases import RawData
 from .load_resources import load_local_pdb_file, load_pdb_file_from_rscb
-from .models import MetAromaticParams, FeatureSpace, Models
+from .models import MetAromaticParams, FeatureSpace, Models, get_params
 from .utils import print_separator
 
 
@@ -13,12 +13,12 @@ def get_pairs_from_file(params: MetAromaticParams, filepath: Path) -> FeatureSpa
 
 def get_pairs_from_pdb(
     pdb_code: str,
-    chain: str = "A",
-    cutoff_angle: float = 109.5,
-    cutoff_distance: float = 4.9,
-    model: Models = "cp",
+    chain: str,
+    cutoff_angle: float,
+    cutoff_distance: float,
+    model: Models,
 ) -> FeatureSpace:
-    params = MetAromaticParams(
+    params = get_params(
         chain=chain,
         cutoff_angle=cutoff_angle,
         cutoff_distance=cutoff_distance,

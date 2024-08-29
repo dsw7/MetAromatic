@@ -1,8 +1,11 @@
 from dataclasses import dataclass, field
 from pathlib import Path
+from sys import stderr
 from typing import TypedDict
-from pydantic import BaseModel
+from typing_extensions import Annotated
+from pydantic import BaseModel, Field, ValidationError
 from .aliases import Midpoints, Coordinates, Models, FloatArray
+from .errors import SearchError
 
 
 class DictInteractions(TypedDict):
@@ -17,8 +20,38 @@ class DictInteractions(TypedDict):
 class MetAromaticParams(BaseModel):
     chain: str
     cutoff_angle: float
-    cutoff_distance: float
+    cutoff_distance: Annotated[float, Field(strict=True, gt=0)]
     model: Models
+
+
+def _unpack_validation_errors(exception: ValidationError) -> str:
+    errors = exception.errors()
+
+    if len(errors) > 1:
+        for error in errors[:-1]:
+            print(f"{error['loc'][0]}: {error['msg']}", file=stderr)
+
+    last_error = errors[-1]
+    return f"{last_error['loc'][0]}: {last_error['msg']}"
+
+
+def get_params(
+    chain: str = "A",
+    cutoff_angle: float = 109.5,
+    cutoff_distance: float = 4.9,
+    model: Models = "cp",
+) -> MetAromaticParams:
+    try:
+        params = MetAromaticParams(
+            chain=chain,
+            cutoff_angle=cutoff_angle,
+            cutoff_distance=cutoff_distance,
+            model=model,
+        )
+    except ValidationError as error:
+        raise SearchError(_unpack_validation_errors(error)) from error
+
+    return params
 
 
 class BatchParams(BaseModel):
