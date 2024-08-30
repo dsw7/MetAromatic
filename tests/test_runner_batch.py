@@ -53,7 +53,7 @@ def mongo_db() -> Generator[database.Database]:
 
 
 @pytest.fixture(scope="module")
-def mongo_coll(mongo_db: database.Database) -> Generator[collection.Collection]:
+def mongo_coll(mongo_db: database.Database) -> Generator[Results]:
     yield mongo_db[TestParams.coll]
     mongo_db[TestParams.coll].drop()
 
