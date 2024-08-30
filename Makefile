@@ -53,7 +53,7 @@ black:
 	@black MetAromatic tests
 
 mypy:
-	@mypy --cache-dir=/tmp/mypy_cache_metaromatic MetAromatic tests
+	@mypy --strict --cache-dir=/tmp/mypy_cache_metaromatic MetAromatic tests
 
 lint:
 	@pylint MetAromatic tests
