@@ -1,12 +1,15 @@
 from os import EX_OK
 from pathlib import Path
-from typing import Generator
+from typing import Generator, TypeAlias
 import pytest
 from click.testing import CliRunner
 from pymongo import MongoClient, errors, collection, database
+from MetAromatic.models import BatchResult
 from MetAromatic.runner import cli
 
 TEST_DATA = Path(__file__).resolve().parent / "data_coronavirus_entries.txt"
+
+Results: TypeAlias = collection.Collection[BatchResult]
 
 
 class TestParams:
@@ -75,54 +78,91 @@ def test_batch_too_many_threads(cli_runner: CliRunner) -> None:
     assert result.exit_code != EX_OK
 
 
-def test_correct_count(mongo_coll: collection.Collection) -> None:
+def test_correct_count(mongo_coll: Results) -> None:
     assert len(list(mongo_coll.find())) == TestParams.num_entries
 
 
-def test_2ca1(mongo_coll: collection.Collection) -> None:
+def test_2ca1(mongo_coll: Results) -> None:
     results = mongo_coll.find_one({"_id": "2ca1"})
+
+    if results is None:
+        pytest.fail(reason="No results")
+
+    if results["interactions"] is None:
+        pytest.fail(reason="No interactions")
+
     assert len(results["interactions"]) == 7
     assert results["errmsg"] is None
 
 
-def test_2fyg(mongo_coll: collection.Collection) -> None:
+def test_2fyg(mongo_coll: Results) -> None:
     results = mongo_coll.find_one({"_id": "2fyg"})
+
+    if results is None:
+        pytest.fail(reason="No results")
+
+    if results["interactions"] is None:
+        pytest.fail(reason="No interactions")
+
     assert len(results["interactions"]) == 3
     assert results["errmsg"] is None
 
 
-def test_1xak(mongo_coll: collection.Collection) -> None:
+def test_1xak(mongo_coll: Results) -> None:
     results = mongo_coll.find_one({"_id": "1xak"})
+
+    if results is None:
+        pytest.fail(reason="No results")
+
     assert results["interactions"] is None
     assert results["errmsg"] == "No MET residues"
 
 
-def test_2fxp(mongo_coll: collection.Collection) -> None:
+def test_2fxp(mongo_coll: Results) -> None:
     results = mongo_coll.find_one({"_id": "2fxp"})
+
+    if results is None:
+        pytest.fail(reason="No results")
+
     assert results["interactions"] is None
     assert results["errmsg"] == "No MET residues"
 
 
-def test_6mwm(mongo_coll: collection.Collection) -> None:
+def test_6mwm(mongo_coll: Results) -> None:
     results = mongo_coll.find_one({"_id": "6mwm"})
+
+    if results is None:
+        pytest.fail(reason="No results")
+
     assert results["interactions"] is None
     assert results["errmsg"] == "No PHE/TYR/TRP residues"
 
 
-def test_2cme(mongo_coll: collection.Collection) -> None:
+def test_2cme(mongo_coll: Results) -> None:
     results = mongo_coll.find_one({"_id": "2cme"})
+
+    if results is None:
+        pytest.fail(reason="No results")
+
     assert results["interactions"] is None
     assert results["errmsg"] == "No Met-aromatic interactions"
 
 
-def test_spam(mongo_coll: collection.Collection) -> None:
+def test_spam(mongo_coll: Results) -> None:
     results = mongo_coll.find_one({"_id": "spam"})
+
+    if results is None:
+        pytest.fail(reason="No results")
+
     assert results["interactions"] is None
     assert results["errmsg"] == "Invalid PDB entry 'spam'"
 
 
 def test_check_valid_info_doc(mongo_coll_info: collection.Collection) -> None:
     results = mongo_coll_info.find_one({})
+
+    if results is None:
+        pytest.fail(reason="No results")
 
     assert results["chain"] == "A"
     assert results["cutoff_angle"] == 109.5
