@@ -1,8 +1,8 @@
 from pathlib import Path
 from .algorithm import MetAromatic
-from .aliases import RawData
+from .aliases import RawData, Models
 from .load_resources import load_local_pdb_file, load_pdb_file_from_rscb
-from .models import FeatureSpace, Models, get_params
+from .models import FeatureSpace, get_params
 from .utils import print_separator
 
 

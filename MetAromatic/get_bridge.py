@@ -1,8 +1,8 @@
 from networkx import Graph, connected_components
 from .algorithm import MetAromatic
-from .aliases import RawData
+from .aliases import RawData, Models
 from .load_resources import load_pdb_file_from_rscb
-from .models import FeatureSpace, BridgeSpace, Models, get_params
+from .models import FeatureSpace, BridgeSpace, get_params
 from .utils import print_separator
 
 

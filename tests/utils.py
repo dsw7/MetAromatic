@@ -1,6 +1,7 @@
 from typing import TypedDict
 from unittest import TestCase
-from MetAromatic.models import DictInteractions, Models
+from MetAromatic.aliases import Models
+from MetAromatic.models import DictInteractions
 
 
 class Defaults(TypedDict):
