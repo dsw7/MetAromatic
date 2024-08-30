@@ -41,7 +41,13 @@ def test_pair_invalid_pdb_code(defaults: Defaults) -> None:
     [
         ("1rcy", -0.01, 109.5, "cp", "cutoff_distance: Input should be greater than 0"),
         ("1rcy", 4.95, -60.0, "cp", "cutoff_angle: Input should be greater than 0"),
-        ("1rcy", 4.95, 720.0, "cp", "cutoff_angle: Input should be less than 360"),
+        (
+            "1rcy",
+            4.95,
+            720.0,
+            "cp",
+            "cutoff_angle: Input should be less than or equal to 360",
+        ),
         ("1rcy", 4.95, 109.5, "pc", "model: Input should be 'cp' or 'rm'"),
         (
             "1rcy",

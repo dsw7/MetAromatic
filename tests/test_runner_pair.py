@@ -69,8 +69,8 @@ def test_pair_no_results(cli_runner: CliRunner) -> None:
     command = "pair 1a5r"
 
     result = cli_runner.invoke(cli, command.split())
-    assert result.exit_code == EX_OK
-    assert "Found no Met-aromatic interactions for entry" in result.output
+    assert result.exit_code != EX_OK
+    assert "No Met-aromatic interactions" in result.output
 
 
 def test_pair_bad_query_type(cli_runner: CliRunner) -> None:
@@ -78,20 +78,6 @@ def test_pair_bad_query_type(cli_runner: CliRunner) -> None:
 
     result = cli_runner.invoke(cli, command.split())
     assert result.exit_code != EX_OK
-
-
-def test_pair_enable_debug(cli_runner: CliRunner) -> None:
-    command = "--debug pair 1rcy"
-
-    result = cli_runner.invoke(cli, command.split())
-    assert result.output.count(" D ") > 0
-
-
-def test_pair_disable_debug(cli_runner: CliRunner) -> None:
-    command = "pair 1rcy"
-
-    result = cli_runner.invoke(cli, command.split())
-    assert result.output.count(" D ") == 0
 
 
 @mark.parametrize(

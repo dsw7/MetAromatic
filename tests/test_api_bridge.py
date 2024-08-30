@@ -3,6 +3,7 @@ from utils import Defaults
 from MetAromatic import get_bridges
 from MetAromatic.aliases import Models
 from MetAromatic.errors import SearchError
+from MetAromatic.models import BridgeSpace
 
 
 @pytest.mark.parametrize(
@@ -28,7 +29,13 @@ def test_bridge_invalid_pdb_code(defaults: Defaults) -> None:
     [
         ("1rcy", -0.01, 109.5, "cp", "cutoff_distance: Input should be greater than 0"),
         ("1rcy", 4.95, -60.0, "cp", "cutoff_angle: Input should be greater than 0"),
-        ("1rcy", 4.95, 720.0, "cp", "cutoff_angle: Input should be less than 360"),
+        (
+            "1rcy",
+            4.95,
+            720.0,
+            "cp",
+            "cutoff_angle: Input should be less than or equal to 360",
+        ),
         ("1rcy", 4.95, 109.5, "pc", "model: Input should be 'cp' or 'rm'"),
         (
             "1rcy",
@@ -55,10 +62,11 @@ def test_bridge_validation(
         )
 
 
-@pytest.mark.parametrize(
-    "code, error",
-    [("1a5r", "No Met-aromatic interactions"), ("1rcy", "Found no bridges")],
-)
-def test_no_results(code: str, error: str, defaults: Defaults) -> None:
-    with pytest.raises(SearchError, match=error):
-        get_bridges(code=code, vertices=4, **defaults)
+def test_no_met_aro_interactions(defaults: Defaults) -> None:
+    with pytest.raises(SearchError, match="No Met-aromatic interactions"):
+        get_bridges(code="1a5r", vertices=4, **defaults)
+
+
+def test_no_bridges(defaults: Defaults) -> None:
+    bs: BridgeSpace = get_bridges(code="1rcy", vertices=4, **defaults)
+    assert len(bs.bridges) == 0

@@ -33,7 +33,7 @@ def test_pair_1rcy_valid_results_use_local_invalid_file(
     [
         (-0.01, 109.5, "cp", "cutoff_distance: Input should be greater than 0"),
         (4.95, -60.0, "cp", "cutoff_angle: Input should be greater than 0"),
-        (4.95, 720.0, "cp", "cutoff_angle: Input should be less than 360"),
+        (4.95, 720.0, "cp", "cutoff_angle: Input should be less than or equal to 360"),
         (4.95, 109.5, "pc", "model: Input should be 'cp' or 'rm'"),
         ("4.95", 109.5, "cp", "cutoff_distance: Input should be a valid number"),
         (4.95, "109.5", "cp", "cutoff_angle: Input should be a valid number"),

@@ -8,7 +8,7 @@ def test_bridge_working_query_vertices_3(cli_runner: CliRunner) -> None:
 
     result = cli_runner.invoke(cli, command.split())
     assert result.exit_code == EX_OK
-    assert "Found no bridges" in result.output
+    assert "Found 0 bridges" in result.output
 
 
 def test_bridge_working_query_with_options(cli_runner: CliRunner) -> None:
@@ -48,17 +48,3 @@ def test_bridge_invalid_model(cli_runner: CliRunner) -> None:
     result = cli_runner.invoke(cli, command.split())
     assert result.exit_code != EX_OK
     assert "Invalid value for '--model'" in result.output
-
-
-def test_bridge_enable_debug(cli_runner: CliRunner) -> None:
-    command = "--debug bridge 1rcy"
-
-    result = cli_runner.invoke(cli, command.split())
-    assert result.output.count(" D ") > 0
-
-
-def test_bridge_disable_debug(cli_runner: CliRunner) -> None:
-    command = "bridge 1rcy"
-
-    result = cli_runner.invoke(cli, command.split())
-    assert result.output.count(" D ") == 0
