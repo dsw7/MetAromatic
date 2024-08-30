@@ -1,5 +1,3 @@
-# pylint: disable=W0201   # Disable definitions outside of __init__
-
 from os import EX_OK
 from pathlib import Path
 import pytest
@@ -13,25 +11,23 @@ DB_NAME = "database_coronavirus"
 COL_NAME = "collection_coronavirus"
 TEST_DATA = Path(__file__).resolve().parent / "data_coronavirus_entries.txt"
 
-if not TEST_DATA.exists():
-    pytest.exit(f"File {TEST_DATA} is missing")
+
+def test_batch_too_few_threads(cli_runner: CliRunner) -> None:
+    command = (
+        f"batch {TEST_DATA} --threads=-1 --database={DB_NAME} --collection={COL_NAME}"
+    )
+
+    result = cli_runner.invoke(cli, command.split())
+    assert result.exit_code != EX_OK
 
 
-class TestRunnerBatch:
-    def setup_class(self) -> None:
-        self.runner = CliRunner()
+def test_batch_too_many_threads(cli_runner: CliRunner) -> None:
+    command = (
+        f"batch {TEST_DATA} --threads=100 --database={DB_NAME} --collection={COL_NAME}"
+    )
 
-    def test_batch_too_few_threads(self) -> None:
-        command = f"batch {TEST_DATA} --threads=-1 --database={DB_NAME} --collection={COL_NAME}"
-
-        result = self.runner.invoke(cli, command.split())
-        assert result.exit_code != EX_OK
-
-    def test_batch_too_many_threads(self) -> None:
-        command = f"batch {TEST_DATA} --threads=100 --database={DB_NAME} --collection={COL_NAME}"
-
-        result = self.runner.invoke(cli, command.split())
-        assert result.exit_code != EX_OK
+    result = cli_runner.invoke(cli, command.split())
+    assert result.exit_code != EX_OK
 
 
 class TestParallelProcessing:
