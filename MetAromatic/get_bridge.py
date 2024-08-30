@@ -2,7 +2,7 @@ from networkx import Graph, connected_components
 from .algorithm import MetAromatic
 from .aliases import RawData
 from .load_resources import load_pdb_file_from_rscb
-from .models import MetAromaticParams, FeatureSpace, BridgeSpace
+from .models import FeatureSpace, BridgeSpace, Models, get_params
 from .utils import print_separator
 
 
@@ -28,7 +28,20 @@ def _isolate_bridges(fs: FeatureSpace, vertices: int) -> BridgeSpace:
     return bs
 
 
-def get_bridges(params: MetAromaticParams, code: str, vertices: int) -> BridgeSpace:
+def get_bridges(
+    chain: str,
+    code: str,
+    cutoff_angle: float,
+    cutoff_distance: float,
+    model: Models,
+    vertices: int,
+) -> BridgeSpace:
+    params = get_params(
+        chain=chain,
+        cutoff_angle=cutoff_angle,
+        cutoff_distance=cutoff_distance,
+        model=model,
+    )
     raw_data: RawData = load_pdb_file_from_rscb(code)
 
     fs: FeatureSpace = MetAromatic(params=params, raw_data=raw_data).get_interactions()

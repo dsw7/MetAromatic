@@ -54,11 +54,11 @@ def pair(obj: MetAromaticParams, pdb_code: str) -> None:
     try:
         print_interactions(
             get_pairs_from_pdb(
-                pdb_code=pdb_code,
                 chain=obj.chain,
                 cutoff_angle=obj.cutoff_angle,
                 cutoff_distance=obj.cutoff_distance,
                 model=obj.model,
+                pdb_code=pdb_code,
             )
         )
     except SearchError as error:
@@ -76,10 +76,10 @@ def read_local(obj: MetAromaticParams, pdb_file: Path) -> None:
     try:
         print_interactions(
             get_pairs_from_file(
-                filepath=pdb_file,
                 chain=obj.chain,
                 cutoff_angle=obj.cutoff_angle,
                 cutoff_distance=obj.cutoff_distance,
+                filepath=pdb_file,
                 model=obj.model,
             )
         )
@@ -100,7 +100,16 @@ def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
     from .get_bridge import get_bridges, print_bridges
 
     try:
-        print_bridges(get_bridges(params=obj, code=code, vertices=vertices))
+        print_bridges(
+            get_bridges(
+                chain=obj.chain,
+                code=code,
+                cutoff_angle=obj.cutoff_angle,
+                cutoff_distance=obj.cutoff_distance,
+                model=obj.model,
+                vertices=vertices,
+            )
+        )
     except SearchError as error:
         sys.exit(str(error))
 
