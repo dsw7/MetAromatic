@@ -1,5 +1,6 @@
 from os import EX_OK
 from pathlib import Path
+from typing import Generator
 import pytest
 from click.testing import CliRunner
 from pymongo import MongoClient, errors, collection, database
@@ -32,7 +33,7 @@ def run_batch_command() -> None:
 
 
 @pytest.fixture(scope="module")
-def mongo_db() -> database.Database:
+def mongo_db() -> Generator[database.Database]:
     client: MongoClient = MongoClient(
         username=TestParams.username, password=TestParams.password
     )
@@ -49,13 +50,13 @@ def mongo_db() -> database.Database:
 
 
 @pytest.fixture(scope="module")
-def mongo_coll(mongo_db: database.Database) -> collection.Collection:
+def mongo_coll(mongo_db: database.Database) -> Generator[collection.Collection]:
     yield mongo_db[TestParams.coll]
     mongo_db[TestParams.coll].drop()
 
 
 @pytest.fixture(scope="module")
-def mongo_coll_info(mongo_db: database.Database) -> collection.Collection:
+def mongo_coll_info(mongo_db: database.Database) -> Generator[collection.Collection]:
     yield mongo_db[TestParams.coll_info]
     mongo_db[TestParams.coll_info].drop()
 
