@@ -3,19 +3,12 @@ from pathlib import Path
 from click.testing import CliRunner
 from pytest import fixture
 from utils import Defaults
-from MetAromatic.models import MetAromaticParams, DictInteractions
+from MetAromatic.models import DictInteractions
 
 
 @fixture(scope="session")
 def defaults() -> Defaults:
     return Defaults(cutoff_distance=4.9, cutoff_angle=109.5, chain="A", model="cp")
-
-
-@fixture(scope="session")
-def ma_params() -> MetAromaticParams:
-    return MetAromaticParams(
-        cutoff_distance=4.9, cutoff_angle=109.5, chain="A", model="cp"
-    )
 
 
 @fixture(scope="session")
