@@ -12,7 +12,13 @@ from .algorithm import MetAromatic
 from .aliases import RawData, PdbCodes, Chunks
 from .errors import SearchError
 from .load_resources import load_pdb_file_from_rscb
-from .models import MetAromaticParams, FeatureSpace, BatchParams
+from .models import (
+    MetAromaticParams,
+    FeatureSpace,
+    BatchParams,
+    BatchResult,
+    DictInteractions,
+)
 
 LOGGER = getLogger("met-aromatic")
 
@@ -148,8 +154,9 @@ class ParallelProcessing:
         LOGGER.info("Unregistering SIGINT from thread terminator")
         signal(SIGINT, SIG_DFL)
 
-    def _get_interaction(self, code: str):
-        doc = {"_id": code}
+    def _get_interaction(self, code: str) -> BatchResult:
+        errmsg: str | None = None
+        interactions: list[DictInteractions] | None = None
 
         try:
             raw_data: RawData = load_pdb_file_from_rscb(code)
@@ -157,13 +164,13 @@ class ParallelProcessing:
                 params=self.params, raw_data=raw_data
             ).get_interactions()
         except SearchError as error:
-            doc["errmsg"] = str(error)
-        except Exception as exc:
-            doc["errmsg"] = str(exc)
+            errmsg = str(error)
+        except Exception as error:
+            errmsg = str(error)
         else:
-            doc["results"] = fs.serialize_interactions()  # type: ignore
+            interactions = fs.serialize_interactions()
 
-        return doc
+        return BatchResult(_id=code, errmsg=errmsg, interactions=interactions)
 
     def _loop_over_chunk(self, chunk: PdbCodes) -> None:
         collection = self.db[self.bp.collection]
@@ -178,8 +185,8 @@ class ParallelProcessing:
 
             LOGGER.info("Processing %s. Count: %i", code, self.count)
 
-            doc = self._get_interaction(code)
-            collection.insert_one(doc)
+            doc_interactions: BatchResult = self._get_interaction(code)
+            collection.insert_one(doc_interactions)
 
     def _insert_summary_doc(self, exec_time: float) -> None:
         batch_job_metadata = {

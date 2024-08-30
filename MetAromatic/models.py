@@ -116,3 +116,9 @@ class FeatureSpace:
 class BridgeSpace:
     interactions: set[tuple[str, str]] = field(default_factory=set)
     bridges: list[set[str]] = field(default_factory=list)
+
+
+class BatchResult(TypedDict):
+    _id: str
+    errmsg: str | None
+    interactions: list[DictInteractions] | None
