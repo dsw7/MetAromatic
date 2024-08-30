@@ -4,6 +4,7 @@ from MetAromatic import get_bridges
 from MetAromatic.aliases import Models
 from MetAromatic.errors import SearchError
 
+
 @pytest.mark.parametrize(
     "code, error",
     [

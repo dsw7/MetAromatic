@@ -2,12 +2,12 @@ from typing import TypeAlias, TypedDict
 from json import loads
 from pathlib import Path
 import pytest
+from utils import Defaults
 from MetAromatic import get_bridges
-from MetAromatic.models import MetAromaticParams, BridgeSpace
+from MetAromatic.models import BridgeSpace
 
 
-class SearchParams(TypedDict):
-    params: MetAromaticParams
+class DefaultsBridge(Defaults):
     vertices: int
 
 
@@ -20,20 +20,18 @@ ControlData: TypeAlias = dict[str, BridgeData]
 
 
 @pytest.fixture(scope="module")
-def search_params() -> SearchParams:
+def search_params() -> DefaultsBridge:
     """
     Parameters used to generate the data_n_3_bridges_no_ang_limit_6_angstroms.json
     control data file.
     """
-    return {
-        "vertices": 4,  # I.e. n = 3 bridges
-        "params": MetAromaticParams(
-            cutoff_distance=6.0,
-            cutoff_angle=360.0,
-            chain="A",
-            model="cp",
-        ),
-    }
+    return DefaultsBridge(
+        chain="A",
+        cutoff_angle=360.0,
+        cutoff_distance=6.0,
+        model="cp",
+        vertices=4,  # I.e. n = 3 bridges
+    )
 
 
 @pytest.fixture(scope="module")
@@ -149,14 +147,10 @@ TEST_CODES = [
 
 @pytest.mark.parametrize("pdb_code", TEST_CODES)
 def test_bridge_benchmark(
-    pdb_code: str, known_bridges: ControlData, search_params: SearchParams
+    pdb_code: str, known_bridges: ControlData, search_params: DefaultsBridge
 ) -> None:
     try:
-        bs: BridgeSpace = get_bridges(
-            code=pdb_code,
-            params=search_params["params"],
-            vertices=search_params["vertices"],
-        )
+        bs: BridgeSpace = get_bridges(code=pdb_code, **search_params)
     except IndexError:
         pytest.skip(
             "Skipping list index out of range error. Occurs because of missing data."
