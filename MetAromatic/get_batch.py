@@ -148,6 +148,23 @@ class ParallelProcessing:
         LOGGER.info("Unregistering SIGINT from thread terminator")
         signal(SIGINT, SIG_DFL)
 
+    def _get_interaction(self, code: str):
+        doc = {"_id": code}
+
+        try:
+            raw_data: RawData = load_pdb_file_from_rscb(code)
+            fs: FeatureSpace = MetAromatic(
+                params=self.params, raw_data=raw_data
+            ).get_interactions()
+        except SearchError as error:
+            doc["errmsg"] = str(error)
+        except Exception as exc:
+            doc["errmsg"] = str(exc)
+        else:
+            doc["results"] = fs.serialize_interactions()  # type: ignore
+
+        return doc
+
     def _loop_over_chunk(self, chunk: PdbCodes) -> None:
         collection = self.db[self.bp.collection]
 
@@ -160,18 +177,8 @@ class ParallelProcessing:
                 self.count += 1
 
             LOGGER.info("Processing %s. Count: %i", code, self.count)
-            doc = {"_id": code}
 
-            try:
-                raw_data: RawData = load_pdb_file_from_rscb(code)
-                fs: FeatureSpace = MetAromatic(
-                    params=self.params, raw_data=raw_data
-                ).get_interactions()
-            except SearchError as error:
-                doc["errmsg"] = str(error)
-            else:
-                doc["results"] = fs.serialize_interactions()  # type: ignore
-
+            doc = self._get_interaction(code)
             collection.insert_one(doc)
 
     def _insert_summary_doc(self, exec_time: float) -> None:
