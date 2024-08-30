@@ -2,138 +2,130 @@ from os import EX_OK
 from pathlib import Path
 import pytest
 from click.testing import CliRunner
-from pymongo import MongoClient, errors
+from pymongo import MongoClient, errors, collection, database
 from MetAromatic.runner import cli
 
-HOST_MONGODB = "localhost"
-PORT_MONGODB = 27017
-DB_NAME = "database_coronavirus"
-COL_NAME = "collection_coronavirus"
 TEST_DATA = Path(__file__).resolve().parent / "data_coronavirus_entries.txt"
 
 
-def test_batch_too_few_threads(cli_runner: CliRunner) -> None:
+class TestParams:
+    db = "test"
+    coll = "drop_me"
+    coll_info = "drop_me_info"
+    username = ""
+    password = ""
+    num_threads = 3
+    num_entries = 9
+
+
+def run_batch_command() -> None:
     command = (
-        f"batch {TEST_DATA} --threads=-1 --database={DB_NAME} --collection={COL_NAME}"
+        f"batch {TEST_DATA} --username={TestParams.username} --password={TestParams.password} "
+        f"--threads=3 --database={TestParams.db} --collection={TestParams.coll}"
     )
+
+    runner = CliRunner()
+    result = runner.invoke(cli, command.split())
+
+    if result.exit_code != EX_OK:
+        pytest.fail("Batch job exited with non-zero exit code")
+
+
+@pytest.fixture(scope="module")
+def mongo_db() -> database.Database:
+    client: MongoClient = MongoClient(
+        username=TestParams.username, password=TestParams.password
+    )
+
+    try:
+        client.list_databases()
+    except errors.OperationFailure as e:
+        pytest.skip(str(e))
+    except errors.ServerSelectionTimeoutError as e:
+        pytest.exit(str(e))
+
+    run_batch_command()
+    yield client[TestParams.db]
+
+
+@pytest.fixture(scope="module")
+def mongo_coll(mongo_db: database.Database) -> collection.Collection:
+    yield mongo_db[TestParams.coll]
+    mongo_db[TestParams.coll].drop()
+
+
+@pytest.fixture(scope="module")
+def mongo_coll_info(mongo_db: database.Database) -> collection.Collection:
+    yield mongo_db[TestParams.coll_info]
+    mongo_db[TestParams.coll_info].drop()
+
+
+def test_batch_too_few_threads(cli_runner: CliRunner) -> None:
+    command = f"batch {TEST_DATA} --threads=-1 --database={TestParams.db} --collection={TestParams.coll}"
 
     result = cli_runner.invoke(cli, command.split())
     assert result.exit_code != EX_OK
 
 
 def test_batch_too_many_threads(cli_runner: CliRunner) -> None:
-    command = (
-        f"batch {TEST_DATA} --threads=100 --database={DB_NAME} --collection={COL_NAME}"
-    )
+    command = f"batch {TEST_DATA} --threads=100 --database={TestParams.db} --collection={TestParams.coll}"
 
     result = cli_runner.invoke(cli, command.split())
     assert result.exit_code != EX_OK
 
 
-class TestParallelProcessing:
-    def setup_class(self) -> None:
-        uri = f"mongodb://{HOST_MONGODB}:{PORT_MONGODB}/"
-        self.client: MongoClient = MongoClient(uri)
+def test_correct_count(mongo_coll: collection.Collection) -> None:
+    assert len(list(mongo_coll.find())) == TestParams.num_entries
 
-        try:
-            self.client.list_databases()
-        except errors.OperationFailure as e:
-            pytest.skip(str(e))
-        except errors.ServerSelectionTimeoutError as e:
-            pytest.exit(str(e))
 
-        self.cursor = self.client[DB_NAME][COL_NAME]
-        self.threads = 3
+def test_2ca1(mongo_coll: collection.Collection) -> None:
+    results = mongo_coll.find_one({"_id": "2ca1"})
+    assert len(results["interactions"]) == 7
+    assert results["errmsg"] is None
 
-        command = (
-            f"batch {TEST_DATA} --uri={uri} --threads={self.threads} "
-            f"--database={DB_NAME} --collection={COL_NAME}"
-        )
 
-        runner = CliRunner()
-        result = runner.invoke(cli, command.split())
+def test_2fyg(mongo_coll: collection.Collection) -> None:
+    results = mongo_coll.find_one({"_id": "2fyg"})
+    assert len(results["interactions"]) == 3
+    assert results["errmsg"] is None
 
-        if result.exit_code != EX_OK:
-            pytest.fail("Batch job exited with non-zero exit code")
 
-        self.num_coronavirus_entries = 9
+def test_1xak(mongo_coll: collection.Collection) -> None:
+    results = mongo_coll.find_one({"_id": "1xak"})
+    assert results["interactions"] is None
+    assert results["errmsg"] == "No MET residues"
 
-        info_collection = self.client[DB_NAME][COL_NAME + "_info"]
-        self.results_info = list(info_collection.find())[0]
 
-    def teardown_class(self) -> None:
-        self.client.drop_database(DB_NAME)
+def test_2fxp(mongo_coll: collection.Collection) -> None:
+    results = mongo_coll.find_one({"_id": "2fxp"})
+    assert results["interactions"] is None
+    assert results["errmsg"] == "No MET residues"
 
-    def test_correct_count(self) -> None:
-        assert len(list(self.cursor.find())) == self.num_coronavirus_entries
 
-    def test_2ca1(self) -> None:
-        results = list(self.cursor.find({"_id": "2ca1"}))[0]
+def test_6mwm(mongo_coll: collection.Collection) -> None:
+    results = mongo_coll.find_one({"_id": "6mwm"})
+    assert results["interactions"] is None
+    assert results["errmsg"] == "No PHE/TYR/TRP residues"
 
-        assert len(results["results"]) == 7
-        assert results["ok"]
-        assert results["status"] == "Success"
 
-    def test_2fyg(self) -> None:
-        results = list(self.cursor.find({"_id": "2fyg"}))[0]
+def test_2cme(mongo_coll: collection.Collection) -> None:
+    results = mongo_coll.find_one({"_id": "2cme"})
+    assert results["interactions"] is None
+    assert results["errmsg"] == "No Met-aromatic interactions"
 
-        assert len(results["results"]) == 3
-        assert results["ok"]
-        assert results["status"] == "Success"
 
-    def test_1xak(self) -> None:
-        results = list(self.cursor.find({"_id": "1xak"}))[0]
+def test_spam(mongo_coll: collection.Collection) -> None:
+    results = mongo_coll.find_one({"_id": "spam"})
+    assert results["interactions"] is None
+    assert results["errmsg"] == "Invalid PDB entry 'spam'"
 
-        assert len(results["results"]) == 0
-        assert not results["ok"]
-        assert results["status"] == "No MET residues"
 
-    def test_2fxp(self) -> None:
-        results = list(self.cursor.find({"_id": "2fxp"}))[0]
+def test_check_valid_info_doc(mongo_coll_info: collection.Collection) -> None:
+    results = mongo_coll_info.find_one({})
 
-        assert len(results["results"]) == 0
-        assert not results["ok"]
-        assert results["status"] == "No MET residues"
-
-    def test_6mwm(self) -> None:
-        results = list(self.cursor.find({"_id": "6mwm"}))[0]
-
-        assert len(results["results"]) == 0
-        assert not results["ok"]
-        assert results["status"] == "No PHE/TYR/TRP residues"
-
-    def test_2cme(self) -> None:
-        results = list(self.cursor.find({"_id": "2cme"}))[0]
-
-        assert len(results["results"]) == 0
-        assert results["ok"]
-        assert results["status"] == "No interactions"
-
-    def test_spam(self) -> None:
-        results = list(self.cursor.find({"_id": "spam"}))[0]
-
-        assert len(results["results"]) == 0
-        assert not results["ok"]
-        assert results["status"] == "Invalid PDB entry"
-
-    def test_info_file_in_results(self) -> None:
-        collections = self.client[DB_NAME].list_collection_names()
-        assert COL_NAME + "_info" in collections
-
-    def test_info_file_correct_num_workers(self) -> None:
-        assert self.results_info["num_workers"] == self.threads
-
-    def test_info_file_correct_number_of_entries(self) -> None:
-        assert self.results_info["number_of_entries"] == self.num_coronavirus_entries
-
-    def test_info_file_correct_chain(self) -> None:
-        assert self.results_info["chain"] == "A"
-
-    def test_info_file_correct_model(self) -> None:
-        assert self.results_info["model"] == "cp"
-
-    def test_info_file_correct_cutoff_distance(self) -> None:
-        assert self.results_info["cutoff_distance"] == 4.9
-
-    def test_info_file_correct_cutoff_angle(self) -> None:
-        assert self.results_info["cutoff_angle"] == 109.5
+    assert results["chain"] == "A"
+    assert results["cutoff_angle"] == 109.5
+    assert results["cutoff_distance"] == 4.9
+    assert results["model"] == "cp"
+    assert results["num_workers"] == TestParams.num_threads
+    assert results["number_of_entries"] == TestParams.num_entries
