@@ -1,7 +1,8 @@
 from functools import cache
 from os import get_terminal_size
 from re import compile, Pattern  # pylint: disable=redefined-builtin
-from numpy import ndarray, linalg, eye, dot, degrees, arccos
+from typing import Any
+from numpy import linalg, eye, dot, degrees, arccos
 from .aliases import Residues, FloatArray
 
 
@@ -24,7 +25,7 @@ def get_unit_vector(v: FloatArray) -> FloatArray:
 
 
 @cache
-def get_3x3_identity_matrix() -> ndarray:
+def get_3x3_identity_matrix() -> Any:
     # No good way to type hint this yet
     # See https://github.com/numpy/numpy/issues/16544#issuecomment-1058675773
     return eye(3)
@@ -34,7 +35,8 @@ def get_angle_between_vecs(u: FloatArray, v: FloatArray) -> float:
     dot_product = dot(u, v)
     cross_product = linalg.norm(v) * linalg.norm(u)
 
-    return degrees(arccos(dot_product / cross_product)).item()
+    angle: float = degrees(arccos(dot_product / cross_product)).item()
+    return angle
 
 
 def _get_met_search_pattern(chain: str) -> Pattern[str]:

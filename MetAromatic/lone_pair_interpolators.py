@@ -78,7 +78,9 @@ class RodriguesMethod:
 
     # Note that I flipped these methods to match previous algorithm
     def get_vector_g(self) -> FloatArray:
-        return matmul(self.rodrigues_rotation_matrix, self.u)
+        vec: FloatArray = matmul(self.rodrigues_rotation_matrix, self.u)
+        return vec
 
     def get_vector_a(self) -> FloatArray:
-        return matmul(self.rodrigues_rotation_matrix, self.v)
+        vec: FloatArray = matmul(self.rodrigues_rotation_matrix, self.v)
+        return vec

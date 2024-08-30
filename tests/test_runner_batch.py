@@ -18,16 +18,16 @@ if not TEST_DATA.exists():
 
 
 class TestRunnerBatch:
-    def setup_class(self):
+    def setup_class(self) -> None:
         self.runner = CliRunner()
 
-    def test_batch_too_few_threads(self):
+    def test_batch_too_few_threads(self) -> None:
         command = f"batch {TEST_DATA} --threads=-1 --database={DB_NAME} --collection={COL_NAME}"
 
         result = self.runner.invoke(cli, command.split())
         assert result.exit_code != EX_OK
 
-    def test_batch_too_many_threads(self):
+    def test_batch_too_many_threads(self) -> None:
         command = f"batch {TEST_DATA} --threads=100 --database={DB_NAME} --collection={COL_NAME}"
 
         result = self.runner.invoke(cli, command.split())
@@ -35,9 +35,9 @@ class TestRunnerBatch:
 
 
 class TestParallelProcessing:
-    def setup_class(self):
+    def setup_class(self) -> None:
         uri = f"mongodb://{HOST_MONGODB}:{PORT_MONGODB}/"
-        self.client = MongoClient(uri)
+        self.client: MongoClient = MongoClient(uri)
 
         try:
             self.client.list_databases()
@@ -65,79 +65,79 @@ class TestParallelProcessing:
         info_collection = self.client[DB_NAME][COL_NAME + "_info"]
         self.results_info = list(info_collection.find())[0]
 
-    def teardown_class(self):
+    def teardown_class(self) -> None:
         self.client.drop_database(DB_NAME)
 
-    def test_correct_count(self):
+    def test_correct_count(self) -> None:
         assert len(list(self.cursor.find())) == self.num_coronavirus_entries
 
-    def test_2ca1(self):
+    def test_2ca1(self) -> None:
         results = list(self.cursor.find({"_id": "2ca1"}))[0]
 
         assert len(results["results"]) == 7
         assert results["ok"]
         assert results["status"] == "Success"
 
-    def test_2fyg(self):
+    def test_2fyg(self) -> None:
         results = list(self.cursor.find({"_id": "2fyg"}))[0]
 
         assert len(results["results"]) == 3
         assert results["ok"]
         assert results["status"] == "Success"
 
-    def test_1xak(self):
+    def test_1xak(self) -> None:
         results = list(self.cursor.find({"_id": "1xak"}))[0]
 
         assert len(results["results"]) == 0
         assert not results["ok"]
         assert results["status"] == "No MET residues"
 
-    def test_2fxp(self):
+    def test_2fxp(self) -> None:
         results = list(self.cursor.find({"_id": "2fxp"}))[0]
 
         assert len(results["results"]) == 0
         assert not results["ok"]
         assert results["status"] == "No MET residues"
 
-    def test_6mwm(self):
+    def test_6mwm(self) -> None:
         results = list(self.cursor.find({"_id": "6mwm"}))[0]
 
         assert len(results["results"]) == 0
         assert not results["ok"]
         assert results["status"] == "No PHE/TYR/TRP residues"
 
-    def test_2cme(self):
+    def test_2cme(self) -> None:
         results = list(self.cursor.find({"_id": "2cme"}))[0]
 
         assert len(results["results"]) == 0
         assert results["ok"]
         assert results["status"] == "No interactions"
 
-    def test_spam(self):
+    def test_spam(self) -> None:
         results = list(self.cursor.find({"_id": "spam"}))[0]
 
         assert len(results["results"]) == 0
         assert not results["ok"]
         assert results["status"] == "Invalid PDB entry"
 
-    def test_info_file_in_results(self):
+    def test_info_file_in_results(self) -> None:
         collections = self.client[DB_NAME].list_collection_names()
         assert COL_NAME + "_info" in collections
 
-    def test_info_file_correct_num_workers(self):
+    def test_info_file_correct_num_workers(self) -> None:
         assert self.results_info["num_workers"] == self.threads
 
-    def test_info_file_correct_number_of_entries(self):
+    def test_info_file_correct_number_of_entries(self) -> None:
         assert self.results_info["number_of_entries"] == self.num_coronavirus_entries
 
-    def test_info_file_correct_chain(self):
+    def test_info_file_correct_chain(self) -> None:
         assert self.results_info["chain"] == "A"
 
-    def test_info_file_correct_model(self):
+    def test_info_file_correct_model(self) -> None:
         assert self.results_info["model"] == "cp"
 
-    def test_info_file_correct_cutoff_distance(self):
+    def test_info_file_correct_cutoff_distance(self) -> None:
         assert self.results_info["cutoff_distance"] == 4.9
 
-    def test_info_file_correct_cutoff_angle(self):
+    def test_info_file_correct_cutoff_angle(self) -> None:
         assert self.results_info["cutoff_angle"] == 109.5

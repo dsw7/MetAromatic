@@ -29,4 +29,7 @@ def pdb_file_1rcy(resources: Path) -> Path:
 
 @fixture(scope="session")
 def valid_results_1rcy(resources: Path) -> list[DictInteractions]:
-    return loads((resources / "expected_results_1rcy.json").read_text())
+    raw_results: str = (resources / "expected_results_1rcy.json").read_text()
+
+    results: list[DictInteractions] = loads(raw_results)
+    return results

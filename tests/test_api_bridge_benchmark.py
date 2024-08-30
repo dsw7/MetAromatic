@@ -36,9 +36,12 @@ def search_params() -> DefaultsBridge:
 
 @pytest.fixture(scope="module")
 def known_bridges(resources: Path) -> ControlData:
-    return loads(
-        (resources / "data_n_3_bridges_no_ang_limit_6_angstroms.json").read_text()
-    )
+    raw_data: str = (
+        resources / "data_n_3_bridges_no_ang_limit_6_angstroms.json"
+    ).read_text()
+
+    data: ControlData = loads(raw_data)
+    return data
 
 
 TEST_CODES = [

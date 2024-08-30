@@ -7,6 +7,7 @@ from re import split
 from signal import signal, SIGINT, SIG_DFL
 from threading import Lock
 from time import time
+from typing import Any
 from pymongo import MongoClient, errors, database
 from .algorithm import MetAromatic
 from .aliases import RawData, PdbCodes, Chunks
@@ -137,7 +138,7 @@ class ParallelProcessing:
         self.count = 0
         self.bool_disable_workers = False
 
-    def _disable_all_workers(self, *args) -> None:
+    def _disable_all_workers(self, *args: Any) -> None:
         LOGGER.info("Detected SIGINT!")
         LOGGER.info("Attempting to stop all workers!")
 

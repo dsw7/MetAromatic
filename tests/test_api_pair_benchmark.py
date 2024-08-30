@@ -11,7 +11,10 @@ ControlData: TypeAlias = dict[str, list[DictInteractions]]
 
 @pytest.fixture(scope="module")
 def data_chem_483(resources: Path) -> ControlData:
-    return loads((resources / "data_483_output_a3_3_m.json").read_text())
+    raw_data: str = (resources / "data_483_output_a3_3_m.json").read_text()
+
+    data: ControlData = loads(raw_data)
+    return data
 
 
 TEST_PDB_CODES = {
