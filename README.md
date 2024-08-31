@@ -371,29 +371,32 @@ Will return:
 {PHE134}-{TYR182}-{MET130}
 -------------------------------------------------------------------
 ```
-To programmatically emulate this command, the following script applies:
+The following snippet approximates the above output:
 ```python3
-from MetAromatic import GetBridgingInteractions
+from MetAromatic import get_bridges
+
 
 def main() -> None:
-    arguments = {
-        'cutoff_distance': 4.9,
-        'cutoff_angle': 109.5,
-        'chain': 'A',
-        'model': 'cp'
-    }
+    results = get_bridges(
+        chain="A",
+        code="6lu7",
+        cutoff_angle=109.5,
+        cutoff_distance=4.9,
+        model="cp",
+        vertices=3,
+    )
 
-    results = GetBridgingInteractions(arguments).get_bridging_interactions('6lu7', 3)
-    print(results.bridges[0])
+    for bridge in results.bridges:
+        print(bridge)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
 ```
-Running this script will return:
+Running this script will print:
 ```
 {'MET130', 'PHE134', 'TYR182'}
 ```
-Which roughly matches the output of the aforementioned `runner` invocation.
 ## Tests and automation
 To test the program, run the following target:
 ```console
