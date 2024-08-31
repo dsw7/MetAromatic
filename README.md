@@ -229,11 +229,11 @@ runner --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 
 ## Running batch jobs and MongoDB integration
 > [!NOTE]
-> This section assumes a host is running MongoDB and familiarity with the MongoDB suite of products.
+> This section assumes a host is running MongoDB [^2] and familiarity with the MongoDB suite of products.
 
 This software is normally used for large scale Protein Data Bank mining efforts and stores the results in a
-MongoDB database (https://www.mongodb.com/). To get started, prepare a batch file of PDB codes to scan. A
-batch file can be a regular text file consisting of delimited PDB codes:
+MongoDB database. To get started, prepare a batch file of PDB codes to scan. A batch file can be a regular
+text file consisting of delimited PDB codes:
 ```
 1xak, 1uw7, 2ca1, 1qz8, 2fxp, 2fyg, 2cme, 6mwm, spam
 ```
@@ -241,10 +241,11 @@ Then run:
 ```console
 runner batch </path/batch/file> --threads <num-threads> --database <db> --collection <collection>
 ```
-The MongoDB database name is specified using the `--database` option and the collection name is specified with the
-`--collection` option. The `--threads` option specifies how many threads to use for processing the batch. The
-hostname of the server hosting the MongoDB deployment can be provided using the `--host` option if the MongoDB
-deployment is not bound to localhost.
+The MongoDB database name is specified using the `--database` option and the collection name is specified with
+the `--collection` option. The `--threads` option specifies how many threads to use for processing the batch.
+The hostname of the server hosting the MongoDB deployment can be provided using the `--host` option if the
+MongoDB deployment is not bound to localhost.
+
 > [!IMPORTANT]
 > The program assumes that authentication is enabled and will prompt for a username and password.
 
@@ -407,3 +408,4 @@ This target will run all unit tests within a `nox` generated virtual environment
 
 [^1]: See [Applications of numerical linear algebra to protein structural analysis: the case of
 methionine-aromatic motifs](https://summit.sfu.ca/item/18741)).
+[^2]: See [MongoDB](https://www.mongodb.com/) for more information.
