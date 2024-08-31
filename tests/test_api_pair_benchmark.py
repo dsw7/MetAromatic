@@ -1,24 +1,21 @@
+from json import loads
 from pathlib import Path
-from pytest import mark, exit, skip
-from MetAromatic import MetAromatic
+from typing import TypeAlias
+import pytest
+from utils import compare_interactions, Defaults
+from MetAromatic import get_pairs_from_pdb
+from MetAromatic.models import FeatureSpace, DictInteractions
 
-TEST_PARAMETERS = {
-    "cutoff_distance": 4.9,
-    "cutoff_angle": 109.5,
-    "chain": "A",
-    "model": "cp",
-}
+ControlData: TypeAlias = dict[str, list[DictInteractions]]
 
-PATH_TEST_DATA = Path(__file__).resolve().parent / "data_483_output_a3_3_m.csv"
 
-if not PATH_TEST_DATA.exists():
-    exit(f"File {PATH_TEST_DATA} is missing")
+@pytest.fixture(scope="module")
+def data_chem_483(resources: Path) -> ControlData:
+    raw_data: str = (resources / "data_483_output_a3_3_m.json").read_text()
 
-TEST_DATA = []
+    data: ControlData = loads(raw_data)
+    return data
 
-with PATH_TEST_DATA.open() as f:
-    for line in f.readlines():
-        TEST_DATA.append(line.strip("\n").split(","))
 
 TEST_PDB_CODES = {
     "1l5l",
@@ -173,26 +170,16 @@ TEST_PDB_CODES = {
 }
 
 
-@mark.parametrize("code", TEST_PDB_CODES)
-def test_pair_against_483_data(code):
-    control = []
-    for row in TEST_DATA:
-        if row[7] == code:
-            control.append(row)
+@pytest.mark.parametrize("code", TEST_PDB_CODES)
+def test_pair_against_483_data(
+    code: str, defaults: Defaults, data_chem_483: ControlData
+) -> None:
 
     try:
-        test_data = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions(code)
-
+        fs: FeatureSpace = get_pairs_from_pdb(pdb_code=code, **defaults)
     except IndexError:
-        skip("Skipping list index out of range error. Occurs because of missing data.")
+        pytest.skip(
+            "Skipping list index out of range error. Occurs because of missing data."
+        )
 
-    sum_norms_control = sum(float(i[6]) for i in control)
-    sum_theta_control = sum(float(i[5]) for i in control)
-    sum_phi_control = sum(float(i[4]) for i in control)
-    sum_norms_test = sum(float(i["norm"]) for i in test_data["interactions"])
-    sum_theta_test = sum(float(i["met_theta_angle"]) for i in test_data["interactions"])
-    sum_phi_test = sum(float(i["met_phi_angle"]) for i in test_data["interactions"])
-
-    assert abs(sum_norms_control - sum_norms_test) < 0.01
-    assert abs(sum_theta_control - sum_theta_test) < 0.01
-    assert abs(sum_phi_control - sum_phi_test) < 0.01
+    compare_interactions(fs.serialize_interactions(), data_chem_483[code])

@@ -1,161 +1,77 @@
-from pathlib import Path
-from unittest import TestCase
-from pytest import mark, exit
-from MetAromatic import MetAromatic, MetAromaticLocal
-
-TEST_PARAMETERS = {
-    "cutoff_distance": 4.9,
-    "cutoff_angle": 109.5,
-    "chain": "A",
-    "model": "cp",
-}
-
-VALID_RESULTS_1RCY = [
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.211,
-        "met_theta_angle": 75.766,
-        "met_phi_angle": 64.317,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 3.954,
-        "met_theta_angle": 60.145,
-        "met_phi_angle": 68.352,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.051,
-        "met_theta_angle": 47.198,
-        "met_phi_angle": 85.151,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.39,
-        "met_theta_angle": 53.4,
-        "met_phi_angle": 95.487,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.62,
-        "met_theta_angle": 68.452,
-        "met_phi_angle": 90.771,
-    },
-    {
-        "aromatic_residue": "TYR",
-        "aromatic_position": 122,
-        "methionine_position": 18,
-        "norm": 4.537,
-        "met_theta_angle": 78.568,
-        "met_phi_angle": 76.406,
-    },
-    {
-        "aromatic_residue": "PHE",
-        "aromatic_position": 54,
-        "methionine_position": 148,
-        "norm": 4.777,
-        "met_theta_angle": 105.947,
-        "met_phi_angle": 143.022,
-    },
-    {
-        "aromatic_residue": "PHE",
-        "aromatic_position": 54,
-        "methionine_position": 148,
-        "norm": 4.61,
-        "met_theta_angle": 93.382,
-        "met_phi_angle": 156.922,
-    },
-    {
-        "aromatic_residue": "PHE",
-        "aromatic_position": 54,
-        "methionine_position": 148,
-        "norm": 4.756,
-        "met_theta_angle": 93.287,
-        "met_phi_angle": 154.63,
-    },
-]
+import pytest
+from utils import compare_interactions, Defaults
+from MetAromatic import get_pairs_from_pdb
+from MetAromatic.aliases import Models
+from MetAromatic.errors import SearchError
+from MetAromatic.models import FeatureSpace, DictInteractions
 
 
-def test_pair_1rcy_valid_results():
-    results = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions("1rcy")
-
-    tc = TestCase()
-    tc.maxDiff = None
-    tc.assertCountEqual(results["interactions"], VALID_RESULTS_1RCY)
-
-
-def test_pair_1rcy_valid_results_use_local():
-    # File downloaded from RSCB PDB
-    path_pdb_file = Path(__file__).resolve().parent / "data_1rcy.pdb"
-
-    if not path_pdb_file.exists():
-        exit(f"File {path_pdb_file} is missing")
-
-    results = MetAromaticLocal(TEST_PARAMETERS).get_met_aromatic_interactions(
-        path_pdb_file
-    )
-
-    tc = TestCase()
-    tc.maxDiff = None
-    tc.assertCountEqual(results["interactions"], VALID_RESULTS_1RCY)
+def test_pair_1rcy_valid_results(
+    defaults: Defaults, valid_results_1rcy: list[DictInteractions]
+) -> None:
+    fs: FeatureSpace = get_pairs_from_pdb(pdb_code="1rcy", **defaults)
+    compare_interactions(fs.serialize_interactions(), valid_results_1rcy)
 
 
-def test_pair_1rcy_valid_results_use_local_invalid_file():
-    # Simulating someone passing a non-PDB formatted file into program
-    path_pdb_file = Path(__file__).resolve().parent / "data_lorem_ipsum.pdb"
-
-    if not path_pdb_file.exists():
-        exit(f"File {path_pdb_file} is missing")
-
-    results = MetAromaticLocal(TEST_PARAMETERS).get_met_aromatic_interactions(
-        path_pdb_file
-    )
-
-    assert results["status"] != "Success"
-    assert not results["OK"]
-
-
-@mark.parametrize(
-    "code, cutoff_distance, cutoff_angle, model, status",
+@pytest.mark.parametrize(
+    "code, error",
     [
-        ("1rcy", -0.01, 109.5, "cp", "Invalid cutoff distance"),
-        ("1rcy", 4.95, -60.0, "cp", "Invalid cutoff angle"),
-        ("1rcy", 4.95, 720.0, "cp", "Invalid cutoff angle"),
-        ("2rcy", 4.95, 109.5, "cp", "No MET residues"),
-        ("3nir", 4.95, 109.5, "cp", "No MET residues"),
-        ("6mwm", 4.95, 109.5, "cp", "No PHE/TYR/TRP residues"),
-        ("abcd", 4.95, 109.5, "cp", "Invalid PDB entry"),
-        ("1rcy", 4.95, 109.5, "pc", "Invalid model"),
-        ("1rcy", "4.95", 109.5, "cp", "Cutoff distance must be a valid float"),
-        ("1rcy", 4.95, "109.5", "cp", "Cutoff angle must be a valid float"),
-        ("1rcy", 4.95, 109.5, 25, "Model must be a valid string"),
+        ("2rcy", "No MET residues"),
+        ("3nir", "No MET residues"),
+        ("6mwm", "No PHE/TYR/TRP residues"),
     ],
 )
-def test_pair_invalid_inputs(code, cutoff_distance, cutoff_angle, model, status):
-    params = {
-        "cutoff_angle": cutoff_angle,
-        "cutoff_distance": cutoff_distance,
-        "chain": "A",
-        "model": model,
-    }
-
-    results = MetAromatic(params).get_met_aromatic_interactions(code)
-    assert not results["OK"]
-    assert results["status"] == status
+def test_pair_missing_residues(code: str, error: str, defaults: Defaults) -> None:
+    with pytest.raises(SearchError, match=error):
+        get_pairs_from_pdb(pdb_code=code, **defaults)
 
 
-def test_pair_no_results_error():
-    results = MetAromatic(TEST_PARAMETERS).get_met_aromatic_interactions("1a5r")
+def test_pair_no_results_error(defaults: Defaults) -> None:
+    with pytest.raises(SearchError, match="No Met-aromatic interactions"):
+        get_pairs_from_pdb(pdb_code="1a5r", **defaults)
 
-    assert results["status"] == "No interactions"
-    assert results["OK"]
+
+def test_pair_invalid_pdb_code(defaults: Defaults) -> None:
+    with pytest.raises(SearchError, match="Invalid PDB entry"):
+        get_pairs_from_pdb(pdb_code="abcd", **defaults)
+
+
+@pytest.mark.parametrize(
+    "code, cutoff_distance, cutoff_angle, model, error",
+    [
+        ("1rcy", -0.01, 109.5, "cp", "cutoff_distance: Input should be greater than 0"),
+        ("1rcy", 4.95, -60.0, "cp", "cutoff_angle: Input should be greater than 0"),
+        (
+            "1rcy",
+            4.95,
+            720.0,
+            "cp",
+            "cutoff_angle: Input should be less than or equal to 360",
+        ),
+        ("1rcy", 4.95, 109.5, "pc", "model: Input should be 'cp' or 'rm'"),
+        (
+            "1rcy",
+            "4.95",
+            109.5,
+            "cp",
+            "cutoff_distance: Input should be a valid number",
+        ),
+        ("1rcy", 4.95, "109.5", "cp", "cutoff_angle: Input should be a valid number"),
+        ("1rcy", 4.95, 109.5, 25, "model: Input should be 'cp' or 'rm'"),
+    ],
+)
+def test_pair_validation(
+    code: str,
+    cutoff_distance: float,
+    cutoff_angle: float,
+    model: Models,  # Note the 'pc' passed above would technically fail type checker
+    error: str,
+) -> None:
+    with pytest.raises(SearchError, match=error):
+        get_pairs_from_pdb(
+            pdb_code=code,
+            cutoff_angle=cutoff_angle,
+            cutoff_distance=cutoff_distance,
+            chain="A",
+            model=model,
+        )

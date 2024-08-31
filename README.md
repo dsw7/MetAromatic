@@ -15,16 +15,12 @@ Code for the following publications:
   - [Step 2: The distance condition](#step-2-the-distance-condition)
   - [Step 3: The angular condition](#step-3-the-angular-condition)
   - [Summary](#summary)
-- [Basic usage](#basic-usage)
-  - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
-  - [Finding "bridging interactions"](#finding-bridging-interactions)
-- [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
-  - [A brief overview](#a-brief-overview)
-  - [Designing a distributed mining strategy](#designing-a-distributed-mining-strategy)
+- [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
+- [Finding "bridging interactions"](#finding-bridging-interactions)
+- [Running jobs and MongoDB integration](#running-batch-jobs-and-mongodb-integration)
 - [Using the MetAromatic API](#using-the-metaromatic-api)
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
-- [Tests and automation](#tests-and-automation)
 
 ## Synopsis
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein
@@ -33,11 +29,13 @@ scale multithreaded batch jobs consisting of hundreds of thousands of queries.
 
 ## Setup
 Simply run:
-```
+```console
 pip install MetAromatic
 ```
 
 ## How it works
+> [!NOTE]
+> See my master's thesis [^1] for a more indepth discussion surrounding the "Met-aromatic" algorithm.
 ### Step 1: Data preprocessing
 Files in the PDB are organized using the SMCRA hierarchy: _Structure_, _Model_, _Chain_, _Residue_ and _Atom_.
 For example, here is the fifth line for the entry 1RCY:
@@ -119,11 +117,10 @@ A representative figure is shown below:
   <img width="336" height="300" src=./pngs/pair-met18-tyr122.png>
 </p>
 
-## Basic usage
-### Finding Met-aromatic pairs
+## Finding Met-aromatic pairs
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest
 query follows:
-```
+```console
 runner pair 1rcy
 ```
 Here, the `pair` argument specifies that we want to run a single aromatic interaction calculation. The query
@@ -149,7 +146,7 @@ order IV interaction between PHE 54 and MET 148. The `NORM` column specifies the
 $\overset{\circ}{\mathrm {A}}$) between the MET residue and one of the midpoints between two carbon atoms in
 an aromatic ring, or $\lVert v \rVert$. The default cutoff $c$ was applied in the above example, at 4.9
 $\overset{\circ}{\mathrm {A}}$. The cutoff can be adjusted, however, using the `--cutoff-distance` option:
-```
+```console
 runner --cutoff-distance 4.0 pair 1rcy
 ```
 Reducing the cutoff distance yields an order I interaction between TYR 122 and MET 18.
@@ -163,7 +160,7 @@ TYR        122        18         3.954      60.145     68.352
 `MET-THETA` and `MET-PHI` refer to $\theta$ and $\phi$, respectively. In the above example, the default cutoff
 angle $\delta$ is used ( $109.5^\circ$ ). The cutoff angle can be adjusted by using the `--cutoff-angle`
 option:
-```
+```console
 runner --cutoff-distance 4.5 --cutoff-angle 60 pair 1rcy
 ```
 The `--cutoff-angle` option ensures that **at least one of** $\theta$ or $\phi$ angles fall below the cutoff
@@ -177,11 +174,9 @@ TYR        122        18         4.39       53.4       95.487
 -------------------------------------------------------------------
 ```
 The default lone pair interpolation model is `cp` or Cross Product (a thorough description is available in my
-master's thesis: [Applications of numerical linear algebra to protein structural analysis: the case of
-methionine-aromatic motifs](https://summit.sfu.ca/item/18741)). There exists another model, `rm` or Rodrigues
-Method for predicting the positions of lone pairs. This model is based on the Rodrigues' Rotation Formula. The
-model type can be passed as follows:
-```
+master's thesis. [^1] There exists another model, `rm` or Rodrigues Method for predicting the positions of
+lone pairs. This model is based on the Rodrigues' Rotation Formula. The model type can be passed as follows:
+```console
 runner --cutoff-distance 4.5 --cutoff-angle 60 --model rm pair 1rcy
 ```
 Which yields similar results:
@@ -198,11 +193,12 @@ Note that the Euclidean distances between TYR aromatic carbon atoms and MET rema
 program searches for "A" delimited chains. Some researchers may, however, be interested in searching for
 aromatic interactions in a different chain within a multichain protein. The `--chain` option can be used to
 specify the chain:
-```
+```console
 runner --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B pair 1rcy
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain.
-### Finding "bridging interactions"
+
+## Finding "bridging interactions"
 Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the
 Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 <p align="center">
@@ -212,7 +208,7 @@ Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 We can specify a search for bridging interactions, instead of conventional aromatic interactions, using the
 `bridge` argument. For example, to search for bridging interactions with a 7.0 $\overset{\circ}{\mathrm {A}}$
 $\lVert v \rVert$ cutoff in 6LU7:
-```
+```console
 runner --cutoff-distance 7.0 bridge 6lu7
 ```
 Which will return a list as follows:
@@ -226,99 +222,94 @@ Which will return a list as follows:
 Where each row corresponds to a bridge. This program treats bridging interactions as networks with a defined
 set of vertices. For example, the above examples are 2-bridges with 3 vertices: ARO - MET - ARO. The
 `--vertices` option can be passed to search for n-bridges:
-```
+```console
 runner --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
-## Batch jobs and MongoDB integration
-### A brief overview
+
+## Running batch jobs and MongoDB integration
+> [!NOTE]
+> This section assumes a host is running MongoDB [^2] and familiarity with the MongoDB suite of products.
+
 This software is normally used for large scale Protein Data Bank mining efforts and stores the results in a
-MongoDB database (https://www.mongodb.com/).  To start a batch job, ensure that the host is running a valid
-MongoDB installation then supply a batch file. A batch file can be a regular text file consisting of delimited
-PDB codes:
+MongoDB database. To get started, prepare a batch file of PDB codes to scan. A batch file can be a regular
+text file consisting of delimited PDB codes:
 ```
-1xak, 1uw7, 2ca1
-1qz8, 2fxp, 2fyg
-2cme, 6mwm, spam
+1xak, 1uw7, 2ca1, 1qz8, 2fxp, 2fyg, 2cme, 6mwm, spam
 ```
-The command follows:
-```
+Then run:
+```console
 runner batch </path/batch/file> --threads <num-threads> --database <db> --collection <collection>
 ```
-The MongoDB dump database is specified using the `--database` option. The collection is specified with the
-`--collection` option. The `--threads` option specifies how many threads to use for processing the batch. The
-recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle.  By default, mining
-jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
+The MongoDB database name is specified using the `--database` option and the collection name is specified with
+the `--collection` option. The `--threads` option specifies how many threads to use for processing the batch.
+The hostname of the server hosting the MongoDB deployment can be provided using the `--host` option if the
+MongoDB deployment is not bound to localhost.
+
+> [!IMPORTANT]
+> The program assumes that authentication is enabled and will prompt for a username and password.
+
+If no issues arise when connecting to MongoDB, the batch job will proceed. Below is an example of output
+corresponding to the above 9 codes:
 ```
-1970-01-01T00:00:00 MainThread I Handshaking with MongoDB at "mongodb://localhost:27017/"
-1970-01-01T00:00:00 MainThread I Imported pdb codes from file /tmp/foo.txt
-1970-01-01T00:00:00 Batch_0 I Getting Met-aromatic interactions for PDB entry 1xak
-1970-01-01T00:00:00 Batch_1 I Getting Met-aromatic interactions for PDB entry 1uw7
-1970-01-01T00:00:00 Batch_2 I Getting Met-aromatic interactions for PDB entry 2ca1
-1970-01-01T00:00:00 Batch_0 E No methionine residues found for entry "1xak"
-1970-01-01T00:00:00 Batch_0 I Processed 1xak. Count: 1
-1970-01-01T00:00:00 Batch_0 I Getting Met-aromatic interactions for PDB entry 1qz8
-1970-01-01T00:00:00 Batch_2 I Processed 2ca1. Count: 2
-1970-01-01T00:00:00 Batch_2 I Getting Met-aromatic interactions for PDB entry 2fyg
-1970-01-01T00:00:00 Batch_1 I Processed 1uw7. Count: 3
-1970-01-01T00:00:00 Batch_1 I Getting Met-aromatic interactions for PDB entry 2fxp
-1970-01-01T00:00:01 Batch_2 I Processed 2fyg. Count: 4
-1970-01-01T00:00:01 Batch_2 I Getting Met-aromatic interactions for PDB entry 1rcy
-1970-01-01T00:00:01 Batch_0 I Processed 1qz8. Count: 5
-1970-01-01T00:00:01 Batch_0 I Getting Met-aromatic interactions for PDB entry 2cme
-1970-01-01T00:00:01 Batch_1 E No methionine residues found for entry "2fxp"
-1970-01-01T00:00:01 Batch_1 I Processed 2fxp. Count: 6
-1970-01-01T00:00:01 Batch_1 I Getting Met-aromatic interactions for PDB entry 6mwm
-1970-01-01T00:00:02 Batch_2 I Processed 1rcy. Count: 7
-1970-01-01T00:00:02 Batch_0 E Found no Met-aromatic interactions for entry "2cme"
-1970-01-01T00:00:02 Batch_0 I Processed 2cme. Count: 8
-1970-01-01T00:00:02 Batch_1 E No aromatic residues found for entry "6mwm"
-1970-01-01T00:00:02 Batch_1 I Processed 6mwm. Count: 9
-1970-01-01T00:00:02 MainThread I Batch job complete!
-1970-01-01T00:00:02 MainThread I Results loaded into database: default_ma
-1970-01-01T00:00:02 MainThread I Results loaded into collection: default_ma
-1970-01-01T00:00:02 MainThread I Batch job statistics loaded into collection: default_ma_info
-1970-01-01T00:00:02 MainThread I Batch job execution time: 2.213000 s
+... MainThread INFO Importing pdb codes from file /tmp/foo.txt
+... MainThread INFO Splitting list of PDB codes into 3 chunks
+... MainThread INFO Deploying 3 workers!
+... MainThread INFO Registering SIGINT to thread terminator
+... Batch_0 INFO Processing 1xak. Count: 1
+... Batch_1 INFO Processing 1uw7. Count: 2
+... Batch_2 INFO Processing 2ca1. Count: 3
+... Batch_0 INFO Processing 1qz8. Count: 4
+... Batch_1 INFO Processing 2fxp. Count: 5
+... Batch_2 INFO Processing 2fyg. Count: 6
+... Batch_0 INFO Processing 2cme. Count: 7
+... Batch_2 INFO Processing spam. Count: 8
+... Batch_1 INFO Processing 6mwm. Count: 9
+... MainThread INFO Batch job complete!
+... MainThread INFO Results loaded into database: test
+... MainThread INFO Results loaded into collection: test
+... MainThread INFO Batch job execution time: 1.746000 s
+... MainThread INFO Loading:
+{
+    "batch_job_execution_time": 1.746,
+    "data_acquisition_date": "...", // date truncated for clarity
+    "num_workers": 3,
+    "number_of_entries": 9,
+    "chain": "A",
+    "cutoff_angle": 109.5,
+    "cutoff_distance": 4.9,
+    "model": "cp"
+}
+Into collection: test_info
+... MainThread INFO Unregistering SIGINT from thread terminator
+```
+And deployed with the command:
+```console
+runner batch /tmp/foo.txt --threads 3 --database test --collection test
+# Where foo.txt contains: 1xak, 1uw7, 2ca1, 1qz8, 2fxp, 2fyg, 2cme, 6mwm, spam
 ```
 A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary
 collection will house all the batch job parameters and other statistics and the collection name will be
-suffixed with `_info`. For example, the above scenario would generate the `default_ma_info` collection:
-```
+suffixed with `_info`. Note that the above command generated:
+```javascript
 {
-        "_id" : ObjectId("6145d54c6f016f61e0afcaa5"),
-        "num_workers" : 3,
-        "cutoff_distance" : 4.9,
-        "cutoff_angle" : 109.5,
-        "chain" : "A",
-        "model" : "cp",
-        "data_acquisition_date" : ISODate("1970-01-01T00:00:02.077Z"),
-        "batch_job_execution_time" : 2.213,
-        "number_of_entries" : 9
+    "batch_job_execution_time": 1.746,
+    "data_acquisition_date": "...", // date truncated for clarity
+    "num_workers": 3,
+    "number_of_entries": 9,
+    "chain": "A",
+    "cutoff_angle": 109.5,
+    "cutoff_distance": 4.9,
+    "model": "cp"
 }
 ```
-### Designing a distributed mining strategy
-A user may be tempted to mine data on a high performance machine and then route the results to a storage
-server. This software supports this. As mentioned before, running a batch job will export data to a MongoDB
-server listening on `localhost:27017` by default. However, the `--uri` option can be used to route results to
-another server. The `--uri` option accepts a valid MongoDB URI string and overrides both the host and port
-specified using the `--host` and `--port` options, respectively. For example, to run a batch job against a
-MongoDB server listening on `localhost` and port 27018, one would pass:
-```
-runner batch --uri=mongodb://localhost:27018/ </path/to/batch.txt>
-```
-To run a batch job against a server `ma-results.local:27017`, with MongoDB user "abc" and password "password,"
-one would pass:
-```
-runner batch --uri=mongodb://abc:password@ma-results.local:27017/ </path/to/batch.txt>
-```
-More information regarding valid URI connection string formats can be found at [Connection String URI Format —
-MongoDB Manual](https://www.mongodb.com/docs/manual/reference/connection-string/).
+
 ## Using the MetAromatic API
 One may be interested in extending the Met-aromatic project into a customized workflow. The instructions
 provided in the [Setup](#setup) section install MetAromatic source into `site-packages`. Therefore, the API
 can be exposed for use in a custom script.
 ### Example: programmatically obtaining Met-aromatic pairs
 The command:
-```
+```console
 runner --cutoff-distance=4.1 pair 1rcy
 ```
 Will return:
@@ -330,50 +321,47 @@ TYR        122        18         3.954      60.145     68.352
 TYR        122        18         4.051      47.198     85.151
 -------------------------------------------------------------------
 ```
-To programmatically emulate this command, the following script applies:
+The following snippet approximates the above output:
 ```python3
 from json import dumps
-from MetAromatic import MetAromatic
+from MetAromatic import get_pairs_from_pdb
+
 
 def main() -> None:
-    arguments = {
-        'cutoff_distance': 4.1,
-        'cutoff_angle': 109.5,
-        'chain': 'A',
-        'model': 'cp'
-    }
-
-    results = MetAromatic(arguments).get_met_aromatic_interactions('1rcy')
+    results = get_pairs_from_pdb(
+        cutoff_distance=4.1, cutoff_angle=109.5, chain="A", model="cp", pdb_code="1rcy"
+    )
 
     for interaction in results.interactions:
-        print(dumps(interaction, indent=4))
+        print(dumps(interaction.to_dict(), indent=4))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
 ```
 Which will print to `stdout`:
 ```json
 {
-    "aromatic_residue": "TYR",
     "aromatic_position": 122,
-    "methionine_position": 18,
-    "norm": 3.954,
+    "aromatic_residue": "TYR",
+    "met_phi_angle": 68.352,
     "met_theta_angle": 60.145,
-    "met_phi_angle": 68.352
+    "methionine_position": 18,
+    "norm": 3.954
 }
 {
-    "aromatic_residue": "TYR",
     "aromatic_position": 122,
-    "methionine_position": 18,
-    "norm": 4.051,
+    "aromatic_residue": "TYR",
+    "met_phi_angle": 85.151,
     "met_theta_angle": 47.198,
-    "met_phi_angle": 85.151
+    "methionine_position": 18,
+    "norm": 4.051
 }
 ```
-This output roughly matches that of the aforementioned `runner` invocation.
+
 ### Example: programmatically obtaining bridging interactions
 The command:
-```
+```console
 runner bridge 6lu7
 ```
 Will return:
@@ -382,32 +370,35 @@ Will return:
 {PHE134}-{TYR182}-{MET130}
 -------------------------------------------------------------------
 ```
-To programmatically emulate this command, the following script applies:
+The following snippet approximates the above output:
 ```python3
-from MetAromatic import GetBridgingInteractions
+from MetAromatic import get_bridges
+
 
 def main() -> None:
-    arguments = {
-        'cutoff_distance': 4.9,
-        'cutoff_angle': 109.5,
-        'chain': 'A',
-        'model': 'cp'
-    }
+    results = get_bridges(
+        chain="A",
+        code="6lu7",
+        cutoff_angle=109.5,
+        cutoff_distance=4.9,
+        model="cp",
+        vertices=3,
+    )
 
-    results = GetBridgingInteractions(arguments).get_bridging_interactions('6lu7', 3)
-    print(results.bridges[0])
+    for bridge in results.bridges:
+        print(bridge)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
 ```
-Running this script will return:
+Running this script will print:
 ```
 {'MET130', 'PHE134', 'TYR182'}
 ```
-Which roughly matches the output of the aforementioned `runner` invocation.
-## Tests and automation
-To test the program, run the following target:
-```
-make test
-```
-This target will run all unit tests within a `nox` generated virtual environment.
+
+<!-- footnotes will always be placed at the bottom of a markdown file so place here -->
+
+[^1]: See [Applications of numerical linear algebra to protein structural analysis: the case of
+methionine-aromatic motifs](https://summit.sfu.ca/item/18741)).
+[^2]: See [MongoDB](https://www.mongodb.com/) for more information.

@@ -1,25 +1,25 @@
-.PHONY = help wheel setup test clean test-pypi pypi black mypy
+.PHONY = help wheel setup test clean test-pypi pypi black mypy lint
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
-
-    To build wheel:
-        $$ make wheel
-    To set up the project:
-        $$ make setup
-    To test the project:
-        $$ make test
-    To remove build, dist and other setuo.py directories:
-        $$ make clean
-    To upload package to TestPyPI:
-        $$ make test-pypi
-    To upload package to PyPI:
-        $$ make pypi
-    To run black over Python code:
-        $$ make black
-    To run mypy over Python code:
-        $$ make mypy
-
+To build wheel:
+  $$ make wheel
+To set up the project:
+  $$ make setup
+To test the project:
+  $$ make test
+To remove build, dist and other setup.py directories:
+  $$ make clean
+To upload package to TestPyPI:
+  $$ make test-pypi
+To upload package to PyPI:
+  $$ make pypi
+To run black over Python code:
+  $$ make black
+To run mypy over Python code:
+  $$ make mypy
+To run pylint over Python code:
+  $$ make lint
 endef
 
 export HELP_LIST_TARGETS
@@ -53,4 +53,7 @@ black:
 	@black MetAromatic tests
 
 mypy:
-	@mypy --cache-dir=/tmp/mypy_cache_metaromatic MetAromatic tests
+	@mypy --strict --cache-dir=/tmp/mypy_cache_metaromatic MetAromatic tests
+
+lint:
+	@pylint MetAromatic tests

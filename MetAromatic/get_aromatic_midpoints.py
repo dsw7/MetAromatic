@@ -2,20 +2,8 @@ from itertools import groupby
 from copy import deepcopy
 from operator import itemgetter
 from numpy import array
-from MetAromatic.complex_types import TYPE_MIDPOINTS
-
-DICT_ATOMS_PHE = {"CG": "A", "CD2": "B", "CE2": "C", "CZ": "D", "CE1": "E", "CD1": "F"}
-
-DICT_ATOMS_TYR = {"CG": "A", "CD2": "B", "CE2": "C", "CZ": "D", "CE1": "E", "CD1": "F"}
-
-DICT_ATOMS_TRP = {
-    "CD2": "A",
-    "CE3": "B",
-    "CZ3": "C",
-    "CH2": "D",
-    "CZ2": "E",
-    "CE2": "F",
-}
+from .aliases import Midpoints, Coordinates, FloatArray
+from .consts import DICT_ATOMS_PHE, DICT_ATOMS_TYR, DICT_ATOMS_TRP
 
 
 def get_midpoints(c: list[float]) -> list[float]:
@@ -24,9 +12,7 @@ def get_midpoints(c: list[float]) -> list[float]:
     return [0.5 * (a + b) for a, b in zip(c, c_f)]
 
 
-def get_aromatic_midpoints(
-    aromatics: list[list[str]], keys: dict[str, str]
-) -> list[TYPE_MIDPOINTS]:
+def _get_aromatic_midpoints(aromatics: Coordinates, keys: dict[str, str]) -> Midpoints:
     aromatics_grouped = [list(group) for _, group in groupby(aromatics, lambda e: e[5])]
 
     midpoints = []
@@ -47,19 +33,23 @@ def get_aromatic_midpoints(
         y_mid = get_midpoints(y_coord)
         z_mid = get_midpoints(z_coord)
 
-        for a, b, c in zip(x_mid, y_mid, z_mid):
-            midpoints.append((ordered[0][5], ordered[0][3], array([a, b, c])))
+        for x, y, z in zip(x_mid, y_mid, z_mid):
+            residue_pos: str = ordered[0][5]
+            residue_name: str = ordered[0][3]
+            coords: FloatArray = array([x, y, z])
+
+            midpoints.append((residue_pos, residue_name, coords))
 
     return midpoints
 
 
-def get_phe_midpoints(phe_coords: list[list[str]]) -> list[TYPE_MIDPOINTS]:
-    return get_aromatic_midpoints(phe_coords, DICT_ATOMS_PHE)
+def get_phe_midpoints(phe_coords: Coordinates) -> Midpoints:
+    return _get_aromatic_midpoints(phe_coords, DICT_ATOMS_PHE)
 
 
-def get_tyr_midpoints(tyr_coords: list[list[str]]) -> list[TYPE_MIDPOINTS]:
-    return get_aromatic_midpoints(tyr_coords, DICT_ATOMS_TYR)
+def get_tyr_midpoints(tyr_coords: Coordinates) -> Midpoints:
+    return _get_aromatic_midpoints(tyr_coords, DICT_ATOMS_TYR)
 
 
-def get_trp_midpoints(trp_coords: list[list[str]]) -> list[TYPE_MIDPOINTS]:
-    return get_aromatic_midpoints(trp_coords, DICT_ATOMS_TRP)
+def get_trp_midpoints(trp_coords: Coordinates) -> Midpoints:
+    return _get_aromatic_midpoints(trp_coords, DICT_ATOMS_TRP)
