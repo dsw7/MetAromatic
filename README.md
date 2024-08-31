@@ -15,12 +15,9 @@ Code for the following publications:
   - [Step 2: The distance condition](#step-2-the-distance-condition)
   - [Step 3: The angular condition](#step-3-the-angular-condition)
   - [Summary](#summary)
-- [Basic usage](#basic-usage)
-  - [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
-  - [Finding "bridging interactions"](#finding-bridging-interactions)
-- [Batch jobs and MongoDB integration](#batch-jobs-and-mongodb-integration)
-  - [A brief overview](#a-brief-overview)
-  - [Designing a distributed mining strategy](#designing-a-distributed-mining-strategy)
+- [Finding Met-aromatic pairs](#finding-met-aromatic-pairs)
+- [Finding "bridging interactions"](#finding-bridging-interactions)
+- [Running jobs and MongoDB integration](#running-batch-jobs-and-mongodb-integration)
 - [Using the MetAromatic API](#using-the-metaromatic-api)
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
@@ -121,8 +118,7 @@ A representative figure is shown below:
   <img width="336" height="300" src=./pngs/pair-met18-tyr122.png>
 </p>
 
-## Basic usage
-### Finding Met-aromatic pairs
+## Finding Met-aromatic pairs
 The easiest means of performing Met-aromatic calculations is to run jobs in a terminal session. The simplest
 query follows:
 ```console
@@ -202,7 +198,8 @@ specify the chain:
 runner --cutoff-distance 4.5 --cutoff-angle 60 --model rm --chain B pair 1rcy
 ```
 In this case, no results are returned because the PDB entry 1rcy does not contain a "B" chain.
-### Finding "bridging interactions"
+
+## Finding "bridging interactions"
 Bridging interactions are interactions whereby two or more aromatic residues meet the criteria of the
 Met-aromatic algorithm, for example, in the example below (PDB entry 6C8A):
 <p align="center">
@@ -229,89 +226,83 @@ set of vertices. For example, the above examples are 2-bridges with 3 vertices: 
 ```console
 runner --cutoff-distance 6.0 bridge 6lu7 --vertices 4
 ```
-## Batch jobs and MongoDB integration
-### A brief overview
+
+## Running batch jobs and MongoDB integration
+> [!NOTE]
+> This section assumes a host is running MongoDB and familiarity with the MongoDB suite of products.
+
 This software is normally used for large scale Protein Data Bank mining efforts and stores the results in a
-MongoDB database (https://www.mongodb.com/). To start a batch job, ensure that the host is running a valid
-MongoDB installation then supply a batch file. A batch file can be a regular text file consisting of delimited
-PDB codes:
+MongoDB database (https://www.mongodb.com/). To get started, prepare a batch file of PDB codes to scan. A
+batch file can be a regular text file consisting of delimited PDB codes:
 ```
-1xak, 1uw7, 2ca1
-1qz8, 2fxp, 2fyg
-2cme, 6mwm, spam
+1xak, 1uw7, 2ca1, 1qz8, 2fxp, 2fyg, 2cme, 6mwm, spam
 ```
-The command follows:
+Then run:
 ```console
 runner batch </path/batch/file> --threads <num-threads> --database <db> --collection <collection>
 ```
-The MongoDB dump database is specified using the `--database` option. The collection is specified with the
+The MongoDB database name is specified using the `--database` option and the collection name is specified with the
 `--collection` option. The `--threads` option specifies how many threads to use for processing the batch. The
-recommended number of threads is 12 on a 300 Mbps network and on a machine that is idle. By default, mining
-jobs are run on `localhost` and on port `27017`. A "healthy" batch job will log as follows:
+hostname of the server hosting the MongoDB deployment can be provided using the `--host` option if the MongoDB
+deployment is not bound to localhost.
+> [!IMPORTANT]
+> The program assumes that authentication is enabled and will prompt for a username and password.
+
+If no issues arise when connecting to MongoDB, the batch job will proceed. Below is an example of output
+corresponding to the above 9 codes:
 ```
-1970-01-01T00:00:00 MainThread I Handshaking with MongoDB at "mongodb://localhost:27017/"
-1970-01-01T00:00:00 MainThread I Imported pdb codes from file /tmp/foo.txt
-1970-01-01T00:00:00 Batch_0 I Getting Met-aromatic interactions for PDB entry 1xak
-1970-01-01T00:00:00 Batch_1 I Getting Met-aromatic interactions for PDB entry 1uw7
-1970-01-01T00:00:00 Batch_2 I Getting Met-aromatic interactions for PDB entry 2ca1
-1970-01-01T00:00:00 Batch_0 E No methionine residues found for entry "1xak"
-1970-01-01T00:00:00 Batch_0 I Processed 1xak. Count: 1
-1970-01-01T00:00:00 Batch_0 I Getting Met-aromatic interactions for PDB entry 1qz8
-1970-01-01T00:00:00 Batch_2 I Processed 2ca1. Count: 2
-1970-01-01T00:00:00 Batch_2 I Getting Met-aromatic interactions for PDB entry 2fyg
-1970-01-01T00:00:00 Batch_1 I Processed 1uw7. Count: 3
-1970-01-01T00:00:00 Batch_1 I Getting Met-aromatic interactions for PDB entry 2fxp
-1970-01-01T00:00:01 Batch_2 I Processed 2fyg. Count: 4
-1970-01-01T00:00:01 Batch_2 I Getting Met-aromatic interactions for PDB entry 1rcy
-1970-01-01T00:00:01 Batch_0 I Processed 1qz8. Count: 5
-1970-01-01T00:00:01 Batch_0 I Getting Met-aromatic interactions for PDB entry 2cme
-1970-01-01T00:00:01 Batch_1 E No methionine residues found for entry "2fxp"
-1970-01-01T00:00:01 Batch_1 I Processed 2fxp. Count: 6
-1970-01-01T00:00:01 Batch_1 I Getting Met-aromatic interactions for PDB entry 6mwm
-1970-01-01T00:00:02 Batch_2 I Processed 1rcy. Count: 7
-1970-01-01T00:00:02 Batch_0 E Found no Met-aromatic interactions for entry "2cme"
-1970-01-01T00:00:02 Batch_0 I Processed 2cme. Count: 8
-1970-01-01T00:00:02 Batch_1 E No aromatic residues found for entry "6mwm"
-1970-01-01T00:00:02 Batch_1 I Processed 6mwm. Count: 9
-1970-01-01T00:00:02 MainThread I Batch job complete!
-1970-01-01T00:00:02 MainThread I Results loaded into database: default_ma
-1970-01-01T00:00:02 MainThread I Results loaded into collection: default_ma
-1970-01-01T00:00:02 MainThread I Batch job statistics loaded into collection: default_ma_info
-1970-01-01T00:00:02 MainThread I Batch job execution time: 2.213000 s
+... MainThread INFO Importing pdb codes from file /tmp/foo.txt
+... MainThread INFO Splitting list of PDB codes into 3 chunks
+... MainThread INFO Deploying 3 workers!
+... MainThread INFO Registering SIGINT to thread terminator
+... Batch_0 INFO Processing 1xak. Count: 1
+... Batch_1 INFO Processing 1uw7. Count: 2
+... Batch_2 INFO Processing 2ca1. Count: 3
+... Batch_0 INFO Processing 1qz8. Count: 4
+... Batch_1 INFO Processing 2fxp. Count: 5
+... Batch_2 INFO Processing 2fyg. Count: 6
+... Batch_0 INFO Processing 2cme. Count: 7
+... Batch_2 INFO Processing spam. Count: 8
+... Batch_1 INFO Processing 6mwm. Count: 9
+... MainThread INFO Batch job complete!
+... MainThread INFO Results loaded into database: test
+... MainThread INFO Results loaded into collection: test
+... MainThread INFO Batch job execution time: 1.746000 s
+... MainThread INFO Loading:
+{
+    "batch_job_execution_time": 1.746,
+    "data_acquisition_date": "...", // date truncated for clarity
+    "num_workers": 3,
+    "number_of_entries": 9,
+    "chain": "A",
+    "cutoff_angle": 109.5,
+    "cutoff_distance": 4.9,
+    "model": "cp"
+}
+Into collection: test_info
+... MainThread INFO Unregistering SIGINT from thread terminator
+```
+And deployed with the command:
+```console
+runner batch /tmp/foo.txt --threads 3 --database test --collection test
+# Where foo.txt contains: 1xak, 1uw7, 2ca1, 1qz8, 2fxp, 2fyg, 2cme, 6mwm, spam
 ```
 A batch job will generate a collection secondary to the collection specified by `--collection`. This secondary
 collection will house all the batch job parameters and other statistics and the collection name will be
-suffixed with `_info`. For example, the above scenario would generate the `default_ma_info` collection:
-```
+suffixed with `_info`. Note that the above command generated:
+```javascript
 {
-        "_id" : ObjectId("6145d54c6f016f61e0afcaa5"),
-        "num_workers" : 3,
-        "cutoff_distance" : 4.9,
-        "cutoff_angle" : 109.5,
-        "chain" : "A",
-        "model" : "cp",
-        "data_acquisition_date" : ISODate("1970-01-01T00:00:02.077Z"),
-        "batch_job_execution_time" : 2.213,
-        "number_of_entries" : 9
+    "batch_job_execution_time": 1.746,
+    "data_acquisition_date": "...", // date truncated for clarity
+    "num_workers": 3,
+    "number_of_entries": 9,
+    "chain": "A",
+    "cutoff_angle": 109.5,
+    "cutoff_distance": 4.9,
+    "model": "cp"
 }
 ```
-### Designing a distributed mining strategy
-A user may be tempted to mine data on a high performance machine and then route the results to a storage
-server. This software supports this. As mentioned before, running a batch job will export data to a MongoDB
-server listening on `localhost:27017` by default. However, the `--uri` option can be used to route results to
-another server. The `--uri` option accepts a valid MongoDB URI string and overrides both the host and port
-specified using the `--host` and `--port` options, respectively. For example, to run a batch job against a
-MongoDB server listening on `localhost` and port 27018, one would pass:
-```console
-runner batch --uri=mongodb://localhost:27018/ </path/to/batch.txt>
-```
-To run a batch job against a server `ma-results.local:27017`, with MongoDB user "abc" and password "password,"
-one would pass:
-```console
-runner batch --uri=mongodb://abc:password@ma-results.local:27017/ </path/to/batch.txt>
-```
-More information regarding valid URI connection string formats can be found at [Connection String URI Format —
-MongoDB Manual](https://www.mongodb.com/docs/manual/reference/connection-string/).
+
 ## Using the MetAromatic API
 One may be interested in extending the Met-aromatic project into a customized workflow. The instructions
 provided in the [Setup](#setup) section install MetAromatic source into `site-packages`. Therefore, the API
