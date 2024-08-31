@@ -4,29 +4,24 @@ from pathlib import Path
 import sys
 import click
 from .aliases import Models
+from .consts import Help
 from .errors import SearchError
 from .models import MetAromaticParams, BatchParams
 
 
 @click.group()
 @click.option(
-    "--cutoff-distance",
-    default=4.9,
-    help="Specify a cutoff distance in Angstroms",
-    type=click.FloatRange(min=0),
+    "--cutoff-distance", default=4.9, help=Help.DIST.value, type=click.FloatRange(min=0)
 )
 @click.option(
     "--cutoff-angle",
     default=109.5,
-    help="Specify a cutoff angle in degrees",
+    help=Help.ANGLE.value,
     type=click.FloatRange(min=0, max=360),
 )
-@click.option("--chain", default="A", help="Specify a chain ID")
+@click.option("--chain", default="A", help=Help.CHAIN.value)
 @click.option(
-    "--model",
-    default="cp",
-    help="Specify a lone pair interpolation model",
-    type=click.Choice(["cp", "rm"]),
+    "--model", default="cp", help=Help.MODEL.value, type=click.Choice(["cp", "rm"])
 )
 @click.pass_context
 def cli(
@@ -44,7 +39,7 @@ def cli(
     )
 
 
-@cli.command(help="Run a Met-aromatic query against a single PDB entry.")
+@cli.command(help=Help.CMD_PAIR.value)
 @click.argument("pdb_code")
 @click.pass_obj
 def pair(obj: MetAromaticParams, pdb_code: str) -> None:
@@ -64,7 +59,7 @@ def pair(obj: MetAromaticParams, pdb_code: str) -> None:
         sys.exit(str(error))
 
 
-@cli.command(help="Run a Met-aromatic query against a local PDB file.")
+@cli.command(help=Help.CMD_READ_LOCAL.value)
 @click.argument(
     "pdb_file", type=click.Path(exists=True, dir_okay=False, path_type=Path)
 )
@@ -86,13 +81,10 @@ def read_local(obj: MetAromaticParams, pdb_file: Path) -> None:
         sys.exit(str(error))
 
 
-@cli.command(help="Run a bridging interaction query on a single PDB entry.")
+@cli.command(help=Help.CMD_BRIDGE.value)
 @click.argument("code")
 @click.option(
-    "--vertices",
-    default=3,
-    type=click.IntRange(min=3),
-    help="Specify number of vertices",
+    "--vertices", default=3, type=click.IntRange(min=3), help=Help.VERTICES.value
 )
 @click.pass_obj
 def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
@@ -113,48 +105,23 @@ def bridge(obj: MetAromaticParams, code: str, vertices: int) -> None:
         sys.exit(str(error))
 
 
-@cli.command(help="Run a Met-aromatic query batch job.")
+@cli.command(help=Help.CMD_BATCH.value)
 @click.argument(
     "batch_file", type=click.Path(exists=True, dir_okay=False, path_type=Path)
 )
 @click.option(
-    "--threads",
-    default=5,
-    type=click.IntRange(min=1, max=15),
-    help="Specify number of workers to use.",
+    "--threads", default=5, type=click.IntRange(min=1, max=15), help=Help.THREADS.value
 )
-@click.option("--host", default="localhost", help="Specify host name.")
+@click.option("--host", default="localhost", help=Help.HOST.value)
+@click.option("--port", type=int, default=27017, help=Help.PORT.value)
+@click.option("-d", "--database", default="default_ma", help=Help.DB.value)
+@click.option("-c", "--collection", default="default_ma", help=Help.COLL.value)
 @click.option(
-    "--port", type=int, default=27017, help="Specify MongoDB TCP connection port."
+    "-x", "--overwrite", is_flag=True, default=False, help=Help.OVERWRITE.value
 )
+@click.option("-u", "--username", prompt=True, help=Help.USERNAME.value)
 @click.option(
-    "-d", "--database", default="default_ma", help="Specify MongoDB database to use."
-)
-@click.option(
-    "-c",
-    "--collection",
-    default="default_ma",
-    help="Specify MongoDB collection to use.",
-)
-@click.option(
-    "-x",
-    "--overwrite",
-    is_flag=True,
-    default=False,
-    help="Specify whether to overwrite collection specified with -c.",
-)
-@click.option(
-    "-u",
-    "--username",
-    prompt=True,
-    help="Specify MongoDB username if authentication is enabled.",
-)
-@click.option(
-    "-p",
-    "--password",
-    prompt=True,
-    hide_input=True,
-    help="Specify MongoDB password if authentication is enabled.",
+    "-p", "--password", prompt=True, hide_input=True, help=Help.PASSWORD.value
 )
 @click.pass_obj
 def batch(
