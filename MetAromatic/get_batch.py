@@ -21,7 +21,7 @@ from .models import (
     DictInteractions,
 )
 
-LOGGER = getLogger("met-aromatic")
+Logger = getLogger("met-aromatic")
 
 
 def _configure_logger() -> None:
@@ -52,7 +52,7 @@ def _configure_logger() -> None:
 
 
 def _load_pdb_codes(batch_file: Path) -> PdbCodes:
-    LOGGER.info("Importing pdb codes from file %s", batch_file)
+    Logger.info("Importing pdb codes from file %s", batch_file)
 
     if not batch_file.exists():
         raise SearchError(f"Path {batch_file} does not exist")
@@ -68,7 +68,7 @@ def _load_pdb_codes(batch_file: Path) -> PdbCodes:
 
 
 def _chunk_pdb_codes(num_chunks: int, pdb_codes: PdbCodes) -> Chunks:
-    LOGGER.info("Splitting list of PDB codes into %i chunks", num_chunks)
+    Logger.info("Splitting list of PDB codes into %i chunks", num_chunks)
 
     chunks = []
 
@@ -106,11 +106,11 @@ def _get_info_collection(base_collection: str) -> str:
 
 
 def _overwrite_collection_if_enabled(db: database.Database, coll: str) -> None:
-    LOGGER.info('Will overwrite collection "%s" if exists', coll)
+    Logger.info('Will overwrite collection "%s" if exists', coll)
     db.drop_collection(coll)
 
     info_collection = _get_info_collection(coll)
-    LOGGER.info('Will overwrite collection "%s" if exists', info_collection)
+    Logger.info('Will overwrite collection "%s" if exists', info_collection)
 
     db.drop_collection(info_collection)
 
@@ -136,23 +136,23 @@ class ParallelProcessing:
         self.chunks = chunks
 
         self.count = 0
-        self.bool_disable_workers = False
+        self.disable_workers = False
 
     def _disable_all_workers(self, *args: Any) -> None:
-        LOGGER.info("Detected SIGINT!")
-        LOGGER.info("Attempting to stop all workers!")
+        Logger.info("Detected SIGINT!")
+        Logger.info("Attempting to stop all workers!")
 
-        self.bool_disable_workers = True
+        self.disable_workers = True
         self._unregister_sigint()
 
     def _register_sigint(self) -> None:
-        LOGGER.info("Registering SIGINT to thread terminator")
+        Logger.info("Registering SIGINT to thread terminator")
 
-        self.bool_disable_workers = False
+        self.disable_workers = False
         signal(SIGINT, self._disable_all_workers)
 
     def _unregister_sigint(self) -> None:
-        LOGGER.info("Unregistering SIGINT from thread terminator")
+        Logger.info("Unregistering SIGINT from thread terminator")
         signal(SIGINT, SIG_DFL)
 
     def _get_interaction(self, code: str) -> BatchResult:
@@ -166,7 +166,7 @@ class ParallelProcessing:
             ).get_interactions()
         except SearchError as error:
             errmsg = str(error)
-        except Exception as error:
+        except Exception as error: # pylint: disable=broad-exception-caught
             errmsg = str(error)
         else:
             interactions = fs.serialize_interactions()
@@ -177,14 +177,14 @@ class ParallelProcessing:
         collection = self.db[self.bp.collection]
 
         for code in chunk:
-            if self.bool_disable_workers:
-                LOGGER.info("Received interrupt signal - stopping worker thread...")
+            if self.disable_workers:
+                Logger.info("Received interrupt signal - stopping worker thread...")
                 break
 
             with self.mutex:
                 self.count += 1
 
-            LOGGER.info("Processing %s. Count: %i", code, self.count)
+            Logger.info("Processing %s. Count: %i", code, self.count)
 
             doc_interactions: BatchResult = self._get_interaction(code)
             collection.insert_one(doc_interactions)
@@ -200,7 +200,7 @@ class ParallelProcessing:
 
         info_collection = _get_info_collection(self.bp.collection)
 
-        LOGGER.info(
+        Logger.info(
             "Loading:\n%s\nInto collection: %s",
             dumps(batch_job_metadata, indent=4, default=str),
             info_collection,
@@ -209,7 +209,7 @@ class ParallelProcessing:
         self.db[info_collection].insert_one(batch_job_metadata)
 
     def deploy_jobs(self) -> None:
-        LOGGER.info("Deploying %i workers!", self.bp.threads)
+        Logger.info("Deploying %i workers!", self.bp.threads)
 
         self._register_sigint()
 
@@ -223,10 +223,10 @@ class ParallelProcessing:
             if wait(workers, return_when=ALL_COMPLETED):
                 exec_time = round(time() - start_time, 3)
 
-                LOGGER.info("Batch job complete!")
-                LOGGER.info("Results loaded into database: %s", self.bp.database)
-                LOGGER.info("Results loaded into collection: %s", self.bp.collection)
-                LOGGER.info("Batch job execution time: %f s", exec_time)
+                Logger.info("Batch job complete!")
+                Logger.info("Results loaded into database: %s", self.bp.database)
+                Logger.info("Results loaded into collection: %s", self.bp.collection)
+                Logger.info("Batch job execution time: %f s", exec_time)
                 self._insert_summary_doc(exec_time)
 
         self._unregister_sigint()

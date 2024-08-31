@@ -65,14 +65,20 @@ def mongo_coll_info(mongo_db: database.Database) -> Generator[collection.Collect
 
 
 def test_batch_too_few_threads(cli_runner: CliRunner) -> None:
-    command = f"batch {TEST_DATA} --threads=-1 --database={TestParams.db} --collection={TestParams.coll}"
+    command = (
+        f"batch {TEST_DATA} --threads=-1 "
+        f"--database={TestParams.db} --collection={TestParams.coll}"
+    )
 
     result = cli_runner.invoke(cli, command.split())
     assert result.exit_code != EX_OK
 
 
 def test_batch_too_many_threads(cli_runner: CliRunner) -> None:
-    command = f"batch {TEST_DATA} --threads=100 --database={TestParams.db} --collection={TestParams.coll}"
+    command = (
+        f"batch {TEST_DATA} --threads=100 "
+        f"--database={TestParams.db} --collection={TestParams.coll}"
+    )
 
     result = cli_runner.invoke(cli, command.split())
     assert result.exit_code != EX_OK

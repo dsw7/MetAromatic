@@ -1,5 +1,4 @@
 # pylint: disable=C0415   # Disable "Import outside toplevel" - we need this for lazy imports
-# pylint: disable=C0301   # Disable "Line too long"
 
 from pathlib import Path
 import sys
