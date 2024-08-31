@@ -7,8 +7,10 @@ from pymongo import MongoClient, errors, collection, database
 from MetAromatic.models import BatchResult
 from MetAromatic.runner import cli
 
-TEST_DATA = Path(__file__).resolve().parent / "data_coronavirus_entries.txt"
 
+TestData = (
+    Path(__file__).resolve().parent / "resources" / "data_coronavirus_entries.txt"
+)
 Results: TypeAlias = collection.Collection[BatchResult]
 
 
@@ -24,7 +26,7 @@ class TestParams:
 
 def run_batch_command() -> None:
     command = (
-        f"batch {TEST_DATA} --username={TestParams.username} --password={TestParams.password} "
+        f"batch {TestData} --username={TestParams.username} --password={TestParams.password} "
         f"--threads=3 --database={TestParams.db} --collection={TestParams.coll}"
     )
 
@@ -36,7 +38,7 @@ def run_batch_command() -> None:
 
 
 @pytest.fixture(scope="module")
-def mongo_db() -> Generator[database.Database]:
+def mongo_db() -> Generator[database.Database, None, None]:
     client: MongoClient = MongoClient(
         username=TestParams.username, password=TestParams.password
     )
@@ -53,20 +55,22 @@ def mongo_db() -> Generator[database.Database]:
 
 
 @pytest.fixture(scope="module")
-def mongo_coll(mongo_db: database.Database) -> Generator[Results]:
+def mongo_coll(mongo_db: database.Database) -> Generator[Results, None, None]:
     yield mongo_db[TestParams.coll]
     mongo_db[TestParams.coll].drop()
 
 
 @pytest.fixture(scope="module")
-def mongo_coll_info(mongo_db: database.Database) -> Generator[collection.Collection]:
+def mongo_coll_info(
+    mongo_db: database.Database,
+) -> Generator[collection.Collection, None, None]:
     yield mongo_db[TestParams.coll_info]
     mongo_db[TestParams.coll_info].drop()
 
 
 def test_batch_too_few_threads(cli_runner: CliRunner) -> None:
     command = (
-        f"batch {TEST_DATA} --threads=-1 "
+        f"batch {TestData} --threads=-1 "
         f"--database={TestParams.db} --collection={TestParams.coll}"
     )
 
@@ -76,7 +80,7 @@ def test_batch_too_few_threads(cli_runner: CliRunner) -> None:
 
 def test_batch_too_many_threads(cli_runner: CliRunner) -> None:
     command = (
-        f"batch {TEST_DATA} --threads=100 "
+        f"batch {TestData} --threads=100 "
         f"--database={TestParams.db} --collection={TestParams.coll}"
     )
 
