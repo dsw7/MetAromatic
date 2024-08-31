@@ -166,7 +166,7 @@ class ParallelProcessing:
             ).get_interactions()
         except SearchError as error:
             errmsg = str(error)
-        except Exception as error: # pylint: disable=broad-exception-caught
+        except Exception as error:  # pylint: disable=broad-exception-caught
             errmsg = str(error)
         else:
             interactions = fs.serialize_interactions()
