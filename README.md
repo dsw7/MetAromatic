@@ -322,47 +322,44 @@ TYR        122        18         3.954      60.145     68.352
 TYR        122        18         4.051      47.198     85.151
 -------------------------------------------------------------------
 ```
-To programmatically emulate this command, the following script applies:
+The following snippet approximates the above output:
 ```python3
 from json import dumps
-from MetAromatic import MetAromatic
+from MetAromatic import get_pairs_from_pdb
+
 
 def main() -> None:
-    arguments = {
-        'cutoff_distance': 4.1,
-        'cutoff_angle': 109.5,
-        'chain': 'A',
-        'model': 'cp'
-    }
-
-    results = MetAromatic(arguments).get_met_aromatic_interactions('1rcy')
+    results = get_pairs_from_pdb(
+        cutoff_distance=4.1, cutoff_angle=109.5, chain="A", model="cp", pdb_code="1rcy"
+    )
 
     for interaction in results.interactions:
-        print(dumps(interaction, indent=4))
+        print(dumps(interaction.to_dict(), indent=4))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
 ```
 Which will print to `stdout`:
 ```json
 {
-    "aromatic_residue": "TYR",
     "aromatic_position": 122,
-    "methionine_position": 18,
-    "norm": 3.954,
+    "aromatic_residue": "TYR",
+    "met_phi_angle": 68.352,
     "met_theta_angle": 60.145,
-    "met_phi_angle": 68.352
+    "methionine_position": 18,
+    "norm": 3.954
 }
 {
-    "aromatic_residue": "TYR",
     "aromatic_position": 122,
-    "methionine_position": 18,
-    "norm": 4.051,
+    "aromatic_residue": "TYR",
+    "met_phi_angle": 85.151,
     "met_theta_angle": 47.198,
-    "met_phi_angle": 85.151
+    "methionine_position": 18,
+    "norm": 4.051
 }
 ```
-This output roughly matches that of the aforementioned `runner` invocation.
+
 ### Example: programmatically obtaining bridging interactions
 The command:
 ```console
