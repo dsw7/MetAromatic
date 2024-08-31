@@ -21,7 +21,6 @@ Code for the following publications:
 - [Using the MetAromatic API](#using-the-metaromatic-api)
   - [Example: programmatically obtaining Met-aromatic pairs](#example-programmatically-obtaining-met-aromatic-pairs)
   - [Example: programmatically obtaining bridging interactions](#example-programmatically-obtaining-bridging-interactions)
-- [Tests and automation](#tests-and-automation)
 
 ## Synopsis
 This program returns a list of closely spaced methionine-aromatic residue pairs for structures in the [Protein
@@ -397,12 +396,6 @@ Running this script will print:
 ```
 {'MET130', 'PHE134', 'TYR182'}
 ```
-## Tests and automation
-To test the program, run the following target:
-```console
-make test
-```
-This target will run all unit tests within a `nox` generated virtual environment.
 
 <!-- footnotes will always be placed at the bottom of a markdown file so place here -->
 
