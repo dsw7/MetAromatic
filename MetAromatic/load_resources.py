@@ -43,7 +43,7 @@ def load_local_pdb_file(pdb_file: Path) -> RawData:
 def _get_ftp_url(pdb_code: str) -> str:
     ent_gz = f"pdb{pdb_code}.ent.gz"
 
-    return f"ftp://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/{pdb_code[1:3]}/{ent_gz}"
+    return f"https://files.wwpdb.org/pub/pdb/data/structures/divided/pdb/{pdb_code[1:3]}/{ent_gz}"
 
 
 def load_pdb_file_from_rscb(pdb_code: str) -> RawData:
