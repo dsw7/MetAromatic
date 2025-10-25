@@ -40,7 +40,9 @@ def run_batch_command() -> None:
 @pytest.fixture(scope="module")
 def mongo_db() -> Generator[database.Database, None, None]:
     client: MongoClient = MongoClient(
-        username=TestParams.username, password=TestParams.password
+        password=TestParams.password,
+        serverSelectionTimeoutMS=3000,
+        username=TestParams.username,
     )
 
     try:
