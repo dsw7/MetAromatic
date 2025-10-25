@@ -46,7 +46,7 @@ def mongo_db() -> Generator[database.Database, None, None]:
     )
 
     try:
-        client.list_databases()
+        client.admin.command("ping")
     except errors.OperationFailure as e:
         pytest.skip(f"Something went wrong when connecting to MongoDB: {e}")
     except errors.ServerSelectionTimeoutError as e:
