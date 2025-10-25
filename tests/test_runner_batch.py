@@ -40,15 +40,15 @@ def run_batch_command() -> None:
 @pytest.fixture(scope="module")
 def mongo_db() -> Generator[database.Database, None, None]:
     client: MongoClient = MongoClient(
-        username=TestParams.username, password=TestParams.password
+        password=TestParams.password,
+        serverSelectionTimeoutMS=3000,
+        username=TestParams.username,
     )
 
     try:
-        client.list_databases()
-    except errors.OperationFailure as e:
-        pytest.skip(str(e))
-    except errors.ServerSelectionTimeoutError as e:
-        pytest.exit(str(e))
+        client.admin.command("ping")
+    except errors.ConnectionFailure as e:
+        pytest.skip(f"Something went wrong when connecting to MongoDB: {e}")
 
     run_batch_command()
     yield client[TestParams.db]
