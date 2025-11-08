@@ -36,4 +36,4 @@ clean:
 py:
 	@black MetAromatic tests
 	@pylint --exit-zero MetAromatic tests
-	@mypy --strict --cache-dir=/tmp/mypy_cache_metaromatic MetAromatic tests
+	@mypy --strict MetAromatic tests
