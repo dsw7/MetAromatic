@@ -41,3 +41,8 @@ ENV/
 
 # Requirements
 requirements.txt
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
